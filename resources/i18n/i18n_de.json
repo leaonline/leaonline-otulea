@@ -6,7 +6,8 @@
   },
   "pages": {
     "welcome": {
-      "title": "Willkommen bei lea."
+      "title": "Willkommen bei lea.",
+      "introduction": "Sie können hier angeben, ob Sie bereits einen Test absolviert haben. Wenn Sie bereits teilgenommen haben, klicken sie auf „Ja“. Falls Sie zum ersten Mal hier sind, klicken Sie bitte auf „Nein“."
     }
   }
 }
