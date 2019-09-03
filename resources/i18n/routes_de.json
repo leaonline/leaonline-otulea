@@ -1,0 +1,8 @@
+{
+  "notFound": "/seite-nicht-gefunden",
+  "welcome": "/willkommen",
+  "overview": "/auswahl",
+  "task": "/aufgabe/:dimension/:level/:taskId",
+  "help": "/hilfe/:type",
+  "evaluate": "/ergebnisse/:sessionId"
+}

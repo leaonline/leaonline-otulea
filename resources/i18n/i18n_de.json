@@ -1,0 +1,6 @@
+{
+  "routes": {
+    "redirecting": "Weiterleitung",
+    "notFound": "Seite nicht gefunden"
+  }
+}
