@@ -7,15 +7,13 @@ const _voices = {}
 let _synthVoices
 
 function loadVoicesWhenAvailable () {
-  return new Promise(resolve=> {
-    window.speechSynthesis.onvoiceschanged = resolve
-    window.speechSynthesis.getVoices()
-  })
-    .then(()=> {
-      console.log('voices loaded', window.speechSynthesis)
-      _synthVoices = speechSynth.getVoices();
-    })
-    .catch(e => console.error(e))
+  const voices = speechSynth.getVoices()
+
+  if (voices.length !== 0) {
+    _synthVoices = voices
+  } else {
+    setTimeout(function () { loadVoicesWhenAvailable() }, 10)
+  }
 }
 
 const getVoices = (locale) => {
@@ -24,7 +22,16 @@ const getVoices = (locale) => {
   }
   if (_voices[ locale ]) return _voices[ locale ]
 
-  console.log(_synthVoices)
+  let loadedVoices
+  let count = 0
+  const secure = 100
+  while (!loadedVoices && count < secure) {
+    loadedVoices = global.speechSynthesis.getVoices()
+  }
+  if (!loadedVoices) {
+    throw new Error('Could not load voices!')
+  }
+
   _voices[ locale ] = _synthVoices.filter(voice => voice.lang === locale)
   return _voices[ locale ]
 }
@@ -36,7 +43,6 @@ function playByText (locale, text) {
   // TODO but for now we just use the first occurrence
   const utterance = new global.SpeechSynthesisUtterance(text)
   utterance.voice = voices[ 0 ]
-  console.log(voices[ 0 ])
   utterance.pitch = 1
   utterance.rate = 1
   speechSynth.speak(utterance)
