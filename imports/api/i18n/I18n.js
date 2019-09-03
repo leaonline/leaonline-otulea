@@ -9,7 +9,7 @@ i18n.load = function (config) {
 }
 
 i18n.get = function (...params) {
-  return _translator && _translator.get()
+  return _translator.get(...params)
 }
 
 i18n.set = function (lang, options) {

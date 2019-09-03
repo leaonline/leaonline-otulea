@@ -1,6 +1,7 @@
 {
   "routes": {
     "redirecting": "Weiterleitung",
-    "notFound": "Seite nicht gefunden"
+    "notFound": "Seite nicht gefunden",
+    "welcome": "Willkommen bei lea."
   }
 }

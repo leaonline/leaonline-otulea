@@ -97,7 +97,6 @@ function createRoute (routeDef, onError) {
               if (loadComplete) {
                 setTimeout(() => {
                   computation.stop()
-                  console.log('loaded')
                   resolve()
                 }, 300)
               }
@@ -123,6 +122,7 @@ function createRoute (routeDef, onError) {
       data.queryParams = queryParams
 
       const label = translate(routeDef.label)
+      console.log(label)
       document.title = `${label}`
 
       try {
@@ -141,7 +141,6 @@ Router.register = function (routeDefinition) {
   const path = routeDefinition.path()
   paths[ path ] = routeDefinition
   const routeInstance = createRoute(routeDefinition)
-  console.log(path, routeInstance)
   return FlowRouter.route(path, routeInstance)
 }
 
