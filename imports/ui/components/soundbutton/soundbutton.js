@@ -3,7 +3,7 @@ import { TTSEngine } from '../../../api/tts/TTSEngine'
 import './soundbutton.html'
 
 const getBsType = (type, outline) => {
-  if (!type) return 'secondary'
+  if (!type) return outline ? `outline-secondary` : 'secondary'
   return outline ? `outline-${type}` : type
 }
 
@@ -11,8 +11,7 @@ Template.soundbutton.onCreated(function () {
   const instance = this
   const { data } = instance
 
-  const btnOutline = data.outline
-  const btnType = getBsType(data.type, btnOutline)
+  const btnType = getBsType(data.type, data.outline)
   const btnBlock = data.block ? 'btn-block' : ''
   const btnLg = data.lg ? 'btn-lg' : ''
   const btnXl = data.xl ? 'btn-xl' : ''
