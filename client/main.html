@@ -1,25 +1,16 @@
 <head>
-  <title>otulea</title>
+    <meta charset="utf-8">
+    <meta name="application-name" content="otue.lea">
+    <meta name="description" content="Online Testumgebung zur Literalitätsentwicklung von Arbeitskräften">
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1"/>
+
+    <link rel="shortcut icon" type="image/png" href="/favicon.png?v1" sizes="16x16 32x32 64x64">
+    <link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon-precomposed.png">
+    <link rel="fluid-icon" href="/favicon.png?v1" title="otu.lea icon">
+
+    <title>otue.lea - Online Testumgebung zur Literalitätsentwicklung von Arbeitskräften</title>
 </head>
 
-<body>
-  <h1>Welcome to Meteor!</h1>
-
-  {{> hello}}
-  {{> info}}
-</body>
-
-<template name="hello">
-  <button>Click Me</button>
-  <p>You've pressed the button {{counter}} times.</p>
-</template>
-
-<template name="info">
-  <h2>Learn Meteor!</h2>
-  <ul>
-    <li><a href="https://www.meteor.com/try" target="_blank">Do the Tutorial</a></li>
-    <li><a href="http://guide.meteor.com" target="_blank">Follow the Guide</a></li>
-    <li><a href="https://docs.meteor.com" target="_blank">Read the Docs</a></li>
-    <li><a href="https://forums.meteor.com" target="_blank">Discussions</a></li>
-  </ul>
+<template name="main-render-target">
+    {{> yield}}
 </template>

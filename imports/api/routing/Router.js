@@ -2,6 +2,7 @@
 import { FlowRouter, RouterHelpers } from 'meteor/ostrio:flow-router-extra'
 import { Meteor } from 'meteor/meteor'
 import { Tracker } from 'meteor/tracker'
+import { translate } from '../i18n/reactiveTranslate'
 
 /**
  * Facade to a router to support a common definition for routing in case
@@ -10,6 +11,7 @@ import { Tracker } from 'meteor/tracker'
  */
 export const Router = {}
 Router.src = FlowRouter
+Router.debug = false
 
 Router.go = function (value, ...optionalArgs) {
   const type = typeof value
@@ -41,23 +43,25 @@ Router.current = function (options = {}) {
 }
 
 Router.param = function (value) {
-  if (typeof value === 'object') {
+  const type = typeof value
+  if (type === 'object') {
     return FlowRouter.setParams(value)
   }
-  if (typeof value === 'string') {
+  if (type === 'string') {
     return FlowRouter.getParam(value)
   }
-  throw new Error(`Unexpected format: [${typeof value}], expected string or object`)
+  throw new Error(`Unexpected format: [${type}], expected string or object`)
 }
 
 Router.queryParam = function (value) {
-  if (typeof value === 'object') {
+  const type = typeof value
+  if ('object' === type) {
     return FlowRouter.setQueryParams(value)
   }
-  if (typeof value === 'string') {
+  if ('string' === type) {
     return FlowRouter.getQueryParam(value)
   }
-  throw new Error(`Unexpected format: [${typeof type}], expected string or object`)
+  throw new Error(`Unexpected format: [${type}], expected string or object`)
 }
 
 const paths = {}
@@ -75,32 +79,52 @@ const paths = {}
  */
 function createRoute (routeDef, onError) {
   return {
-    triggersEnter: routeDef.triggersEnter(),
     name: routeDef.key,
     whileWaiting () {
-      this.render(routeDef.target, 'loading', { title: routeDef.label })
+      // we render by default a "loading" template
+      // which can be explicitly prevented
+      if (routeDef.showLoading !== false) {
+        this.render(routeDef.target, 'loading', { title: routeDef.label })
+      }
     },
     waitOn () {
-      routeDef.load()
       return new Promise((resolve) => {
-        let tracker
-        tracker = Tracker.autorun(() => {
-          const loadComplete = !Meteor.loggingIn() && Roles.subscription.ready()
-          if (loadComplete) {
-            setTimeout(() => {
-              tracker.stop()
-              resolve()
-            }, 300)
-          }
-        })
+        routeDef.load()
+          .then(() => {
+            let tracker
+            tracker = Tracker.autorun((computation) => {
+              const loadComplete = !Meteor.loggingIn() && Roles.subscription.ready()
+              if (loadComplete) {
+                setTimeout(() => {
+                  computation.stop()
+                  console.log('loaded')
+                  resolve()
+                }, 300)
+              }
+            })
+          })
+          .catch(e => {
+            console.error(e)
+            resolve()
+          })
       })
     },
+    triggersEnter: routeDef.triggersEnter && routeDef.triggersEnter(),
     action (params, queryParams) {
-      window.scrollTo(0, 0)
+      // run custom actions to run at very first,
+      // for example to scroll the window to the top
+      // or prepare the window environment otherwise
+      if (routeDef.onAction) {
+        routeDef.onAction()
+      }
+
       const data = routeDef.data || {}
       data.params = params
       data.queryParams = queryParams
-      document.title = `CARO ${routeDef.label()}`
+
+      const label = translate(routeDef.label)
+      document.title = `${label}`
+
       try {
         this.render(routeDef.target, routeDef.template, data)
       } catch (e) {
@@ -117,6 +141,7 @@ Router.register = function (routeDefinition) {
   const path = routeDefinition.path()
   paths[ path ] = routeDefinition
   const routeInstance = createRoute(routeDefinition)
+  console.log(path, routeInstance)
   return FlowRouter.route(path, routeInstance)
 }
 
