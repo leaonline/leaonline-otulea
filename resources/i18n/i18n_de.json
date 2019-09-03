@@ -3,5 +3,10 @@
     "redirecting": "Weiterleitung",
     "notFound": "Seite nicht gefunden",
     "welcome": "Willkommen bei lea."
+  },
+  "pages": {
+    "welcome": {
+      "title": "Willkommen bei lea."
+    }
   }
 }
