@@ -26,6 +26,7 @@ dburles:mongo-collection-instances
 
 accounts-base
 accounts-password
+alanning:roles
 
 # UI
 
