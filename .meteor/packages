@@ -35,3 +35,4 @@ seba:minifiers-autoprefixer
 aldeed:autoform
 ostrio:flow-router-extra
 ostrio:i18n
+jkuester:template-states
