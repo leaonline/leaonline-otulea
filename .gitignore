@@ -4,3 +4,8 @@ public/
 # ide specific
 .idea
 .vscode
+
+# config files
+settings.json
+leaconfig.json
+routes_de.json
