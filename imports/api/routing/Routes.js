@@ -1,5 +1,5 @@
 import settings from '../../../resources/i18n/routes_de' // TODO load dynamically using i18n locale
-import { createNotFoundTrigger } from './triggers'
+import { createLoggedinTrigger, createLoginTrigger, createNotFoundTrigger } from './triggers'
 
 export const Routes = {}
 
@@ -45,6 +45,42 @@ Routes.fallback = {
   data: null
 }
 
+/**
+ * The starting page of the app, that contains an
+ * @type {{path: (function(): string), label: string, triggersEnter: (function(): *[]), load(): Promise<undefined>, target: null, template: null, roles: null, data: null}}
+ */
+Routes.welcome = {
+  path: () => `${settings.welcome}`,
+  label: 'routes.welcome',
+  triggersEnter: () => [],
+  async load () {
+    return import('../../ui/pages/welcome/welcome')
+  },
+  target: null,
+  template: 'welcome',
+  roles: null,
+  data: null
+}
+
+const notLoggedInTrigger = createLoginTrigger(Routes.welcome)
+
+/**
+ * The default route to be used when landing on the page without params
+ * @type {{path: (function(): string), label: string, triggersEnter: (function(): *[]), load(): Promise<undefined>, target: null, template: null, roles: null, data: null}}
+ */
+Routes.root = {
+  path: () => '/',
+  label: 'routes.redirecting',
+  triggersEnter: () => [ notLoggedInTrigger ],
+  async load () {
+    return
+  },
+  target: null,
+  template: null,
+  roles: null,
+  data: null
+}
+
 Object.keys(Routes).forEach(key => {
-  Routes[key].key = key
+  Routes[ key ].key = key
 })
