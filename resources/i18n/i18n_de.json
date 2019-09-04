@@ -1,4 +1,8 @@
 {
+  "common": {
+    "yes": "Ja",
+    "no": "Nein"
+  },
   "routes": {
     "redirecting": "Weiterleitung",
     "notFound": "Seite nicht gefunden",
