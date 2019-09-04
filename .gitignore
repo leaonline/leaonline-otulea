@@ -1,5 +1,7 @@
+# folders
 node_modules/
 public/
+packages/
 
 # ide specific
 .idea
