@@ -29,10 +29,13 @@ accounts-password
 alanning:roles
 
 # UI
+reactive-dict
 
 fourseven:scss
 seba:minifiers-autoprefixer
+
 aldeed:autoform
+
 ostrio:flow-router-extra
 ostrio:i18n
 jkuester:template-states
