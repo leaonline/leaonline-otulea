@@ -1,5 +1,6 @@
 <template name="soundbutton">
     <button {{attributes}}>
-        <i class="fas fa-volume-up"></i>
+		{{#unless noIcon}}<i class="fas fa-volume-up"></i>{{/unless}}
+		{{#if label}}<span>{{label}}</span>{{/if}}
     </button>
 </template>
