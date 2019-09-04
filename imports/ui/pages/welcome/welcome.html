@@ -1,23 +1,62 @@
 <template name="welcome">
 	<h1 class="text-center">{{i18n "pages.welcome.title"}}</h1>
 
-	<div class="embed-responsive embed-responsive-16by9">
-		<iframe class="embed-responsive-item" src="{{leaconfig "videos" "welcome"}}" allowfullscreen></iframe>
-	</div>
+	{{#if intro}}
+		<div class="welcome-intro-container">
+			<div class="embed-responsive embed-responsive-16by9">
+				<iframe class="embed-responsive-item" src="{{leaconfig "videos" "welcome"}}" allowfullscreen></iframe>
+			</div>
 
-	<div class="card my-5">
-		<div class="card-body d-flex">
-			{{> soundbutton tts="pages.welcome.introduction" outline=true}} <span class="ml-3">{{i18n
-				"pages.welcome.introduction"}}</span>
-		</div>
-	</div>
+			<div class="card my-5">
+				<div class="card-body d-flex">
+					{{> soundbutton tts="pages.welcome.introduction" outline=true}} <span class="ml-3">{{i18n
+						"pages.welcome.introduction"}}</span>
+				</div>
+			</div>
 
-	<div class="my-5 row">
-		<div class="col">
-			{{> soundbutton tts="common.yes" label=(i18n "common.yes") playHover=true noIcon=true lg=true outline=true block=true}}
+			<div class="my-5 row {{#if (or login newCode)}}d-unavailable{{/if}}">
+				<div class="col">
+					{{> soundbutton class="lea-welcome-yes" tts="common.yes" label=(i18n "common.yes") playHover=true noIcon=true lg=true outline=true block=true}}
+				</div>
+				<div class="col">
+					{{> soundbutton class="lea-welcome-no" tts="common.no" label=(i18n "common.no") playHover=true noIcon=true lg=true outline=true block=true}}
+				</div>
+			</div>
 		</div>
-		<div class="col">
-			{{> soundbutton tts="common.no" label=(i18n "common.no") playHover=true noIcon=true lg=true outline=true block=true}}
+	{{/if}}
+
+	{{#if login}}
+		<div class="card my-5">
+			<div class="card-body d-flex">
+				{{> soundbutton tts="pages.welcome.introduction" outline=true}} <span class="ml-3">{{i18n
+					"pages.welcome.enterCode"}}</span>
+			</div>
 		</div>
-	</div>
+	{{/if}}
+
+	{{#if newCode}}
+		<div class="card my-5">
+			<div class="card-body d-flex">
+				{{> soundbutton tts="pages.welcome.newCode" outline=true}} <span class="ml-3">{{i18n
+					"pages.welcome.newCode"}}</span>
+			</div>
+			<div class="card-body text-center">
+				<h1 class="text-center new-code-area">{{randomCode}}</h1>
+			</div>
+		</div>
+	{{/if}}
+
+	{{#if (or login newCode)}}
+		<div class="welcome-login-container my-5">
+			<div class="input-group input-group-lg">
+				<input type="text" data-index="0" maxlength="1" class="login-field text-uppercase form-control text-center m-2" autofocus />
+				<input type="text" data-index="1" maxlength="1" class="login-field text-uppercase form-control text-center m-2" />
+				<input type="text" data-index="2" maxlength="1" class="login-field text-uppercase form-control text-center m-2" />
+				<input type="text" data-index="3" maxlength="1" class="login-field text-uppercase form-control text-center m-2" />
+				<input type="text" data-index="4" maxlength="1" class="login-field text-uppercase form-control text-center m-2" />
+			</div>
+
+			{{> soundbutton class="lea-welcome-login my-5" tts="pages.welcome.login" label=(i18n "pages.welcome.login") playHover=true noIcon=true lg=true outline=true block=true}}
+		</div>
+	{{/if}}
 </template>

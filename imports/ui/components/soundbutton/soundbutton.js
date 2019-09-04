@@ -17,6 +17,7 @@ Template.soundbutton.helpers({
     const btnLg = data.lg ? 'btn-lg' : ''
     const btnXl = data.xl ? 'btn-xl' : ''
     const btnSm = data.sm ? 'btn-sm' : ''
+    const customClass = data.class || ''
 
     const btnPlayClass = data.playHover
       ? 'lea-sound-hover'
@@ -25,7 +26,7 @@ Template.soundbutton.helpers({
     return {
       id: data.id,
       title: data.title,
-      class: `${btnPlayClass} btn btn-${btnType} ${btnBlock} ${btnSm} ${btnLg} ${btnXl}`,
+      class: `${btnPlayClass} btn btn-${btnType} ${btnBlock} ${btnSm} ${btnLg} ${btnXl} ${customClass}`,
       'data-tts': data.tts
     }
   }
