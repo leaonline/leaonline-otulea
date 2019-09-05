@@ -1,11 +1,7 @@
 import { Template } from 'meteor/templating'
 import { TTSEngine } from '../../../api/tts/TTSEngine'
+import { getBsType } from '../../../utils/bootstrapUtils'
 import './soundbutton.html'
-
-const getBsType = (type, outline) => {
-  if (!type) return outline ? `outline-secondary` : 'secondary'
-  return outline ? `outline-${type}` : type
-}
 
 Template.soundbutton.helpers({
   attributes () {

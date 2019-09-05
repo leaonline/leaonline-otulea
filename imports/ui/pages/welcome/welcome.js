@@ -1,6 +1,7 @@
 import { Template } from 'meteor/templating'
 import { Random } from 'meteor/random'
 import '../../components/soundbutton/soundbutton'
+import '../../components/actionButton/actionButton'
 import './welcome.css'
 import './welcome.html'
 

@@ -16,10 +16,15 @@
 
 			<div class="my-5 row {{#if (or login newCode)}}d-unavailable{{/if}}">
 				<div class="col">
-					{{> soundbutton class="lea-welcome-yes" tts="common.yes" label=(i18n "common.yes") playHover=true noIcon=true lg=true outline=true block=true}}
+                    <div class="btn-group btn-group-lg w-100">
+                        {{> soundbutton tts="common.yes" outline=true }}
+                        <button class="lea-welcome-yes btn btn-outline-secondary btn-block">
+                            {{i18n "common.yes"}}
+                        </button>
+                    </div>
 				</div>
 				<div class="col">
-					{{> soundbutton class="lea-welcome-no" tts="common.no" label=(i18n "common.no") playHover=true noIcon=true lg=true outline=true block=true}}
+                    {{> actionButton class="w-100" lg=true block=true outline=true tts="common.no" label=(i18n "common.no") btnClass="lea-welcome-no" }}
 				</div>
 			</div>
 		</div>

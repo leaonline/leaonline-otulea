@@ -1,0 +1,9 @@
+<template name="actionButton">
+    <div {{groupAttributes}}>
+        {{> soundbutton tts=tts outline=outline }}
+        <button {{attributes}}>
+            {{#if icon}}<i class="fas fa fa-fw fa-{{icon}}"></i>{{/if}}
+            {{#if label}}<span>{{label}}</span>{{/if}}
+        </button>
+    </div>
+</template>
