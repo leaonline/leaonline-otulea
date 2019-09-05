@@ -89,7 +89,7 @@ Template.welcome.events({
         const $next = templateInstance.$(`input[data-index="${index + 1}"]`)
         $next.focus()
       } else {
-        templateInstance.$('.lea-welcome-login').focus()
+        showLoginButton(templateInstance)
       }
     }
   },
@@ -120,6 +120,7 @@ Template.welcome.events({
 
     templateInstance.wizard.newCode(false)
     templateInstance.wizard.login(false)
+    templateInstance.state.set('loginFail', false)
   }
 })
 
@@ -132,21 +133,30 @@ function resetInputs(templateInstance) {
 function focusInput (templateInstance) {
   const $target = templateInstance.$(`input[data-index="0"]`)
   $target.focus()
-  $target.get(0).scrollIntoView({behavior: 'smooth'})
+  $target.get(0).scrollIntoView(true)
+}
+
+function showLoginButton (templateInstance) {
+  const $target = templateInstance.$('.lea-welcome-login-container')
+  $target.removeClass('d-none')
+  templateInstance.$('.lea-welcome-login').focus()
+}
+
+function loginFail(templateInstance) {
+  resetInputs(templateInstance)
+  focusInput(templateInstance)
+  templateInstance.state.set('loginFail', true)
 }
 
 function registerNewUser (code, templateInstance) {
   const registerCode = templateInstance.newUser.get()
   if (registerCode !== code) {
-    templateInstance.state.set('loginFail', true)
-    return
+    return loginFail(templateInstance)
   } else {
     Meteor.call('registerUser', { code }, (err, userId) => {
       if (err) {
         console.error(err)
-        resetInputs(templateInstance)
-        focusInput(templateInstance)
-        templateInstance.state.set('loginFail', true)
+        loginFail(templateInstance)
       } else {
         console.log('logged in', Meteor.user(), userId)
       }
@@ -158,9 +168,7 @@ function loginUser (code, templateInstance) {
   Meteor.loginWithPassword(code, code, (err) => {
     if (err) {
       console.error(err)
-      resetInputs(templateInstance)
-      focusInput(templateInstance)
-      templateInstance.state.set('loginFail', true)
+      loginFail(templateInstance)
     } else {
       console.log('logged in', Meteor.user(), code)
     }

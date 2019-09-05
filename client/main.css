@@ -4,6 +4,8 @@
 }
 
 .d-unavailable {
+    cursor: not-allowed;
+    
 	pointer-events: none;
 	/* IE 8 */
 	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
