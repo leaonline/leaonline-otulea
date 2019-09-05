@@ -1,4 +1,5 @@
-import settings from '../../../resources/i18n/routes_de' // TODO load dynamically using i18n locale
+import { Routes } from './Routes'
+import settings from '../../../resources/i18n/i18n_routes' // TODO load dynamically using i18n locale
 
 export const resolveRoute = function resolve (key, ...optionalArgs) {
   const route = Routes[ key ]

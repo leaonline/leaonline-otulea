@@ -1,5 +1,7 @@
+# folders
 node_modules/
 public/
+packages/
 
 # ide specific
 .idea
@@ -8,4 +10,4 @@ public/
 # config files
 settings.json
 leaconfig.json
-routes_de.json
+i18n_routes.json
