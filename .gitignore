@@ -1,6 +1,5 @@
 # folders
 node_modules/
-public/
 packages/
 
 # ide specific
@@ -11,3 +10,6 @@ packages/
 settings.json
 leaconfig.json
 i18n_routes.json
+
+# proprietary stuff
+public/fonts/
