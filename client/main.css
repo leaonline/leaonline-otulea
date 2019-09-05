@@ -15,3 +15,11 @@
 	/* Good browsers */
 	opacity: 0.5;
 }
+
+body {
+	background-color: #f9f9f9 !important;
+}
+
+.card {
+	border: none !important;
+}
