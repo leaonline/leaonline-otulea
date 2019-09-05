@@ -41,10 +41,16 @@ function playByText (locale, text, { onEnd }) {
 
   // TODO load preference here, e.g. male / female etc.
   // TODO but for now we just use the first occurrence
-  const utterance = new global.SpeechSynthesisUtterance(text)
+  const utterance = new global.SpeechSynthesisUtterance()
   utterance.voice = voices[ 0 ]
   utterance.pitch = 1
   utterance.rate = 1
+  utterance.voiceURI = 'native'
+  utterance.volume = 1
+  utterance.rate = 1
+  utterance.pitch = 0.8
+  utterance.text = text
+  utterance.lang = 'de-DE'
 
   if (onEnd) {
     utterance.onend = onEnd
