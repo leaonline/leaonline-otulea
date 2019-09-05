@@ -36,7 +36,7 @@ const getVoices = (locale) => {
   return _voices[ locale ]
 }
 
-function playByText (locale, text) {
+function playByText (locale, text, { onEnd }) {
   const voices = getVoices(locale)
 
   // TODO load preference here, e.g. male / female etc.
@@ -46,28 +46,32 @@ function playByText (locale, text) {
   utterance.pitch = 1
   utterance.rate = 1
 
+  if (onEnd) {
+    utterance.onend = onEnd
+  }
+
   speechSynth.cancel()
   speechSynth.speak(utterance)
 }
 
-function playById (locale, id) {
+function playById (locale, id, { onEnd }) {
   const translated = i18n.get(id)
   if (!translated || translated === `${locale}.${id}`) {
     throw new Error(`Unknown TTS by id [${id}]`)
   }
-  return playByText(locale, translated)
+  return playByText(locale, translated, { onEnd })
 }
 
-TTSEngine.play = function ({ id, text }) {
+TTSEngine.play = function ({ id, text, onEnd }) {
   const locale = i18n.getLocale()
   if (text) {
-    return playByText(locale, text)
+    return playByText(locale, text, { onEnd })
   } else {
-    return playById(locale, id)
+    return playById(locale, id, { onEnd })
   }
 }
 
-TTSEngine.stop = function() {
+TTSEngine.stop = function () {
   speechSynth.cancel()
 }
 
