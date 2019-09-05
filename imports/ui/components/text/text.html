@@ -1,5 +1,7 @@
 <template name="text">
     <span class="text-wrapper {{class}}">
-        {{#each token in tokens}}<span {{tokenAttributes @index}} data-index="{{@index}}"> </span><span {{tokenAttributes @index}} data-index="{{@index}}">{{token}}</span>{{/each}}
+        {{#each token in tokens}}
+            <span {{tokenAttributes @index}} data-index="{{@index}}">{{token}}</span>
+        {{/each}}
     </span>
 </template>

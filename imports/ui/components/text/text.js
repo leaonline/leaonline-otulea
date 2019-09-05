@@ -58,6 +58,7 @@ Template.text.events({
     TTSEngine.play({ text, onEnd })
     templateInstance.play(index)
   },
+  /*
   'mousedown .lea-text-token' (event, templateInstance) {
     const index = dataTarget(event, templateInstance, 'index')
     templateInstance.startIndex.set(index)
@@ -102,4 +103,5 @@ Template.text.events({
       selection.empty()
     }
   }
+  */
 })
