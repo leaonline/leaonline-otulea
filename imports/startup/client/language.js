@@ -8,3 +8,8 @@ const config =  {
 };
 
 i18n.load(config)
+
+
+Meteor.startup(() => {
+  document.documentElement.setAttribute('lang', 'de')
+})
