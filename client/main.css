@@ -1,3 +1,8 @@
+@font-face {
+	font-family: 'Semikolon';
+	src: url('http://localhost:3000/fonts/SemikolonPlus-Regular.otf'); /*URL to font*/
+}
+
 .d-unavailable {
 	pointer-events: none;
 	/* IE 8 */
@@ -14,6 +19,15 @@
 
 	/* Good browsers */
 	opacity: 0.5;
+}
+
+.lea-text {
+    font-family: Semikolon, Arial !important;
+    font-size: 20px;
+}
+
+.lea-text-xl {
+    font-size: 48px;
 }
 
 body {

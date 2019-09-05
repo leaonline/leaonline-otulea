@@ -1,7 +1,9 @@
 {
   "common": {
     "yes": "Ja",
-    "no": "Nein"
+    "no": "Nein",
+    "back": "Zurück",
+    "continue": "Weiter"
   },
   "routes": {
     "redirecting": "Weiterleitung",

@@ -109,6 +109,12 @@ Template.welcome.events({
     } else {
       loginUser(loginCode.toUpperCase(), templateInstance)
     }
+  },
+  'click .lea-back-button' (event, templateInstance) {
+    event.preventDefault()
+
+    templateInstance.wizard.newCode(false)
+    templateInstance.wizard.login(false)
   }
 })
 

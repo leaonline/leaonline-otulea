@@ -6,13 +6,17 @@
             </div>
 
             <div class="card my-3">
-                <div class="card-body d-flex">
+                <div class="card-body d-flex align-items-center">
                     {{> soundbutton tts="pages.welcome.introduction" outline=true}}
                     {{> text src=(i18n "pages.welcome.introduction") class="ml-3"}}
                 </div>
                 <div class="card-body mt-3 row {{#if (or login newCode)}}d-unavailable{{/if}}">
                     <div class="col">
-                        {{> actionButton class="w-100" block=true outline=true tts="common.yes" label=(i18n "common.yes") btnClass="lea-welcome-yes" }}
+                        {{#if login}}
+                            {{> actionButton class="w-100" block=true outline=true tts="common.yes" label=(i18n "common.yes") btnClass="lea-welcome-yes active" }}
+                        {{else}}
+                            {{> actionButton class="w-100" block=true outline=true tts="common.yes" label=(i18n "common.yes") btnClass="lea-welcome-yes" }}
+                        {{/if}}
                     </div>
                     <div class="col">
                         {{> actionButton class="w-100" block=true outline=true tts="common.no" label=(i18n "common.no") btnClass="lea-welcome-no" }}
@@ -26,23 +30,23 @@
     {{#if (or login newCode)}}
         <div class="card">
             {{#if login}}
-                <div class="card-body d-flex">
+                <div class="card-body d-flex align-items-start">
                     {{> soundbutton tts="pages.welcome.enterCode" outline=true}}
-                    {{> text src=(i18n "pages.welcome.enterCode") class="ml-3"}}
+                    {{> text src=(i18n "pages.welcome.enterCode") class="ml-3 w-100"}}
+                    {{> actionButton outline=true tts="common.back" icon="arrow-up" btnClass="lea-back-button" }}
                 </div>
             {{/if}}
 
             {{#if newCode}}
-                <div class="card-body d-flex">
+                <div class="card-body d-flex align-items-start">
                     {{> soundbutton tts="pages.welcome.newCode" outline=true}}
                     {{> text src=(i18n "pages.welcome.newCode") class="ml-3"}}
+                    {{> actionButton outline=true tts="common.back" icon="arrow-up" btnClass="lea-back-button" }}
                 </div>
                 <div class="card-body text-center">
-                    <h1 class="text-center">
                         {{#with randomCode}}
-                            {{> text src=this}}
+                            {{> text src=this class="lea-text-xl"}}
                         {{/with}}
-                    </h1>
                 </div>
             {{/if}}
 
