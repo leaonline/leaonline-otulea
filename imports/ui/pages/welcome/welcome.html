@@ -26,8 +26,8 @@
 	{{#if login}}
 		<div class="card my-5">
 			<div class="card-body d-flex">
-				{{> soundbutton tts="pages.welcome.introduction" outline=true}} <span class="ml-3">{{i18n
-					"pages.welcome.enterCode"}}</span>
+				{{> soundbutton tts="pages.welcome.introduction" outline=true}}
+                {{> text src=(i18n "pages.welcome.enterCode") class="ml-3"}}
 			</div>
 		</div>
 	{{/if}}
@@ -35,8 +35,8 @@
 	{{#if newCode}}
 		<div class="card my-5">
 			<div class="card-body d-flex">
-				{{> soundbutton tts="pages.welcome.newCode" outline=true}} <span class="ml-3">{{i18n
-					"pages.welcome.newCode"}}</span>
+				{{> soundbutton tts="pages.welcome.newCode" outline=true}}
+                {{> text src=(i18n "pages.welcome.newCode") class="ml-3"}}
 			</div>
 			<div class="card-body text-center">
 				<h1 class="text-center new-code-area">{{randomCode}}</h1>
