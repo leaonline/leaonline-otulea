@@ -1,5 +1,6 @@
 import { Template } from 'meteor/templating'
 import { dataTarget } from '../../../utils/eventUtils'
+import { TTSEngine } from '../../../api/tts/TTSEngine'
 import './text.css'
 import './text.html'
 
@@ -7,8 +8,6 @@ const OUT_TIMEOUT = 100
 
 Template.text.onCreated(function () {
   const instance = this
-  instance.state.set('mouseOverIndices', {})
-  instance.state.set('mouseDownIndices', {})
 })
 
 Template.text.helpers({
@@ -26,5 +25,9 @@ Template.text.helpers({
 })
 
 Template.text.events({
-
+  'click .lea-text-token' (event, templateinstance) {
+    event.preventDefault()
+    const text = templateinstance.$(event.currentTarget).text()
+    TTSEngine.play({ text })
+  }
 })
