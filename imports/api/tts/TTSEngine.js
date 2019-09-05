@@ -45,6 +45,8 @@ function playByText (locale, text) {
   utterance.voice = voices[ 0 ]
   utterance.pitch = 1
   utterance.rate = 1
+
+  speechSynth.cancel()
   speechSynth.speak(utterance)
 }
 
@@ -63,6 +65,10 @@ TTSEngine.play = function ({ id, text }) {
   } else {
     return playById(locale, id)
   }
+}
+
+TTSEngine.stop = function() {
+  speechSynth.cancel()
 }
 
 loadVoicesWhenAvailable()
