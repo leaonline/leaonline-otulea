@@ -38,17 +38,22 @@ Template.welcome.helpers({
   },
   or (...args) {
     args.pop()
-    console.log(args)
-    const val = args.some(entry => !!entry)
-    console.log(val)
-    return val
+    return args.some(entry => !!entry)
   },
   randomCode () {
     return Template.instance().newUser.get().split('').join(' ')
   },
   loginFail () {
     return Template.getState('loginFail')
+  },
+  rendered () {
+    return Template.getState('rendered')
   }
+})
+
+Template.welcome.onRendered(function () {
+  const instance = this
+  instance.state.set('rendered', true)
 })
 
 Template.welcome.events({

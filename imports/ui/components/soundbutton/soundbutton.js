@@ -2,6 +2,7 @@ import { Template } from 'meteor/templating'
 import { TTSEngine } from '../../../api/tts/TTSEngine'
 import { getBsType } from '../../../utils/bootstrapUtils'
 import './soundbutton.html'
+import { i18n } from '../../../api/i18n/I18n'
 
 Template.soundbutton.onCreated(function () {
   const instance = this
@@ -19,7 +20,8 @@ Template.soundbutton.onCreated(function () {
     id: data.id,
     title: data.title,
     class: `lea-sound-btn btn btn-${btnType} ${btnBlock} ${btnSm} ${btnLg} ${btnXl} ${customClass}`,
-    'data-tts': data.tts
+    'data-tts': data.tts,
+    'aria-label': data.title || i18n.get('aria.readText')
   })
 })
 

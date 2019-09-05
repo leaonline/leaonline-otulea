@@ -1,4 +1,7 @@
 {
+  "aria": {
+    "readText": "Text als Audio abspielen"
+  },
   "common": {
     "yes": "Ja",
     "no": "Nein",

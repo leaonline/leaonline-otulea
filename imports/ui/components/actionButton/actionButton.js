@@ -15,7 +15,8 @@ Template.actionButton.helpers({
     return {
       id: data.id,
       title: data.title,
-      class: `lea-action-button btn btn-${btnType} ${btnBlock} ${customClass}`
+      class: `lea-action-button btn btn-${btnType} ${btnBlock} ${customClass}`,
+      'aria-label': data.label || data.title || 'button'
     }
   },
   groupAttributes () {

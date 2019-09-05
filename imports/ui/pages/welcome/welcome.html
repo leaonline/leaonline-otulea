@@ -2,7 +2,9 @@
     {{#if intro}}
         <div class="welcome-intro-container my-3">
             <div class="embed-responsive embed-responsive-16by9">
-                <iframe title="{{i18n "pages.welcome.introVideo"}}" class="embed-responsive-item" src="{{leaconfig "videos" "welcome"}}" allowfullscreen></iframe>
+                {{#if rendered}}
+                    <iframe title="{{i18n "pages.welcome.introVideo"}}" class="embed-responsive-item" src="{{leaconfig "videos" "welcome"}}" allowfullscreen></iframe>
+                {{/if}}
             </div>
 
             <div class="card my-3">
