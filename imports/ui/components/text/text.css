@@ -1,0 +1,7 @@
+.lea-text-token:hover {
+    text-decoration: underline;
+}
+
+.text-wrapper:hover {
+    cursor: pointer;
+}
