@@ -1,6 +1,11 @@
 <template name="soundbutton">
-    <button {{attributes}}>
-        {{#unless noIcon}}<i class="fas fa-volume-up"></i>{{/unless}}
-        {{#if label}}<span>{{label}}</span>{{/if}}
-    </button>
+    {{#unless isPlaying}}
+        <button {{attributes}}>
+            <i class="fas fa-fw fa-volume-up"></i>
+        </button>
+    {{else}}
+        <button {{attributes}}>
+            <i class="fas fa-fw fa-cog fa-spin"></i>
+        </button>
+    {{/unless}}
 </template>
