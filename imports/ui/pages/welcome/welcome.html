@@ -39,7 +39,11 @@
                 {{> text src=(i18n "pages.welcome.newCode") class="ml-3"}}
 			</div>
 			<div class="card-body text-center">
-				<h1 class="text-center new-code-area">{{randomCode}}</h1>
+				<h1 class="text-center">
+                    {{#with randomCode}}
+                        {{> text src=this}}
+                    {{/with}}
+                </h1>
 			</div>
 		</div>
 	{{/if}}

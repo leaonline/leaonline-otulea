@@ -42,7 +42,7 @@ Template.welcome.helpers({
     return val
   },
   randomCode () {
-    return Random.id(MAX_INPUTS).toUpperCase()
+    return Random.id(MAX_INPUTS).toUpperCase().split('').join(' ')
   }
 })
 
