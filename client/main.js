@@ -1,3 +1,4 @@
+import '../imports/startup/client/serviceWorker'
 import '../imports/startup/client/language'
 import '../imports/startup/client/schema'
 import '../imports/startup/client/bootstrap'
