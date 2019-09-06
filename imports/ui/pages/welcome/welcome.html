@@ -11,41 +11,64 @@
 			</div>
 		</div>
 
-		<div class="container welcome-intro-container my-3">
-			<div class="card">
-				<div class="card-body d-flex align-items-center">
-					{{> soundbutton tts="pages.welcome.introduction" outline=true}}
-					{{> text src=(i18n "pages.welcome.introduction") class="ml-3"}}
+		{{#unless currentUser}}
+			<div class="container welcome-intro-container my-3">
+				<div class="card">
+					<div class="card-body d-flex align-items-center">
+						{{> soundbutton tts="pages.welcome.introduction" outline=true}}
+						{{> text src=(i18n "pages.welcome.introduction") class="ml-3"}}
+					</div>
+					<div class="card-body mt-3 row {{#if (or login newCode)}}d-unavailable{{/if}}">
+						<div class="col">
+							{{#if login}}
+								{{> actionButton class="w-100" block=true outline=true tts="common.yes" label=(i18n "common.yes") btnClass="lea-welcome-yes active" }}
+							{{else}}
+								{{> actionButton class="w-100" block=true outline=true tts="common.yes" label=(i18n "common.yes") btnClass="lea-welcome-yes" }}
+							{{/if}}
+						</div>
+						<div class="col">
+							{{#if newCode}}
+								{{> actionButton class="w-100" block=true outline=true tts="common.no" label=(i18n "common.no") btnClass="lea-welcome-no active" }}
+							{{else}}
+								{{> actionButton class="w-100" block=true outline=true tts="common.no" label=(i18n "common.no") btnClass="lea-welcome-no" }}
+							{{/if}}
+						</div>
+					</div>
 				</div>
-				<div class="card-body mt-3 row {{#if (or login newCode)}}d-unavailable{{/if}}">
-					<div class="col">
-						{{#if login}}
-							{{> actionButton class="w-100" block=true outline=true tts="common.yes" label=(i18n "common.yes") btnClass="lea-welcome-yes active" }}
-						{{else}}
-							{{> actionButton class="w-100" block=true outline=true tts="common.yes" label=(i18n "common.yes") btnClass="lea-welcome-yes" }}
-						{{/if}}
-					</div>
-					<div class="col">
-						{{#if newCode}}
-							{{> actionButton class="w-100" block=true outline=true tts="common.no" label=(i18n "common.no") btnClass="lea-welcome-no active" }}
-						{{else}}
-							{{> actionButton class="w-100" block=true outline=true tts="common.no" label=(i18n "common.no") btnClass="lea-welcome-no" }}
-						{{/if}}
-					</div>
+			</div>
+		{{/unless}}
+	{{/if}}
+
+	{{#if currentUser}}
+		<div class="container my-3">
+			<div class="card">
+				<div class="card-body d-flex align-items-start">
+					{{> soundbutton tts="pages.welcome.loggedIn" outline=true}}
+					{{> text src=(i18n "pages.welcome.loggedIn" ) class="ml-3 w-100"}}
+				</div>
+				<div class="card-body text-center">
+					<h1>{{currentUser.username}}</h1>
+				</div>
+				<div class="card-body">
+					{{> actionButton type="primary" class="w-100" block=true outline=true
+							label=(i18n "navigation.toOverview")
+							tts="navigation.toOverview" icon="arrow-right" btnClass="to-overview-button" }}
+				</div>
+				<div class="card-body text-center">
+					{{> actionButton outline=true tts="pages.welcome.wrongUser" label=(i18n "pages.welcome.wrongUser") btnClass="lea-logout-button" sm=true}}
 				</div>
 			</div>
 		</div>
 	{{/if}}
 
-
-	{{#if (or login newCode)}}
+	{{#if loginRequired}}
 		<div class="container">
 			<div class="card">
 				{{#if login}}
 					<div class="card-body d-flex align-items-start">
 						{{> soundbutton tts="pages.welcome.enterCode" outline=true}}
-						{{> text src=(i18n "pages.welcome.enterCode") class="ml-3 w-100"}}
-						{{> actionButton outline=true tts="common.back" icon="arrow-up" btnClass="lea-back-button" }}
+						{{> text src=(i18n "pages.welcome.enterCode" ) class="ml-3 w-100"}}
+						{{> actionButton tts="common.back" icon="arrow-up" btnClass="lea-back-button" lg=true }}
 					</div>
 				{{/if}}
 

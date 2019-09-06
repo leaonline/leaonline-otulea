@@ -1,12 +1,14 @@
+import { Meteor } from 'meteor/meteor'
 import { Template } from 'meteor/templating'
 import { ReactiveVar } from 'meteor/reactive-var'
 import { Random } from 'meteor/random'
+import { TTSEngine } from '../../../api/tts/TTSEngine'
+import { loggedIn } from '../../../utils/accountUtils'
 import '../../components/soundbutton/soundbutton'
 import '../../components/actionButton/actionButton'
 import '../../components/text/text'
 import './welcome.scss'
 import './welcome.html'
-import { TTSEngine } from '../../../api/tts/TTSEngine'
 
 const MAX_INPUTS = 5
 
@@ -49,10 +51,21 @@ Template.welcome.helpers({
   },
   videoRequested () {
     return Template.getState('videoRequested')
+  },
+  loginRequired () {
+    if (loggedIn()) {
+      return false
+    }
+    const instance = Template.instance()
+    return instance.state.get('login') || instance.state.get('newCode')
   }
 })
 
 Template.welcome.events({
+  'click .lea-logout-button' (event, templateInstance) {
+    event.preventDefault()
+    Meteor.logout()
+  },
   'click .request-video-button' (event, templateInstance) {
     event.preventDefault()
     templateInstance.state.set('videoRequested', true)
@@ -156,12 +169,12 @@ function registerNewUser (code, templateInstance) {
   if (registerCode !== code) {
     return loginFail(templateInstance)
   } else {
-    Meteor.call('registerUser', { code }, (err, userId) => {
+    Meteor.call('registerUser', { code }, (err) => {
       if (err) {
         console.error(err)
         loginFail(templateInstance)
       } else {
-        console.log('logged in', Meteor.user(), userId)
+        loginUser(code, templateInstance)
       }
     })
   }
