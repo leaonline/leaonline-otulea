@@ -1,4 +1,5 @@
 import { Template } from 'meteor/templating'
+import { ReactiveVar } from 'meteor/reactive-var'
 import { Random } from 'meteor/random'
 import '../../components/soundbutton/soundbutton'
 import '../../components/actionButton/actionButton'
@@ -46,17 +47,16 @@ Template.welcome.helpers({
   loginFail () {
     return Template.getState('loginFail')
   },
-  rendered () {
-    return Template.getState('rendered')
+  videoRequested () {
+    return Template.getState('videoRequested')
   }
 })
 
-Template.welcome.onRendered(function () {
-  const instance = this
-  instance.state.set('rendered', true)
-})
-
 Template.welcome.events({
+  'click .request-video-button' (event, templateInstance) {
+    event.preventDefault()
+    templateInstance.state.set('videoRequested', true)
+  },
   'click .lea-welcome-yes' (event, templateInstance) {
     event.preventDefault()
     templateInstance.wizard.login(true)
@@ -64,8 +64,11 @@ Template.welcome.events({
   },
   'click .lea-welcome-no' (event, templateInstance) {
     event.preventDefault()
-    templateInstance.wizard.newCode(true)
-    setTimeout(() => focusInput(templateInstance), 50)
+
+    templateInstance.$('.intro-video-container').animate({ height: '100px' }, 500, 'swing', () => {
+      templateInstance.wizard.newCode(true)
+      setTimeout(() => focusInput(templateInstance), 50)
+    })
   },
   'keydown .login-field' (event, templateInstance) {
     event.preventDefault()
@@ -124,7 +127,7 @@ Template.welcome.events({
   }
 })
 
-function resetInputs(templateInstance) {
+function resetInputs (templateInstance) {
   templateInstance.$('.login-field').each(function (index, input) {
     templateInstance.$(input).val(null)
   })
@@ -142,7 +145,7 @@ function showLoginButton (templateInstance) {
   templateInstance.$('.lea-welcome-login').focus()
 }
 
-function loginFail(templateInstance) {
+function loginFail (templateInstance) {
   resetInputs(templateInstance)
   focusInput(templateInstance)
   templateInstance.state.set('loginFail', true)

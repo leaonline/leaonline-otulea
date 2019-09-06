@@ -1,90 +1,90 @@
 <template name="welcome">
-    {{#if intro}}
-        <div class="welcome-intro-container my-3">
-            <div class="embed-responsive embed-responsive-16by9">
-                {{#if rendered}}
-                    <iframe title="{{i18n "pages.welcome.introVideo"}}" class="embed-responsive-item"
-                            src="{{leaconfig "videos" "welcome"}}" allowfullscreen></iframe>
-                {{/if}}
-            </div>
+	{{#if intro}}
+		<div class="welcome-intro-container my-3">
+			<div class="intro-video-container embed-responsive embed-responsive-16by9">
+				<video controls preload="none" class="embed-responsive-item" allowfullscreen>
+					<source src="{{leaconfig "videos" "welcome"}}" type="video/mp4">
+					Your browser does not support the video tag.
+				</video>
+			</div>
 
-            <div class="card my-3">
-                <div class="card-body d-flex align-items-center">
-                    {{> soundbutton tts="pages.welcome.introduction" outline=true}}
-                    {{> text src=(i18n "pages.welcome.introduction") class="ml-3"}}
-                </div>
-                <div class="card-body mt-3 row {{#if (or login newCode)}}d-unavailable{{/if}}">
-                    <div class="col">
-                        {{#if login}}
-                            {{> actionButton class="w-100" block=true outline=true tts="common.yes" label=(i18n "common.yes") btnClass="lea-welcome-yes active" }}
-                        {{else}}
-                            {{> actionButton class="w-100" block=true outline=true tts="common.yes" label=(i18n "common.yes") btnClass="lea-welcome-yes" }}
-                        {{/if}}
-                    </div>
-                    <div class="col">
-                        {{#if newCode}}
-                            {{> actionButton class="w-100" block=true outline=true tts="common.no" label=(i18n "common.no") btnClass="lea-welcome-no active" }}
-                        {{else}}
-                            {{> actionButton class="w-100" block=true outline=true tts="common.no" label=(i18n "common.no") btnClass="lea-welcome-no" }}
-                        {{/if}}
-                    </div>
-                </div>
-            </div>
-        </div>
-    {{/if}}
-
-
-    {{#if (or login newCode)}}
-        <div class="card">
-            {{#if login}}
-                <div class="card-body d-flex align-items-start">
-                    {{> soundbutton tts="pages.welcome.enterCode" outline=true}}
-                    {{> text src=(i18n "pages.welcome.enterCode") class="ml-3 w-100"}}
-                    {{> actionButton outline=true tts="common.back" icon="arrow-up" btnClass="lea-back-button" }}
-                </div>
-            {{/if}}
-
-            {{#if newCode}}
-                <div class="card-body d-flex align-items-start">
-                    {{> soundbutton tts="pages.welcome.newCode" outline=true}}
-                    {{> text src=(i18n "pages.welcome.newCode") class="ml-3"}}
-                    {{> actionButton outline=true tts="common.back" icon="arrow-up" btnClass="lea-back-button" }}
-                </div>
-                <div class="card-body text-center">
-                    {{#with randomCode}}
-                        {{> text src=this class="lea-text-xl"}}
-                    {{/with}}
-                </div>
-            {{/if}}
+			<div class="card my-3">
+				<div class="card-body d-flex align-items-center">
+					{{> soundbutton tts="pages.welcome.introduction" outline=true}}
+					{{> text src=(i18n "pages.welcome.introduction") class="ml-3"}}
+				</div>
+				<div class="card-body mt-3 row {{#if (or login newCode)}}d-unavailable{{/if}}">
+					<div class="col">
+						{{#if login}}
+							{{> actionButton class="w-100" block=true outline=true tts="common.yes" label=(i18n "common.yes") btnClass="lea-welcome-yes active" }}
+						{{else}}
+							{{> actionButton class="w-100" block=true outline=true tts="common.yes" label=(i18n "common.yes") btnClass="lea-welcome-yes" }}
+						{{/if}}
+					</div>
+					<div class="col">
+						{{#if newCode}}
+							{{> actionButton class="w-100" block=true outline=true tts="common.no" label=(i18n "common.no") btnClass="lea-welcome-no active" }}
+						{{else}}
+							{{> actionButton class="w-100" block=true outline=true tts="common.no" label=(i18n "common.no") btnClass="lea-welcome-no" }}
+						{{/if}}
+					</div>
+				</div>
+			</div>
+		</div>
+	{{/if}}
 
 
-            <div class="card-body welcome-login-container my-3">
-                <div class="input-group">
-                    <input type="text" data-index="0" maxlength="1"
-                           class="login-field text-uppercase form-control text-center mr-2" autofocus/>
-                    <input type="text" data-index="1" maxlength="1"
-                           class="login-field text-uppercase form-control text-center mx-2"/>
-                    <input type="text" data-index="2" maxlength="1"
-                           class="login-field text-uppercase form-control text-center mx-2"/>
-                    <input type="text" data-index="3" maxlength="1"
-                           class="login-field text-uppercase form-control text-center mx-2"/>
-                    <input type="text" data-index="4" maxlength="1"
-                           class="login-field text-uppercase form-control text-center ml-2"/>
-                </div>
+	{{#if (or login newCode)}}
+		<div class="card">
+			{{#if login}}
+				<div class="card-body d-flex align-items-start">
+					{{> soundbutton tts="pages.welcome.enterCode" outline=true}}
+					{{> text src=(i18n "pages.welcome.enterCode") class="ml-3 w-100"}}
+					{{> actionButton outline=true tts="common.back" icon="arrow-up" btnClass="lea-back-button" }}
+				</div>
+			{{/if}}
 
-                {{> actionButton class="lea-welcome-login-container w-100 mt-3 d-none"
-                        lg=true block=true type="primary"  tts="pages.welcome.login"
-                        label=(i18n "pages.welcome.login") btnClass="lea-welcome-login" }}
-            </div>
+			{{#if newCode}}
+				<div class="card-body d-flex align-items-start">
+					{{> soundbutton tts="pages.welcome.newCode" outline=true}}
+					{{> text src=(i18n "pages.welcome.newCode") class="ml-3"}}
+					{{> actionButton outline=true tts="common.back" icon="arrow-up" btnClass="lea-back-button" }}
+				</div>
+				<div class="card-body text-center">
+					{{#with randomCode}}
+						{{> text src=this class="lea-text-xl"}}
+					{{/with}}
+				</div>
+			{{/if}}
 
-            {{#if loginFail}}
-                <div class="card-body d-flex align-items-start">
-                    {{> soundbutton tts="pages.welcome.loginFail" type="warning" outline=true}}
-                    <div class="alert alert-warning w-100 ml-3">
-                        {{> text src=(i18n "pages.welcome.loginFail")}}
-                    </div>
-                </div>
-            {{/if}}
-        </div>
-    {{/if}}
+
+			<div class="card-body welcome-login-container my-3">
+				<div class="input-group">
+					<input type="text" data-index="0" maxlength="1"
+						   class="login-field text-uppercase form-control text-center mr-2" autofocus />
+					<input type="text" data-index="1" maxlength="1"
+						   class="login-field text-uppercase form-control text-center mx-2" />
+					<input type="text" data-index="2" maxlength="1"
+						   class="login-field text-uppercase form-control text-center mx-2" />
+					<input type="text" data-index="3" maxlength="1"
+						   class="login-field text-uppercase form-control text-center mx-2" />
+					<input type="text" data-index="4" maxlength="1"
+						   class="login-field text-uppercase form-control text-center ml-2" />
+				</div>
+
+				{{> actionButton class="lea-welcome-login-container w-100 mt-3 d-none"
+						lg=true block=true type="primary"  tts="pages.welcome.login"
+						label=(i18n "pages.welcome.login") btnClass="lea-welcome-login" }}
+			</div>
+
+			{{#if loginFail}}
+				<div class="card-body d-flex align-items-start">
+					{{> soundbutton tts="pages.welcome.loginFail" type="warning" outline=true}}
+					<div class="alert alert-warning w-100 ml-3">
+						{{> text src=(i18n "pages.welcome.loginFail")}}
+					</div>
+				</div>
+			{{/if}}
+		</div>
+	{{/if}}
 </template>
