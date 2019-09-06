@@ -11,6 +11,7 @@ import './welcome.scss'
 import './welcome.html'
 
 const MAX_INPUTS = 5
+let originalVideoHeight
 
 Template.welcome.onCreated(function () {
   const instance = this
@@ -72,13 +73,18 @@ Template.welcome.events({
   },
   'click .lea-welcome-yes' (event, templateInstance) {
     event.preventDefault()
-    templateInstance.wizard.login(true)
-    setTimeout(() => focusInput(templateInstance), 50)
+    const $videoContainer = templateInstance.$('.intro-video-container')
+    originalVideoHeight = $videoContainer.height()
+    $videoContainer.animate({ height: '100px' }, 500, 'swing', () => {
+      templateInstance.wizard.login(true)
+      setTimeout(() => focusInput(templateInstance), 50)
+    })
   },
   'click .lea-welcome-no' (event, templateInstance) {
     event.preventDefault()
-
-    templateInstance.$('.intro-video-container').animate({ height: '100px' }, 500, 'swing', () => {
+    const $videoContainer = templateInstance.$('.intro-video-container')
+    originalVideoHeight = $videoContainer.height()
+    $videoContainer.animate({ height: '100px' }, 500, 'swing', () => {
       templateInstance.wizard.newCode(true)
       setTimeout(() => focusInput(templateInstance), 50)
     })
@@ -133,10 +139,11 @@ Template.welcome.events({
   },
   'click .lea-back-button' (event, templateInstance) {
     event.preventDefault()
-
     templateInstance.wizard.newCode(false)
-    templateInstance.wizard.login(false)
     templateInstance.state.set('loginFail', false)
+    templateInstance.$('.intro-video-container').animate({ height: originalVideoHeight }, 500, 'swing', () => {
+      templateInstance.wizard.login(false)
+    })
   }
 })
 
