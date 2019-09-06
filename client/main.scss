@@ -1,0 +1,43 @@
+
+
+.d-unavailable {
+  cursor: not-allowed;
+
+  pointer-events: none;
+  /* IE 8 */
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
+
+  /* IE 5-7 */
+  filter: alpha(opacity=50);
+
+  /* Netscape */
+  -moz-opacity: 0.5;
+
+  /* Safari 1.x */
+  -khtml-opacity: 0.5;
+
+  /* Good browsers */
+  opacity: 0.5;
+}
+
+.lea-text {
+  font-family: Semikolon, Arial !important;
+  font-size: 20px;
+}
+
+.lea-text-xl {
+  font-size: 48px;
+}
+
+body {
+  background-color: #f5f5f5 !important;
+  min-height: 100vh;
+}
+
+.main-container {
+  min-height: 100vh;
+}
+
+.card {
+  border: none !important;
+}

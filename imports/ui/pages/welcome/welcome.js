@@ -3,7 +3,7 @@ import { Random } from 'meteor/random'
 import '../../components/soundbutton/soundbutton'
 import '../../components/actionButton/actionButton'
 import '../../components/text/text'
-import './welcome.css'
+import './welcome.scss'
 import './welcome.html'
 import { TTSEngine } from '../../../api/tts/TTSEngine'
 

@@ -16,7 +16,6 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  console.log(event.request.method)
   const requestToFetch = event.request.clone();
   event.respondWith(
     caches.match(event.request.clone()).then((cached) => {

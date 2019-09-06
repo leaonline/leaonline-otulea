@@ -1,28 +1,36 @@
 <head>
-    <meta charset="utf-8">
-    <meta name="application-name" content="otue.lea">
-    <meta name="description" content="Online Testumgebung zur Literalitätsentwicklung von Arbeitskräften">
-    <meta name="viewport" content="initial-scale=1, maximum-scale=5, minimum-scale=-5"/>
-    <meta name="theme-color" content="#FF00AA">
-    <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' http://* 'unsafe-inline'; script-src 'self' http://* 'unsafe-inline' 'unsafe-eval'" />
-
-
-    <link rel="manifest" href="/manifest.json">
-    <link rel="shortcut icon" type="image/png" href="/icon/favicon.png?v1" sizes="16x16 32x32 64x64">
-    <link rel="apple-touch-icon" sizes="120x120" href="/icon/apple-touch-icon-precomposed.png">
-    <link rel="fluid-icon" href="/icon/favicon.png?v1" title="otu.lea icon">
-
-    <title>otue.lea - Online Testumgebung zur Literalitätsentwicklung von Arbeitskräften</title>
+	<meta charset="utf-8">
+	<meta name="application-name" content="otue.lea">
+	<meta name="description" content="Online Testumgebung zur Literalitätsentwicklung von Arbeitskräften">
+	<meta name="viewport" content="initial-scale=1, maximum-scale=5, minimum-scale=-5" />
+	<meta name="theme-color" content="#FF00AA">
+	<meta http-equiv="Content-Security-Policy"
+		  content="default-src *; style-src 'self' http://* 'unsafe-inline'; script-src 'self' http://* 'unsafe-inline' 'unsafe-eval'" />
+	<link rel="preconnect" href="http://www.ifeb.uni-bremen.de" crossorigin>
+	<link rel="manifest" href="/manifest.json">
+	<link rel="shortcut icon" type="image/png" href="/icon/favicon.png?v1" sizes="16x16 32x32 64x64">
+	<link rel="apple-touch-icon" sizes="120x120" href="/icon/apple-touch-icon-precomposed.png">
+	<link rel="fluid-icon" href="/icon/favicon.png?v1" title="otu.lea icon">
+	<title>otue.lea - Online Testumgebung zur Literalitätsentwicklung von Arbeitskräften</title>
+	<noscript>Sorry, your browser does not support JavaScript!</noscript>
 </head>
 
 <body>
-<noscript>
-    <h1>Please enable javascript!</h1>
-</noscript>
+<noscript>Sorry, your browser does not support JavaScript!</noscript>
+<!--
+<style>
+	@font-face {
+		font-family: 'Semikolon';
+		font-display: fallback;
+		src: local('SemikolonPlus-Regular.otf'), url('http://localhost:3000/fonts/SemikolonPlus-Regular.otf');
+	}
+</style>
+-->
+
 </body>
 
 <template name="main-render-target">
-    <div class="container main-container">
-        {{> yield}}
-    </div>
+	<div class="container main-container">
+		{{> yield}}
+	</div>
 </template>

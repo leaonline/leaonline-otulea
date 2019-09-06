@@ -1,7 +1,7 @@
 import { Template } from 'meteor/templating'
 import { dataTarget } from '../../../utils/eventUtils'
 import { TTSEngine } from '../../../api/tts/TTSEngine'
-import './text.css'
+import './text.scss'
 import './text.html'
 
 const OUT_TIMEOUT = 100

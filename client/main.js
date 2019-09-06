@@ -7,5 +7,5 @@ import '../imports/startup/client/routes'
 import '../imports/startup/client/routeHelpers'
 import '../imports/startup/client/leaconfig'
 
-import './main.css'
+import './main.scss'
 import './main.html'
