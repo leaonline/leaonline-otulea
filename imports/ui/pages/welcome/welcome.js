@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor'
 import { Template } from 'meteor/templating'
 import { ReactiveVar } from 'meteor/reactive-var'
 import { Random } from 'meteor/random'
+import { Router } from '../../../api/routing/Router'
 import { TTSEngine } from '../../../api/tts/TTSEngine'
 import { loggedIn } from '../../../utils/accountUtils'
 import '../../components/soundbutton/soundbutton'
@@ -144,6 +145,10 @@ Template.welcome.events({
     templateInstance.$('.intro-video-container').animate({ height: originalVideoHeight }, 500, 'swing', () => {
       templateInstance.wizard.login(false)
     })
+  },
+  'click .to-overview-button' (event, templateInstance) {
+    const route = templateInstance.data.next()
+    Router.go(route)
   }
 })
 
@@ -193,7 +198,8 @@ function loginUser (code, templateInstance) {
       console.error(err)
       loginFail(templateInstance)
     } else {
-      console.log('logged in', Meteor.user(), code)
+      const route = templateInstance.data.next()
+      Router.go(route)
     }
   })
 }

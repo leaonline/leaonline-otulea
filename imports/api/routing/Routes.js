@@ -5,7 +5,8 @@ export const Routes = {}
 
 /**
  * Renders a default template for all pages that have not been found.
- * @type {{path: (function(): *), label: string, triggersEnter: (function(): *[]), load(), target: null, template: string, roles: null, data: null}}
+ * @type {{path: (function(): *), label: string, triggersEnter: (function(): *[]), load(), target: null, template:
+ *   string, roles: null, data: null}}
  */
 
 Routes.notFound = {
@@ -29,7 +30,8 @@ const notFoundTrigger = createNotFoundTrigger(Routes.notFound)
 
 /**
  * Reroute to notFound route in case an unknown / non-maching url has been detected.
- * @type {{path: (function(): string), label: *, triggersEnter: (function(): *[]), load(), target: null, template: string, roles: null, data: null}}
+ * @type {{path: (function(): string), label: *, triggersEnter: (function(): *[]), load(), target: null, template:
+ *   string, roles: null, data: null}}
  */
 
 Routes.fallback = {
@@ -47,7 +49,8 @@ Routes.fallback = {
 
 /**
  * The starting page of the app, that contains an
- * @type {{path: (function(): string), label: string, triggersEnter: (function(): *[]), load(): Promise<undefined>, target: null, template: null, roles: null, data: null}}
+ * @type {{path: (function(): string), label: string, triggersEnter: (function(): *[]), load(): Promise<undefined>,
+ *   target: null, template: null, roles: null, data: null}}
  */
 Routes.welcome = {
   path: () => `${settings.welcome}`,
@@ -59,14 +62,39 @@ Routes.welcome = {
   target: null,
   template: 'welcome',
   roles: null,
-  data: null
+  data: {
+    next () {
+      return Routes.overview
+    }
+  }
+}
+
+Routes.overview = {
+  path: () => `${settings.overview}`,
+  label: 'routes.overview',
+  triggersEnter: () => [],
+  async load () {
+    return import('../../ui/pages/overview/overview')
+  },
+  target: null,
+  template: 'overview',
+  roles: null,
+  onAction () {
+    window.scrollTo(0, 0)
+  },
+  data: {
+    next () {
+      throw new Error('not yet implemented')
+    }
+  }
 }
 
 const notLoggedInTrigger = createLoginTrigger(Routes.welcome)
 
 /**
  * The default route to be used when landing on the page without params
- * @type {{path: (function(): string), label: string, triggersEnter: (function(): *[]), load(): Promise<undefined>, target: null, template: null, roles: null, data: null}}
+ * @type {{path: (function(): string), label: string, triggersEnter: (function(): *[]), load(): Promise<undefined>,
+ *   target: null, template: null, roles: null, data: null}}
  */
 Routes.root = {
   path: () => '/',
