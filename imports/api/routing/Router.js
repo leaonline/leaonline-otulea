@@ -2,6 +2,7 @@
 import { FlowRouter, RouterHelpers } from 'meteor/ostrio:flow-router-extra'
 import { Meteor } from 'meteor/meteor'
 import { Tracker } from 'meteor/tracker'
+import { Template } from 'meteor/templating'
 import { translate } from '../i18n/reactiveTranslate'
 
 /**
@@ -70,6 +71,12 @@ Router.titlePrefix = function (value = '') {
   _titlePrefix = value
 }
 
+let _loadingTemplate
+
+Router.loadingTemplate = function (value = 'loading') {
+  _loadingTemplate = value
+}
+
 const paths = {}
 
 /*
@@ -90,31 +97,33 @@ function createRoute (routeDef, onError) {
       // we render by default a "loading" template
       // which can be explicitly prevented
       if (routeDef.showLoading !== false) {
-        this.render(routeDef.target, 'loading', { title: routeDef.label })
+        this.render(routeDef.target, _loadingTemplate, { title: routeDef.label })
       }
     },
     waitOn () {
-      return new Promise((resolve) => {
-        routeDef.load()
-          .then(() => {
-            Tracker.autorun((computation) => {
-              const loadComplete = !Meteor.loggingIn() && Roles.subscription.ready()
-              if (loadComplete) {
-                setTimeout(() => {
-                  computation.stop()
-                  resolve()
-                }, 300)
-              }
-            })
+      return Promise.all([
+        Promise.resolve(routeDef.load()),
+        new Promise((resolve) => {
+          Tracker.autorun((computation) => {
+            const loadComplete = !Meteor.loggingIn() && Roles.subscription.ready()
+            if (loadComplete) {
+              computation.stop()
+              resolve()
+            }
           })
-          .catch(e => {
-            console.error(e)
-            resolve()
-          })
-      })
+        })
+      ])
     },
     triggersEnter: routeDef.triggersEnter && routeDef.triggersEnter(),
     action (params, queryParams) {
+      // if we have loaded the template but it is not available
+      // on the rendering pipeline through Template.<name> we
+      // just skip the action and wait for the next rendering cycle
+      if (!Template[ routeDef.template ]) {
+        console.warn(`Found rendering attempt on unloaded Template [${routeDef.template}]`)
+        return
+      }
+
       // run custom actions to run at very first,
       // for example to scroll the window to the top
       // or prepare the window environment otherwise
