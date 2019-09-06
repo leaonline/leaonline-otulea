@@ -36,6 +36,7 @@ body {
 
 .main-container {
   min-height: 100vh;
+  height: 100vh;
 }
 
 .card {
@@ -44,4 +45,9 @@ body {
 
 .vh-25 {
   height: 25vh;
+}
+
+.container-fluid {
+  margin: 0 0 0 0 !important;
+  padding: 0 0 0 0 !important;
 }
