@@ -64,6 +64,12 @@ Router.queryParam = function (value) {
   throw new Error(`Unexpected format: [${type}], expected string or object`)
 }
 
+let _titlePrefix = ''
+
+Router.titlePrefix = function (value = '') {
+  _titlePrefix = value
+}
+
 const paths = {}
 
 /*
@@ -91,8 +97,7 @@ function createRoute (routeDef, onError) {
       return new Promise((resolve) => {
         routeDef.load()
           .then(() => {
-            let tracker
-            tracker = Tracker.autorun((computation) => {
+            Tracker.autorun((computation) => {
               const loadComplete = !Meteor.loggingIn() && Roles.subscription.ready()
               if (loadComplete) {
                 setTimeout(() => {
@@ -122,8 +127,7 @@ function createRoute (routeDef, onError) {
       data.queryParams = queryParams
 
       const label = translate(routeDef.label)
-      console.log(label)
-      document.title = `${label}`
+      document.title = `${_titlePrefix} ${label}`
 
       try {
         this.render(routeDef.target, routeDef.template, data)
