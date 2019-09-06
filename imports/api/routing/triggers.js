@@ -1,10 +1,7 @@
 /* global Roles */
-import { Meteor } from 'meteor/meteor'
 import { check } from 'meteor/check'
-import { Router} from './Router'
-
-export const loggedIn = () => Meteor.userId() && Meteor.user()
-export const loggedOut = () => !loggedIn()
+import { Router } from './Router'
+import { loggedIn, loggedOut } from '../../utils/accountUtils'
 
 export const createLoginTrigger = (redirectRoute) => {
   check(redirectRoute.path, Function)
