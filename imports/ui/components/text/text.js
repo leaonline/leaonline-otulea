@@ -1,4 +1,5 @@
 import { Template } from 'meteor/templating'
+import { ReactiveVar } from 'meteor/reactive-var'
 import { dataTarget } from '../../../utils/eventUtils'
 import { TTSEngine } from '../../../api/tts/TTSEngine'
 import './text.scss'
@@ -10,7 +11,6 @@ const whiteSpace = /\s+/g
 Template.text.onCreated(function () {
   const instance = this
   instance.startIndex = new ReactiveVar(-1)
-  instance.token = new ReactiveVar(instance.data.src.split(whiteSpace))
   const _isPlaying = new ReactiveVar({})
 
   instance.play = (...indices) => {
@@ -33,7 +33,7 @@ Template.text.onCreated(function () {
 
 Template.text.helpers({
   tokens () {
-    return Template.instance().token.get()
+    return Template.instance().data.src.split(whiteSpace)
   },
   tokenAttributes (currentIndex) {
     const instance = Template.instance()
