@@ -12,12 +12,19 @@ Template.actionButton.helpers({
     const btnBlock = data.block ? 'btn-block' : ''
     const customClass = data.btnClass || ''
 
-    return {
+    const atts = {
       id: data.id,
       title: data.title,
       class: `lea-action-button btn btn-${btnType} ${btnBlock} ${customClass}`,
       'aria-label': data.label || data.title || 'button'
     }
+
+    Object.keys(data).forEach(key => {
+      if (key.indexOf('data-') === -1) return
+      atts[ key ] = data[ key ]
+    })
+
+    return atts
   },
   groupAttributes () {
     const instance = Template.instance()
