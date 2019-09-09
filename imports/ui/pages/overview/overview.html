@@ -1,3 +1,59 @@
 <template name="overview">
-	overview
+	<div class="container overview-dimensions-container my-3 {{#if dimensionSelected}}d-unavailable{{/if}}">
+		<div class="card">
+			<div class="card-body d-flex align-items-center">
+				{{> soundbutton tts="pages.overview.chooseDimension" outline=true}}
+				{{> text src=(i18n "pages.overview.chooseDimension") class="ml-3"}}
+			</div>
+			<div class="card-body mt-3">
+				<div class="row">
+					{{#each dimension in dimensions}}
+						<div class="col col-xs-12 col-md-6 col-lg-3 my-1">
+							{{> actionButton class="w-100 overview-button" block=true icon=dimension.icon type=dimension.type
+									outline=true data-dimension=dimension.name active=(isSelectedDimension dimension.name)
+									tts=dimension.label label=(i18n dimension.label) btnClass="lea-dimension-button" }}
+						</div>
+					{{/each}}
+				</div>
+			</div>
+		</div>
+	</div>
+
+	{{#with dimensionSelected}}
+		<div class="container overview-level-container my-3">
+			<div class="card">
+				<div class="card-body d-flex align-items-center">
+					{{> soundbutton tts="pages.overview.chooseLevel" outline=true}}
+					{{> text src=(i18n "pages.overview.chooseLevel") class="ml-3"}}
+					{{> actionButton outline=true tts="common.back" icon="arrow-up" btnClass="lea-back-button" data-type="dimension" }}
+				</div>
+				<div class="card-body mt-3">
+					<div class="row">
+						{{#each level in levels}}
+							<div class="col col-xs-12 col-md-6 col-lg-4 my-1">
+								{{> actionButton class="w-100 overview-button" block=true type=this.type outline=true data-level=level.name
+										active=(isSelectedLevel level.name)
+										tts=level.label label=(i18n level.label) btnClass="lea-level-button" }}
+							</div>
+						{{/each}}
+					</div>
+				</div>
+
+				{{#if levelSelected}}
+					<div class="card-body d-flex align-items-center">
+						{{#let label=dimensionLevel}}
+							{{> soundbutton tts=(label) outline=true}}
+							{{> text src=(i18n label) class="ml-3"}}
+						{{/let}}
+					</div>
+					<div class="card-body mt-5">
+						{{> actionButton class="lea-overview-confirm-container w-100 mt-3"
+								lg=true block=true type=this.type  tts="pages.overview.confirm"
+								label=(i18n "pages.overview.confirm") btnClass="lea-overview-confirm-button" }}
+					</div>
+				{{/if}}
+			</div>
+		</div>
+	{{/with}}
+
 </template>

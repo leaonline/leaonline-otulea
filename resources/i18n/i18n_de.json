@@ -2,6 +2,37 @@
   "aria": {
     "readText": "Text als Audio abspielen"
   },
+  "dimensions": {
+    "understand": {
+      "title": "Sprache",
+      "easy": "Ich erkenne, ob einfache Sätze richtig formuliert sind.",
+      "medium": "Ich erkenne, ob Sätze richtig gesprochen sind, die etwas über die Vergangenheit aussagen.",
+      "hard": "Ich kann erkennen, ob zwei Sätze inhaltlich zusammenhängen."
+    },
+    "reading": {
+      "title": "Lesen",
+      "easy": "Ich kann bereits kurze, einfache Wörter lesen.",
+      "medium": "Ich kann längere Wörter und einfache Sätze lesen und deren Sinn verstehen.",
+      "hard": "Ich kann ganze Texte lesen und einzelne Informationen heraussuchen."
+    },
+    "writing": {
+      "title": "Schreiben",
+      "easy": "Ich kann einige Buchstaben erkennen, aber mir fällt es schwer ganze Wörter zu schreiben.",
+      "medium": "Ich kann ganze Wörter schreiben, habe aber immer noch ein wenig Schwierigkeiten mit der Rechtschreibung.",
+      "hard": "Ich kann ganze Wörter richtig schreiben. Nur das Schreiben zusammenhängender Sätze fällt mir schwer."
+    },
+    "math": {
+      "title": "Rechnen",
+      "easy": "Ich kann Ziffern bis eintausend erkennen.",
+      "medium": "Ich kann Zahlen bis eintausend schriftlich zusammenzählen oder voneinander abziehen.",
+      "hard": "Ich kann Zahlen schriftliche miteinander mal nehmen oder teilen."
+    }
+  },
+  "levels": {
+    "easy": "Einfach",
+    "medium": "Mittel",
+    "hard": "Schwer"
+  },
   "navigation": {
     "toOverview": "Zur Übersichtsseite"
   },
@@ -28,6 +59,11 @@
       "enterCode": "Bitte geben Sie hier Ihren Code ein.",
       "loginFail": "Der Code war nicht korrekt. Bitte versuchen Sie es erneut.",
       "login": "Anmelden"
+    },
+    "overview": {
+      "chooseDimension": "Bitte wählen Sie eine Kategorie aus.",
+      "chooseLevel": "Wir möchten die Aufgaben möglichst passend für Sie zusammenstellen. Bitte schätzen Sie hier Ihre Fähigkeiten ein. Wenn Sie mit dem Mauszeiger über die Schaltflächen fahren, werden Ihnen Beipsiele genannt. Bitte klicken Sie mit der linken Maustaste die Schaltfläche an, die Ihre Fähigkeit am ehesten beschreibt.",
+      "confirm": "Aufgaben starten"
     }
   }
 }
