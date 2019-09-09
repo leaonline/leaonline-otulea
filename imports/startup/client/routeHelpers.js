@@ -1,4 +1,4 @@
-import { Template } from "meteor/templating"
+import { Template } from 'meteor/templating'
 import { Routes } from '../../api/routing/Routes'
 import { Router } from '../../api/routing/Router'
 import { resolveRoute } from '../../api/routing/routeHelpers'
@@ -23,4 +23,9 @@ Template.registerHelper('encodeURIComponent', function (value) {
 Template.registerHelper('join', function (char, ...args) {
   args.pop()
   return args.join(char)
+})
+
+Template.registerHelper('log', function (...args) {
+  args.pop()
+  console.log(...args)
 })
