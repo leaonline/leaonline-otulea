@@ -14,11 +14,13 @@ export const createLoginTrigger = (redirectRoute) => {
   }
 }
 
-export const createLoggedinTrigger = (resolveRouteFct) => {
-  check(resolveRouteFct, Function)
+export const createLoggedinTrigger = (redirectRoute) => {
+  check(redirectRoute.path, Function)
   return function loggedTrigger () {
     if (loggedIn()) {
-      Router.go(resolveRouteFct())
+      const location = Router.location()
+      const fullPath = redirectRoute.path(encodeURIComponent(location))
+      Router.go(fullPath)
     }
   }
 }

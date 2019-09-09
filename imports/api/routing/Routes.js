@@ -23,12 +23,6 @@ Routes.notFound = {
 }
 
 /**
- * @private
- */
-
-const notFoundTrigger = createNotFoundTrigger(Routes.notFound)
-
-/**
  * Reroute to notFound route in case an unknown / non-maching url has been detected.
  * @type {{path: (function(): string), label: *, triggersEnter: (function(): *[]), load(), target: null, template:
  *   string, roles: null, data: null}}
@@ -37,12 +31,14 @@ const notFoundTrigger = createNotFoundTrigger(Routes.notFound)
 Routes.fallback = {
   path: () => '*',
   label: 'routes.redirecting',
-  triggersEnter: () => [ notFoundTrigger ],
+  triggersEnter: () => [
+    createNotFoundTrigger(Routes.notFound)
+  ],
   async load () {
-    return
+    return true
   },
   target: null,
-  template: null,
+  template: 'loading',
   roles: null,
   data: null
 }
@@ -72,7 +68,9 @@ Routes.welcome = {
 Routes.overview = {
   path: () => `${settings.overview}`,
   label: 'routes.overview',
-  triggersEnter: () => [],
+  triggersEnter: () => [
+    createLoginTrigger(Routes.welcome),
+  ],
   async load () {
     return import('../../ui/pages/overview/overview')
   },
@@ -89,8 +87,6 @@ Routes.overview = {
   }
 }
 
-const notLoggedInTrigger = createLoginTrigger(Routes.welcome)
-
 /**
  * The default route to be used when landing on the page without params
  * @type {{path: (function(): string), label: string, triggersEnter: (function(): *[]), load(): Promise<undefined>,
@@ -99,12 +95,15 @@ const notLoggedInTrigger = createLoginTrigger(Routes.welcome)
 Routes.root = {
   path: () => '/',
   label: 'routes.redirecting',
-  triggersEnter: () => [ notLoggedInTrigger ],
+  triggersEnter: () => [
+    createLoginTrigger(Routes.welcome),
+    createLoggedinTrigger(Routes.overview)
+  ],
   async load () {
-    return
+    return true
   },
   target: null,
-  template: null,
+  template: 'loading',
   roles: null,
   data: null
 }
