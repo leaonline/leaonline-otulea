@@ -9,6 +9,7 @@ Template.soundbutton.onCreated(function () {
   const instance = this
   const { data } = instance
 
+  const initialTTS = data.tts
   const btnType = getBsType(data.type, data.outline)
   const btnBlock = data.block ? 'btn-block' : ''
   const btnLg = data.lg ? 'btn-lg' : ''
@@ -18,12 +19,28 @@ Template.soundbutton.onCreated(function () {
   const activeClass = data.active ? 'active' : ''
 
   instance.isPlaying = new ReactiveVar(false)
+  instance.tts = new ReactiveVar(initialTTS)
   instance.attributes = new ReactiveVar({
     id: data.id,
     title: data.title,
     class: `lea-sound-btn btn btn-${btnType} ${btnBlock} ${btnSm} ${btnLg} ${btnXl} ${activeClass} ${customClass}`,
-    'data-tts': data.tts,
+    'data-tts': initialTTS,
     'aria-label': data.title || i18n.get('aria.readText')
+  })
+
+  instance.autorun(() => {
+    const reactiveData = Template.currentData()
+
+    if (reactiveData.tts !== instance.tts.get()) {
+      // if the TTS target changed reactively
+      // we need to stop the current playing
+      if (instance.isPlaying.get()) {
+        TTSEngine.stop()
+      }
+      // we need to update the internal
+      // TTS target state to allow playing the new sound
+      instance.tts.set(reactiveData.tts)
+    }
   })
 })
 
@@ -41,9 +58,12 @@ Template.soundbutton.helpers({
     const instance = Template.instance()
     const isPlaying = instance.isPlaying.get()
     const atts = Object.assign({}, instance.attributes.get())
+
     if (isPlaying || instance.data.active) {
       atts.class += ' active'
     }
+    atts[ 'data-tts' ] = instance.tts.get()
+
     return atts
   },
   isPlaying () {
