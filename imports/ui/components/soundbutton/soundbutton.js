@@ -27,6 +27,15 @@ Template.soundbutton.onCreated(function () {
   })
 })
 
+Template.soundbutton.onDestroyed(function () {
+  const instance = this
+  const isPlaying = instance.isPlaying.get()
+
+  if (isPlaying) {
+    TTSEngine.stop()
+  }
+})
+
 Template.soundbutton.helpers({
   attributes () {
     const instance = Template.instance()
