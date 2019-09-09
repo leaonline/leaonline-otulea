@@ -11,11 +11,12 @@ Template.actionButton.helpers({
     const btnType = getBsType(data.type, data.outline)
     const btnBlock = data.block ? 'btn-block' : ''
     const customClass = data.btnClass || ''
+    const activeClass = data.active ? 'active' : ''
 
     const atts = {
       id: data.id,
       title: data.title,
-      class: `lea-action-button btn btn-${btnType} ${btnBlock} ${customClass}`,
+      class: `lea-action-button btn btn-${btnType} ${btnBlock} ${activeClass} ${customClass}`,
       'aria-label': data.label || data.title || 'button'
     }
 
