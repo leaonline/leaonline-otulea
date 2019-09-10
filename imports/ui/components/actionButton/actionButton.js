@@ -16,7 +16,7 @@ Template.actionButton.helpers({
     const atts = {
       id: data.id,
       title: data.title,
-      class: `lea-action-button btn btn-${btnType} ${btnBlock} ${activeClass} ${customClass}`,
+      class: `lea-action-button ml-2 btn btn-${btnType} ${btnBlock} ${activeClass} ${customClass}`,
       'aria-label': data.label || data.title || 'button'
     }
 
@@ -31,15 +31,12 @@ Template.actionButton.helpers({
     const instance = Template.instance()
     const { data } = instance
 
-    const btnLg = data.lg ? 'btn-group-lg' : ''
-    const btnXl = data.xl ? 'btn-group-xl' : ''
-    const btnSm = data.sm ? 'btn-group-sm' : ''
     const customClass = data.class || ''
 
     return {
       id: data.id,
       title: data.title,
-      class: `btn-group  ${btnSm} ${btnLg} ${btnXl} ${customClass}`
+      class: `d-flex ${customClass}`
     }
   }
 })
