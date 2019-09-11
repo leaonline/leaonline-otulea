@@ -7,7 +7,7 @@ packages/
 .vscode
 
 # config files
-settings.json
+productionSettings.json
 leaconfig.json
 i18n_routes.json
 
