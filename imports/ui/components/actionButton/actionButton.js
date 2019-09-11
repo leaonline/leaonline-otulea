@@ -36,7 +36,7 @@ Template.actionButton.helpers({
     return {
       id: data.id,
       title: data.title,
-      class: `d-flex ${customClass}`
+      class: `d-flex align-items-center ${customClass}`
     }
   }
 })

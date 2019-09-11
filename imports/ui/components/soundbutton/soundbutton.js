@@ -12,18 +12,17 @@ Template.soundbutton.onCreated(function () {
   const initialTTS = data.tts
   const btnType = getBsType(data.type, data.outline)
   const btnBlock = data.block ? 'btn-block' : ''
-  const btnLg = data.lg ? 'btn-lg' : ''
-  const btnXl = data.xl ? 'btn-xl' : ''
-  const btnSm = data.sm ? 'btn-sm' : ''
+  const btnSize = data.md || data.xs || data.lg || 'btn-sm'
   const customClass = data.class || ''
   const activeClass = data.active ? 'active' : ''
+  const borderClass = data.border ? '' : 'border-0'
 
   instance.isPlaying = new ReactiveVar(false)
   instance.tts = new ReactiveVar(initialTTS)
   instance.attributes = new ReactiveVar({
     id: data.id,
     title: data.title,
-    class: `lea-sound-btn btn btn-${btnType} ${btnBlock} ${btnSm} ${btnLg} ${btnXl} ${activeClass} ${customClass}`,
+    class: `lea-sound-btn btn btn-${btnType} ${btnBlock} ${btnSize} ${borderClass} ${activeClass} ${customClass}`,
     'data-tts': initialTTS,
     'aria-label': data.title || i18n.get('aria.readText')
   })
