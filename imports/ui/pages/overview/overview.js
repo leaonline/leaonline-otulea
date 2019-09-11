@@ -4,7 +4,7 @@ import { Levels } from '../../../api/session/Levels'
 import { dataTarget } from '../../../utils/eventUtils'
 import '../../components/soundbutton/soundbutton'
 import '../../components/actionButton/actionButton'
-import '../../components/text/text'
+import '../../components/textgroup/textgroup'
 import './overview.scss'
 import './overview.html'
 
