@@ -4,7 +4,6 @@ const logAttempt = (...args) => console.log(...args)
 
 Meteor.startup(() => {
   RateLimiterRegistry.run(function callback (reply, input) {
-
     if (reply.allowed) {
       return void 0
     } else {

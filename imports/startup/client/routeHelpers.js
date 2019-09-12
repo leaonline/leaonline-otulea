@@ -8,7 +8,7 @@ Template.registerHelper('route', function (key, ...optionalArgs) {
 })
 
 Template.registerHelper('routeDef', function (key) {
-  return Routes[ key ]
+  return Routes[key]
 })
 
 Template.registerHelper('referrer', function () {

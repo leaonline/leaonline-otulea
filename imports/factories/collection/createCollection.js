@@ -1,4 +1,4 @@
-import { Mongo } from "meteor/mongo"
+import { Mongo } from 'meteor/mongo'
 import { Schema } from '../../api/schema/Schema'
 
 export const createCollection = ({ name, schema }) => {

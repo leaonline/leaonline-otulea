@@ -3,7 +3,7 @@ import { check } from 'meteor/check'
 import { isObject } from '../../utils/matchUtils'
 
 export const rateLimitMethods = methods => {
-  check(methods, [ isObject ])
+  check(methods, [isObject])
   return methods.map(rateLimitMethod)
 }
 

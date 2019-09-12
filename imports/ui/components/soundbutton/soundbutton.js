@@ -61,7 +61,7 @@ Template.soundbutton.helpers({
     if (isPlaying || instance.data.active) {
       atts.class += ' active'
     }
-    atts[ 'data-tts' ] = instance.tts.get()
+    atts['data-tts'] = instance.tts.get()
 
     return atts
   },

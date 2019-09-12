@@ -16,19 +16,19 @@ Template.text.onCreated(function () {
   instance.play = (...indices) => {
     const isPlaying = _isPlaying.get()
     indices.forEach(index => {
-      isPlaying[ index ] = true
+      isPlaying[index] = true
     })
     _isPlaying.set(isPlaying)
   }
   instance.stop = index => {
     const isPlaying = _isPlaying.get()
-    isPlaying[ index ] = false
+    isPlaying[index] = false
     _isPlaying.set(isPlaying)
   }
   instance.clear = () => {
     _isPlaying.set({})
   }
-  instance.isPlaying = index => _isPlaying.get()[ index ]
+  instance.isPlaying = index => _isPlaying.get()[index]
 })
 
 Template.text.helpers({
@@ -57,7 +57,7 @@ Template.text.events({
 
     TTSEngine.play({ text, onEnd })
     templateInstance.play(index)
-  },
+  }
   /*
   'mousedown .lea-text-token' (event, templateInstance) {
     const index = dataTarget(event, templateInstance, 'index')

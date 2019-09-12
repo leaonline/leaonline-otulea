@@ -69,7 +69,7 @@ Routes.overview = {
   path: () => `${settings.overview}`,
   label: 'routes.overview',
   triggersEnter: () => [
-    createLoginTrigger(Routes.welcome),
+    createLoginTrigger(Routes.welcome)
   ],
   async load () {
     return import('../../ui/pages/overview/overview')
@@ -109,5 +109,5 @@ Routes.root = {
 }
 
 Object.keys(Routes).forEach(key => {
-  Routes[ key ].key = key
+  Routes[key].key = key
 })

@@ -9,11 +9,11 @@ import { SubsCache } from 'meteor/ccorcos:subs-cache'
 // ////////////////////////////////////////////////////////////////////////////
 
 let _connection = Meteor.Connection
-let _subs = {}
+const _subs = {}
 let _subsCache = null
 let _subsCacheTimeout = -1 // never timeout
 let _subsCacheMaxPubs = -1 // no limit
-let _debug = false
+const _debug = false
 
 function getCache () {
   if (!_subsCache) {
@@ -31,7 +31,7 @@ function createHandle (publicationName, opts, callbacks) {
   }
 
   const handle = getCache().subscribe(publicationName, options, _callbacks)
-  _subs[ publicationName ] = { handle, options }
+  _subs[publicationName] = { handle, options }
   return handle
 }
 
@@ -110,7 +110,7 @@ export const SubsManager = {
 
     const { handle } = this.handle(publicationName)
     handle.stopNow()
-    delete _subs[ publicationName ]
+    delete _subs[publicationName]
     return !this.has(publicationName)
   },
 
@@ -123,19 +123,19 @@ export const SubsManager = {
 
   dispose () {
     Object.keys(_subs).forEach(key => {
-      const handle = _subs[ key ].handle
+      const handle = _subs[key].handle
       handle.stopNow()
-      delete _subs[ key ]
+      delete _subs[key]
     })
     SubsCache.clearAll()
     _subsCache = null
   },
 
   has (publicationName) {
-    return !!(_subs[ publicationName ])
+    return !!(_subs[publicationName])
   },
 
   handle (publicationName) {
-    return _subs[ publicationName ]
+    return _subs[publicationName]
   }
 }

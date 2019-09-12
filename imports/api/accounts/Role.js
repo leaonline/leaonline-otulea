@@ -8,7 +8,7 @@ export const Role = {}
 
 Role.test = {
   value: 'test',
-  compatible: [ Group.field.value ]
+  compatible: [Group.field.value]
 }
 
 /**
@@ -19,7 +19,7 @@ Role.test = {
 
 Role.runSession = {
   value: 'runSession',
-  compatible: [ Group.field.value ]
+  compatible: [Group.field.value]
 }
 
 /**
@@ -27,7 +27,7 @@ Role.runSession = {
  */
 Role.crudTestUsers = {
   value: 'crudTestUsers',
-  compatible: [ Group.team.value, Group.admin.value ]
+  compatible: [Group.team.value, Group.admin.value]
 }
 
 /**
@@ -36,8 +36,8 @@ Role.crudTestUsers = {
  */
 Role.crudTeamUsers = {
   value: 'crudTeamUsers',
-  compatible: [ Group.admin.value ],
-  optional: [ Group.team.value ]
+  compatible: [Group.admin.value],
+  optional: [Group.team.value]
 }
 
 /**
@@ -45,8 +45,8 @@ Role.crudTeamUsers = {
  */
 Role.manageRoles = {
   value: 'manageRoles',
-  compatible: [ Group.admin.value ],
-  optional: [ Group.team.value ]
+  compatible: [Group.admin.value],
+  optional: [Group.team.value]
 }
 
 /**
@@ -54,5 +54,5 @@ Role.manageRoles = {
  */
 Role.manageAdmins = {
   value: 'manageAdmins',
-  compatible: [ Group.admin.value ]
+  compatible: [Group.admin.value]
 }

@@ -20,10 +20,10 @@ const getVoices = (locale) => {
   if (!global.speechSynthesis) {
     throw new Error('Browser does not support speech synthesis')
   }
-  if (_voices[ locale ]) return _voices[ locale ]
+  if (_voices[locale]) return _voices[locale]
 
   let loadedVoices
-  let count = 0
+  const count = 0
   const secure = 100
   while (!loadedVoices && count < secure) {
     loadedVoices = global.speechSynthesis.getVoices()
@@ -32,8 +32,8 @@ const getVoices = (locale) => {
     throw new Error('Could not load voices!')
   }
 
-  _voices[ locale ] = _synthVoices.filter(voice => voice.lang === locale)
-  return _voices[ locale ]
+  _voices[locale] = _synthVoices.filter(voice => voice.lang === locale)
+  return _voices[locale]
 }
 
 function playByText (locale, text, { onEnd }) {
@@ -42,7 +42,7 @@ function playByText (locale, text, { onEnd }) {
   // TODO load preference here, e.g. male / female etc.
   // TODO but for now we just use the first occurrence
   const utterance = new global.SpeechSynthesisUtterance()
-  utterance.voice = voices[ 0 ]
+  utterance.voice = voices[0]
   utterance.pitch = 1
   utterance.rate = 1
   utterance.voiceURI = 'native'

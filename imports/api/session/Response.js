@@ -11,5 +11,5 @@ Response.schema = {
   answers: Array,
   'answers.$:': Object,
   'answers.$.interactionId:': String,
-  'answers.$.value:': String,
+  'answers.$.value:': String
 }

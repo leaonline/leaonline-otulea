@@ -18,7 +18,7 @@ TaskSet.helpers = {
     result.length = 3
     let i
     for (i = 0; i < 3; i++) {
-      result[ i ] = `${dimension}.${level}.${i + 1}`
+      result[i] = `${dimension}.${level}.${i + 1}`
     }
     return result
   }

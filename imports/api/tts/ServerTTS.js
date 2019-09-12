@@ -15,7 +15,7 @@ function postData (url, text) {
     cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
     credentials: 'omit', // include, *same-origin, omit
     headers: {
-      'Accept': 'application/json, text/plain, */*',
+      Accept: 'application/json, text/plain, */*',
       'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
     },
     redirect: 'follow', // manual, *follow, error
@@ -51,8 +51,7 @@ function playAudio (url, onEnd) {
 ServerTTS.stop = function () {
   if (audio) {
     audio.pause()
-    const event = new Event('ended');
+    const event = new Event('ended')
     audio.dispatchEvent(event)
   }
 }
-

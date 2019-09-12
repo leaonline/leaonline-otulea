@@ -42,7 +42,7 @@ Template.overview.helpers({
     const instance = Template.instance()
     const dimension = instance.state.get('dimension')
     const level = instance.state.get('level')
-    return level && dimension && dimension.descriptions[ level.name ]
+    return level && dimension && dimension.descriptions[level.name]
   }
 })
 
@@ -50,7 +50,7 @@ Template.overview.events({
   'click .lea-dimension-button' (event, templateInstance) {
     event.preventDefault()
     const dimensionName = dataTarget(event, templateInstance, 'dimension')
-    templateInstance.state.set('dimension', Dimensions[ dimensionName ])
+    templateInstance.state.set('dimension', Dimensions[dimensionName])
   },
   'click .lea-back-button' (event, templateInstance) {
     event.preventDefault()
@@ -60,6 +60,6 @@ Template.overview.events({
   'click .lea-level-button' (event, templateInstance) {
     event.preventDefault()
     const levelName = dataTarget(event, templateInstance, 'level')
-    templateInstance.state.set('level', Levels[ levelName ])
+    templateInstance.state.set('level', Levels[levelName])
   }
 })

@@ -161,7 +161,7 @@ function resetInputs (templateInstance) {
 }
 
 function focusInput (templateInstance) {
-  const $target = templateInstance.$(`input[data-index="0"]`)
+  const $target = templateInstance.$('input[data-index="0"]')
   $target.focus()
   $target.get(0).scrollIntoView(true)
 }

@@ -8,7 +8,7 @@ const createMethod = ({ name, schema, run, roles, group, isPublic }) => {
   check(schema, isObject)
   check(run, Function)
   check(isPublic, maybe(Boolean))
-  check(roles, isPublic ? maybe([ String ]) : [ String ])
+  check(roles, isPublic ? maybe([String]) : [String])
   check(group, isPublic ? maybe(String) : String)
 
   const validationSchema = Schema.create(schema)
@@ -20,7 +20,6 @@ const createMethod = ({ name, schema, run, roles, group, isPublic }) => {
 }
 
 export const createMethods = methods => {
-  check(methods, [ isObject ])
+  check(methods, [isObject])
   return methods.map(createMethod)
 }
-

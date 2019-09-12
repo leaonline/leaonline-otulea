@@ -64,7 +64,7 @@ class ExtendedValidatedMethod extends ValidatedMethod {
     if (Array.isArray(methodDefinition.mixins)) {
       methodDefinition.mixins = methodDefinition.mixins.concat(PermissionsMixin, RoleMixin, ErrorLogMixin)
     } else {
-      methodDefinition.mixins = [ PermissionsMixin, RoleMixin, ErrorLogMixin ]
+      methodDefinition.mixins = [PermissionsMixin, RoleMixin, ErrorLogMixin]
     }
 
     super(methodDefinition)
