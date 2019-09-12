@@ -1,3 +1,5 @@
+import exampleTask from '../../../resources/lea/exampleTasks'
+
 export const Task = {
   name: 'task',
   label: 'task.title',
@@ -5,11 +7,28 @@ export const Task = {
 }
 
 Task.schema = {
+  taskId: String,
   story: Array,
-  'story.$': String,
+  'story.$': {
+    type: Object,
+    blackbox: true
+  },
   stimuli: Array,
-  'stimuli.$': Array,
+  'stimuli.$': {
+    type: Object,
+    blackbox: true
+  },
   pages: Array,
   'pages.$': Array,
-  'pages.$.$': String
+  'pages.$.$': {
+    type: Object,
+    blackbox: true
+  }
+}
+
+Task.helpers = {
+  load (taskId) {
+    // TODO HTTP GET from content server
+    return exampleTask[taskId]
+  }
 }

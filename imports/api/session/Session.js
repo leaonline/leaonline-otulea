@@ -95,6 +95,19 @@ Session.methods.cancel = {
   })
 }
 
+Session.publications.current = {
+  name: 'session.publications.current',
+  query: {},
+  projection: {},
+  run: onServer(function () {
+    return Session.collection().findOne({ startedAt: { $exists: true }, completedAt: { $exists: false } })
+  }),
+  subscribe: onClient(function () {
+    import { SubsManager } from '../subscriptions/SubsManager'
+    return SubsManager.subscribe(Session.publications.current.name)
+  })
+}
+
 let _collection
 
 Session.collection = function () {

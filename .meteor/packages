@@ -42,3 +42,5 @@ aldeed:autoform
 ostrio:flow-router-extra
 ostrio:i18n
 jkuester:template-states
+
+ccorcos:subs-cache
