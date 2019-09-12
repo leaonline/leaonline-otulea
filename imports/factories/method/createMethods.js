@@ -3,7 +3,7 @@ import ValidatedMethod from './ValidatedMethod'
 import { isObject, maybe } from '../../utils/matchUtils'
 import { Schema } from '../../api/schema/Schema'
 
-export const createMethod = ({ name, schema, run, roles, group, isPublic }) => {
+const createMethod = ({ name, schema, run, roles, group, isPublic }) => {
   check(name, String)
   check(schema, isObject)
   check(run, Function)
