@@ -1,31 +1,15 @@
-const ContentSchema = {
-  type: String,
-  subtype: String,
-  value: String,
-  class: {
-    type: String,
-    optional: true
-  }
-}
-const ContentListSchema = {
-  content: Array,
-  'content.$': ContentSchema
-}
-
-const PagesSchema = {
-  pages: Array,
-  'pages.$': ContentListSchema
-}
-
 export const Task = {
   name: 'task',
   label: 'task.title',
-  icon: 'cube',
-  schema: {
-    startedAt: Date,
-    completedAt: Date,
-    story: ContentListSchema,
-    stimuli: ContentListSchema,
-    pages: PagesSchema
-  }
+  icon: 'cube'
+}
+
+Task.schema = {
+  story: Array,
+  'story.$': String,
+  stimuli: Array,
+  'stimuli.$': Array,
+  pages: Array,
+  'pages.$': Array,
+  'pages.$.$': String
 }
