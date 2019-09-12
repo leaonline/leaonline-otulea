@@ -9,3 +9,15 @@ import '../imports/startup/client/leaconfig'
 
 import './main.scss'
 import './main.html'
+
+Template['main-render-target'].events({
+  'click .logout-button' (event, templateInstance) {
+    event.preventDefault()
+    Meteor.logout(err => {
+      if (err) {
+        console.error(err)
+      }
+      window.location.reload()
+    })
+  }
+})
