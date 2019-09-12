@@ -18,7 +18,7 @@ Role.test = {
  */
 
 Role.runSession = {
-  value: 'test',
+  value: 'runSession',
   compatible: [ Group.field.value ]
 }
 
