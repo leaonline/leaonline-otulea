@@ -40,7 +40,8 @@
     "yes": "Ja",
     "no": "Nein",
     "back": "Zurück",
-    "continue": "Weiter"
+    "continue": "Weiter",
+    "logout": "Abmelden"
   },
   "routes": {
     "redirecting": "Weiterleitung",

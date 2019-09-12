@@ -2,14 +2,14 @@ import { Meteor } from 'meteor/meteor'
 import { Template } from 'meteor/templating'
 import { ReactiveVar } from 'meteor/reactive-var'
 import { Random } from 'meteor/random'
+import { Users } from '../../../api/accounts/User'
 import { Router } from '../../../api/routing/Router'
 import { TTSEngine } from '../../../api/tts/TTSEngine'
 import { loggedIn } from '../../../utils/accountUtils'
-
+import '../../components/soundbutton/soundbutton'
 import '../../components/actionButton/actionButton'
 import '../../components/textgroup/textgroup'
 import '../../components/text/text'
-
 import './welcome.scss'
 import './welcome.html'
 
@@ -183,7 +183,7 @@ function registerNewUser (code, templateInstance) {
   if (registerCode !== code) {
     return loginFail(templateInstance)
   } else {
-    Meteor.call('registerUser', { code }, (err) => {
+    Users.methods.register.call({ code }, (err) => {
       if (err) {
         console.error(err)
         loginFail(templateInstance)
@@ -200,8 +200,19 @@ function loginUser (code, templateInstance) {
       console.error(err)
       loginFail(templateInstance)
     } else {
+      onLoggedIn()
       const route = templateInstance.data.next()
       Router.go(route)
     }
+  })
+}
+
+function onLoggedIn () {
+  const screenWidth = window.screen.width * window.devicePixelRatio
+  const screenHeight = window.screen.height * window.devicePixelRatio
+  const viewPortWidth = window.screen.availWidth
+  const viewPortHeight = window.screen.availHeight
+  Users.methods.loggedIn.call({ screenWidth, screenHeight, viewPortWidth, viewPortHeight }, (err) => {
+    if (err) console.log(err)
   })
 }
