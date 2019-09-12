@@ -1,0 +1,42 @@
+{
+  "1.1.1": {
+    "story": [
+      {
+        "type": "text",
+        "subtype": "text",
+        "value": "Das ist ein Beispieltext",
+        "class": "w-100"
+      },
+      {
+        "type": "media",
+        "subtype": "image",
+        "value": "https://commons.wikimedia.org/wiki/Felis_silvestris_catus#/media/File:Neighbours_Siamese.jpg",
+        "class": null
+      }
+    ],
+    "stimuli": [
+      {
+        "type": "text",
+        "subtype": "text",
+        "value": "Das ist auch ein Beispieltext",
+        "class": "w-100"
+      }
+    ],
+    "pages": [
+      [
+        {
+          "type": "text",
+          "subtype": "text",
+          "value": "Das ist auch ein Hilfetext",
+          "class": "w-100"
+        },
+        {
+          "type": "item",
+          "subtype": "multipleChoice",
+          "value": "itemIdHere",
+          "class": "w-100"
+        }
+      ]
+    ]
+  }
+}
