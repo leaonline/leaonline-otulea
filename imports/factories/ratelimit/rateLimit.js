@@ -7,7 +7,17 @@ export const rateLimitMethods = methods => {
   return methods.map(rateLimitMethod)
 }
 
-export const rateLimitMethod = ({ name, userId, connectionId, clientAddress, numRequests, timeInterval }) => {
+const rateLimitMethod = ({ name, userId, connectionId, clientAddress, numRequests, timeInterval }) => {
   // no need to check since RateLimiterRegistry does that already
   return RateLimiterRegistry.addMethod({ name, userId, connectionId, clientAddress, numRequests, timeInterval })
+}
+
+export const rateLimitPublications = publications => {
+  check(publications, [isObject])
+  return publications.map(rateLimitPublication)
+}
+
+const rateLimitPublication = ({ name, userId, connectionId, clientAddress, numRequests, timeInterval }) => {
+  // no need to check since RateLimiterRegistry does that already
+  return RateLimiterRegistry.addPublication({ name, userId, connectionId, clientAddress, numRequests, timeInterval })
 }
