@@ -6,7 +6,7 @@ export const ValidatedPublication = ({ name, validate, run, roles, group, isPubl
     const { userId } = self
 
     // first validate permissions
-    if (!isPublic && !Roles.userIsInRoles(userId, roles, group)) {
+    if (!isPublic && !Roles.userIsInRole(userId, roles, group)) {
       // throw new Meteor.Error('errors.permissionDenied')
       return self.ready()
     }
