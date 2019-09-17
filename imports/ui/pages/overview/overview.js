@@ -2,6 +2,7 @@ import { Template } from 'meteor/templating'
 import { Dimensions } from '../../../api/session/Dimensions'
 import { Levels } from '../../../api/session/Levels'
 import { Session } from '../../../api/session/Session'
+import { Router } from '../../../api/routing/Router'
 import { dataTarget } from '../../../utils/eventUtils'
 
 import '../../components/actionButton/actionButton'
@@ -91,15 +92,22 @@ Template.overview.events({
     setTimeout(() => {
       const $target = templateInstance.$('.overview-level-decision')
       const scrollTarget = $target && $target.get(0)
-      scrollTarget && scrollTarget.scrollIntoView({block: "end", behavior: "smooth"})
+      scrollTarget && scrollTarget.scrollIntoView({ block: 'end', behavior: 'smooth' })
     }, 50)
   },
   'click .lea-overview-confirm-button' (event, templateInstance) {
     event.preventDefault()
     const dimension = templateInstance.state.get('dimension')
     const level = templateInstance.state.get('level')
-    Session.methods.start.call({ dimension: dimension.name, level: level.name }, (err, sessionId) => {
-      console.log(err, sessionId)
+    const restart = dataTarget(event, templateInstance, 'restart')
+
+    Session.methods.start.call({ dimension: dimension.name, level: level.name, restart }, (err, taskId) => {
+      const route = templateInstance.data.next({
+        dimension: dimension.name,
+        level: level.name,
+        taskId: taskId
+      })
+      Router.go(route)
     })
   }
 })

@@ -44,9 +44,7 @@ Routes.fallback = {
 }
 
 /**
- * The starting page of the app, that contains an
- * @type {{path: (function(): string), label: string, triggersEnter: (function(): *[]), load(): Promise<undefined>,
- *   target: null, template: null, roles: null, data: null}}
+ * The starting page of the app
  */
 Routes.welcome = {
   path: () => `${settings.welcome}`,
@@ -65,6 +63,9 @@ Routes.welcome = {
   }
 }
 
+/**
+ * Overview page to select dimension and level
+ */
 Routes.overview = {
   path: () => `${settings.overview}`,
   label: 'routes.overview',
@@ -81,8 +82,32 @@ Routes.overview = {
     window.scrollTo(0, 0)
   },
   data: {
+    next ({ dimension, level, taskId }) {
+      return Routes.task.path({ dimension, level, taskId })
+    }
+  }
+}
+
+Routes.task = {
+  path: ({ dimension = ':dimensionId', level = ':levelId', taskId = ':taskId' } = {}) => {
+    return `${settings.task}/${dimension}/${level}/${taskId}`
+  },
+  label: 'routes.task',
+  triggersEnter: () => [
+    createLoginTrigger(Routes.welcome)
+  ],
+  async load () {
+    return import('../../ui/pages/task/task')
+  },
+  target: null,
+  template: 'task',
+  roles: null,
+  onAction () {
+    window.scrollTo(0, 0)
+  },
+  data: {
     next () {
-      throw new Error('not yet implemented')
+      throw new Error('not implemented')
     }
   }
 }
@@ -109,5 +134,5 @@ Routes.root = {
 }
 
 Object.keys(Routes).forEach(key => {
-  Routes[key].key = key
+  Routes[ key ].key = key
 })
