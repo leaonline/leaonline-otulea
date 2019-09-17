@@ -1,9 +1,14 @@
 import { getCollection } from '../../utils/collectionuUtils'
+import { Role } from '../accounts/Role'
+import { Group } from '../accounts/Group'
+import { onClient, onServer } from '../../utils/archUtils'
 
 export const Task = {
   name: 'task',
   label: 'task.title',
-  icon: 'cube'
+  icon: 'cube',
+  methods: {},
+  publications: {}
 }
 
 Task.schema = {
@@ -37,8 +42,25 @@ Task.collection = function () {
 }
 
 Task.helpers = {
-  load (taskId) {
+  load (taskId, cb) {
     // TODO HTTP GET from content server
-    return Task.collection().findOne(taskId)
+    Task.methods.load.call({ taskId }, cb)
   }
+}
+
+Task.methods.load = {
+  name: 'task.methods.load',
+  schema: {
+    taskId: String
+  },
+  roles: [ Role.runSession.value, Role.test.value ],
+  group: Group.field.value,
+  numRequests: 1,
+  timeInterval: 1000,
+  run: onServer(function ({ taskId }) {
+    return Task.collection().findOne(taskId)
+  }),
+  call: onClient(function ({ taskId }, cb) {
+    Meteor.call(Task.methods.load.name, { taskId }, cb)
+  })
 }
