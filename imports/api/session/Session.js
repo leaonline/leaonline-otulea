@@ -1,4 +1,4 @@
-import {check} from 'meteor/check'
+import { check } from 'meteor/check'
 import { Role } from '../accounts/Role'
 import { Group } from '../accounts/Group'
 import { onClient, onServer } from '../../utils/archUtils'
@@ -24,6 +24,10 @@ Session.schema = {
   level: String,
   sets: Array,
   'sets.$': String,
+  currentSet: {
+    type: Number,
+    defaultValue: 0
+  },
   responses: {
     type: Array,
     optional: true
@@ -43,33 +47,40 @@ Session.methods.start = {
   name: 'session.start',
   schema: {
     dimension: String,
-    level: String
+    level: String,
+    restart: {
+      type: Boolean,
+      optional: true
+    }
   },
   numRequests: 1,
   timeInterval: 1000,
   roles: [ Role.runSession.value ],
   group: Group.field.value,
-  run: onServer(function ({ dimension, level }) {
-    import { TaskSet } from './TaskSet'
-
+  run: onServer(function ({ dimension, level, restart }) {
     const { userId } = this
     const SessionCollection = Session.collection()
-    const cancelledSession = SessionCollection.findOne({ userId, completedAt: { $exists: false } })
 
-    if (cancelledSession) {
-      return cancelledSession
+    if (!restart) {
+      const cancelledSession = SessionCollection.findOne({ userId, completedAt: { $exists: false } })
+      if (cancelledSession) {
+        return cancelledSession
+      }
     }
 
     const startedAt = new Date()
-    const sets = TaskSet.helpers.getInitialSet({ dimension, level })
+    const initialTasksDoc = TaskSet.helpers.getInitialSet({ dimension, level })
+    const sets = []
+    sets.push(initialTasksDoc._id)
+
     const responses = []
     const insertDoc = { userId, startedAt, dimension, level, sets }
     const newSessionId = SessionCollection.insert(insertDoc)
-
-    return SessionCollection.findOne(newSessionId)
+    console.log(initialTasksDoc)
+    return newSessionId && initialTasksDoc.tasks[ 0 ]
   }),
-  call: onClient(function ({ dimension, level }, cb) {
-    Meteor.call(Session.methods.start.name, { dimension, level }, cb)
+  call: onClient(function ({ dimension, level, restart }, cb) {
+    Meteor.call(Session.methods.start.name, { dimension, level, restart }, cb)
   })
 }
 

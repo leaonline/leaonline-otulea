@@ -1,3 +1,5 @@
+import { getCollection } from '../../utils/collectionuUtils'
+
 export const TaskSet = {
   name: 'taskSet',
   label: 'taskSet.label',
@@ -5,21 +7,22 @@ export const TaskSet = {
 }
 
 TaskSet.schema = {
-  startedAt: Date,
-  completedAt: Date,
+  dimension: String,
+  level: String,
   tasks: Array,
   'tasks.$': String
 }
 
+let _TaskSetCollection
+TaskSet.collection = function () {
+  if (!_TaskSetCollection) {
+    _TaskSetCollection = getCollection(TaskSet)
+  }
+  return _TaskSetCollection
+}
+
 TaskSet.helpers = {
   getInitialSet ({ dimension, level }) {
-    // TODO implement with real data
-    const result = []
-    result.length = 3
-    let i
-    for (i = 0; i < 3; i++) {
-      result[i] = `${dimension}.${level}.${i + 1}`
-    }
-    return result
+    return TaskSet.collection().findOne({ dimension, level })
   }
 }

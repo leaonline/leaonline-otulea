@@ -1,4 +1,4 @@
-import exampleTask from '../../../resources/lea/exampleTasks'
+import { getCollection } from '../../utils/collectionuUtils'
 
 export const Task = {
   name: 'task',
@@ -8,6 +8,8 @@ export const Task = {
 
 Task.schema = {
   taskId: String,
+  dimension: String,
+  level: String,
   story: Array,
   'story.$': {
     type: Object,
@@ -26,9 +28,17 @@ Task.schema = {
   }
 }
 
+let _TaskCollection
+Task.collection = function () {
+  if (!_TaskCollection) {
+    _TaskCollection = getCollection(Task)
+  }
+  return _TaskCollection
+}
+
 Task.helpers = {
   load (taskId) {
     // TODO HTTP GET from content server
-    return exampleTask[taskId]
+    return Task.collection().findOne(taskId)
   }
 }
