@@ -7,22 +7,26 @@ const _requestCache = new Map()
 
 let audio
 
-function postData (url, text) {
+function postData (url, text, onError) {
+  const body = 'text=' + encodeURIComponent(text)
+  console.log(url, body)
   // Default options are marked with *
   return fetch(url, {
     method: 'POST', // *GET, POST, PUT, DELETE, etc.
     mode: 'cors', // no-cors, cors, *same-origin
-    cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-    credentials: 'omit', // include, *same-origin, omit
+    cache: 'default', // *default, no-cache, reload, force-cache, only-if-cached
+    credentials: 'same-origin', // include, *same-origin, omit
     headers: {
-      Accept: 'application/json, text/plain, */*',
+      'Accept': 'application/json, text/plain, */*',
       'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
     },
     redirect: 'follow', // manual, *follow, error
-    referrer: 'no-referrer', // no-referrer, *client
-    body: 'text=' + encodeURIComponent(text)
+    referrer: 'client', // no-referrer, *client
+    body: body
   })
-    .then(response => console.log(response) || response.json()) // parses JSON response into native JavaScript objects
+    .then(response => console.log(response) || response.json())
+    .catch(onError)
+  // parses JSON response into native JavaScript objects
 }
 
 ServerTTS.play = function ({ id, text, onEnd, onError }) {
@@ -32,13 +36,12 @@ ServerTTS.play = function ({ id, text, onEnd, onError }) {
     return playAudio(cachedUrl, onEnd)
   }
 
-  postData(TTS_URL, requestText)
+  postData(TTS_URL, requestText, onError)
     .then(data => {
       const { url } = data
       _requestCache.set(requestText, url)
       playAudio(url, onEnd)
     })
-    .catch(onError)
 }
 
 function playAudio (url, onEnd) {

@@ -10,7 +10,11 @@ TTSEngine.play = function ({ id, text, onEnd }) {
     BrowserTTS.play({ id, text, onEnd })
   }
   if (TTSEngine.mode === 'server') {
-    ServerTTS.play({ id, text, onEnd, onError: fallback })
+    const onError = err => {
+      console.error(err)
+      fallback()
+    }
+    ServerTTS.play({ id, text, onEnd, onError })
   } else {
     fallback()
   }
