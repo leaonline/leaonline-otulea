@@ -1,4 +1,7 @@
 import '../imports/startup/server/accounts'
+import '../imports/startup/server/Task'
+import '../imports/startup/server/TaskSet'
 import '../imports/startup/server/Session'
 import '../imports/startup/server/rateLimit'
 import '../imports/startup/server/sanityCheck'
+import '../imports/startup/server/fixtures'
