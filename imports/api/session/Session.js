@@ -1,3 +1,4 @@
+import {check} from 'meteor/check'
 import { Role } from '../accounts/Role'
 import { Group } from '../accounts/Group'
 import { onClient, onServer } from '../../utils/archUtils'
@@ -15,7 +16,10 @@ export const Session = {
 Session.schema = {
   userId: String,
   startedAt: Date,
-  completedAt: Date,
+  completedAt: {
+    type: Date,
+    optional: true
+  },
   dimension: String,
   level: String,
   sets: Array,
@@ -28,9 +32,11 @@ Session.schema = {
 }
 
 Session.helpers = {
-  current () {
-    return Session.collection().findOne()
-  }
+  current ({ dimension, level } = {}) {
+    check(dimension, String)
+    check(level, String)
+    return Session.collection().findOne({ dimension, level })
+  },
 }
 
 Session.methods.start = {
@@ -39,6 +45,8 @@ Session.methods.start = {
     dimension: String,
     level: String
   },
+  numRequests: 1,
+  timeInterval: 1000,
   roles: [ Role.runSession.value ],
   group: Group.field.value,
   run: onServer(function ({ dimension, level }) {
@@ -70,6 +78,8 @@ Session.methods.complete = {
   schema: {
     sessionId: String
   },
+  numRequests: 1,
+  timeInterval: 1000,
   roles: [ Role.runSession.value ],
   group: Group.field.value,
   run: onServer(function ({ sessionId }) {
@@ -85,6 +95,8 @@ Session.methods.cancel = {
   schema: {
     sessionId: String
   },
+  numRequests: 1,
+  timeInterval: 1000,
   roles: [ Role.runSession.value ],
   group: Group.field.value,
   run: onServer(function ({ sessionId }) {
@@ -97,10 +109,19 @@ Session.methods.cancel = {
 
 Session.publications.current = {
   name: 'session.publications.current',
-  query: {},
+  schema: {},
   projection: {},
+  numRequests: 1,
+  timeInterval: 1000,
+  roles: [ Role.runSession.value ],
+  group: Group.field.value,
   run: onServer(function () {
-    return Session.collection().findOne({ startedAt: { $exists: true }, completedAt: { $exists: false } })
+    return Session.collection().find({
+      startedAt: { $exists: true },
+      completedAt: { $exists: false }
+    }, {
+      sort: { startedAt: -1 }
+    })
   }),
   subscribe: onClient(function () {
     import { SubsManager } from '../subscriptions/SubsManager'

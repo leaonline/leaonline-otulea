@@ -6,7 +6,7 @@ import '../imports/startup/client/fontawesome'
 import '../imports/startup/client/routes'
 import '../imports/startup/client/routeHelpers'
 import '../imports/startup/client/leaconfig'
-
+import '../imports/startup/client/session'
 import './main.scss'
 import './main.html'
 
