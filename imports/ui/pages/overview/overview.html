@@ -61,12 +61,14 @@
 									</div>
 									<div class="col">
 										{{> actionButton class="lea-overview-confirm-container w-100 mt-3"
+												data-restart="true"
 												lg=true block=true type=this.type  outline=true tts="common.restart"
 												label=(i18n "common.restart") btnClass="lea-overview-confirm-button" }}
 									</div>
 								</div>
 							{{else}}
 								{{> actionButton class="lea-overview-confirm-container w-100 mt-3"
+										data-restart="true"
 										lg=true block=true type=this.type  tts="pages.overview.confirm"
 										label=(i18n "pages.overview.confirm") btnClass="lea-overview-confirm-button" }}
 							{{/if}}
