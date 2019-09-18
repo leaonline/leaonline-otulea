@@ -65,6 +65,12 @@
       "chooseDimension": "Bitte wählen Sie eine Kategorie aus.",
       "chooseLevel": "Wir möchten die Aufgaben möglichst passend für Sie zusammenstellen. Bitte schätzen Sie hier Ihre Fähigkeiten ein. Wenn Sie mit dem Mauszeiger über die Schaltflächen fahren, werden Ihnen Beipsiele genannt. Bitte klicken Sie mit der linken Maustaste die Schaltfläche an, die Ihre Fähigkeit am ehesten beschreibt.",
       "confirm": "Aufgaben starten"
+    },
+    "notFound": {
+      "title": "Die Seite wurde nicht gefunden",
+      "description": "Es wurde die angeforderte Seite nicht im System gefunden. Möchten Sie uns den Fehler mitteilen?",
+      "toOverview": "Zurück zur Übersicht",
+      "toWelcome": "Zurück zur Startseite"
     }
   }
 }
