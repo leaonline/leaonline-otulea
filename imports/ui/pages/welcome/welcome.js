@@ -12,6 +12,7 @@ import '../../components/textgroup/textgroup'
 import '../../components/text/text'
 import './welcome.scss'
 import './welcome.html'
+import { fadeOut } from '../../../utils/animationUtils'
 
 const MAX_INPUTS = 5
 let originalVideoHeight
@@ -150,7 +151,9 @@ Template.welcome.events({
   },
   'click .to-overview-button' (event, templateInstance) {
     const route = templateInstance.data.next()
-    Router.go(route)
+    fadeOut('.lea-welcome-container', templateInstance, () => {
+      Router.go(route)
+    })
   }
 })
 
@@ -202,7 +205,9 @@ function loginUser (code, templateInstance) {
     } else {
       onLoggedIn()
       const route = templateInstance.data.next()
-      Router.go(route)
+      fadeOut('.lea-welcome-container', templateInstance, () => {
+        Router.go(route)
+      })
     }
   })
 }
