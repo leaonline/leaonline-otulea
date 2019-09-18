@@ -1,33 +1,33 @@
 <template name="task">
-    <div class="container lea-task-container">
-        {{#unless loadComplete}}
-            <div class="w-100 text-center">
-                <i class="fa fas fa-3x fa-fw fa-spinner fa-pulse"></i>
-            </div>
-        {{/unless}}
+	<div class="container lea-task-container">
+		{{#unless loadComplete}}
+			<div class="w-100 text-center">
+				<i class="fa fas fa-3x fa-fw fa-spinner fa-pulse"></i>
+			</div>
+		{{else}}
+			{{#with sessionDoc}}
+				<div class="text-center">
+					{{this.dimension}} / {{this.level}}
+				</div>
+			{{/with}}
 
-        {{#with sessionDoc}}
-            <div class="text-center">
-                {{this.dimension}} / {{this.level}}
-            </div>
-        {{/with}}
+			{{#with taskDoc}}
+				{{#each storyElement in this.story}}
+					<div class="card my-2">
+						<div class="card-body">
+							{{storyElement.value}}
+						</div>
+					</div>
+				{{/each}}
 
-        {{#with taskDoc}}
-            {{#each storyElement in this.story}}
-                <div class="card my-2">
-                    <div class="card-body">
-                        {{storyElement.value}}
-                    </div>
-                </div>
-            {{/each}}
-
-            {{#each stimuli in this.story}}
-                <div class="card my-2">
-                    <div class="card-body">
-                        {{storyElement.value}}
-                    </div>
-                </div>
-            {{/each}}
-        {{/with}}
-    </div>
+				{{#each stimuli in this.story}}
+					<div class="card my-2">
+						<div class="card-body">
+							{{storyElement.value}}
+						</div>
+					</div>
+				{{/each}}
+			{{/with}}
+		{{/unless}}
+	</div>
 </template>

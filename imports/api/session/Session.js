@@ -68,9 +68,9 @@ Session.methods.start = {
     if (!restart) {
       const cancelledSession = SessionCollection.findOne({ userId, completedAt: { $exists: false } })
       if (cancelledSession) {
-        const currentSetId = cancelledSession.sets[cancelledSession.currentSet]
+        const currentSetId = cancelledSession.sets[ cancelledSession.currentSet ]
         const currentSetDoc = TaskSet.collection().findOne(currentSetId)
-        return currentSetDoc.tasks[cancelledSession.currentTask]
+        return currentSetDoc.tasks[ cancelledSession.currentTask ]
       }
     }
 
@@ -131,7 +131,9 @@ Session.publications.current = {
   roles: [ Role.runSession.value ],
   group: Group.field.value,
   run: onServer(function () {
+    const { userId } = this
     return Session.collection().find({
+      userId: userId,
       startedAt: { $exists: true },
       completedAt: { $exists: false }
     }, {
