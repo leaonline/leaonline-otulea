@@ -104,11 +104,7 @@ Template.overview.events({
     const restart = Boolean(restartStr)
 
     Session.methods.start.call({ dimension: dimension.name, level: level.name, restart }, (err, taskId) => {
-      const route = templateInstance.data.next({
-        dimension: dimension.name,
-        level: level.name,
-        taskId: taskId
-      })
+      const route = templateInstance.data.next({ taskId: taskId })
       if (err || !taskId) {
         console.log(err)
         return

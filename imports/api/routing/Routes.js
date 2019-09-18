@@ -82,15 +82,15 @@ Routes.overview = {
     window.scrollTo(0, 0)
   },
   data: {
-    next ({ dimension, level, taskId }) {
-      return Routes.task.path({ dimension, level, taskId })
+    next ({ taskId }) {
+      return Routes.task.path(taskId)
     }
   }
 }
 
 Routes.task = {
-  path: ({ dimension = ':dimensionId', level = ':levelId', taskId = ':taskId' } = {}) => {
-    return `${settings.task}/${dimension}/${level}/${taskId}`
+  path: (taskId = ':taskId') => {
+    return `${settings.task}/${taskId}`
   },
   label: 'routes.task',
   triggersEnter: () => [
