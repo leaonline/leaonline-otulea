@@ -28,10 +28,15 @@
 					{{/each}}
 				</div>
 
-				<div class="card my-4">
-					{{#each page in this.pages}}
-					{{/each}}
-				</div>
+				{{#with currentPage}}
+					<div class="card my-4">
+						{{#each taskContent in this}}
+							<div class="card-body">
+								{{> TaskRendererFactory content=taskContent}}
+							</div>
+						{{/each}}
+					</div>
+				{{/with}}
 			{{/with}}
 		{{/unless}}
 	</div>

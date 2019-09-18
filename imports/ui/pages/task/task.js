@@ -10,6 +10,7 @@ import './task.html'
 Template.task.onCreated(function () {
   const instance = this
   const { taskId } = instance.data.params
+  const currentPage = Router.queryParam('s') || 0
 
   instance.autorun(() => {
     const taskDoc = instance.state.get('taskDoc')
@@ -53,5 +54,13 @@ Template.task.helpers({
   },
   sessionDoc () {
     return Template.getState('sessionDoc')
+  },
+  currentPage () {
+    const instance = Template.instance()
+    const taskDoc = instance.state.get('taskDoc')
+    if (!taskDoc) return
+
+    const current = instance.state.get('currentPage') || 0
+    return taskDoc.pages[current]
   }
 })

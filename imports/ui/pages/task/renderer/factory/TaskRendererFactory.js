@@ -36,7 +36,7 @@ Template.TaskRendererFactory.helpers({
     if (!content) {
       return
     }
-    console.log(content)
+
     const template = instance.state.get(content.subtype)
     return template && { template, data: content }
   }
