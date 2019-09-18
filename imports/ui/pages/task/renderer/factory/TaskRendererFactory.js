@@ -1,6 +1,11 @@
 import { Renderers } from '../Renderers'
 import './TaskRendererFactory.html'
 
+// keep this global to ensure, that
+// renderers are loaded only once in
+// a running application session
+const loaded = new ReactiveDict()
+
 Template.TaskRendererFactory.onCreated(function () {
   const instance = this
 
@@ -11,7 +16,7 @@ Template.TaskRendererFactory.onCreated(function () {
     // skip current autorun if we have no content
     // or the template has already been loaded
     // for this current content type
-    if (!content || instance.state.get(content.subtype)) {
+    if (!content || loaded.get(content.subtype)) {
       return
     }
 
@@ -23,7 +28,7 @@ Template.TaskRendererFactory.onCreated(function () {
 
     rendererContext
       .load()
-      .then(() => instance.state.set(content.subtype, rendererContext.template))
+      .then(() => loaded.set(content.subtype, rendererContext.template))
       .catch(e => console.error(e))
   })
 })
@@ -37,7 +42,7 @@ Template.TaskRendererFactory.helpers({
       return
     }
 
-    const template = instance.state.get(content.subtype)
+    const template = loaded.get(content.subtype)
     return template && { template, data: content }
   }
 })
