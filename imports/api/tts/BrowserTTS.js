@@ -23,9 +23,9 @@ const getVoices = (locale) => {
   if (_voices[locale]) return _voices[locale]
 
   let loadedVoices
-  const count = 0
+  let count = 0
   const secure = 100
-  while (!loadedVoices && count < secure) {
+  while (!loadedVoices && count++ < secure) {
     loadedVoices = global.speechSynthesis.getVoices()
   }
   if (!loadedVoices) {

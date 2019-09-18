@@ -8,6 +8,7 @@ TTSEngine.mode = 'server'
 TTSEngine.play = function ({ id, text, onEnd }) {
   const fallback = () => {
     BrowserTTS.play({ id, text, onEnd })
+    TTSEngine.mode = 'browser'
   }
   if (TTSEngine.mode === 'server') {
     const onError = err => {
