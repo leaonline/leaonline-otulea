@@ -10,6 +10,7 @@ import '../../components/textgroup/textgroup'
 import './overview.scss'
 import './overview.html'
 import { fadeOut } from '../../../utils/animationUtils'
+import { TTSEngine } from '../../../api/tts/TTSEngine'
 
 const dimensions = Object.values(Dimensions)
 const levels = Object.values(Levels)
@@ -64,7 +65,7 @@ Template.overview.helpers({
     return Template.getState('sessionLoadComplete')
   },
   sessionAlreadyRunning () {
-    return Template.getState('sessionAlreadyRunning')
+    return Template.getState('currentSession')
   }
 })
 
@@ -84,10 +85,9 @@ Template.overview.events({
     const levelName = dataTarget(event, templateInstance, 'level')
     const dimension = templateInstance.state.get('dimension')
     const level = Levels[ levelName ]
-    console.log(dimension, level)
-    if (Session.helpers.current({ dimension: dimension.name, level: level.name })) {
-      templateInstance.state.set('sessionAlreadyRunning', true)
-    }
+
+    const currentSession = Session.helpers.current({ dimension: dimension.name, level: level.name })
+    templateInstance.state.set('currentSession', currentSession)
     templateInstance.state.set('level', level)
 
     setTimeout(() => {
@@ -113,6 +113,7 @@ Template.overview.events({
         console.log(err)
         return
       }
+      TTSEngine.stop()
       fadeOut('.lea-overview-container', templateInstance, () => {
         Router.go(route)
       })
