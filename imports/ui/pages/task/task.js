@@ -1,7 +1,9 @@
 import { Template } from 'meteor/templating'
 import { Session } from '../../../api/session/Session'
-import './task.html'
 import { Task } from '../../../api/session/Task'
+import { fadeOut } from '../../../utils/animationUtils'
+import { Router } from '../../../api/routing/Router'
+import './task.html'
 
 Template.task.onCreated(function () {
   const instance = this
@@ -16,12 +18,26 @@ Template.task.onCreated(function () {
     const sessionSub = Session.publications.current.subscribe()
     if (sessionSub.ready()) {
       const sessionDoc = Session.helpers.current({ dimension, level })
-      instance.state.set('sessionDoc', sessionDoc)
+      if (sessionDoc) {
+        instance.state.set('sessionDoc', sessionDoc)
+      } else {
+        const route = instance.data.prev()
+        fadeOut('.lea-task-container', instance, () => {
+          Router.go(route)
+        })
+      }
     }
   })
 
   Task.helpers.load(taskId, (err, taskDoc) => {
-    instance.state.set('taskDoc', taskDoc)
+    if (taskDoc) {
+      instance.state.set('taskDoc', taskDoc)
+    } else {
+      const route = instance.data.prev()
+      fadeOut('.lea-task-container', instance, () => {
+        Router.go(route)
+      })
+    }
   })
 })
 

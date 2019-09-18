@@ -108,6 +108,9 @@ Routes.task = {
   data: {
     next () {
       throw new Error('not implemented')
+    },
+    prev () {
+      return Routes.overview
     }
   }
 }
