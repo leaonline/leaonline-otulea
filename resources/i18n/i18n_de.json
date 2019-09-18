@@ -40,8 +40,10 @@
     "yes": "Ja",
     "no": "Nein",
     "back": "Zurück",
-    "continue": "Weiter",
-    "logout": "Abmelden"
+    "forward": "Weiter",
+    "continue": "Fortsetzen",
+    "logout": "Abmelden",
+    "restart": "Neu starten"
   },
   "routes": {
     "redirecting": "Weiterleitung",
@@ -64,7 +66,8 @@
     "overview": {
       "chooseDimension": "Bitte wählen Sie eine Kategorie aus.",
       "chooseLevel": "Wir möchten die Aufgaben möglichst passend für Sie zusammenstellen. Bitte schätzen Sie hier Ihre Fähigkeiten ein. Wenn Sie mit dem Mauszeiger über die Schaltflächen fahren, werden Ihnen Beipsiele genannt. Bitte klicken Sie mit der linken Maustaste die Schaltfläche an, die Ihre Fähigkeit am ehesten beschreibt.",
-      "confirm": "Aufgaben starten"
+      "confirm": "Aufgaben starten",
+      "sessionFound": "Es läuft bereits eine Bearbeitung für diese Auswahl. Möchten Sie die Bearbeitung fortsetzen oder neu starten?"
     },
     "notFound": {
       "title": "Die Seite wurde nicht gefunden",
