@@ -23,6 +23,6 @@ TaskSet.collection = function () {
 
 TaskSet.helpers = {
   getInitialSet ({ dimension, level }) {
-    return TaskSet.collection().findOne({ dimension, level })
+    return TaskSet.collection().findOne() // fixme use dimension and level when all tasks are supported
   }
 }

@@ -28,6 +28,10 @@ Session.schema = {
     type: Number,
     defaultValue: 0
   },
+  currentTask: {
+    type: Number,
+    defaultValue: 0
+  },
   responses: {
     type: Array,
     optional: true
@@ -64,7 +68,9 @@ Session.methods.start = {
     if (!restart) {
       const cancelledSession = SessionCollection.findOne({ userId, completedAt: { $exists: false } })
       if (cancelledSession) {
-        return cancelledSession
+        const currentSetId = cancelledSession.sets[cancelledSession.currentSet]
+        const currentSetDoc = TaskSet.collection().findOne(currentSetId)
+        return currentSetDoc.tasks[cancelledSession.currentTask]
       }
     }
 
@@ -72,10 +78,9 @@ Session.methods.start = {
     const initialTasksDoc = TaskSet.helpers.getInitialSet({ dimension, level })
     const sets = []
     sets.push(initialTasksDoc._id)
-    
+
     const insertDoc = { userId, startedAt, dimension, level, sets }
     const newSessionId = SessionCollection.insert(insertDoc)
-    console.log(initialTasksDoc)
     return newSessionId && initialTasksDoc.tasks[ 0 ]
   }),
   call: onClient(function ({ dimension, level, restart }, cb) {
