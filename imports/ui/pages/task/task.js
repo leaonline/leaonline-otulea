@@ -3,6 +3,8 @@ import { Session } from '../../../api/session/Session'
 import { Task } from '../../../api/session/Task'
 import { fadeOut } from '../../../utils/animationUtils'
 import { Router } from '../../../api/routing/Router'
+
+import './renderer/factory/TaskRendererFactory'
 import './task.html'
 
 Template.task.onCreated(function () {

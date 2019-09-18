@@ -12,21 +12,26 @@
 			{{/with}}
 
 			{{#with taskDoc}}
-				{{#each storyElement in this.story}}
-					<div class="card my-2">
+				<div class="card my-2">
+					{{#each storyElement in this.story}}
 						<div class="card-body">
-							{{storyElement.value}}
+							{{> TaskRendererFactory content=storyElement}}
 						</div>
-					</div>
-				{{/each}}
+					{{/each}}
+				</div>
 
-				{{#each stimuli in this.story}}
-					<div class="card my-2">
+				<div class="card my-2">
+					{{#each stimuli in this.stimuli}}
 						<div class="card-body">
-							{{storyElement.value}}
+							{{> TaskRendererFactory content=stimuli}}
 						</div>
-					</div>
-				{{/each}}
+					{{/each}}
+				</div>
+
+				<div class="card my-4">
+					{{#each page in this.pages}}
+					{{/each}}
+				</div>
 			{{/with}}
 		{{/unless}}
 	</div>
