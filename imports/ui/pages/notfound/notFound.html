@@ -2,10 +2,20 @@
     <div class="container">
 		<div class="jumbotron">
 			<h1 class="text-center">
-				<i class="fa fa-fw fas fa-smile-wink"></i>
+				<i class="fa fa-fw fas fa-ban"></i>
 			</h1>
-				{{> textGroup tts="pages.notFound.title"}}
+			{{> textGroup tts="pages.notFound.title" groupClass="my-4" class="font-weight-bold"}}
 
+			{{> textGroup tts="pages.notFound.description" groupClass="my-4"}}
+
+			<div class="row">
+				<div class="col">
+					{{> actionButton tts="common.yes" label=(i18n "common.yes") block=true outline=true}}
+				</div>
+				<div class="col">
+					{{> actionButton tts="common.no" label=(i18n "common.no") block=true outline=true}}
+				</div>
+			</div>
 		</div>
 	</div>
 </template>
