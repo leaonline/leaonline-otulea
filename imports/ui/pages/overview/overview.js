@@ -101,7 +101,7 @@ Template.overview.events({
     const level = templateInstance.state.get('level')
     const restartStr = dataTarget(event, templateInstance, 'restart')
     const restart = Boolean(restartStr)
-    
+
     Session.methods.start.call({ dimension: dimension.name, level: level.name, restart }, (err, taskId) => {
       const route = templateInstance.data.next({
         dimension: dimension.name,
