@@ -1,0 +1,7 @@
+<template name="TaskRendererFactory">
+	{{#with templateContext}}
+		{{> Template.dynamic template=this.template data=this.data }}
+		{{else}}
+		...error
+	{{/with}}
+</template>
