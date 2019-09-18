@@ -55,7 +55,7 @@ Session.methods.start = {
   },
   numRequests: 1,
   timeInterval: 1000,
-  roles: [ Role.runSession.value ],
+  roles: [ Role.runSession.value, Role.test.value ],
   group: Group.field.value,
   run: onServer(function ({ dimension, level, restart }) {
     const { userId } = this
@@ -72,8 +72,7 @@ Session.methods.start = {
     const initialTasksDoc = TaskSet.helpers.getInitialSet({ dimension, level })
     const sets = []
     sets.push(initialTasksDoc._id)
-
-    const responses = []
+    
     const insertDoc = { userId, startedAt, dimension, level, sets }
     const newSessionId = SessionCollection.insert(insertDoc)
     console.log(initialTasksDoc)
