@@ -20,9 +20,13 @@ Template.actionButton.helpers({
       'aria-label': data.label || data.title || 'button'
     }
 
+    if (data.href) {
+      atts.href = data.href
+    }
+
     Object.keys(data).forEach(key => {
       if (key.indexOf('data-') === -1) return
-      atts[key] = data[key]
+      atts[ key ] = data[ key ]
     })
 
     return atts

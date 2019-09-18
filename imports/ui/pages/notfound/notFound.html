@@ -2,13 +2,13 @@
 	<div class="container">
 		<div class="jumbotron">
 			<h1 class="text-center">
-				<i class="fa fa-fw fas fa-ban"></i>
+				<span>¯\_(ツ)_/¯</span>
 			</h1>
 			{{> textGroup tts="pages.notFound.title" groupClass="my-4" class="font-weight-bold"}}
 		</div>
 
 		{{#unless hideDecision}}
-			<div class="card">
+			<div class="card lea-not-found-decision-container">
 				<div class="card-body">
 					{{> textGroup tts="pages.notFound.description" groupClass="my-4"}}
 
@@ -29,10 +29,10 @@
 		<div class="card">
 			<div class="card-body">
 				{{#if currentUser}}
-					{{> actionButton tts="pages.notFound.toOverview" label=(i18n "pages.notFound.toOverview")
+					{{> actionButton tts="pages.notFound.toOverview" href=(route 'overview') label=(i18n "pages.notFound.toOverview")
 							block=true outline=true type="primary"}}
 					{{else}}
-					{{> actionButton tts="pages.notFound.toWelcome" label=(i18n "pages.notFound.toWelcome")
+					{{> actionButton tts="pages.notFound.toWelcome" href=(route 'welcome') label=(i18n "pages.notFound.toWelcome")
 							block=true outline=true type="primary"}}
 				{{/if}}
 			</div>

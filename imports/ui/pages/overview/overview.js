@@ -9,6 +9,7 @@ import '../../components/actionButton/actionButton'
 import '../../components/textgroup/textgroup'
 import './overview.scss'
 import './overview.html'
+import { fadeOut } from '../../../utils/animationUtils'
 
 const dimensions = Object.values(Dimensions)
 const levels = Object.values(Levels)
@@ -108,7 +109,13 @@ Template.overview.events({
         level: level.name,
         taskId: taskId
       })
-      Router.go(route)
+      if (err || !taskId) {
+        console.log(err)
+        return
+      }
+      fadeOut('.lea-overview-container', templateInstance, () => {
+        Router.go(route)
+      })
     })
   }
 })

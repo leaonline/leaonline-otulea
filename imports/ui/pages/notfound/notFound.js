@@ -4,6 +4,7 @@ import { loggedIn } from '../../../utils/accountUtils'
 import '../../components/textgroup/textgroup'
 import '../../components/actionButton/actionButton'
 import './notFound.html'
+import { fadeOut } from '../../../utils/animationUtils'
 
 Template.notFound.helpers({
   hideDecision () {
@@ -19,7 +20,9 @@ Template.notFound.events({
     if (decision) {
       // TODO SEND NOT FOUND ERROR HERE
     } else {
-      templateInstance.state.set('hideDecision', true)
+      fadeOut('.lea-not-found-decision-container', templateInstance, () => {
+        templateInstance.state.set('hideDecision', true)
+      })
     }
   }
 })
