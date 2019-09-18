@@ -35,6 +35,8 @@ Template.task.onCreated(function () {
   Task.helpers.load(taskId, (err, taskDoc) => {
     if (taskDoc) {
       instance.state.set('taskDoc', taskDoc)
+      instance.state.set('currentPage', taskDoc.pages[currentPage])
+      instance.state.set('hasNext', taskDoc.pages.length > currentPage)
     } else {
       const route = instance.data.prev()
       fadeOut('.lea-task-container', instance, () => {
@@ -56,11 +58,12 @@ Template.task.helpers({
     return Template.getState('sessionDoc')
   },
   currentPage () {
-    const instance = Template.instance()
-    const taskDoc = instance.state.get('taskDoc')
-    if (!taskDoc) return
-
-    const current = instance.state.get('currentPage') || 0
-    return taskDoc.pages[current]
+    return Template.getState('currentPage')
+  },
+  hasNext () {
+    return Template.getState('hasNext')
+  },
+  hasPrev () {
+    return Template.getState('hasPrev')
   }
 })
