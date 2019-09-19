@@ -13,8 +13,8 @@
       {
         "type": "media",
         "subtype": "image",
-        "value": "https://commons.wikimedia.org/wiki/Felis_silvestris_catus#/media/File:Neighbours_Siamese.jpg",
-        "class": null
+        "value": "https://upload.wikimedia.org/wikipedia/commons/6/60/Neighbours_Siamese.jpg",
+        "class": "w-75"
       }
     ],
     "stimuli": [
