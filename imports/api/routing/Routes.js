@@ -106,11 +106,14 @@ Routes.task = {
     window.scrollTo(0, 0)
   },
   data: {
-    next () {
-      throw new Error('not implemented')
+    next ({ taskId }) {
+      return Routes.task.path(taskId)
     },
     prev () {
       return Routes.overview
+    },
+    finish () {
+      throw new Error('undefined route')
     }
   }
 }

@@ -1,15 +1,16 @@
 import { Template } from 'meteor/templating'
 import { Session } from '../../../api/session/Session'
 import { Task } from '../../../api/session/Task'
-import { fadeOut } from '../../../utils/animationUtils'
+import { Response } from '../../../api/session/Response'
 import { Router } from '../../../api/routing/Router'
+import { Dimensions } from '../../../api/session/Dimensions'
+import { Levels } from '../../../api/session/Levels'
+import { fadeOut } from '../../../utils/animationUtils'
 import { dataTarget } from '../../../utils/eventUtils'
 
 import '../../components/actionButton/actionButton'
 import './renderer/factory/TaskRendererFactory'
 import './task.html'
-import { Dimensions } from '../../../api/session/Dimensions'
-import { Levels } from '../../../api/session/Levels'
 
 
 Template.task.onCreated(function () {
@@ -27,6 +28,7 @@ Template.task.onCreated(function () {
     if (sessionSub.ready()) {
       const sessionDoc = Session.helpers.current({ dimension, level })
       if (sessionDoc) {
+        instance.state.set('progress', sessionDoc.progress)
         instance.state.set('sessionDoc', sessionDoc)
       } else {
         const route = instance.data.prev()
@@ -40,6 +42,7 @@ Template.task.onCreated(function () {
   Task.helpers.load(taskId, (err, taskDoc) => {
     if (taskDoc) {
       instance.state.set('taskDoc', taskDoc)
+      instance.state.set('maxPages', taskDoc.pages.length)
       instance.state.set('currentPageCount', currentPageCount)
       instance.state.set('currentPage', taskDoc.pages[currentPageCount])
       instance.state.set('hasNext', taskDoc.pages.length > currentPageCount + 1)
@@ -78,11 +81,20 @@ Template.task.helpers({
   currentPage () {
     return Template.getState('currentPage')
   },
+  currentPageCount () {
+    return Template.getState('currentPageCount') + 1
+  },
+  maxPages () {
+    return Template.getState('maxPages')
+  },
   hasNext () {
     return Template.getState('hasNext')
   },
   hasPrev () {
     return Template.getState('hasPrev')
+  },
+  progress () {
+    return Template.getState('progress')
   }
 })
 
@@ -93,15 +105,17 @@ Template.task.events({
     const taskDoc = templateInstance.state.get('taskDoc')
     const currentPageCount = templateInstance.state.get('currentPageCount')
     const newPage = {}
-debugger
+
     if (action === 'next') {
       newPage.currentPageCount = currentPageCount + 1
       newPage.currentPage = taskDoc.pages[newPage.currentPageCount]
-    } else if (action === 'back') {
+      newPage.hasNext = (newPage.currentPageCount + 1) < taskDoc.pages.length
+    }
+
+    if (action === 'back') {
       newPage.currentPageCount = currentPageCount - 1
       newPage.currentPage = taskDoc.pages[newPage.currentPageCount]
-    } else {
-      throw new Error(`Undefined action: ${action}`)
+      newPage.hasNext = (newPage.currentPageCount + 1) < taskDoc.pages.length
     }
 
     if (!newPage.currentPage) {
@@ -112,7 +126,34 @@ debugger
   },
   'click .lea-pagenav-finish-button' (event, templateInstance) {
     event.preventDefault()
+    const { taskId } = templateInstance.data.params
+    const sessionDoc = templateInstance.state.get('sessionDoc')
+    const answers = [] // TODO
+    const sessionId = sessionDoc._id
 
-
+    // WHEN A TASK IS FINISHED, THE FOLLOWING
+    // STEPS ARE TAKEN
+    // 1. SEND RESPONSES
+    // 2. UPDATE SESSION
+    // 3. CHECK IF SESSION IS COMPLETE
+    //  a - if complete call finish()
+    //  b - else call next()
+    Response.methods.send.call({ taskId, sessionId, answers }, (err, responseId) => {
+      if (err) {
+        console.error(err)
+        return
+      }
+      Session.methods.update.call({ sessionId, responseId }, (err, taskId) => {
+        if (err) {
+          console.error(err)
+          return
+        }
+        const route = taskId
+          ? templateInstance.data.next({taskId})
+          : templateInstance.data.finish()
+        console.log(route)
+        Router.go(route)
+      })
+    })
   }
 })

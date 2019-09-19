@@ -7,7 +7,10 @@
 		{{else}}
 				<div class="w-100 d-flex align-items-center my-3">
 					<div class="progress w-100">
-						<div class="progress-bar bg-{{dimension.type}}" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+						{{#with progress}}
+						<div class="progress-bar bg-{{dimension.type}}" role="progressbar" style="width: {{this}}%"
+							 aria-valuenow="{{this}}" aria-valuemin="0" aria-valuemax="100"></div>
+						{{/with}}
 					</div>
 					<span class="mx-5 no-wrap">{{i18n dimension.label}} - {{i18n level.label}}</span>
 					{{#actionButton sm=true tts="common.toOverview" outline=true class="no-wrap" btnClass="btn-sm"}}
@@ -37,7 +40,8 @@
 				{{#with dimension}}
 				<div class="card my-4 border border-{{type}} ">
 					<div class="card-header bg-{{this.type}} text-white d-flex">
-						<i class="ml-auto fa fas fa-fw fa-{{this.icon}}"></i>
+						<i class="fa fas fa-fw fa-{{this.icon}}"></i>
+						<span class="ml-auto">{{currentPageCount}} / {{maxPages}}</span>
 					</div>
 				{{#with currentPage}}
 					{{#each taskContent in this}}
@@ -49,12 +53,12 @@
 						{{#if hasPrev}}
 							{{> actionButton outline=true tts="common.back" btnClass="lea-pagenav-button"
 									data-action="back"
-									label=(i18n "common.next") class="ml-auto"}}
+									label=(i18n "common.forward") class="ml-auto"}}
 						{{/if}}
 						{{#if hasNext}}
-							{{> actionButton outline=true tts="common.next" btnClass="lea-pagenav-button"
+							{{> actionButton outline=true tts="common.forward" btnClass="lea-pagenav-button"
 									data-action="next"
-									label=(i18n "common.next") class="ml-auto"}}
+									label=(i18n "common.forward") class="ml-auto"}}
 						{{else}}
 							{{> actionButton tts="common.finish" btnClass="lea-pagenav-finish-button"
 									icon="thumbs-up" label=(i18n "common.finish") class="ml-auto"}}
