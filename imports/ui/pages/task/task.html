@@ -12,7 +12,8 @@
 							 aria-valuenow="{{this}}" aria-valuemin="0" aria-valuemax="100"></div>
 						{{/with}}
 					</div>
-					<span class="mx-5 no-wrap">{{i18n dimension.label}} - {{i18n level.label}}</span>
+					<span class="mx-3 no-wrap">{{currentTaskCount}} / {{maxTasksCount}}</span>
+					<span class="mx-3 no-wrap">{{i18n dimension.label}} - {{i18n level.label}}</span>
 					{{#actionButton sm=true tts="common.toOverview" outline=true class="no-wrap" btnClass="btn-sm"}}
 						{{#each dimensions}}
 						<i class="fa fas fa-square text-{{this.type}}"></i>

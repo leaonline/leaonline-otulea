@@ -28,7 +28,12 @@ Template.task.onCreated(function () {
     if (sessionSub.ready()) {
       const sessionDoc = Session.helpers.current({ dimension, level })
       if (sessionDoc) {
+        const {currentTask} = sessionDoc
+        const {tasks} = sessionDoc
+
         instance.state.set('progress', Session.helpers.getProgress(sessionDoc))
+        instance.state.set('currentTaskCount', tasks.indexOf(currentTask) + 1)
+        instance.state.set('maxTasksCount', tasks.length)
         instance.state.set('sessionDoc', sessionDoc)
       } else {
         const route = instance.data.prev()
@@ -62,6 +67,12 @@ Template.task.helpers({
   },
   taskDoc () {
     return Template.getState('taskDoc')
+  },
+  currentTaskCount () {
+    return Template.getState('currentTaskCount')
+  },
+  maxTasksCount() {
+    return Template.getState('maxTasksCount')
   },
   sessionDoc () {
     return Template.getState('sessionDoc')
@@ -152,7 +163,9 @@ Template.task.events({
           ? templateInstance.data.next({taskId})
           : templateInstance.data.finish()
         console.log(route)
-        Router.go(route)
+        fadeOut('.lea-task-container', templateInstance, () => {
+          x<Router.go(route)
+        })
       })
     })
   }
