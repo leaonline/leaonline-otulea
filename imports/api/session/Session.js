@@ -65,7 +65,7 @@ Session.helpers = {
   },
   getProgress ({ currentTask, tasks }) {
     const index = tasks.indexOf(currentTask) + 1
-    return Math.floor(100 * (index / tasks.length))
+    return Math.floor(100 * (index / (tasks.length)))
   },
   getNextTask ({ currentTask, tasks }) {
     if (!tasks || tasks.length === 0) {
