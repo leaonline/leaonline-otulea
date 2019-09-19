@@ -39,6 +39,77 @@
           "value": "01234567890",
           "class": "w-100"
         }
+      ],
+      [
+        {
+          "type": "text",
+          "subtype": "text",
+          "value": "Das ist auch ein Hilfetext",
+          "class": "w-100"
+        },
+        {
+          "type": "item",
+          "subtype": "h5p",
+          "value": "9876543210",
+          "class": "w-100"
+        }
+      ]
+    ]
+  },
+  "1.1.2": {
+    "taskId": "1.1.2",
+    "dimension": "reading",
+    "level": "easy",
+    "story": [
+      {
+        "type": "text",
+        "subtype": "text",
+        "value": "Das ist ein anderer Beispieltext",
+        "class": "w-100"
+      },
+      {
+        "type": "media",
+        "subtype": "image",
+        "value": "https://upload.wikimedia.org/wikipedia/commons/6/60/Neighbours_Siamese.jpg",
+        "class": "w-75"
+      }
+    ],
+    "stimuli": [
+      {
+        "type": "text",
+        "subtype": "text",
+        "value": "Das ist auch ein Beispieltext",
+        "class": "w-100"
+      }
+    ],
+    "pages": [
+      [
+        {
+          "type": "text",
+          "subtype": "text",
+          "value": "Das ist auch ein Hilfetext",
+          "class": "w-100"
+        },
+        {
+          "type": "item",
+          "subtype": "h5p",
+          "value": "01234567890",
+          "class": "w-100"
+        }
+      ],
+      [
+        {
+          "type": "text",
+          "subtype": "text",
+          "value": "Das ist auch ein Hilfetext",
+          "class": "w-100"
+        },
+        {
+          "type": "item",
+          "subtype": "h5p",
+          "value": "9876543210",
+          "class": "w-100"
+        }
       ]
     ]
   }
