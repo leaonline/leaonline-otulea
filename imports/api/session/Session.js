@@ -14,27 +14,42 @@ export const Session = {
 }
 
 Session.schema = {
+
+  /**
+   * The user who this session belongs to.
+   */
+
   userId: String,
+
+  /**
+   * Temporal start and end indicators.
+   */
+
   startedAt: Date,
   completedAt: {
     type: Date,
     optional: true
   },
+
+  /**
+   * The related dimension and level of the current session.
+   */
   dimension: String,
   level: String,
-  sets: Array,
-  'sets.$': String,
-  currentSet: {
-    type: Number,
-    defaultValue: 0
-  },
-  currentTask: {
-    type: Number,
-    defaultValue: 0
-  },
-  progress: {
-    type: Number
-  },
+
+  /**
+   * A list of task documents to load and a reference to
+   * the current task by id.
+   */
+
+  tasks: Array,
+  'tasks.$': String,
+  currentTask: String,
+
+  /**
+   * References to response documents. Initially empty
+   */
+
   responses: {
     type: Array,
     optional: true
@@ -48,8 +63,22 @@ Session.helpers = {
     check(level, String)
     return Session.collection().findOne({ dimension, level })
   },
-  getProgress({ currentTask, tasks }) {
-    return Math.floor(100 * (currentTask / tasks.length))
+  getProgress ({ currentTask, tasks }) {
+    const index = tasks.indexOf(currentTask) + 1
+    return Math.floor(100 * (index / tasks.length))
+  },
+  getNextTask ({ currentTask, tasks }) {
+    if (!tasks || tasks.length === 0) {
+      return
+    }
+    if (!currentTask) {
+      return tasks[ 0 ]
+    }
+    const index = tasks.indexOf(currentTask)
+    if (index === -1 || index >= tasks.length - 1) {
+      return
+    }
+    return tasks[ index + 1 ]
   }
 }
 
@@ -72,23 +101,20 @@ Session.methods.start = {
     const SessionCollection = Session.collection()
 
     if (!restart) {
-      const cancelledSession = SessionCollection.findOne({ userId, completedAt: { $exists: false } })
+      const cancelledSession = SessionCollection.findOne({ userId, dimension, level, completedAt: { $exists: false } })
       if (cancelledSession) {
-        const currentSetId = cancelledSession.sets[ cancelledSession.currentSet ]
-        const currentSetDoc = TaskSet.collection().findOne(currentSetId)
-        return currentSetDoc.tasks[ cancelledSession.currentTask ]
+        return cancelledSession.currentTask
       }
     }
 
     const startedAt = new Date()
     const initialTasksDoc = TaskSet.helpers.getInitialSet({ dimension, level })
-    const progress = Session.helpers.getProgress({ currentTask: 1, tasks: initialTasksDoc.tasks })
-    const sets = []
-    sets.push(initialTasksDoc._id)
+    const { tasks } = initialTasksDoc
+    const currentTask = Session.helpers.getNextTask({ tasks })
 
-    const insertDoc = { userId, startedAt, dimension, level, sets, progress }
+    const insertDoc = { userId, startedAt, dimension, level, tasks, currentTask }
     const newSessionId = SessionCollection.insert(insertDoc)
-    return newSessionId && initialTasksDoc.tasks[ 0 ]
+    return newSessionId && currentTask
   }),
   call: onClient(function ({ dimension, level, restart }, cb) {
     Meteor.call(Session.methods.start.name, { dimension, level, restart }, cb)
@@ -113,39 +139,22 @@ Session.methods.update = {
       throw new Error('errors.permissionDenied', 'errors.notOwner')
     }
 
-    const currentTask = sessionDoc.currentTask
-    const currentSetId = sessionDoc.sets[sessionDoc.currentSet]
-    const currentSetDoc = TaskSet.collection().findOne(currentSetId)
-    let nextTaskId = currentSetDoc.tasks[currentTask + 1]
-    const update = { $addToSet: { response: responseId }}
-
-
-
-    if (nextTaskId) {
-      console.log(currentSetDoc.tasks, nextTaskId, currentSetDoc.tasks[currentTask])
-      update.$set = {}
-      update.$set.currentTask = currentTask + 1
-      update.$set.progress = Session.helpers.getProgress({ currentTask: 1, tasks: currentSetDoc.tasks })
-      Session.collection().update(currentSetId, update)
-      return nextTaskId
+    const nextTask = Session.helpers.getNextTask(sessionDoc)
+    const update = {
+      $addToSet: {
+        response: responseId
+      },
+      $set: {}
     }
 
-    const nextSetId = sessionDoc.sets[sessionDoc.currentSet + 1]
-    console.log(currentSetId, nextSetId, sessionDoc.sets)
-    if (nextSetId) {
-      const nextSet = TaskSet.collection().findOne(nextSetId)
-      update.$set = {}
-      update.$set.currentSet= sessionDoc.currentSet + 1
-      update.$set.currentTask = 0
-      update.progress = Session.helpers.getProgress({ currentTask: 1, tasks: nextSet.tasks })
-      nextTaskId = nextSet.tasks[0]
-      Session.collection().update(currentSetId, update)
-      return nextTaskId
+    if (nextTask) {
+      update.$set.currentTask = nextTask
+    } else {
+      update.$set.completedAt = new Date()
     }
 
-    update.completedAt = new Date()
-    Session.collection().update(currentSetId, update)
-    return null
+    Session.collection().update(sessionDoc._id, update)
+    return nextTask
   }),
   call: onClient(function ({ sessionId, responseId }, cb) {
     Meteor.call(Session.methods.update.name, { sessionId, responseId }, cb)
