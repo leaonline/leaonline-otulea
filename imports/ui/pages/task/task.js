@@ -8,6 +8,8 @@ import { dataTarget } from '../../../utils/eventUtils'
 import '../../components/actionButton/actionButton'
 import './renderer/factory/TaskRendererFactory'
 import './task.html'
+import { Dimensions } from '../../../api/session/Dimensions'
+import { Levels } from '../../../api/session/Levels'
 
 
 Template.task.onCreated(function () {
@@ -61,6 +63,18 @@ Template.task.helpers({
   sessionDoc () {
     return Template.getState('sessionDoc')
   },
+  dimension () {
+    const sessionDoc = Template.getState('sessionDoc')
+    if (!sessionDoc) return
+
+    return Dimensions[sessionDoc.dimension]
+  },
+  level () {
+    const sessionDoc = Template.getState('sessionDoc')
+    if (!sessionDoc) return
+
+    return Levels[sessionDoc.level]
+  },
   currentPage () {
     return Template.getState('currentPage')
   },
@@ -79,7 +93,7 @@ Template.task.events({
     const taskDoc = templateInstance.state.get('taskDoc')
     const currentPageCount = templateInstance.state.get('currentPageCount')
     const newPage = {}
-
+debugger
     if (action === 'next') {
       newPage.currentPageCount = currentPageCount + 1
       newPage.currentPage = taskDoc.pages[newPage.currentPageCount]
