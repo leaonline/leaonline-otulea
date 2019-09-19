@@ -1,6 +1,7 @@
 import { Template } from 'meteor/templating'
 import { getBsType } from '../../../utils/bootstrapUtils'
 
+import '../soundbutton/soundbutton'
 import './actionButton.html'
 
 Template.actionButton.helpers({
