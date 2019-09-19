@@ -28,7 +28,7 @@ Template.task.onCreated(function () {
     if (sessionSub.ready()) {
       const sessionDoc = Session.helpers.current({ dimension, level })
       if (sessionDoc) {
-        instance.state.set('progress', sessionDoc.progress)
+        instance.state.set('progress', Session.helpers.getProgress(sessionDoc))
         instance.state.set('sessionDoc', sessionDoc)
       } else {
         const route = instance.data.prev()
