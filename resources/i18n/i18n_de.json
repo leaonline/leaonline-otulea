@@ -43,7 +43,8 @@
     "forward": "Weiter",
     "continue": "Fortsetzen",
     "logout": "Abmelden",
-    "restart": "Neu starten"
+    "restart": "Neu starten",
+    "finish": "Fertig"
   },
   "routes": {
     "redirecting": "Weiterleitung",

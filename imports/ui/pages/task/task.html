@@ -36,8 +36,18 @@
 							</div>
 						{{/each}}
 						<div class="card-body d-flex">
+							{{#if hasPrev}}
+								{{> actionButton outline=true tts="common.back" btnClass="lea-pagenav-button"
+									data-action="back"
+										label=(i18n "common.next") class="ml-auto"}}
+							{{/if}}
 							{{#if hasNext}}
-								{{> actionButton outline=true tts="common.next" icon="arrow-right" class="ml-auto"}}
+								{{> actionButton outline=true tts="common.next" btnClass="lea-pagenav-button"
+										data-action="next"
+										label=(i18n "common.next") class="ml-auto"}}
+								{{else}}
+								{{> actionButton tts="common.finish" btnClass="lea-pagenav-finish-button"
+										icon="thumbs-up" label=(i18n "common.finish") class="ml-auto"}}
 							{{/if}}
 						</div>
 					</div>
