@@ -4,6 +4,7 @@ import { Task } from '../../../api/session/Task'
 import { fadeOut } from '../../../utils/animationUtils'
 import { Router } from '../../../api/routing/Router'
 
+import '../../components/actionButton/actionButton'
 import './renderer/factory/TaskRendererFactory'
 import './task.html'
 
