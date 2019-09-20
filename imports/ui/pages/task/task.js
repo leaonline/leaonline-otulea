@@ -12,7 +12,6 @@ import '../../components/actionButton/actionButton'
 import './renderer/factory/TaskRendererFactory'
 import './task.html'
 
-
 Template.task.onCreated(function () {
   const instance = this
   const { taskId } = instance.data.params
@@ -28,8 +27,8 @@ Template.task.onCreated(function () {
     if (sessionSub.ready()) {
       const sessionDoc = Session.helpers.current({ dimension, level })
       if (sessionDoc) {
-        const {currentTask} = sessionDoc
-        const {tasks} = sessionDoc
+        const { currentTask } = sessionDoc
+        const { tasks } = sessionDoc
 
         instance.state.set('progress', Session.helpers.getProgress(sessionDoc))
         instance.state.set('currentTaskCount', tasks.indexOf(currentTask) + 1)
@@ -49,7 +48,7 @@ Template.task.onCreated(function () {
       instance.state.set('taskDoc', taskDoc)
       instance.state.set('maxPages', taskDoc.pages.length)
       instance.state.set('currentPageCount', currentPageCount)
-      instance.state.set('currentPage', taskDoc.pages[currentPageCount])
+      instance.state.set('currentPage', taskDoc.pages[ currentPageCount ])
       instance.state.set('hasNext', taskDoc.pages.length > currentPageCount + 1)
     } else {
       const route = instance.data.prev()
@@ -71,7 +70,7 @@ Template.task.helpers({
   currentTaskCount () {
     return Template.getState('currentTaskCount')
   },
-  maxTasksCount() {
+  maxTasksCount () {
     return Template.getState('maxTasksCount')
   },
   sessionDoc () {
@@ -81,13 +80,13 @@ Template.task.helpers({
     const sessionDoc = Template.getState('sessionDoc')
     if (!sessionDoc) return
 
-    return Dimensions[sessionDoc.dimension]
+    return Dimensions[ sessionDoc.dimension ]
   },
   level () {
     const sessionDoc = Template.getState('sessionDoc')
     if (!sessionDoc) return
 
-    return Levels[sessionDoc.level]
+    return Levels[ sessionDoc.level ]
   },
   currentPage () {
     return Template.getState('currentPage')
@@ -112,20 +111,20 @@ Template.task.helpers({
 Template.task.events({
   'click .lea-pagenav-button' (event, templateInstance) {
     event.preventDefault()
-    const action = dataTarget(event,templateInstance, 'action')
+    const action = dataTarget(event, templateInstance, 'action')
     const taskDoc = templateInstance.state.get('taskDoc')
     const currentPageCount = templateInstance.state.get('currentPageCount')
     const newPage = {}
 
     if (action === 'next') {
       newPage.currentPageCount = currentPageCount + 1
-      newPage.currentPage = taskDoc.pages[newPage.currentPageCount]
+      newPage.currentPage = taskDoc.pages[ newPage.currentPageCount ]
       newPage.hasNext = (newPage.currentPageCount + 1) < taskDoc.pages.length
     }
 
     if (action === 'back') {
       newPage.currentPageCount = currentPageCount - 1
-      newPage.currentPage = taskDoc.pages[newPage.currentPageCount]
+      newPage.currentPage = taskDoc.pages[ newPage.currentPageCount ]
       newPage.hasNext = (newPage.currentPageCount + 1) < taskDoc.pages.length
     }
 
@@ -160,11 +159,11 @@ Template.task.events({
           return
         }
         const route = taskId
-          ? templateInstance.data.next({taskId})
+          ? templateInstance.data.next({ taskId })
           : templateInstance.data.finish()
         console.log(route)
         fadeOut('.lea-task-container', templateInstance, () => {
-          x<Router.go(route)
+          Router.go(route)
         })
       })
     })
