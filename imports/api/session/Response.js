@@ -3,6 +3,7 @@ import { Role } from '../accounts/Role'
 import { Group } from '../accounts/Group'
 import { onClient, onServer } from '../../utils/archUtils'
 import { getCollection } from '../../utils/collectionuUtils'
+import { PermissionDeniedError } from '../errors/PermissionDenied'
 
 export const Response = {
   name: 'response',
@@ -58,7 +59,7 @@ Response.methods.send = {
     const {userId} = this
     const sessionDoc = Session.collection().findOne(sessionId)
     if (userId !== sessionDoc.userId) {
-      throw new Error('erros.permissionDenied', 'errors.notOwner')
+      throw new PermissionDeniedError(PermissionDeniedError.NOT_OWNER)
     }
 
     const existingResponse = Response.collection().findOne({sessionId, taskId, userId})

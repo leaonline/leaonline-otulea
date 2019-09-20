@@ -4,6 +4,8 @@ import { Group } from '../accounts/Group'
 import { onClient, onServer } from '../../utils/archUtils'
 import { getCollection } from '../../utils/collectionuUtils'
 import { TaskSet } from './TaskSet'
+import { PermissionDeniedError } from '../errors/PermissionDenied'
+import { NotImplementedError } from '../errors/NotImplemented'
 
 export const Session = {
   name: 'session',
@@ -136,7 +138,7 @@ Session.methods.update = {
     const sessionDoc = Session.collection().findOne(sessionId)
 
     if (userId !== sessionDoc.userId) {
-      throw new Error('errors.permissionDenied', 'errors.notOwner')
+      throw new PermissionDeniedError(PermissionDeniedError.NOT_OWNER)
     }
 
     const nextTask = Session.helpers.getNextTask(sessionDoc)
@@ -171,10 +173,10 @@ Session.methods.complete = {
   roles: [ Role.runSession.value ],
   group: Group.field.value,
   run: onServer(function ({ sessionId }) {
-    throw new Error('not implemented')
+    throw new NotImplementedError()
   }),
   call: onClient(function ({ sessionId }) {
-    throw new Error('not implemented')
+    throw new NotImplementedError()
   })
 }
 
@@ -188,10 +190,10 @@ Session.methods.cancel = {
   roles: [ Role.runSession.value ],
   group: Group.field.value,
   run: onServer(function ({ sessionId }) {
-    throw new Error('not implemented')
+    throw new NotImplementedError(sessionId)
   }),
   call: onClient(function ({ sessionId }) {
-    throw new Error('not implemented')
+    throw new NotImplementedError(sessionId)
   })
 }
 

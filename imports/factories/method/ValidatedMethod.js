@@ -1,6 +1,7 @@
 /* global Roles */
 import { Meteor } from 'meteor/meteor'
 import { ValidatedMethod } from 'meteor/mdg:validated-method'
+import { PermissionDeniedError } from '../../api/errors/PermissionDenied'
 
 const PermissionsMixin = function (options) {
   const runFct = options.run
@@ -13,7 +14,7 @@ const PermissionsMixin = function (options) {
 
     // user permission
     if (!userId || !Meteor.users.findOne(userId)) {
-      throw new Meteor.Error('errors.permissionDenied')
+      throw new PermissionDeniedError(PermissionDeniedError.NO_USER)
     }
 
     return runFct.call(this, ...args)
@@ -31,7 +32,7 @@ const RoleMixin = function (options) {
 
       // CHECK ROLES
       if (!Roles.userIsInRole(userId, roles, group)) {
-        throw new Meteor.Error('errors.notInRole')
+        throw new PermissionDeniedError(PermissionDeniedError.NOT_IN_ROLES)
       }
 
       return runFct.call(this, ...args)

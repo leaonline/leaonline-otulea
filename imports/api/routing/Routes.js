@@ -1,5 +1,6 @@
 import settings from '../../../resources/i18n/i18n_routes' // TODO load dynamically using i18n locale
 import { createLoggedinTrigger, createLoginTrigger, createNotFoundTrigger } from './triggers'
+import { NotImplementedError } from '../errors/NotImplemented'
 
 export const Routes = {}
 
@@ -141,7 +142,7 @@ Routes.complete = {
   },
   data: {
     next () {
-      throw new Error('not yet implemented')
+      throw new NotImplementedError()
     }
   }
 }
