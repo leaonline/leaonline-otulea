@@ -165,23 +165,6 @@ Session.methods.update = {
   })
 }
 
-Session.methods.complete = {
-  name: 'session.complete',
-  schema: {
-    sessionId: String
-  },
-  numRequests: 1,
-  timeInterval: 1000,
-  roles: [ Role.runSession.value ],
-  group: Group.field.value,
-  run: onServer(function ({ sessionId }) {
-    throw new NotImplementedError()
-  }),
-  call: onClient(function ({ sessionId }) {
-    throw new NotImplementedError()
-  })
-}
-
 Session.methods.results = {
   name: 'session.methods.results',
   schema: {
@@ -198,23 +181,6 @@ Session.methods.results = {
   call: onClient(function ({sessionId}, cb) {
     // TODO replace later with POST request to eval server
     Meteor.call(Session.methods.results.name, {sessionId}, cb)
-  })
-}
-
-Session.methods.cancel = {
-  name: 'session.cancel',
-  schema: {
-    sessionId: String
-  },
-  numRequests: 1,
-  timeInterval: 1000,
-  roles: [ Role.runSession.value ],
-  group: Group.field.value,
-  run: onServer(function ({ sessionId }) {
-    throw new NotImplementedError(sessionId)
-  }),
-  call: onClient(function ({ sessionId }) {
-    throw new NotImplementedError(sessionId)
   })
 }
 
