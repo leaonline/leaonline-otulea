@@ -1,6 +1,6 @@
-import { Meteor } from 'meteor/meteor'
+import { LeaError } from './LeaErorr'
 
-export class PermissionDeniedError extends Meteor.Error {
+export class PermissionDeniedError extends LeaError {
   static get TITLE () {
     return 'errors.permissionDenied.title'
   }

@@ -1,6 +1,6 @@
-import { Meteor } from 'meteor/meteor'
+import { LeaError } from './LeaErorr'
 
-export class NotImplementedError extends Meteor.Error {
+export class NotImplementedError extends LeaError {
   static get TITLE () {
     return 'errors.notImplemented.title'
   }
