@@ -10,10 +10,10 @@
 		<div class="card">
 			<div class="card-body">
 				{{#if currentUser}}
-					{{> actionButton tts="pages.notFound.toOverview" href=(route 'overview') label=(i18n "pages.notFound.toOverview")
+					{{> actionButton tts="common.toOverview" href=(route 'overview') label=(i18n "common.toOverview")
 							block=true outline=true type="primary" btnClass="lea-pagenotfound-button"}}
 					{{else}}
-					{{> actionButton tts="pages.notFound.toWelcome" href=(route 'welcome') label=(i18n "pages.notFound.toWelcome")
+					{{> actionButton tts="common.toWelcome" href=(route 'welcome') label=(i18n "common.toWelcome")
 							block=true outline=true type="primary" btnClass="lea-pagenotfound-button"}}
 				{{/if}}
 			</div>

@@ -44,7 +44,9 @@
     "continue": "Fortsetzen",
     "logout": "Abmelden",
     "restart": "Neu starten",
-    "finish": "Fertig"
+    "finish": "Fertig",
+    "toOverview": "Zur Übersicht",
+    "toWelcome": "Zur Startseite"
   },
   "routes": {
     "redirecting": "Weiterleitung",
@@ -72,9 +74,7 @@
     },
     "notFound": {
       "title": "Die angefragte Seite wurde nicht gefunden. Das tut uns leid.",
-      "description": "Es wurde die angeforderte Seite nicht im System gefunden. Möchten Sie uns den Fehler mitteilen?",
-      "toOverview": "Zurück zur Übersicht",
-      "toWelcome": "Zurück zur Startseite"
+      "description": "Es wurde die angeforderte Seite nicht im System gefunden. Möchten Sie uns den Fehler mitteilen?"
     },
     "complete": {
       "thankYou": "Schön, dass Sie teilgenommen haben!"

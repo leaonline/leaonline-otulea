@@ -25,4 +25,7 @@ export const createLoggedinTrigger = (redirectRoute) => {
   }
 }
 
-export const createNotFoundTrigger = (route) => () => Router.go(route)
+export const createNotFoundTrigger = (route) => (notFoundContext) => {
+  // log not found route
+  Router.go(route)
+}

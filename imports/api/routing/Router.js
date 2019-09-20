@@ -128,7 +128,7 @@ function createRoute (routeDef, onError) {
       // for example to scroll the window to the top
       // or prepare the window environment otherwise
       if (routeDef.onAction) {
-        routeDef.onAction()
+        routeDef.onAction(params, queryParams)
       }
 
       const data = routeDef.data || {}
