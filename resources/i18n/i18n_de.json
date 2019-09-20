@@ -71,10 +71,13 @@
       "sessionFound": "Es läuft bereits eine Bearbeitung für diese Auswahl. Möchten Sie die Bearbeitung fortsetzen oder neu starten?"
     },
     "notFound": {
-      "title": "Die Seite wurde nicht gefunden",
+      "title": "Die angefragte Seite wurde nicht gefunden. Das tut uns leid.",
       "description": "Es wurde die angeforderte Seite nicht im System gefunden. Möchten Sie uns den Fehler mitteilen?",
       "toOverview": "Zurück zur Übersicht",
       "toWelcome": "Zurück zur Startseite"
+    },
+    "complete": {
+      "thankYou": "Schön, dass Sie teilgenommen haben!"
     }
   }
 }

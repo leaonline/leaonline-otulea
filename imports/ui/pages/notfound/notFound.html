@@ -1,5 +1,5 @@
 <template name="notFound">
-	<div class="container">
+	<div class="container lea-pagenotfound-container">
 		<div class="jumbotron">
 			<h1 class="text-center">
 				<span>¯\_(ツ)_/¯</span>
@@ -7,33 +7,14 @@
 			{{> textGroup tts="pages.notFound.title" groupClass="my-4 font-weight-bold justify-content-center"}}
 		</div>
 
-		{{#unless hideDecision}}
-			<div class="card lea-not-found-decision-container">
-				<div class="card-body">
-					{{> textGroup tts="pages.notFound.description" groupClass="my-4"}}
-
-					<div class="row">
-						<div class="col">
-							{{> actionButton tts="common.yes" label=(i18n "common.yes") block=true outline=true
-									btnClass="lea-not-found-decision-button" data-decision="1"}}
-						</div>
-						<div class="col">
-							{{> actionButton tts="common.no" label=(i18n "common.no") block=true outline=true
-									btnClass="lea-not-found-decision-button"}}
-						</div>
-					</div>
-				</div>
-			</div>
-		{{/unless}}
-
 		<div class="card">
 			<div class="card-body">
 				{{#if currentUser}}
 					{{> actionButton tts="pages.notFound.toOverview" href=(route 'overview') label=(i18n "pages.notFound.toOverview")
-							block=true outline=true type="primary"}}
+							block=true outline=true type="primary" btnClass="lea-pagenotfound-button"}}
 					{{else}}
 					{{> actionButton tts="pages.notFound.toWelcome" href=(route 'welcome') label=(i18n "pages.notFound.toWelcome")
-							block=true outline=true type="primary"}}
+							block=true outline=true type="primary" btnClass="lea-pagenotfound-button"}}
 				{{/if}}
 			</div>
 		</div>

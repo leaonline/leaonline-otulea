@@ -20,7 +20,11 @@ Routes.notFound = {
   target: null,
   template: 'notFound',
   roles: null,
-  data: null
+  data: {
+    next () {
+      return Routes.overview
+    }
+  }
 }
 
 /**
@@ -117,17 +121,17 @@ Routes.task = {
     prev () {
       return Routes.overview
     },
-    finish () {
-      return Routes.complete
+    finish ({ sessionId }) {
+      return Routes.complete.path(sessionId)
     }
   }
 }
 
 Routes.complete = {
-  path: () => {
-    return `${settings.complete}`
+  path: (sessionId = ':sessionId') => {
+    return `${settings.complete}/${sessionId}`
   },
-  label: 'routes.task',
+  label: 'routes.complete',
   triggersEnter: () => [
     createLoginTrigger(Routes.welcome)
   ],
