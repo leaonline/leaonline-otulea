@@ -2,6 +2,16 @@
   "aria": {
     "readText": "Text als Audio abspielen"
   },
+  "competencies": {
+    "fulfilled": "Das kann ich schon",
+    "toImprove": "Das kann ich bald, wenn ich noch ein wenig übe",
+    "reading": {
+      "1": "kurze Sätze lesen und verstehen.",
+      "2": "dies das",
+      "3": "gut lesen",
+      "4": "richtig gut lesen"
+    }
+  },
   "dimensions": {
     "understand": {
       "title": "Sprache",
@@ -77,7 +87,9 @@
       "description": "Es wurde die angeforderte Seite nicht im System gefunden. Möchten Sie uns den Fehler mitteilen?"
     },
     "complete": {
-      "thankYou": "Schön, dass Sie teilgenommen haben!"
+      "thankYou": "Schön, dass Sie teilgenommen haben!",
+      "printResults": "Ergebnis ausdrucken",
+      "printResultsTeacher": "Für Kursleitende ausdrucken"
     }
   }
 }

@@ -1,10 +1,54 @@
 <template name="complete">
 	<div class="container lea-complete-container">
-
 		<div class="card my-4">
 			<div class="card-body">
 				{{> textGroup tts="pages.complete.thankYou" }}
 			</div>
+			{{#with evaluationResults}}
+				{{#with this.fulfilled}}
+					<div class="card-body">
+						{{> textGroup tts="competencies.fulfilled" label=(i18n "competencies.fulfilled")
+								groupClass="alert alert-info w-100"}}
+						<div class="card-body">
+							{{#each competency in this}}
+								{{> textGroup tts=competency.label label=(i18n competency.label)}}
+							{{/each}}
+						</div>
+					</div>
+				{{/with}}
+
+				{{#with this.toImprove}}
+					<div class="card-body">
+						{{> textGroup tts="competencies.toImprove" label=(i18n "competencies.toImprove")
+								groupClass="alert alert-info w-100"}}
+						<div class="card-body">
+							{{#each competency in this}}
+								{{> textGroup tts=competency.label label=(i18n competency.label)}}
+							{{/each}}
+						</div>
+					</div>
+				{{/with}}
+
+				<div class="card-body d-flex justify-content-between">
+					{{> actionButton tts="pages.complete.printResults" label=(i18n "pages.complete.printResults")
+							outline=true icon="print"}}
+
+					{{> actionButton tts="pages.complete.printResultsTeacher"
+							outline=true  label=(i18n "pages.complete.printResultsTeacher") icon="print"}}
+				</div>
+
+				<div class="card-body">
+					{{> actionButton tts="common.forward" label=(i18n "common.forward") block=true
+							btnClass="lea-complete-forward-button" class="ml-auto"}}
+				</div>
+			{{else}}
+				<div class="card-body d-flex">
+					<h1 class="text-center">
+						<i class="fa fas fa-fw fa-spinner fa-pulse"></i>
+					</h1>
+				</div>
+			{{/with}}
 		</div>
 	</div>
+
 </template>
