@@ -160,7 +160,7 @@ Template.task.events({
         }
         const route = taskId
           ? templateInstance.data.next({ taskId })
-          : templateInstance.data.finish()
+          : templateInstance.data.finish({ sessionId })
         console.log(route)
         fadeOut('.lea-task-container', templateInstance, () => {
           Router.go(route)
