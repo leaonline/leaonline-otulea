@@ -2,5 +2,6 @@
   "welcome": "/willkommen",
   "notFound": "/seite-nicht-gefunden",
   "overview": "/auswahl-aufgaben",
-  "task": "/aufgabe"
+  "task": "/aufgabe",
+  "complete": "/ergebnisse"
 }

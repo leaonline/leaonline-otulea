@@ -88,6 +88,10 @@ Routes.overview = {
   }
 }
 
+/**
+ * Task process page, where all tasks are dynamically rendered and processed.
+ */
+
 Routes.task = {
   path: (taskId = ':taskId') => {
     return `${settings.task}/${taskId}`
@@ -113,7 +117,31 @@ Routes.task = {
       return Routes.overview
     },
     finish () {
-      throw new Error('undefined route')
+      return Routes.complete
+    }
+  }
+}
+
+Routes.complete = {
+  path: () => {
+    return `${settings.complete}`
+  },
+  label: 'routes.task',
+  triggersEnter: () => [
+    createLoginTrigger(Routes.welcome)
+  ],
+  async load () {
+    return import('../../ui/pages/complete/complete')
+  },
+  target: null,
+  template: 'complete',
+  roles: null,
+  onAction () {
+    window.scrollTo(0, 0)
+  },
+  data: {
+    next () {
+      throw new Error('not yet implemented')
     }
   }
 }
