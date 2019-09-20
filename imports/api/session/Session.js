@@ -6,6 +6,8 @@ import { getCollection } from '../../utils/collectionuUtils'
 import { TaskSet } from './TaskSet'
 import { PermissionDeniedError } from '../errors/PermissionDenied'
 import { NotImplementedError } from '../errors/NotImplemented'
+import exampleResults from '../../../resources/lea/exampleResults'
+
 
 export const Session = {
   name: 'session',
@@ -177,6 +179,25 @@ Session.methods.complete = {
   }),
   call: onClient(function ({ sessionId }) {
     throw new NotImplementedError()
+  })
+}
+
+Session.methods.results = {
+  name: 'session.methods.results',
+  schema: {
+    sessionId: String
+  },
+  numRequests: 1,
+  timeInterval: 1000,
+  roles: [ Role.runSession.value ],
+  group: Group.field.value,
+  run: onServer(function ({sessionId}) {
+    // FIXME replace these fixtures with real data from eval serv
+    return exampleResults
+  }),
+  call: onClient(function ({sessionId}, cb) {
+    // TODO replace later with POST request to eval server
+    Meteor.call(Session.methods.results.name, {sessionId}, cb)
   })
 }
 
