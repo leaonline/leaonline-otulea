@@ -1,4 +1,5 @@
 import { Session } from '../../../api/session/Session'
+import { Router } from '../../../api/routing/Router'
 import '../../components/textgroup/textgroup'
 import '../../components/actionButton/actionButton'
 import './complete.html'
@@ -27,6 +28,7 @@ Template.complete.helpers({
 Template.complete.events({
   'click .lea-complete-forward-button' (event, templateInstance) {
     event.preventDefault()
-    templateInstance.state.set('printOptions', true)
+    const route = templateInstance.data.next()
+    Router.go(route)
   }
 })

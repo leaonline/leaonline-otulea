@@ -146,7 +146,7 @@ Routes.complete = {
   },
   data: {
     next () {
-      throw new NotImplementedError()
+      return Routes.overview
     }
   }
 }
