@@ -5,7 +5,7 @@ import { Response } from '../../../api/session/Response'
 import { Router } from '../../../api/routing/Router'
 import { Dimensions } from '../../../api/session/Dimensions'
 import { Levels } from '../../../api/session/Levels'
-import { fadeOut } from '../../../utils/animationUtils'
+import { fadeOut, fadeIn } from '../../../utils/animationUtils'
 import { dataTarget } from '../../../utils/eventUtils'
 
 import '../../components/actionButton/actionButton'
@@ -14,8 +14,26 @@ import './task.html'
 
 Template.task.onCreated(function () {
   const instance = this
-  const { taskId } = instance.data.params
   const currentPageCount = Router.queryParam('p') || 0
+
+  instance.autorun(() => {
+    const data = Template.currentData()
+    const { taskId } = data.params
+    Task.helpers.load(taskId, (err, taskDoc) => {
+      if (taskDoc) {
+        instance.state.set('taskDoc', taskDoc)
+        instance.state.set('maxPages', taskDoc.pages.length)
+        instance.state.set('currentPageCount', currentPageCount)
+        instance.state.set('currentPage', taskDoc.pages[ currentPageCount ])
+        instance.state.set('hasNext', taskDoc.pages.length > currentPageCount + 1)
+      } else {
+        const route = instance.data.prev()
+        fadeOut('.lea-task-container', instance, () => {
+          Router.go(route)
+        })
+      }
+    })
+  })
 
   instance.autorun(() => {
     const taskDoc = instance.state.get('taskDoc')
@@ -34,6 +52,11 @@ Template.task.onCreated(function () {
         instance.state.set('currentTaskCount', tasks.indexOf(currentTask) + 1)
         instance.state.set('maxTasksCount', tasks.length)
         instance.state.set('sessionDoc', sessionDoc)
+        if (instance.state.get('fadedOut')) {
+          fadeIn('.lea-task-container', instance, () => {
+
+          })
+        }
       } else {
         const route = instance.data.prev()
         fadeOut('.lea-task-container', instance, () => {
@@ -42,20 +65,12 @@ Template.task.onCreated(function () {
       }
     }
   })
+})
 
-  Task.helpers.load(taskId, (err, taskDoc) => {
-    if (taskDoc) {
-      instance.state.set('taskDoc', taskDoc)
-      instance.state.set('maxPages', taskDoc.pages.length)
-      instance.state.set('currentPageCount', currentPageCount)
-      instance.state.set('currentPage', taskDoc.pages[ currentPageCount ])
-      instance.state.set('hasNext', taskDoc.pages.length > currentPageCount + 1)
-    } else {
-      const route = instance.data.prev()
-      fadeOut('.lea-task-container', instance, () => {
-        Router.go(route)
-      })
-    }
+Template.task.onDestroyed(function () {
+  const instance = this
+  instance.state.set({
+    'fadedOut': null
   })
 })
 
@@ -163,6 +178,7 @@ Template.task.events({
           : templateInstance.data.finish({ sessionId })
         console.log(route)
         fadeOut('.lea-task-container', templateInstance, () => {
+          templateInstance.state.set('fadedOut', true)
           Router.go(route)
         })
       })
