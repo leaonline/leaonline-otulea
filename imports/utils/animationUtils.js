@@ -13,3 +13,19 @@ export const fadeOut = (target, templateInstance, cb) => {
     }
   }
 }
+
+export const fadeIn = (target, templateInstance, cb) => {
+  let $target
+  try {
+    $target = templateInstance.$(target)
+  } catch (e) {
+    console.error(e) // TODO LOG MISSING DOM RANGE ERROR
+    $target = global.$(target)
+  } finally {
+    if ($target && $target.fadeIn) {
+      $target.fadeIn('slow', cb)
+    } else {
+      cb()
+    }
+  }
+}
