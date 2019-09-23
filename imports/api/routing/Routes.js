@@ -145,6 +145,31 @@ Routes.complete = {
     window.scrollTo(0, 0)
   },
   data: {
+    end () {
+      return Routes.logout
+    },
+    next () {
+      return Routes.overview
+    }
+  }
+}
+
+Routes.logout = {
+  path: () => {
+    return `${settings.logout}`
+  },
+  label: 'routes.logout',
+  triggersEnter: () => [],
+  async load () {
+    return import('../../ui/pages/logout/logout')
+  },
+  target: null,
+  template: 'logout',
+  roles: null,
+  onAction () {
+    window.scrollTo(0, 0)
+  },
+  data: {
     next () {
       return Routes.overview
     }

@@ -3,5 +3,6 @@
   "notFound": "/seite-nicht-gefunden",
   "overview": "/auswahl-aufgaben",
   "task": "/aufgabe",
-  "complete": "/ergebnisse"
+  "complete": "/ergebnisse",
+  "logout": "/abgemeldet"
 }
