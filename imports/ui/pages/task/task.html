@@ -40,21 +40,26 @@
 							{{/each}}
 							<div class="card-body d-flex">
 								{{#if hasPrev}}
-									{{> actionButton outline=true tts="common.back" btnClass="lea-pagenav-button"
+									{{> actionButton type=currentType outline=true tts="common.back" btnClass="lea-pagenav-button"
 											data-action="back"
 											label=(i18n "common.forward") class="ml-auto"}}
 								{{/if}}
 								{{#if hasNext}}
-									{{> actionButton outline=true tts="common.forward" btnClass="lea-pagenav-button"
-											data-action="next"
-											label=(i18n "common.forward") class="ml-auto"}}
-								{{else}}
-									{{> actionButton tts="common.finish" btnClass="lea-pagenav-finish-button"
-											icon="thumbs-up" label=(i18n "common.finish") class="ml-auto"}}
+									<button class="btn  btn-outline-{{currentType}} lea-pagenav-button ml-auto"
+											data-action="next">
+										<i class="fa fas fa-fw fa-arrow-right"></i>
+									</button>
 								{{/if}}
 							</div>
 						{{/with}}
 					</div>
+
+					{{#unless hasNext}}
+						<div class="card-body d-flex justify-content-center">
+							{{> actionButton type=currentType tts="common.finish" btnClass="lea-pagenav-finish-button"
+									icon="thumbs-up" label=(i18n "common.finish") }}
+						</div>
+					{{/unless}}
 				{{/with}}
 			{{/with}}
 		{{/unless}}

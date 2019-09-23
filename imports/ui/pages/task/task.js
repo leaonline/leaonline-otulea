@@ -107,6 +107,13 @@ Template.task.helpers({
 
     return Levels[ sessionDoc.level ]
   },
+  currentType () {
+    const sessionDoc = Template.getState('sessionDoc')
+    if (!sessionDoc) return
+
+    const dimension = Dimensions[ sessionDoc.dimension ]
+    return dimension && dimension.type
+  },
   currentPage () {
     return Template.getState('currentPage')
   },
