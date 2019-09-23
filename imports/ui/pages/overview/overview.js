@@ -47,7 +47,7 @@ Template.overview.onCreated(function () {
       const levelIndex = parseInt(l, 10)
       const level = _levels.find(el => el.index === levelIndex)
       const currentSession = Session.helpers.current({ dimension: dimension.name, level: level.name })
-      
+
       instance.state.set('currentSession', currentSession)
       instance.state.set('level', level)
 
@@ -102,7 +102,10 @@ Template.overview.helpers({
     return Template.getState('sessionLoadComplete')
   },
   sessionAlreadyRunning () {
-    return Template.getState('currentSession')
+    return Template.getState('currentSession') && !Template.getState('starting')
+  },
+  starting () {
+    return Template.getState('starting')
   }
 })
 
@@ -135,7 +138,14 @@ Template.overview.events({
     const restartStr = dataTarget(event, templateInstance, 'restart')
     const restart = Boolean(restartStr)
 
+    templateInstance.state.set('starting', true)
     Session.methods.start.call({ dimension: dimension.name, level: level.name, restart }, (err, taskId) => {
+      if (err) {
+        console.error(err)
+        templateInstance.state.set('starting', false)
+        return
+      }
+
       const route = templateInstance.data.next({ taskId: taskId })
       if (err || !taskId) {
         console.log(err)
