@@ -26,7 +26,7 @@ Router.go = function (value, ...optionalArgs) {
 }
 
 Router.has = function (path) {
-  return paths[path]
+  return paths[ path ]
 }
 
 Router.location = function (options = {}) {
@@ -94,9 +94,9 @@ function createRoute (routeDef, onError) {
   return {
     name: routeDef.key,
     whileWaiting () {
-      // we render by default a "loading" template
-      // which can be explicitly prevented
-      if (routeDef.showLoading !== false) {
+      // we render by default a "loading" template if the Template has not been loaded yet
+      // which can be explicitly prevented by switching showLoading to false
+      if (!Template[ routeDef.template ] && routeDef.showLoading !== false) {
         this.render(routeDef.target, _loadingTemplate, { title: routeDef.label })
       }
     },
@@ -119,7 +119,7 @@ function createRoute (routeDef, onError) {
       // if we have loaded the template but it is not available
       // on the rendering pipeline through Template.<name> we
       // just skip the action and wait for the next rendering cycle
-      if (!Template[routeDef.template]) {
+      if (!Template[ routeDef.template ]) {
         console.warn(`Found rendering attempt on unloaded Template [${routeDef.template}]`)
         return
       }
@@ -152,7 +152,7 @@ function createRoute (routeDef, onError) {
 
 Router.register = function (routeDefinition) {
   const path = routeDefinition.path()
-  paths[path] = routeDefinition
+  paths[ path ] = routeDefinition
   const routeInstance = createRoute(routeDefinition)
   return FlowRouter.route(path, routeInstance)
 }
