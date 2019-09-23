@@ -1,8 +1,15 @@
 export const fadeOut = (target, templateInstance, cb) => {
-  const $target = templateInstance.$(target)
-  if ($target) {
-    $target.fadeOut('slow', cb)
-  } else {
-    cb()
+  let $target
+  try {
+    $target = templateInstance.$(target)
+  } catch (e) {
+    console.error(e) // TODO LOG MISSING DOM RANGE ERROR
+    $target = global.$(target)
+  } finally {
+    if ($target && $target.fadeOut) {
+      $target.fadeOut('slow', cb)
+    } else {
+      cb()
+    }
   }
 }

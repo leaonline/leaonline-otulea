@@ -152,9 +152,14 @@ Template.overview.events({
         return
       }
       TTSEngine.stop()
+
+      setTimeout(() => {
+
+
       fadeOut('.lea-overview-container', templateInstance, () => {
         Router.go(route)
       })
+      }, 100)
     })
   }
 })
