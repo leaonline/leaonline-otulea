@@ -2,6 +2,7 @@ import { Session } from '../../../api/session/Session'
 import { Router } from '../../../api/routing/Router'
 import '../../components/textgroup/textgroup'
 import '../../components/actionButton/actionButton'
+import '../../components/navbar/navbar'
 import './complete.html'
 
 const states = {

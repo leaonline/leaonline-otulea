@@ -1,6 +1,8 @@
 <template name="complete">
 	<div class="container lea-complete-container">
 
+		{{>navbar sessionId=sessionId showProgress=false }}
+
 		{{#if showResults}}
 		<div class="card my-4">
 			<div class="card-body">
