@@ -18,21 +18,22 @@
 					<div class="card-body">
 						{{> textGroup tts="pages.welcome.introduction"}}
 					</div>
-					<div class="card-body mt-3 row {{#if (or login newCode)}}d-unavailable{{/if}}">
-						<div class="col">
-							{{#if login}}
-								{{> actionButton class="w-100" block=true outline=true tts="common.yes" label=(i18n "common.yes") btnClass="lea-welcome-yes active" sndBtnClass="border-0" }}
-							{{else}}
-								{{> actionButton class="w-100" block=true outline=true tts="common.yes" label=(i18n "common.yes") btnClass="lea-welcome-yes" sndBtnClass="border-0"  }}
-							{{/if}}
-						</div>
-						<div class="col">
-							{{#if newCode}}
-								{{> actionButton class="w-100" block=true outline=true tts="common.no" label=(i18n "common.no") btnClass="lea-welcome-no active" sndBtnClass="border-0" }}
-							{{else}}
-								{{> actionButton class="w-100" block=true outline=true tts="common.no" label=(i18n "common.no") btnClass="lea-welcome-no" sndBtnClass="border-0" }}
-							{{/if}}
-						</div>
+				</div>
+
+				<div class="card-body mt-3 row {{#if (or login newCode)}}d-unavailable{{/if}}">
+					<div class="col">
+						{{#if login}}
+							{{> actionButton class="w-100" block=true outline=true tts="common.yes" label=(i18n "common.yes") btnClass="lea-welcome-yes active" sndBtnClass="border-0" }}
+						{{else}}
+							{{> actionButton class="w-100" block=true outline=true tts="common.yes" label=(i18n "common.yes") btnClass="lea-welcome-yes" sndBtnClass="border-0"  }}
+						{{/if}}
+					</div>
+					<div class="col">
+						{{#if newCode}}
+							{{> actionButton class="w-100" block=true outline=true tts="common.no" label=(i18n "common.no") btnClass="lea-welcome-no active" sndBtnClass="border-0" }}
+						{{else}}
+							{{> actionButton class="w-100" block=true outline=true tts="common.no" label=(i18n "common.no") btnClass="lea-welcome-no" sndBtnClass="border-0" }}
+						{{/if}}
 					</div>
 				</div>
 			</div>
@@ -85,8 +86,8 @@
 				{{/if}}
 
 
-				<div class="card-body welcome-login-container my-3">
-					<div class="input-group">
+				<div class="card-body welcome-login-container my-3 row">
+					<div class="input-group input-group-lg col col-md-8 col-lg-6 col-xl-4 mx-auto">
 						<input type="text" data-index="0" maxlength="1"
 							   class="login-field text-uppercase form-control text-center mr-2" autofocus />
 						<input type="text" data-index="1" maxlength="1"
@@ -98,10 +99,6 @@
 						<input type="text" data-index="4" maxlength="1"
 							   class="login-field text-uppercase form-control text-center ml-2" />
 					</div>
-
-					{{> actionButton class="lea-welcome-login-container w-100 mt-3 d-none"
-							lg=true block=true type="primary"  tts="pages.welcome.login" sndBtnClass="border-0"
-							label=(i18n "pages.welcome.login") btnClass="lea-welcome-login" }}
 				</div>
 
 				{{#if loginFail}}
@@ -109,6 +106,12 @@
 						{{> textGroup tts="pages.welcome.loginFail" type="warning" class="alert alert-warning"}}
 					</div>
 				{{/if}}
+			</div>
+
+			<div class="card-body">
+				{{> actionButton class="lea-welcome-login-container w-100 mt-3 d-none"
+						lg=true block=true type="primary"  tts="pages.welcome.login" sndBtnClass="border-0"
+						label=(i18n "pages.welcome.login") btnClass="lea-welcome-login" }}
 			</div>
 		</div>
 	{{/if}}
