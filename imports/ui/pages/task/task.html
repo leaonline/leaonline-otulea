@@ -27,23 +27,20 @@
 				</div>
 
 				{{#with dimension}}
-					<div class="card my-4 border border-{{type}} ">
-						<div class="card-header bg-{{this.type}} text-white d-flex">
-							<i class="fa fas fa-fw fa-{{this.icon}}"></i>
-							<span class="ml-auto">{{currentPageCount}} / {{maxPages}}</span>
-						</div>
+					<div class="card my-4 border border-secondary ">
 						{{#with currentPage}}
 							{{#each taskContent in this}}
 								<div class="card-body">
 									{{> TaskRendererFactory content=taskContent}}
 								</div>
 							{{/each}}
-							<div class="card-body d-flex">
+							<div class="card-body d-flex justify-content-between align-items-center">
 								{{#if hasPrev}}
 									{{> actionButton type=currentType outline=true tts="common.back" btnClass="lea-pagenav-button"
 											data-action="back"
 											label=(i18n "common.forward") class="ml-auto"}}
 								{{/if}}
+								<span class="text-{{currentType}}">{{currentPageCount}} / {{maxPages}}</span>
 								{{#if hasNext}}
 									<button class="btn  btn-outline-{{currentType}} lea-pagenav-button ml-auto"
 											data-action="next">
