@@ -1,13 +1,11 @@
-import { check } from 'meteor/check'
+import { check, Match } from 'meteor/check'
 import { Role } from '../accounts/Role'
 import { Group } from '../accounts/Group'
 import { onClient, onServer } from '../../utils/archUtils'
 import { getCollection } from '../../utils/collectionuUtils'
 import { TaskSet } from './TaskSet'
 import { PermissionDeniedError } from '../errors/PermissionDenied'
-import { NotImplementedError } from '../errors/NotImplemented'
 import exampleResults from '../../../resources/lea/exampleResults'
-
 
 export const Session = {
   name: 'session',
@@ -62,10 +60,10 @@ Session.schema = {
 }
 
 Session.helpers = {
-  current ({ dimension, level } = {}) {
-    check(dimension, String)
-    check(level, String)
-    return Session.collection().findOne({ dimension, level })
+  current ({ dimension, level, completedAt } = {}) {
+    check(dimension, Match.Maybe(String))
+    check(level, Match.Maybe(String))
+    return Session.collection().findOne({ dimension, level, completedAt }, { sort: { statedAt: -1 } })
   },
   getProgress ({ currentTask, tasks }) {
     const index = tasks.indexOf(currentTask) + 1
@@ -174,13 +172,14 @@ Session.methods.results = {
   timeInterval: 1000,
   roles: [ Role.runSession.value ],
   group: Group.field.value,
-  run: onServer(function ({sessionId}) {
+  run: onServer(function ({ sessionId }) {
     // FIXME replace these fixtures with real data from eval serv
-    return exampleResults
+    const sessionDoc = Session.collection().findOne(sessionId)
+    return { sessionDoc, results: exampleResults }
   }),
-  call: onClient(function ({sessionId}, cb) {
+  call: onClient(function ({ sessionId }, cb) {
     // TODO replace later with POST request to eval server
-    Meteor.call(Session.methods.results.name, {sessionId}, cb)
+    Meteor.call(Session.methods.results.name, { sessionId }, cb)
   })
 }
 

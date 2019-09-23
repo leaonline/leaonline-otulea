@@ -9,6 +9,7 @@ import { fadeOut, fadeIn } from '../../../utils/animationUtils'
 import { dataTarget } from '../../../utils/eventUtils'
 
 import '../../components/actionButton/actionButton'
+import '../../layout/navbar/navbar'
 import './renderer/factory/TaskRendererFactory'
 import './task.html'
 
@@ -20,6 +21,9 @@ Template.task.onCreated(function () {
     const data = Template.currentData()
     const { taskId } = data.params
     Task.helpers.load(taskId, (err, taskDoc) => {
+      if (err) {
+        return console.error(err) // TODO handle
+      }
       if (taskDoc) {
         instance.state.set('taskDoc', taskDoc)
         instance.state.set('maxPages', taskDoc.pages.length)
