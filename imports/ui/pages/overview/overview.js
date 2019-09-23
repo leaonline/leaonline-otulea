@@ -26,6 +26,9 @@ Template.overview.onCreated(function () {
   })
 
   instance.autorun(() => {
+    const sessionLoadComplete = instance.state.get('sessionLoadComplete')
+    if (!sessionLoadComplete) return
+
     const data = Template.currentData()
     const { d } = data.queryParams
     const { l } = data.queryParams
@@ -34,7 +37,7 @@ Template.overview.onCreated(function () {
 
     if (typeof d !== 'undefined') {
       const dimensionIndex = parseInt(d, 10)
-      dimension = _dimensions[ dimensionIndex ]
+      dimension = _dimensions.find(el => el.index === dimensionIndex)
       instance.state.set('dimension', dimension)
     } else {
       instance.state.set('dimension', null)
@@ -42,8 +45,9 @@ Template.overview.onCreated(function () {
 
     if (typeof l !== 'undefined') {
       const levelIndex = parseInt(l, 10)
-      const level = _levels[ levelIndex ]
+      const level = _levels.find(el => el.index === levelIndex)
       const currentSession = Session.helpers.current({ dimension: dimension.name, level: level.name })
+      
       instance.state.set('currentSession', currentSession)
       instance.state.set('level', level)
 
