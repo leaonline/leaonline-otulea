@@ -5,6 +5,7 @@ Dimensions.writing = {
   label: 'dimensions.writing.title',
   icon: 'pen-alt',
   type: 'primary',
+  index: 1,
   descriptions: {
     easy: 'dimensions.writing.easy',
     medium: 'dimensions.writing.medium',
@@ -17,6 +18,7 @@ Dimensions.reading = {
   label: 'dimensions.reading.title',
   icon: 'book-open',
   type: 'danger',
+  index: 2,
   descriptions: {
     easy: 'dimensions.reading.easy',
     medium: 'dimensions.reading.medium',
@@ -29,6 +31,7 @@ Dimensions.math = {
   label: 'dimensions.math.title',
   icon: 'calculator',
   type: 'success',
+  index: 3,
   descriptions: {
     easy: 'dimensions.math.easy',
     medium: 'dimensions.math.medium',
@@ -41,6 +44,7 @@ Dimensions.understand = {
   label: 'dimensions.understand.title',
   icon: 'comments',
   type: 'warning',
+  index: 4,
   descriptions: {
     easy: 'dimensions.understand.easy',
     medium: 'dimensions.understand.medium',

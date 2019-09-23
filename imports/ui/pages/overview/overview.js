@@ -3,24 +3,57 @@ import { Dimensions } from '../../../api/session/Dimensions'
 import { Levels } from '../../../api/session/Levels'
 import { Session } from '../../../api/session/Session'
 import { Router } from '../../../api/routing/Router'
+import { TTSEngine } from '../../../api/tts/TTSEngine'
 import { dataTarget } from '../../../utils/eventUtils'
+import { fadeOut } from '../../../utils/animationUtils'
 
 import '../../components/actionButton/actionButton'
 import '../../components/textgroup/textgroup'
 import './overview.scss'
 import './overview.html'
-import { fadeOut } from '../../../utils/animationUtils'
-import { TTSEngine } from '../../../api/tts/TTSEngine'
 
-const dimensions = Object.values(Dimensions)
-const levels = Object.values(Levels)
+const _dimensions = Object.values(Dimensions)
+const _levels = Object.values(Levels)
 
 Template.overview.onCreated(function () {
   const instance = this
+
   instance.autorun(() => {
     const sessionSub = Session.publications.current.subscribe()
     if (sessionSub.ready()) {
       instance.state.set('sessionLoadComplete', true)
+    }
+  })
+
+  instance.autorun(() => {
+    const data = Template.currentData()
+    const { d } = data.queryParams
+    const { l } = data.queryParams
+
+    let dimension
+
+    if (typeof d !== 'undefined') {
+      const dimensionIndex = parseInt(d, 10)
+      dimension = _dimensions[ dimensionIndex ]
+      instance.state.set('dimension', dimension)
+    } else {
+      instance.state.set('dimension', null)
+    }
+
+    if (typeof l !== 'undefined') {
+      const levelIndex = parseInt(l, 10)
+      const level = _levels[ levelIndex ]
+      const currentSession = Session.helpers.current({ dimension: dimension.name, level: level.name })
+      instance.state.set('currentSession', currentSession)
+      instance.state.set('level', level)
+
+      setTimeout(() => {
+        const $target = instance.$('.overview-level-decision')
+        const scrollTarget = $target && $target.get(0)
+        scrollTarget && scrollTarget.scrollIntoView({ block: 'end', behavior: 'smooth' })
+      }, 50)
+    } else {
+      instance.state.set('level', null)
     }
   })
 })
@@ -30,7 +63,7 @@ Template.overview.helpers({
   // DIMENSIONS
   // ---------------------- // ----------------------
   dimensions () {
-    return dimensions
+    return _dimensions
   },
   dimensionSelected () {
     return Template.getState('dimension')
@@ -43,7 +76,7 @@ Template.overview.helpers({
   // LEVELS
   // ---------------------- // ----------------------
   levels () {
-    return levels
+    return _levels
   },
   levelSelected () {
     return Template.getState('level')
@@ -73,28 +106,23 @@ Template.overview.events({
   'click .lea-dimension-button' (event, templateInstance) {
     event.preventDefault()
     const dimensionName = dataTarget(event, templateInstance, 'dimension')
-    templateInstance.state.set('dimension', Dimensions[ dimensionName ])
+    const dimension = Dimensions[ dimensionName ]
+    const d = dimension.index
+    Router.queryParam({ d })
   },
   'click .lea-back-button' (event, templateInstance) {
     event.preventDefault()
-    templateInstance.state.set('dimension', null)
-    templateInstance.state.set('level', null)
+    fadeOut('.overview-level-container', templateInstance, () => {
+      Router.queryParam({ d: null, l: null })
+    })
   },
   'click .lea-level-button' (event, templateInstance) {
     event.preventDefault()
     const levelName = dataTarget(event, templateInstance, 'level')
-    const dimension = templateInstance.state.get('dimension')
     const level = Levels[ levelName ]
 
-    const currentSession = Session.helpers.current({ dimension: dimension.name, level: level.name })
-    templateInstance.state.set('currentSession', currentSession)
-    templateInstance.state.set('level', level)
-
-    setTimeout(() => {
-      const $target = templateInstance.$('.overview-level-decision')
-      const scrollTarget = $target && $target.get(0)
-      scrollTarget && scrollTarget.scrollIntoView({ block: 'end', behavior: 'smooth' })
-    }, 50)
+    const l = level.index
+    Router.queryParam({ l })
   },
   'click .lea-overview-confirm-button' (event, templateInstance) {
     event.preventDefault()
