@@ -12,11 +12,14 @@
 		{{#with labels}}
 			<span class="mx-3 no-wrap">{{i18n this.dimension}} - {{i18n this.level}}</span>
 		{{/with}}
-		{{#actionButton sm=true tts="common.toOverview" outline=true
-						class="ml-auto no-wrap" btnClass="btn-sm navbar-overview-button"}}
-			{{#each dimensions}}
-				<i class="fa fas fa-square text-{{this.type}}"></i>
-			{{/each}}
-		{{/actionButton}}
+		<button class="btn btn-outline-secondary btn-sm navbar-help-button ml-auto mr-2 no-wrap"
+				title="{{i18n "common.help"}}">
+			<i class="fa fas fa-fw fa-question"></i>
+		</button>
+
+		<button class="btn btn-outline-secondary btn-sm navbar-overview-button ml-auto no-wrap"
+				title="{{i18n "common.toOverview"}}">
+			<i class="fa fas fa-fw fa-times"></i>
+		</button>
 	</div>
 </template>
