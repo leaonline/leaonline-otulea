@@ -8,6 +8,7 @@ import { Levels } from '../../../api/session/Levels'
 import { fadeOut, fadeIn } from '../../../utils/animationUtils'
 import { dataTarget } from '../../../utils/eventUtils'
 
+
 import '../../components/actionButton/actionButton'
 import '../../layout/navbar/navbar'
 import './renderer/factory/TaskRendererFactory'
@@ -158,7 +159,12 @@ Template.task.events({
       throw new Error(`Undefined page for current index ${newPage.currentPageCount}`)
     }
 
-    templateInstance.state.set(newPage)
+    fadeOut('.lea-task-current-content', templateInstance, () => {
+      templateInstance.state.set(newPage)
+      setTimeout(() => {
+        fadeIn('.lea-task-current-content', templateInstance, () => {})
+      }, 100)
+    })
   },
   'click .lea-pagenav-finish-button' (event, templateInstance) {
     event.preventDefault()

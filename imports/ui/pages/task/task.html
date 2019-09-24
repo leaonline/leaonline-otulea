@@ -1,5 +1,5 @@
 <template name="task">
-	<div class="container lea-task-container">
+	<div class="container lea-task-container mb-5">
 		{{#unless loadComplete}}
 			<div class="w-100 text-center">
 				<i class="fa fas fa-3x fa-fw fa-spinner fa-pulse"></i>
@@ -27,11 +27,13 @@
 				</div>
 
 				{{#with dimension}}
-					<div class="card my-4 border border-secondary ">
+					<div class="card my-4 border border-secondary">
 						{{#with currentPage}}
 							{{#each taskContent in this}}
 								<div class="card-body">
-									{{> TaskRendererFactory content=taskContent}}
+									<div class="w-100 h-100 lea-task-current-content">
+										{{> TaskRendererFactory content=taskContent}}
+									</div>
 								</div>
 							{{/each}}
 							<div class="card-body d-flex justify-content-between align-items-center">
@@ -54,7 +56,7 @@
 					{{#unless hasNext}}
 						<div class="card-body d-flex justify-content-center">
 							{{> actionButton type=currentType tts="common.finish" btnClass="lea-pagenav-finish-button"
-									icon="thumbs-up" label=(i18n "common.finish") }}
+									class="lea-task-finish-group" icon="thumbs-up" label=(i18n "common.finish") }}
 						</div>
 					{{/unless}}
 				{{/with}}
