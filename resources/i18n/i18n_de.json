@@ -64,6 +64,9 @@
     "welcome": "Willkommen bei lea."
   },
   "pages": {
+    "task": {
+      "title": "Aufgabe bearbeiten"
+    },
     "welcome": {
       "title": "Willkommen bei lea.",
       "introVideo": "Video mit Begrüßung",

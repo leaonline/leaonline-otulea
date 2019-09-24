@@ -12,7 +12,7 @@ export const Routes = {}
 
 Routes.notFound = {
   path: () => `${settings.notFound}`,
-  label: 'routes.notFound',
+  label: 'pages.notFound.title',
   triggersEnter: () => [],
   async load () {
     return import('../../ui/pages/notfound/notFound')
@@ -35,7 +35,7 @@ Routes.notFound = {
 
 Routes.fallback = {
   path: () => '*',
-  label: 'routes.redirecting',
+  label: 'pages.redirecting.title',
   triggersEnter: () => [
     createNotFoundTrigger(Routes.notFound)
   ],
@@ -53,7 +53,7 @@ Routes.fallback = {
  */
 Routes.welcome = {
   path: () => `${settings.welcome}`,
-  label: 'routes.welcome',
+  label: 'pages.welcome.title',
   triggersEnter: () => [],
   async load () {
     return import('../../ui/pages/welcome/welcome')
@@ -73,7 +73,7 @@ Routes.welcome = {
  */
 Routes.overview = {
   path: () => `${settings.overview}`,
-  label: 'routes.overview',
+  label: 'pages.overview.title',
   triggersEnter: () => [
     createLoginTrigger(Routes.welcome)
   ],
@@ -101,7 +101,7 @@ Routes.task = {
   path: (taskId = ':taskId') => {
     return `${settings.task}/${taskId}`
   },
-  label: 'routes.task',
+  label: 'pages.task.title',
   triggersEnter: () => [
     createLoginTrigger(Routes.welcome)
   ],
@@ -131,7 +131,7 @@ Routes.complete = {
   path: (sessionId = ':sessionId') => {
     return `${settings.complete}/${sessionId}`
   },
-  label: 'routes.complete',
+  label: 'pages.complete.title',
   triggersEnter: () => [
     createLoginTrigger(Routes.welcome)
   ],
@@ -158,7 +158,7 @@ Routes.logout = {
   path: () => {
     return `${settings.logout}`
   },
-  label: 'routes.logout',
+  label: 'pages.logout.title',
   triggersEnter: () => [],
   async load () {
     return import('../../ui/pages/logout/logout')
@@ -183,7 +183,7 @@ Routes.logout = {
  */
 Routes.root = {
   path: () => '/',
-  label: 'routes.redirecting',
+  label: 'pages.redirecting.title',
   triggersEnter: () => [
     createLoginTrigger(Routes.welcome),
     createLoggedinTrigger(Routes.overview)
