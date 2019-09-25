@@ -9,7 +9,7 @@
 					<div class="row">
 						{{#each dimension in dimensions}}
 							<div class="col col-xs-12 col-md-6 col-lg-3 my-1">
-								{{> actionButton class="w-100 overview-button" block=true icon=dimension.icon type=dimension.type
+								{{> actionButton class="d-block overview-button" block=true icon=dimension.icon type=dimension.type
 										iconClass="d-block ml-auto mr-auto my-2 fa-2x"
 										outline=true data-dimension=dimension.name active=(isSelectedDimension dimension.name)
 										tts=dimension.label label=(i18n dimension.label) btnClass="lea-dimension-button font-weight-bold" }}
