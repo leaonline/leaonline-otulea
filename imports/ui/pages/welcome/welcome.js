@@ -6,13 +6,13 @@ import { Users } from '../../../api/accounts/User'
 import { Router } from '../../../api/routing/Router'
 import { TTSEngine } from '../../../api/tts/TTSEngine'
 import { loggedIn } from '../../../utils/accountUtils'
+import { fadeOut } from '../../../utils/animationUtils'
 import '../../components/soundbutton/soundbutton'
 import '../../components/actionButton/actionButton'
 import '../../components/textgroup/textgroup'
 import '../../components/text/text'
 import './welcome.scss'
 import './welcome.html'
-import { fadeOut } from '../../../utils/animationUtils'
 
 const MAX_INPUTS = 5
 let originalVideoHeight
@@ -63,6 +63,13 @@ Template.welcome.helpers({
     }
     const instance = Template.instance()
     return instance.state.get('login') || instance.state.get('newCode')
+  },
+  loggedIn () {
+    if (!loggedIn()) return false
+    return !Template.getState('logginIn')
+  },
+  loggingIn () {
+    return Template.getState('logginIn')
   }
 })
 
@@ -129,6 +136,8 @@ Template.welcome.events({
   'click .lea-welcome-login' (event, templateInstance) {
     event.preventDefault()
 
+    templateInstance.state.set('logginIn', true)
+
     let loginCode = ''
     templateInstance.$('.login-field').each(function (index, input) {
       loginCode += templateInstance.$(input).val()
@@ -178,6 +187,7 @@ function showLoginButton (templateInstance) {
 function loginFail (templateInstance) {
   resetInputs(templateInstance)
   focusInput(templateInstance)
+  templateInstance.state.set('logginIn', false)
   templateInstance.state.set('loginFail', true)
 }
 
