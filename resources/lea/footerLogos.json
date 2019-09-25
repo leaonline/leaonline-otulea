@@ -1,14 +1,17 @@
 [
   {
     "name": "logo-text.png",
-    "title": "Diese Anwendung ist Teil von lea.online"
+    "title": "Diese Anwendung ist Teil von lea.online",
+    "href": ""
   },
   {
     "name": "logo-ph-weingarten.png",
-    "title": "Entwickelt von der PH-Weingarten"
+    "title": "Entwickelt von der PH-Weingarten",
+    "href": ""
   },
   {
     "name": "logo-uni-bremen.png",
-    "title": "Entwickelt von der Universität Bremen"
+    "title": "Entwickelt von der Universität Bremen",
+    "href": ""
   }
 ]

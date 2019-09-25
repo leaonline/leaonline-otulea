@@ -36,7 +36,7 @@
             <nav class="navbar navbar-expand-lg bg-transparent bg-light">
                 <div class="container">
 					{{#each logo in logos}}
-					<a class="navbar-brand">
+					<a class="navbar-brand" href="{{logo.href}}">
 						<img src="/logos/{{logo.name}}" title="{{logo.title}}" class="mr-4" height="30">
 					</a>
 					{{/each}}
