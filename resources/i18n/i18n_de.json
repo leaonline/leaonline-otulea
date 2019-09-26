@@ -52,6 +52,7 @@
     "back": "Zurück",
     "forward": "Weiter",
     "continue": "Fortsetzen",
+    "end": "Beenden",
     "logout": "Abmelden",
     "restart": "Neu starten",
     "finish": "Weiter zur nächsten Aufgabe",
@@ -94,7 +95,8 @@
       "thankYou": "Schön, dass Sie teilgenommen haben!",
       "printResults": "Ergebnis ausdrucken",
       "printResultsTeacher": "Für Kursleitende ausdrucken",
-      "youCanPrint": "Sie können Ihr Ergebnis hier ausdrucken."
+      "youCanPrint": "Sie können Ihr Ergebnis hier ausdrucken.",
+      "continueOrEnd": "Was möchten Sie als nächstes tun?"
     }
   }
 }
