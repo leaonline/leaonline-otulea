@@ -16,6 +16,17 @@ $theme-colors: (
         primary: #85C4F0,
         secondary: #183B5D
 );
+
+
+.lea-outline-secondary {
+  background: white !important;
+}
+
+.lea-outline-secondary:hover {
+  background: #183B5D !important;
+  color: white !important;
+}
+
 /* -------end customization-------- */
 
 /* finally, import Bootstrap to set the changes! */
