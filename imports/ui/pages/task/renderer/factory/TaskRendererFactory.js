@@ -1,3 +1,5 @@
+import { Template } from 'meteor/templating'
+import { ReactiveDict } from 'meteor/reactive-dict'
 import { Renderers } from '../Renderers'
 import './TaskRendererFactory.html'
 
@@ -11,7 +13,7 @@ Template.TaskRendererFactory.onCreated(function () {
 
   instance.autorun(() => {
     const data = Template.currentData()
-    const {content} = data
+    const { content } = data
 
     // skip current autorun if we have no content
     // or the template has already been loaded
@@ -20,9 +22,9 @@ Template.TaskRendererFactory.onCreated(function () {
       return
     }
 
-    const rendererContext = Renderers[content.subtype]
+    const rendererContext = Renderers[ content.subtype ]
     if (!rendererContext) {
-      // something weirdly failed, what to do here?
+      // something weirdly failed, what to do here? FIXME
       return
     }
 
@@ -41,7 +43,7 @@ Template.TaskRendererFactory.helpers({
     if (!content) {
       return
     }
-
+    content.type = data.type
     const template = loaded.get(content.subtype)
     return template && { template, data: content }
   }
