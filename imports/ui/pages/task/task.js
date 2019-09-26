@@ -13,6 +13,7 @@ import '../../components/actionButton/actionButton'
 import '../../layout/navbar/navbar'
 import './renderer/factory/TaskRendererFactory'
 import './task.html'
+import { isTaskRoute } from '../../../utils/routeUtils'
 
 Template.task.onCreated(function () {
   const instance = this
@@ -200,8 +201,16 @@ Template.task.events({
         const route = taskId
           ? templateInstance.data.next({ taskId })
           : templateInstance.data.finish({ sessionId })
-        console.log(route)
-        fadeOut('.lea-task-container', templateInstance, () => {
+
+        // we check if the route is to another task
+        // se we would fade the navbar only when the
+        // result page (or another pahe) will be shown
+        const fadeTarget = isTaskRoute(route)
+          ? '.lea-task-content-container'
+          : '.lea-task-container'
+
+        fadeOut(fadeTarget, templateInstance, () => {
+          templateInstance.state.set('taskDoc', null)
           templateInstance.state.set('fadedOut', true)
           Router.go(route)
         })
