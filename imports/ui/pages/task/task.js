@@ -159,10 +159,17 @@ Template.task.events({
       throw new Error(`Undefined page for current index ${newPage.currentPageCount}`)
     }
 
+    const $current = templateInstance.$('.lea-task-current-content-container')
+    const currentHeight = $current.height()
+    const oldContainerCss = $current.css('height') || ''
+    $current.css('height', `${currentHeight}px`)
+
     fadeOut('.lea-task-current-content', templateInstance, () => {
       templateInstance.state.set(newPage)
       setTimeout(() => {
-        fadeIn('.lea-task-current-content', templateInstance, () => {})
+        fadeIn('.lea-task-current-content', templateInstance, () => {
+          $current.css('height', oldContainerCss)
+        })
       }, 100)
     })
   },
