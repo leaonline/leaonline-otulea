@@ -119,8 +119,17 @@ Template.overview.events({
   },
   'click .lea-back-button' (event, templateInstance) {
     event.preventDefault()
-    fadeOut('.overview-level-container', templateInstance, () => {
-      Router.queryParam({ d: null, l: null })
+    const dimension = templateInstance.state.get('dimension')
+    const level = templateInstance.state.get('level')
+    const target = dataTarget(event, templateInstance)
+
+    const queryParams = { l: null }
+    if (dimension && !level) {
+      queryParams.d = null
+    }
+
+    fadeOut(target, templateInstance, () => {
+      Router.queryParam(queryParams)
     })
   },
   'click .lea-level-button' (event, templateInstance) {

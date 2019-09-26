@@ -25,7 +25,8 @@
 				<div class="card">
 					<div class="card-body">
 						{{#textGroup tts="pages.overview.chooseLevel"}}
-							{{> actionButton outline=true tts="common.back" icon="arrow-up" btnClass="lea-back-button" data-type="dimension" }}
+							{{> actionButton outline=true tts="common.back" icon="arrow-up" data-target=".overview-level-container"
+									btnClass="lea-back-button" data-type="dimension" }}
 						{{/textGroup}}
 					</div>
 					<div class="card-body mt-3">
@@ -46,9 +47,10 @@
 				<div class="w-100 overview-session-container my-3">
 					<div class="card">
 						<div class="card-body mt-3 overview-level-description">
-							{{#let label=dimensionLevel}}
-								{{> textGroup tts=label}}
-							{{/let}}
+							{{#textGroup tts=dimensionLevel}}
+								{{> actionButton outline=true tts="common.back" data-target=".overview-session-container"
+										icon="arrow-up" btnClass="lea-back-button" data-type="dimension" }}
+							{{/textGroup}}
 						</div>
 						<div class="card-body mt-3 overview-level-decision">
 							{{#if sessionLoadComplete}}
