@@ -37,7 +37,7 @@
                 <div class="container">
 					{{#each logo in logos}}
 					<a class="navbar-brand" href="{{logo.href}}">
-						<img src="/logos/{{logo.name}}" title="{{logo.title}}" class="mr-4" height="30">
+						{{> image src=logo.src title=logo.title alt=logo.alt class="mr-4" height="30"}}
 					</a>
 					{{/each}}
                     <div class="collapse navbar-collapse" id="navbarNavDropdown">

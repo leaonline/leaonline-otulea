@@ -7,10 +7,12 @@ import { Router } from '../../../api/routing/Router'
 import { TTSEngine } from '../../../api/tts/TTSEngine'
 import { loggedIn } from '../../../utils/accountUtils'
 import { fadeOut } from '../../../utils/animationUtils'
+
 import '../../components/soundbutton/soundbutton'
 import '../../components/actionButton/actionButton'
 import '../../components/textgroup/textgroup'
 import '../../components/text/text'
+
 import './welcome.scss'
 import './welcome.html'
 
