@@ -93,7 +93,8 @@
     "complete": {
       "thankYou": "Schön, dass Sie teilgenommen haben!",
       "printResults": "Ergebnis ausdrucken",
-      "printResultsTeacher": "Für Kursleitende ausdrucken"
+      "printResultsTeacher": "Für Kursleitende ausdrucken",
+      "youCanPrint": "Sie können Ihr Ergebnis hier ausdrucken."
     }
   }
 }

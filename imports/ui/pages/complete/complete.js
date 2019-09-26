@@ -5,6 +5,7 @@ import '../../components/textgroup/textgroup'
 import '../../components/actionButton/actionButton'
 import '../../layout/navbar/navbar'
 import './complete.html'
+import { Dimensions } from '../../../api/session/Dimensions'
 
 const states = {
   showResults: 'showResults',
@@ -27,7 +28,10 @@ Template.complete.onCreated(function () {
     if (err) {
       return console.error(err) // TODO handle
     }
+    const dimension = Dimensions[ sessionDoc.dimension ]
+
     instance.state.set('results', results)
+    instance.state.set('currentType', dimension && dimension.type)
     instance.state.set('sessionDoc', sessionDoc)
   })
 })
@@ -40,16 +44,25 @@ Template.complete.helpers({
     return Template.getState('results')
   },
   showResults () {
-    return Template.getState('view') === states.showResults
+    const instance = Template.instance()
+    return instance.state.get('sessionDoc') &&
+      instance.state.get('view') === states.showResults
   },
   showDecision () {
-    return Template.getState('view') === states.showDecision
+    const instance = Template.instance()
+    return instance.state.get('sessionDoc') &&
+      instance.state.get('view') === states.showDecision
   },
   showPrint () {
-    return Template.getState('view') === states.showPrint
+    const instance = Template.instance()
+    return instance.state.get('sessionDoc') &&
+      instance.state.get('view') === states.showPrint
   },
   sessionDoc () {
     return Template.getState('sessionDoc')
+  },
+  currentType () {
+    return Template.getState('currentType')
   }
 })
 
