@@ -1,5 +1,5 @@
 import 'bootstrap'
-import 'bootstrap/scss/bootstrap.scss'
 import popper from 'popper.js'
+import './custom.scss'
 
 global.Popper = global.Popper || popper
