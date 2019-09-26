@@ -39,7 +39,8 @@ Template.navbar.onCreated(function () {
     })
     instance.labels.set({
       dimension: dimension.label,
-      level: level.label
+      level: level.label,
+      type: dimension.type
     })
     instance.state.set({ showProgress })
   })
