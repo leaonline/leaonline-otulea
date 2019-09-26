@@ -1,6 +1,6 @@
 <template name="overview">
-	<div class="container lea-overview-container">
-		<div class="w-100 overview-dimensions-container my-3 {{#if dimensionSelected}}d-unavailable{{/if}}">
+	<div class="lea-overview-container">
+		<div class="container w-100 overview-dimensions-container my-3 {{#if dimensionSelected}}d-unavailable{{/if}}">
 			<div class="card">
 				<div class="card-body">
 					{{> textGroup tts="pages.overview.chooseDimension"}}
@@ -21,7 +21,7 @@
 		</div>
 
 		{{#with dimensionSelected}}
-			<div class="w-100 overview-level-container my-3">
+			{{#container class="overview-level-container my-3"}}
 				<div class="card">
 					<div class="card-body">
 						{{#textGroup tts="pages.overview.chooseLevel"}}
@@ -41,10 +41,10 @@
 						</div>
 					</div>
 				</div>
-			</div>
+			{{/container}}
 
 			{{#if levelSelected}}
-				<div class="w-100 overview-session-container my-3">
+				{{#container class="overview-session-container my-3"}}
 					<div class="card">
 						<div class="card-body mt-3 overview-level-description">
 							{{#textGroup tts=dimensionLevel}}
@@ -80,7 +80,7 @@
 							{{/if}}
 						</div>
 					</div>
-				</div>
+				{{/container}}
 			{{/if}}
 		{{/with}}
 	</div>

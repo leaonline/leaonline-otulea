@@ -7,6 +7,7 @@ import { TTSEngine } from '../../../api/tts/TTSEngine'
 import { dataTarget } from '../../../utils/eventUtils'
 import { fadeOut } from '../../../utils/animationUtils'
 
+import '../../components/container/container'
 import '../../components/actionButton/actionButton'
 import '../../components/textgroup/textgroup'
 import './overview.scss'
@@ -54,7 +55,7 @@ Template.overview.onCreated(function () {
       setTimeout(() => {
         const $target = instance.$('.overview-level-decision')
         const scrollTarget = $target && $target.get(0)
-        scrollTarget && scrollTarget.scrollIntoView({ block: 'end', behavior: 'smooth' })
+        scrollTarget && scrollTarget.scrollIntoView({ block: 'start', behavior: 'smooth' })
       }, 50)
     } else {
       instance.state.set('level', null)

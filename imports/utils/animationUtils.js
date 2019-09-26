@@ -23,9 +23,11 @@ export const fadeIn = (target, templateInstance, cb) => {
     $target = global.$(target)
   } finally {
     if ($target && $target.fadeIn) {
-      $target.fadeIn('slow', cb)
+      $target.fadeIn('slow', () => {
+        cb(null, $target)
+      })
     } else {
-      cb()
+      cb(new Error(`Undefined target [${target}]`))
     }
   }
 }
