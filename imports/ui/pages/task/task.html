@@ -10,21 +10,41 @@
 			{{/with}}
 
 			{{#with taskDoc}}
-				<div class="card my-2">
-					{{#each storyElement in this.story}}
-						<div class="card-body">
-							{{> TaskRendererFactory content=storyElement type=currentType}}
-						</div>
-					{{/each}}
-				</div>
 
-				<div class="card my-2">
-					{{#each stimuli in this.stimuli}}
-						<div class="card-body">
-							{{> TaskRendererFactory content=stimuli type=currentType}}
+				{{#with this.story}}
+					<div class="card my-2">
+						{{#each storyElement in this}}
+							<div class="card-body">
+								{{> TaskRendererFactory content=storyElement type=currentType}}
+							</div>
+						{{/each}}
+					</div>
+				{{/with}}
+
+				{{#with this.stimuli}}
+					<div class="card my-2">
+						{{#each stimuli in this}}
+							<div class="card-body">
+								{{> TaskRendererFactory content=stimuli type=currentType}}
+							</div>
+						{{/each}}
+					</div>
+				{{/with}}
+
+				{{#with this.instructions}}
+					<div class="card my-2">
+						<div class="card-body d-flex align-items-center">
+							<span class="w-100">
+								{{#each instruction in this}}
+									{{> TaskRendererFactory content=instruction type=currentType}}
+								{{/each}}
+							</span>
+							<span class="text-light">
+								<i class="fa fas fa-fw fa-3x fa-info"></i>
+							</span>
 						</div>
-					{{/each}}
-				</div>
+					</div>
+				{{/with}}
 
 				{{#with dimension}}
 					<div class="card my-4 border border-secondary">
