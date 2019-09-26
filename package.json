@@ -15,6 +15,7 @@
     "bcrypt": "^3.0.6",
     "bootstrap": "^4.3.1",
     "jquery": "^3.4.1",
+    "lozad": "^1.9.0",
     "meteor-node-stubs": "^0.4.1",
     "popper.js": "^1.15.0",
     "simpl-schema": "^1.5.5"
