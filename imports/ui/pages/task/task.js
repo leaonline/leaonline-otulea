@@ -8,7 +8,7 @@ import { Levels } from '../../../api/session/Levels'
 import { fadeOut, fadeIn } from '../../../utils/animationUtils'
 import { dataTarget } from '../../../utils/eventUtils'
 
-
+import '../../components/container/container'
 import '../../components/actionButton/actionButton'
 import '../../layout/navbar/navbar'
 import './renderer/factory/TaskRendererFactory'
