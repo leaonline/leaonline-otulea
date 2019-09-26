@@ -2,9 +2,10 @@
     <div {{groupAttributes}}>
         {{> soundbutton tts=tts outline=true sm=sm lg=lg type=type active=active class=sndBtnClass }}
         <button {{attributes}}>
-            {{#if icon}}<i class="fas fa fa-fw fa-{{icon}} {{iconClass}}"></i>{{/if}}
+			{{#if leftIcon}}<i class="fas fa fa-fw fa-{{icon}} {{iconClass}}"></i>{{/if}}
             {{#if label}}<span class="lea-text">{{label}}</span>{{/if}}
 			{{> Template.contentBlock ..}}
+			{{#if rightIcon}}<i class="fas fa fa-fw fa-{{icon}} ml-1 {{iconClass}}"></i>{{/if}}
         </button>
     </div>
 </template>

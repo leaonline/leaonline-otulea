@@ -5,6 +5,16 @@ import '../soundbutton/soundbutton'
 import './actionButton.html'
 
 Template.actionButton.helpers({
+  leftIcon () {
+    const instance = Template.instance()
+    const { data } = instance
+    return data.icon && data.iconPos !== 'right'
+  },
+  rightIcon () {
+    const instance = Template.instance()
+    const { data } = instance
+    return data.icon && data.iconPos === 'right'
+  },
   attributes () {
     const instance = Template.instance()
     const { data } = instance
