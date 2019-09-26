@@ -24,7 +24,7 @@
 						</div>
 						<div class="card-body">
 							{{#each competency in this}}
-								{{> textGroup tts=competency.label label=(i18n competency.label) type=currentType}}
+								{{> textGroup tts=competency.label center=true label=(i18n competency.label) type=currentType}}
 							{{/each}}
 						</div>
 					</div>
@@ -38,7 +38,7 @@
 						</div>
 						<div class="card-body">
 							{{#each competency in this}}
-								{{> textGroup tts=competency.label label=(i18n competency.label) type=currentType}}
+								{{> textGroup tts=competency.label center=true label=(i18n competency.label) type=currentType}}
 							{{/each}}
 						</div>
 					</div>
@@ -55,8 +55,10 @@
 
 
 			<div class="card-body">
+				{{#with currentType}}
 				{{> actionButton tts="common.forward" label=(i18n "common.forward") block=true
-						btnClass="lea-showresults-forward-button" class="ml-auto" type=currentType}}
+						outline=true btnClass="lea-showresults-forward-button" class="ml-auto" type=this}}
+				{{/with}}
 			</div>
 		{{/if}}
 
