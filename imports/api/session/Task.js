@@ -1,6 +1,7 @@
-import { getCollection } from '../../utils/collectionuUtils'
+import { Meteor } from 'meteor/meteor'
 import { Role } from '../accounts/Role'
 import { Group } from '../accounts/Group'
+import { getCollection } from '../../utils/collectionuUtils'
 import { onClient, onServer } from '../../utils/archUtils'
 
 export const Task = {
@@ -22,6 +23,11 @@ Task.schema = {
   },
   stimuli: Array,
   'stimuli.$': {
+    type: Object,
+    blackbox: true
+  },
+  instructions: Array,
+  'instructions.$': {
     type: Object,
     blackbox: true
   },

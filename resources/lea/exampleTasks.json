@@ -7,7 +7,7 @@
       {
         "type": "text",
         "subtype": "text",
-        "value": "Das ist ein Beispieltext",
+        "value": "Das ist eine Geschichte. Diese Story wird auf einer eigenen Seite erzählt.",
         "class": "w-100"
       },
       {
@@ -21,7 +21,15 @@
       {
         "type": "text",
         "subtype": "text",
-        "value": "Das ist auch ein Beispieltext",
+        "value": "Das ist auch ein Beispieltext, z.B. ein Stimuli",
+        "class": "w-100"
+      }
+    ],
+    "instructions": [
+      {
+        "type": "text",
+        "subtype": "text",
+        "value": "Das ist eine Arbeitsanweisung. Machen Sie dies das! Los jetzt!",
         "class": "w-100"
       }
     ],
@@ -82,12 +90,20 @@
         "class": "w-100"
       }
     ],
+    "instructions": [
+      {
+        "type": "text",
+        "subtype": "text",
+        "value": "Das ist eine Instruktion",
+        "class": "w-100"
+      }
+    ],
     "pages": [
       [
         {
           "type": "text",
           "subtype": "text",
-          "value": "Das ist auch ein Hilfetext",
+          "value": "Das ist auch evtl. ein Hilfetext",
           "class": "w-100"
         },
         {
@@ -101,7 +117,7 @@
         {
           "type": "text",
           "subtype": "text",
-          "value": "Das ist auch ein Hilfetext",
+          "value": "Das ist irgendein",
           "class": "w-100"
         },
         {
