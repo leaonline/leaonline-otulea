@@ -1,7 +1,7 @@
 <template name="overview">
 	<div class="lea-overview-container">
-		<div class="container w-100 overview-dimensions-container my-3 {{#if dimensionSelected}}d-unavailable{{/if}}">
-			<div class="card">
+		{{#container class="overview-dimensions-container my-3"}}
+			<div class="card {{#if dimensionSelected}}d-unavailable{{/if}}">
 				<div class="card-body">
 					{{> textGroup tts="pages.overview.chooseDimension"}}
 				</div>
@@ -18,7 +18,7 @@
 					</div>
 				</div>
 			</div>
-		</div>
+		{{/container}}
 
 		{{#with dimensionSelected}}
 			{{#container class="overview-level-container my-3"}}
@@ -47,38 +47,38 @@
 				{{#container class="overview-session-container my-3"}}
 					<div class="card">
 						<div class="card-body mt-3 overview-level-description">
-							{{#textGroup tts=dimensionLevel}}
+							{{#textGroup tts=dimensionLevel class="w-100"}}
 								{{> actionButton outline=true tts="common.back" data-target=".overview-session-container"
 										icon="arrow-up" btnClass="lea-back-button" data-type="dimension" }}
 							{{/textGroup}}
 						</div>
-						<div class="card-body mt-3 overview-level-decision">
-							{{#if sessionLoadComplete}}
-								{{#if sessionAlreadyRunning}}
-									{{> textGroup tts="pages.overview.sessionFound"}}
-									<div class="row">
-										<div class="col">
-											{{> actionButton class="lea-overview-continue-container w-100 mt-3"
-													lg=true block=true type=this.type  outline=true  tts="common.continue"
-													label=(i18n "common.continue") btnClass="lea-overview-confirm-button" }}
-										</div>
-										<div class="col">
-											{{> actionButton class="lea-overview-confirm-container w-100 mt-3"
-													data-restart="true"
-													lg=true block=true type=this.type  outline=true tts="common.restart"
-													label=(i18n "common.restart") btnClass="lea-overview-confirm-button" }}
-										</div>
+					</div>
+
+					<div class="card-body mt-3 overview-level-decision">
+						{{#if sessionLoadComplete}}
+							{{#if sessionAlreadyRunning}}
+								{{> textGroup tts="pages.overview.sessionFound"}}
+								<div class="row">
+									<div class="col">
+										{{> actionButton class="lea-overview-continue-container w-100 mt-3"
+												lg=true block=true type=this.type  outline=true  tts="common.continue"
+												label=(i18n "common.continue") btnClass="lea-overview-confirm-button" }}
 									</div>
-								{{else}}
-									{{> actionButton class="lea-overview-confirm-container w-100 mt-3"
-											data-restart="true"
-											lg=true block=true type=this.type  tts="pages.overview.confirm"
-											label=(i18n "pages.overview.confirm") btnClass="lea-overview-confirm-button" }}
-								{{/if}}
+									<div class="col">
+										{{> actionButton class="lea-overview-confirm-container w-100 mt-3"
+												data-restart="true"
+												lg=true block=true type=this.type  outline=true tts="common.restart"
+												label=(i18n "common.restart") btnClass="lea-overview-confirm-button" }}
+									</div>
+								</div>
 							{{else}}
-								<i class="fa fas fa-fw fa-spinner fa-pulse"></i>
+								{{> actionButton class="lea-overview-confirm-container w-100 mt-3" data-restart="true"
+										lg=true block=true type=this.type  tts="pages.overview.confirm" outline=true
+										label=(i18n "pages.overview.confirm") btnClass="lea-overview-confirm-button" }}
 							{{/if}}
-						</div>
+						{{else}}
+							<i class="fa fas fa-fw fa-spinner fa-pulse"></i>
+						{{/if}}
 					</div>
 				{{/container}}
 			{{/if}}
