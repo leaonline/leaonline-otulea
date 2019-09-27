@@ -57,7 +57,8 @@
     "restart": "Neu starten",
     "finish": "Weiter zur nächsten Aufgabe",
     "toOverview": "Zur Übersicht",
-    "toWelcome": "Zur Startseite"
+    "toWelcome": "Zur Startseite",
+    "help": "Hilfe"
   },
   "routes": {
     "redirecting": "Weiterleitung",
