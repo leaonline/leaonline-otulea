@@ -1,11 +1,13 @@
 import { Template } from 'meteor/templating'
 import { Session } from '../../../api/session/Session'
 import { Router } from '../../../api/routing/Router'
+import { Dimensions } from '../../../api/session/Dimensions'
+
+import '../../components/container/container'
 import '../../components/textgroup/textgroup'
 import '../../components/actionButton/actionButton'
 import '../../layout/navbar/navbar'
 import './complete.html'
-import { Dimensions } from '../../../api/session/Dimensions'
 
 const states = {
   showResults: 'showResults',
@@ -13,15 +15,10 @@ const states = {
   showDecision: 'showDecision'
 }
 
+const _states = Object.values(states)
+
 Template.complete.onCreated(function () {
   const instance = this
-  const currentView = Router.queryParam('v')
-
-  if (currentView && states[ currentView ]) {
-    instance.state.set('view', currentView)
-  } else {
-    instance.state.set('view', states.showResults)
-  }
 
   const { sessionId } = instance.data.params
   Session.methods.results.call({ sessionId }, (err, { sessionDoc, results }) => {
@@ -33,6 +30,18 @@ Template.complete.onCreated(function () {
     instance.state.set('results', results)
     instance.state.set('currentType', dimension && dimension.type)
     instance.state.set('sessionDoc', sessionDoc)
+  })
+
+  instance.autorun(() => {
+    const data = Template.currentData()
+    const v = data.queryParams.v || 0
+    const currentView = _states[parseInt(v,10)]
+
+    if (currentView && states[ currentView ]) {
+      instance.state.set('view', currentView)
+    } else {
+      instance.state.set('view', states.showResults)
+    }
   })
 })
 
@@ -69,19 +78,19 @@ Template.complete.helpers({
 Template.complete.events({
   'click .lea-showresults-forward-button' (event, templateInstance) {
     event.preventDefault()
-    templateInstance.state.set('view', states.showPrint)
+    Router.queryParam({ v: _states.indexOf(states.showPrint)})
   },
   'click .lea-showprint-back-button' (event, templateInstance) {
     event.preventDefault()
-    templateInstance.state.set('view', states.showResults)
+    Router.queryParam({ v: _states.indexOf(states.showResults)})
   },
   'click .lea-showprint-forward-button' (event, templateInstance) {
     event.preventDefault()
-    templateInstance.state.set('view', states.showDecision)
+    Router.queryParam({ v: _states.indexOf(states.showDecision)})
   },
   'click .lea-showdecision-back-button' (event, templateInstance) {
     event.preventDefault()
-    templateInstance.state.set('view', states.showPrint)
+    Router.queryParam({ v: _states.indexOf(states.showPrint)})
   },
   'click .lea-end-button' (event, templateInstance) {
     event.preventDefault()
