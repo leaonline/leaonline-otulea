@@ -70,16 +70,22 @@
     "level": "easy",
     "story": [
       {
-        "type": "text",
-        "subtype": "text",
-        "value": "Das ist ein anderer Beispieltext",
-        "class": "w-100"
-      },
-      {
-        "type": "media",
-        "subtype": "image",
-        "value": "https://upload.wikimedia.org/wikipedia/commons/6/60/Neighbours_Siamese.jpg",
-        "class": "w-75"
+        "type": "layout",
+        "subtype": "grid",
+        "value": [
+          {
+            "type": "text",
+            "subtype": "text",
+            "value": "Das ist ein anderer Beispieltext",
+            "class": "w-100"
+          },
+          {
+            "type": "media",
+            "subtype": "image",
+            "value": "https://upload.wikimedia.org/wikipedia/commons/6/60/Neighbours_Siamese.jpg",
+            "class": "w-75"
+          }
+        ]
       }
     ],
     "stimuli": [

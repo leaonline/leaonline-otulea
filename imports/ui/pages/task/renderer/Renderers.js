@@ -16,5 +16,11 @@ export const Renderers = {
     async load () {
       return import('../renderer/h5p/h5pRenderer')
     }
+  },
+  grid: {
+    template: 'gridRenderer',
+    async load () {
+      return import('../renderer/grid/gridRenderer')
+    }
   }
 }
