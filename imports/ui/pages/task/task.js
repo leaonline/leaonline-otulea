@@ -11,7 +11,7 @@ import { dataTarget } from '../../../utils/eventUtils'
 import '../../components/container/container'
 import '../../components/actionButton/actionButton'
 import '../../layout/navbar/navbar'
-import './renderer/factory/TaskRendererFactory'
+import '../../renderer/factory/TaskRendererFactory'
 import './task.html'
 import { isTaskRoute } from '../../../utils/routeUtils'
 
