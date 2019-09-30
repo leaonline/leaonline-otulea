@@ -2,21 +2,28 @@
 /* import the necessary Bootstrap files */
 @import "{}/node_modules/bootstrap/scss/functions";
 @import "{}/node_modules/bootstrap/scss/variables";
+@import "./leacolors";
 
 /* -------begin customization-------- */
 
+
 /* simply assign the value */
-$body-bg: #F3F3F3;
+$body-bg: $lea-gray-lighter;
 
 /* or, use an existing variable */
 $theme-colors: (
-        warning: #FFC800,
-        danger: #D95A7C,
-        success: #00DDB6,
-        primary: #85C4F0,
-        secondary: #183B5D,
-        light: #BFBFBF
+        warning: $lea-warning,
+        danger: $lea-danger,
+        success: $lea-success,
+        primary: $lea-primary,
+        secondary: $lea-secondary,
+        light: $lea-light,
+        gray: $lea-gray
 );
+
+.border-gray {
+  border: solid $lea-gray !important;
+}
 
 
 .lea-outline-secondary {
@@ -24,7 +31,7 @@ $theme-colors: (
 }
 
 .lea-outline-secondary:hover {
-  background: #183B5D !important;
+  background: $lea-secondary !important;
   color: white !important;
 }
 
