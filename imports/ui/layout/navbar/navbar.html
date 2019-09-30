@@ -15,15 +15,8 @@
 			{{/with}}
 		{{/if}}
 		<span class="ml-auto no-wrap">
-			<button class="btn btn-outline-secondary btn-sm navbar-help-button mr-2"
-					title="{{i18n "common.help"}}">
-				<i class="fa fas fa-fw fa-question"></i>
-			</button>
-
-			<button class="btn btn-outline-secondary btn-sm navbar-overview-button"
-					title="{{i18n "common.toOverview"}}">
-				<i class="fa fas fa-fw fa-times"></i>
-			</button>
+			{{> actionButton class="mr-1" outline=true btnClass="navbar-help-button btn-sm" sound=false title=(i18n "common.help") icon="question"}}
+			{{> actionButton outline=true btnClass="navbar-overview-button btn-sm" sound=false title=(i18n "common.toOverview") icon="times"}}
 		</span>
 	</div>
 </template>
