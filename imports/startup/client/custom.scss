@@ -14,7 +14,8 @@ $theme-colors: (
         danger: #D95A7C,
         success: #00DDB6,
         primary: #85C4F0,
-        secondary: #183B5D
+        secondary: #183B5D,
+        light: #BFBFBF
 );
 
 
@@ -25,6 +26,10 @@ $theme-colors: (
 .lea-outline-secondary:hover {
   background: #183B5D !important;
   color: white !important;
+}
+
+.card {
+  border-radius: 0px !important;
 }
 
 /* -------end customization-------- */
