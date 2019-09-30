@@ -5,6 +5,10 @@ import '../soundbutton/soundbutton'
 import './actionButton.html'
 
 Template.actionButton.helpers({
+  sound () {
+    const instance = Template.instance()
+    return instance.data.sound !== false
+  },
   leftIcon () {
     const instance = Template.instance()
     const { data } = instance
@@ -48,11 +52,12 @@ Template.actionButton.helpers({
     const { data } = instance
 
     const customClass = data.class || ''
+    const defaultClass = data.sound !== false ? 'd-flex align-items-center' : ''
 
     return {
       id: data.id,
       title: data.title,
-      class: `d-flex align-items-center ${customClass}`
+      class: `${defaultClass} ${customClass}`
     }
   }
 })
