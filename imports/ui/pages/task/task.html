@@ -50,7 +50,10 @@
 				{{/with}}
 
 				{{#with dimension}}
-					<div class="card my-4 lea-task-current-content-container">
+					<div class="card my-4 lea-task-current-content-container border-gray">
+						<div class="card-header bg-transparent border-0 p-0 d-flex justify-content-center">
+							<span class="text-white bg-gray px-3 py-1 trapezoid">{{currentPageCount}} / {{maxPages}}</span>
+						</div>
 						{{#with currentPage}}
 							{{#each taskContent in this}}
 								<div class="card-body">
@@ -65,7 +68,6 @@
 											data-action="back" type=currentType
 											label=(i18n "common.forward") class="ml-auto"}}
 								{{/if}}
-								<span class="text-{{currentType}}">{{currentPageCount}} / {{maxPages}}</span>
 								{{#if hasNext}}
 									<button class="btn  btn-outline-{{currentType}} lea-pagenav-button ml-auto"
 											data-action="next">

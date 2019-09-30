@@ -69,6 +69,6 @@ body, wrapper {
   padding: 0 0 0 0 !important;
 }
 
-.lea-task-current-content-container {
-  border: solid 3px #D6D6D6 !important;
+.trapezoid {
+  transform: perspective(3px) rotateX(-1deg);
 }
