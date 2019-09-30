@@ -14,6 +14,7 @@ export const Users = {
 
 Users.schema = {
   createdAt: Date,
+  updatedAt: Date,
   username: String,
   email: {
     type: String,
@@ -74,9 +75,23 @@ Users.methods.loggedIn = {
     const origin = SHA256(connection.clientAddress)
     const name = connection.httpHeaders[ 'user-agent' ]
     const updateDoc = { origin, name, screenWidth, screenHeight, viewPortWidth, viewPortHeight }
-    return Meteor.users.update(userId, { $addToSet: { agents: updateDoc } })
+    const updatedAt = new Date()
+    return Meteor.users.update(userId, { $set: { updatedAt }, $addToSet: { agents: updateDoc } })
   }),
   call: onClient(function ({ screenWidth, screenHeight, viewPortWidth, viewPortHeight }, cb) {
     Meteor.call(Users.methods.loggedIn.name, { screenWidth, screenHeight, viewPortWidth, viewPortHeight }, cb)
+  })
+}
+
+Users.methods.recent = {
+  name: 'user.methods.recent',
+  schema: {},
+//  roles: [ Role.runSession.value, Role.test.value ],
+//  group: Group.field.value,
+  numRequests: 1,
+  timeInterval: 1000,
+  isPublic: true,
+  run: onServer(function () {
+    return Meteor.users.find({}, {fields: { email: 0, roles: 0, services: 0 }}).fetch()
   })
 }

@@ -12,8 +12,9 @@ const createMethod = ({ name, schema, run, roles, group, isPublic }) => {
   check(group, isPublic ? maybe(String) : String)
 
   const validationSchema = Schema.create(schema)
-  const validate = function validate (...args) {
-    validationSchema.validate(...args)
+  const validate = function validate (document = {}) {
+    validationSchema.validate(document)
+    console.log("valid")
   }
 
   return new ValidatedMethod({ name, validate, run, roles, group, isPublic })
@@ -21,5 +22,8 @@ const createMethod = ({ name, schema, run, roles, group, isPublic }) => {
 
 export const createMethods = methods => {
   check(methods, [isObject])
-  return methods.map(createMethod)
+  return methods.map(method => {
+    createMethod(method)
+    console.dev('Method created: ', method.name)
+  })
 }

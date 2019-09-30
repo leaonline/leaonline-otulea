@@ -6,6 +6,7 @@ import { getCollection } from '../../utils/collectionuUtils'
 import { TaskSet } from './TaskSet'
 import { PermissionDeniedError } from '../errors/PermissionDenied'
 import exampleResults from '../../../resources/lea/exampleResults'
+import { SubsManager } from '../subscriptions/SubsManager'
 
 export const Session = {
   name: 'session',
@@ -181,6 +182,31 @@ Session.methods.results = {
     // TODO replace later with POST request to eval server
     Meteor.call(Session.methods.results.name, { sessionId }, cb)
   })
+}
+
+Session.methods.recent = {
+  name: 'session.methods.recent',
+  schema: {
+    userId: {
+      type: String,
+      optional: true
+    }
+  },
+  numRequests: 1,
+  timeInterval: 1000,
+  roles: [ Role.readSessions.value ],
+  group: Group.team.value,
+  isPublic: true,
+  run: onServer(function ({userId}) {
+    return Session.collection().find({
+      userId: userId,
+      startedAt: { $exists: true }
+    }, {
+      limit: 100,
+      hint: { $natural: -1 }
+    }).fetch()
+  }),
+  call: void 0
 }
 
 Session.publications.current = {

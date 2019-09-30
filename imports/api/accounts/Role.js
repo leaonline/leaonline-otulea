@@ -22,6 +22,11 @@ Role.runSession = {
   compatible: [Group.field.value]
 }
 
+Role.readSessions = {
+  value: 'readSessions',
+  compatible: [Group.team.value]
+}
+
 /**
  * Can create, read, write, update, delete a user for testing purposes
  */
