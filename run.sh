@@ -1,2 +1,2 @@
 #!/bin/sh
-meteor --settings=settings.json
+METEOR_PACKAGE_DIRS=../lib meteor --settings=settings.json

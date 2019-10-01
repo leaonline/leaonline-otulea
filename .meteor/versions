@@ -46,6 +46,7 @@ jkuester:template-states@0.2.2
 jquery@1.11.11
 lai:collection-extensions@0.2.1_1
 launch-screen@1.1.1
+leaonline:errors@1.0.0
 livedata@1.0.18
 localstorage@1.2.0
 logging@1.1.20
