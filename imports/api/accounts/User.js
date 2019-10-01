@@ -86,11 +86,10 @@ Users.methods.loggedIn = {
 Users.methods.recent = {
   name: 'user.methods.recent',
   schema: {},
-//  roles: [ Role.runSession.value, Role.test.value ],
-//  group: Group.field.value,
+  roles: [ Role.runSession.value, Role.test.value ],
+  group: Group.field.value,
   numRequests: 1,
   timeInterval: 1000,
-  isPublic: true,
   run: onServer(function () {
     return Meteor.users.find({}, {
       limit: 100,

@@ -6,13 +6,13 @@ import { PermissionDeniedError } from '../../api/errors/PermissionDenied'
 const PermissionsMixin = function (options) {
   const runFct = options.run
   options.run = function run (...args) {
-    const { userId } = this
     const exception = options.isPublic || (options.permission && options.permission(...args))
     if (exception) {
       return runFct.call(this, ...args)
     }
 
-    // user permission
+    // user level permission
+    const { userId } = this
     if (!userId || !Meteor.users.findOne(userId)) {
       throw new PermissionDeniedError(PermissionDeniedError.NO_USER)
     }
@@ -63,9 +63,9 @@ class ExtendedValidatedMethod extends ValidatedMethod {
   constructor (methodDefinition) {
     // ADD DEFAULT MIXINS
     if (Array.isArray(methodDefinition.mixins)) {
-      methodDefinition.mixins = methodDefinition.mixins.concat(PermissionsMixin, RoleMixin, ErrorLogMixin)
+      methodDefinition.mixins = methodDefinition.mixins.concat(ErrorLogMixin, RoleMixin, PermissionsMixin)
     } else {
-      methodDefinition.mixins = [PermissionsMixin, RoleMixin, ErrorLogMixin]
+      methodDefinition.mixins = [ErrorLogMixin, RoleMixin, PermissionsMixin]
     }
 
     super(methodDefinition)

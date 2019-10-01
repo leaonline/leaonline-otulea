@@ -14,7 +14,6 @@ const createMethod = ({ name, schema, run, roles, group, isPublic }) => {
   const validationSchema = Schema.create(schema)
   const validate = function validate (document = {}) {
     validationSchema.validate(document)
-    console.log("valid")
   }
 
   return new ValidatedMethod({ name, validate, run, roles, group, isPublic })
