@@ -92,6 +92,14 @@ Users.methods.recent = {
   timeInterval: 1000,
   isPublic: true,
   run: onServer(function () {
-    return Meteor.users.find({}, {fields: { email: 0, roles: 0, services: 0 }}).fetch()
+    return Meteor.users.find({}, {
+      limit: 100,
+      fields: {
+        email: 0,
+        roles: 0,
+        services: 0
+      },
+      hint: { $natural: -1 }
+    }).fetch()
   })
 }
