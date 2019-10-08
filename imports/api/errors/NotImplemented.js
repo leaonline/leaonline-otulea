@@ -1,1 +1,1 @@
-export { NotImplementedError } from 'meteor/leaonline:errors/NotImplementedError'
+export { NotImplementedError } from 'meteor/leaonline:errors/NotImplemented'
