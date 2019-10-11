@@ -28,6 +28,7 @@ Template.task.onCreated(function () {
       }
       if (taskDoc) {
         instance.state.set('taskDoc', taskDoc)
+        instance.state.set('taskStory', taskDoc.story)
         instance.state.set('maxPages', taskDoc.pages.length)
         instance.state.set('currentPageCount', currentPageCount)
         instance.state.set('currentPage', taskDoc.pages[ currentPageCount ])
@@ -84,6 +85,9 @@ Template.task.helpers({
   loadComplete () {
     const instance = Template.instance()
     return instance.state.get('sessionDoc') && instance.state.get('taskDoc')
+  },
+  taskStory () {
+    return Template.getState('taskStory')
   },
   taskDoc () {
     return Template.getState('taskDoc')
@@ -172,6 +176,12 @@ Template.task.events({
           $current.css('height', oldContainerCss)
         })
       }, 100)
+    })
+  },
+  'click .lea-task-finishstory-button' (event, templateInstance) {
+    event.preventDefault()
+    fadeOut('.lea-task-story-container', templateInstance, () => {
+      templateInstance.state.set('taskStory', null)
     })
   },
   'click .lea-pagenav-finish-button' (event, templateInstance) {

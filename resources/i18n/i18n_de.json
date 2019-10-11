@@ -67,7 +67,8 @@
   },
   "pages": {
     "task": {
-      "title": "Aufgabe bearbeiten"
+      "title": "Aufgabe bearbeiten",
+      "continueToTask": "Weiter zur Aufgabe"
     },
     "welcome": {
       "title": "Willkommen bei lea.",
