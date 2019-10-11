@@ -70,6 +70,9 @@
       "title": "Aufgabe bearbeiten",
       "continueToTask": "Weiter zur Aufgabe"
     },
+    "logout": {
+      "description": "Sie sind nun abgemeldet und können das Fenster schließen."
+    },
     "welcome": {
       "title": "Willkommen bei lea.",
       "introVideo": "Video mit Begrüßung",
