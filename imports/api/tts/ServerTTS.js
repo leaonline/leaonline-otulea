@@ -1,3 +1,4 @@
+import { HTTP } from 'meteor/http'
 import { i18n } from '../i18n/I18n'
 
 export const ServerTTS = {}
@@ -7,27 +8,6 @@ const _requestCache = new Map()
 
 let audio
 
-function postData (url, text, onError) {
-  const body = 'text=' + encodeURIComponent(text)
-  console.log(url, body)
-  // Default options are marked with *
-  return fetch(url, {
-    method: 'POST', // *GET, POST, PUT, DELETE, etc.
-    mode: 'cors', // no-cors, cors, *same-origin
-    cache: 'default', // *default, no-cache, reload, force-cache, only-if-cached
-    credentials: 'same-origin', // include, *same-origin, omit
-    headers: {
-      'Accept': 'application/json, text/plain, */*',
-      'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-    },
-    redirect: 'follow', // manual, *follow, error
-    referrer: 'client', // no-referrer, *client
-    body: body
-  })
-    .then(response => console.log(response) || response.json())
-    .catch(onError)
-  // parses JSON response into native JavaScript objects
-}
 
 ServerTTS.play = function ({ id, text, onEnd, onError }) {
   const requestText = text || i18n.get(id)
@@ -36,12 +16,25 @@ ServerTTS.play = function ({ id, text, onEnd, onError }) {
     return playAudio(cachedUrl, onEnd)
   }
 
-  postData(TTS_URL, requestText, onError)
-    .then(data => {
-      const { url } = data
+  const options = {
+   params: {text: requestText},
+   headers: {
+     'Accept': 'application/json, text/plain, */*',
+     'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+   }
+  }
+
+  HTTP.post(TTS_URL, options, (err, res) => {
+    console.log(err, res)
+    if (err) {
+      return onError(err)
+    } else {
+      const { url } = res.data
+      console.log(url)
       _requestCache.set(requestText, url)
       playAudio(url, onEnd)
-    })
+    }
+  })
 }
 
 function playAudio (url, onEnd) {
