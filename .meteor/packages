@@ -46,4 +46,8 @@ ostrio:flow-router-extra
 ostrio:i18n
 jkuester:template-states
 
+# pub/sub
 ccorcos:subs-cache
+
+# connection
+http
