@@ -1,4 +1,5 @@
 accounts-base@1.4.4
+accounts-oauth@1.1.16
 accounts-password@1.5.1
 alanning:roles@1.2.16
 aldeed:autoform@6.3.0
@@ -47,7 +48,10 @@ jkuester:template-states@0.2.2
 jquery@1.11.11
 lai:collection-extensions@0.2.1_1
 launch-screen@1.1.1
+leaonline:accounts-lea@0.0.1
+leaonline:ddp-login-handler@1.0.1
 leaonline:errors@1.0.0
+leaonline:oauth-lea@1.0.0
 livedata@1.0.18
 localstorage@1.2.0
 logging@1.1.20
@@ -69,6 +73,8 @@ mongo-dev-server@1.1.0
 mongo-id@1.0.7
 npm-bcrypt@0.9.3
 npm-mongo@3.1.2
+oauth@1.2.8
+oauth2@1.2.1
 observe-sequence@1.0.16
 ordered-dict@1.1.0
 ostrio:cstorage@2.2.2

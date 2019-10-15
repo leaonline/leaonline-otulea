@@ -33,6 +33,9 @@ mdg:validated-method
 accounts-base
 accounts-password
 alanning:roles
+leaonline:accounts-lea
+leaonline:ddp-login-handler
+service-configuration
 
 # UI
 reactive-dict
