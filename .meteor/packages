@@ -19,6 +19,7 @@ shell-server@0.4.0            # Server-side component of the `meteor shell` comm
 
 # Base Tools
 leaonline:errors@1.0.0
+leaonline:interfaces
 
 # Collections
 

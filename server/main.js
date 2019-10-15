@@ -1,5 +1,6 @@
 import '../imports/startup/server/error'
 import '../imports/startup/server/accounts'
+import '../imports/startup/server/service'
 import '../imports/startup/server/Task'
 import '../imports/startup/server/Response'
 import '../imports/startup/server/TaskSet'
