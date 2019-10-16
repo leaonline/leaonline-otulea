@@ -1,5 +1,11 @@
 {
   "public": {
+    "app": {
+      "name": "otu.lea",
+      "label": "apps.otulea.title",
+      "description": "apps.otulea.description",
+      "icon": "edit"
+    },
     "tts": {
       "url": "http://localhost:3030/tts"
     }
