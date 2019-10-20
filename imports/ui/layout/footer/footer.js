@@ -1,16 +1,15 @@
 import { Template } from 'meteor/templating'
 import { Legal } from '../../../api/config/Legal'
-import footerLogos from '../../../../resources/lea/footerLogos.json'
+import { dataTarget } from '../../../utils/eventUtils'
+import { Logos } from '../../../api/config/Logos'
 import '../../components/image/image'
 import '../../components/soundbutton/soundbutton'
 import './footer.html'
-import { dataTarget } from '../../../utils/eventUtils'
 
 const mapSource = logo => {
   logo.src = `/logos/${logo.name}`
   return logo
 }
-const mappedLogos = footerLogos.map(mapSource)
 const legalRoutes = Object.keys(Legal.schema).map(key => {
   const value = Legal.schema[ key ]
   return {
@@ -24,13 +23,16 @@ const legalData = {}
 Template.footer.onCreated(function () {
   const instance = this
 
-  // TODO call mapped logos config
-  // TODO call legal config
+  Logos.methods.get.call((err, logoDoc) => {
+    console.log(logoDoc)
+    instance.state.set('logoDoc', logoDoc)
+  })
 })
 
 Template.footer.helpers({
   logos () {
-    return mappedLogos
+    const logoDoc = Template.getState('logoDoc')
+    return logoDoc && logoDoc.footerLogos
   },
   legalRoutes () {
     return legalRoutes
