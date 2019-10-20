@@ -50,7 +50,12 @@ Logos.methods.update = {
   isPublic: true, // FIXME only backend editors and admins
   numRequests: 1,
   timeInterval: 250,
-  schema: Object.assign({}, Logos.schema, { _id: String }),
+  schema: Object.assign({}, Logos.schema, {
+    _id: {
+      type: String,
+      optional: true
+    }
+  }),
   run: onServer(function ({ mainLogo, footerLogos }) {
     const LogoCollection = Logos.collection()
     const logoDoc = LogoCollection.findOne()
