@@ -24,7 +24,6 @@ Template.footer.onCreated(function () {
   const instance = this
 
   Logos.methods.get.call((err, logoDoc) => {
-    console.log(logoDoc)
     instance.state.set('logoDoc', logoDoc)
   })
 })
