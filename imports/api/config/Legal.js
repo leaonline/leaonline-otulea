@@ -10,7 +10,7 @@ export const Legal = {
 Legal.schema = {
   imprint: {
     type: String,
-    label: 'legal.Legal',
+    label: 'legal.imprint',
     optional: true,
     max: 5000,
     autoform: {
@@ -98,7 +98,6 @@ Legal.methods.update = {
     contact: Legal.schema.contact
   },
   run: onServer(function ({ _id, imprint, privacy, terms, contact }) {
-    console.log(_id, imprint)
     return Legal.collection().update(_id, { $set: { imprint, privacy, terms, contact } })
   })
 }
@@ -108,11 +107,22 @@ Legal.methods.get = {
   isPublic: true,
   numRequests: 1,
   timeInterval: 250,
-  schema: {},
-  run: onServer(function () {
-    return Legal.collection().findOne()
+  schema: {
+    name: {
+      type: String,
+      optional: true,
+      allowedValues: Object.keys(Legal.schema)
+    }
+  },
+  run: onServer(function ({ name } = {}) {
+    const config = Legal.collection().findOne()
+    if (!name) {
+      return config
+    } else {
+      return config[name]
+    }
   }),
-  call: onClient(function (cb) {
-    Meteor.call(Legal.methods.get.name, cb)
+  call: onClient(function (name, cb) {
+    Meteor.call(Legal.methods.get.name, {name}, cb)
   })
 }

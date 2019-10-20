@@ -27,6 +27,7 @@ Routes.notFound = {
   }
 }
 
+
 /**
  * Reroute to notFound route in case an unknown / non-maching url has been detected.
  * @type {{path: (function(): string), label: *, triggersEnter: (function(): *[]), load(), target: null, template:

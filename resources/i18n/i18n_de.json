@@ -1,4 +1,7 @@
 {
+  "actions": {
+    "close": "Schließen"
+  },
   "aria": {
     "readText": "Text als Audio abspielen"
   },
@@ -37,6 +40,12 @@
       "medium": "Ich kann Zahlen bis eintausend schriftlich zusammenzählen oder voneinander abziehen.",
       "hard": "Ich kann Zahlen schriftliche miteinander mal nehmen oder teilen."
     }
+  },
+  "legal": {
+    "imprint": "Impressum",
+    "privacy": "Datenschutz",
+    "terms": "Nutzungsbedingungen",
+    "contact": "Kontakt"
   },
   "levels": {
     "easy": "Einfach",

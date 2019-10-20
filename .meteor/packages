@@ -40,6 +40,8 @@ service-configuration
 
 # UI
 reactive-dict
+perak:markdown
+
 
 fourseven:scss
 seba:minifiers-autoprefixer

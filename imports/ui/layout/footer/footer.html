@@ -1,0 +1,55 @@
+<template name="footer">
+    <footer class="container-fluid w-100 mt-5">
+        <nav class="navbar navbar-expand-lg bg-transparent bg-light">
+            <div class="container">
+                {{#each logo in logos}}
+                    <a class="navbar-brand" href="{{logo.href}}">
+                        {{> image src=logo.src title=logo.title alt=logo.alt class="mr-4" height="30"}}
+                    </a>
+                {{/each}}
+                <small>
+                <ul class="navbar-nav ml-auto">
+                    {{#each legalRoute in legalRoutes}}
+                        <li class="nav-item d-flex align-items-center">
+                            {{>soundbutton tts=legalRoute.label sm=true outline=true}}
+                            <a class="ml-n2 mr-4 nav-link legal-link" href="#" data-key="{{legalRoute.name}}">{{i18n legalRoute.label}}</a>
+                        </li>
+                    {{/each}}
+                </ul>
+                </small>
+                <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                    {{#if currentUser}}
+                        <ul class="navbar-nav ml-auto">
+                            <li class="nav-item active">
+                                <a class="btn btn-outline-secondary nav-link logout-button" href="#">{{i18n "common.logout"}}</a>
+                            </li>
+                        </ul>
+                    {{/if}}
+                </div>
+            </div>
+        </nav>
+    </footer>
+    <!-- Modal -->
+    <div class="modal fade" id="legalContentModal" tabindex="-1" role="dialog" aria-labelledby="legalContentModalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="legalContentModal">{{i18n currentLegalLabel}}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="{{i18n 'actions.close'}}">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    {{#with currentLegalData}}
+                        {{#markdown}}{{this}}{{/markdown}}
+                    {{else}}
+
+                    {{/with}}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">{{i18n 'actions.close'}}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
