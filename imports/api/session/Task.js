@@ -3,41 +3,7 @@ import { Role } from '../accounts/Role'
 import { Group } from '../accounts/Group'
 import { getCollection } from '../../utils/collectionuUtils'
 import { onClient, onServer } from '../../utils/archUtils'
-
-export const Task = {
-  name: 'task',
-  label: 'task.title',
-  icon: 'cube',
-  methods: {},
-  publications: {}
-}
-
-Task.schema = {
-  taskId: String,
-  dimension: String,
-  level: String,
-  story: Array,
-  'story.$': {
-    type: Object,
-    blackbox: true
-  },
-  stimuli: Array,
-  'stimuli.$': {
-    type: Object,
-    blackbox: true
-  },
-  instructions: Array,
-  'instructions.$': {
-    type: Object,
-    blackbox: true
-  },
-  pages: Array,
-  'pages.$': Array,
-  'pages.$.$': {
-    type: Object,
-    blackbox: true
-  }
-}
+import { Task } from 'meteor/leaonline:interfaces/Task'
 
 let _TaskCollection
 Task.collection = function () {
@@ -70,3 +36,5 @@ Task.methods.load = {
     Meteor.call(Task.methods.load.name, { taskId }, cb)
   })
 }
+
+export { Task }
