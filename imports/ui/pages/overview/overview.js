@@ -13,8 +13,8 @@ import '../../components/textgroup/textgroup'
 import './overview.scss'
 import './overview.html'
 
-const _dimensions = Object.values(Dimensions)
-const _levels = Object.values(Levels)
+const _dimensions = Object.values(Dimensions.types)
+const _levels = Object.values(Levels.types)
 
 Template.overview.onCreated(function () {
   const instance = this
@@ -114,7 +114,7 @@ Template.overview.events({
   'click .lea-dimension-button' (event, templateInstance) {
     event.preventDefault()
     const dimensionName = dataTarget(event, templateInstance, 'dimension')
-    const dimension = Dimensions[ dimensionName ]
+    const dimension = Dimensions.types[ dimensionName ]
     const d = dimension.index
     Router.queryParam({ d })
   },
@@ -136,7 +136,7 @@ Template.overview.events({
   'click .lea-level-button' (event, templateInstance) {
     event.preventDefault()
     const levelName = dataTarget(event, templateInstance, 'level')
-    const level = Levels[ levelName ]
+    const level = Levels.types[ levelName ]
 
     const l = level.index
     Router.queryParam({ l })

@@ -13,8 +13,8 @@ if (Meteor.isDevelopment) {
       })
     }
     if (TaskSet.collection().find().count() === 0) {
-      const allDimensions = Object.keys(Dimensions)
-      const allLevels = Object.keys(Levels)
+      const allDimensions = Object.keys(Dimensions.types)
+      const allLevels = Object.keys(Levels.types)
 
       allDimensions.forEach(dimension => {
         allLevels.forEach(level => {

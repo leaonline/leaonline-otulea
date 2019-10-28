@@ -28,8 +28,8 @@ Template.navbar.onCreated(function () {
 
     const { currentTask } = sessionDoc
     const { tasks } = sessionDoc
-    const dimension = Dimensions[ sessionDoc.dimension ]
-    const level = Levels[ sessionDoc.level ]
+    const dimension = Dimensions.types[ sessionDoc.dimension ]
+    const level = Levels.types[ sessionDoc.level ]
 
     instance.progress.set({
       value: Session.helpers.getProgress(sessionDoc),

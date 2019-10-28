@@ -1,10 +1,4 @@
-import leaconfig from '../../../resources/lea/leaconfig'
-import { isUndefined } from '../../utils/isDefined'
+import {LeaCoreLib} from 'meteor/leaonline:corelib'
+import { i18n } from '../../api/i18n/I18n'
 
-Template.registerHelper('leaconfig', function (categoryKey, valueKey) {
-  const category = leaconfig[categoryKey]
-  if (isUndefined(category)) {
-    return
-  }
-  return category[valueKey]
-})
+LeaCoreLib.i18n.load(i18n)
