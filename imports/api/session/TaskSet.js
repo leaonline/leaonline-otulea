@@ -1,4 +1,3 @@
-import { ReactiveVar } from 'meteor/reactive-var'
 import { TaskSet } from 'meteor/leaonline:interfaces/TaskSet'
 import { UrlService } from '../urls/UrlService'
 
@@ -28,7 +27,7 @@ TaskSet.helpers.load = callback => {
 }
 
 TaskSet.helpers.getInitialSet = ({ dimension, level }) => {
-  return TaskSet.collection().findOne() // fixme use dimension and level when all tasks are supported
+  return TaskSet.collection().findOne({ dimension, level })
 }
 
 TaskSet.helpers.hasSet = ({ dimension, level }) => {
@@ -41,4 +40,18 @@ TaskSet.helpers.hasSet = ({ dimension, level }) => {
   }
   return _localCollection.findOne(query)
 }
+
+
+if (Meteor.isServer) {
+  Meteor.startup(() => {
+    TaskSet.helpers.load((err, res) => {
+      if (err) {
+        return console.warn(err)
+      } else {
+        console.info(`[TaskSet]: loaded sets: ${res}`)
+      }
+    })
+  })
+}
+
 export { TaskSet }
