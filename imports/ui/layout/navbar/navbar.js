@@ -10,6 +10,11 @@ import './navbar.html'
 
 const _dimensions = Object.values(Dimensions)
 
+Template.navbar.onDestroyed(function () {
+  const instance = this
+  instance.state.clear()
+})
+
 Template.navbar.onCreated(function () {
   const instance = this
   instance.progress = new ReactiveVar()
