@@ -112,6 +112,10 @@ Session.methods.start = {
 
     const startedAt = new Date()
     const initialTasksDoc = TaskSet.helpers.getInitialSet({ dimension, level })
+    if (!initialTasksDoc) {
+      throw new Error('Expected a taskSet document to exist')
+    }
+
     const { tasks } = initialTasksDoc
     const currentTask = Session.helpers.getNextTask({ tasks })
 
