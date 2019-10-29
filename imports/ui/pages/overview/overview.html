@@ -8,12 +8,14 @@
 				<div class="card-body mt-3">
 					<div class="row">
 						{{#each dimension in dimensions}}
-							<div class="col col-xs-12 col-md-6 col-lg-3 my-1">
+							<div class="col col-xs-12 col-md-6 col-lg-3 my-1 {{#if dimensionDisabled dimension.name}}d-unavailable{{/if}}">
 								{{> actionButton class="d-block overview-button" block=true icon=dimension.icon type=dimension.type
 										iconClass="d-block ml-auto mr-auto my-2 fa-2x"
 										outline=true data-dimension=dimension.name active=(isSelectedDimension dimension.name)
 										tts=dimension.label label=(i18n dimension.label) btnClass="lea-dimension-button font-weight-bold" }}
 							</div>
+                            {{else}}
+                            {{> loading}}
 						{{/each}}
 					</div>
 				</div>
@@ -32,7 +34,7 @@
 					<div class="card-body mt-3">
 						<div class="row">
 							{{#each level in levels}}
-								<div class="col col-xs-12 col-md-6 col-lg-4 my-1">
+								<div class="col col-xs-12 col-md-6 col-lg-4 my-1 {{#if levelDisabled dimension.name level.name}}d-unavailable{{/if}}">
 									{{> actionButton class="w-100 overview-button" block=true type=this.type outline=true data-level=level.name
 											active=(isSelectedLevel level.name)
 											tts=level.label label=(i18n level.label) btnClass="lea-level-button p-5 font-weight-bold" }}

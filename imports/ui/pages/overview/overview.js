@@ -6,6 +6,7 @@ import { Router } from '../../../api/routing/Router'
 import { TTSEngine } from '../../../api/tts/TTSEngine'
 import { dataTarget } from '../../../utils/eventUtils'
 import { fadeOut } from '../../../utils/animationUtils'
+import { TaskSet } from '../../../api/session/TaskSet'
 
 import '../../components/container/container'
 import '../../components/actionButton/actionButton'
@@ -18,6 +19,19 @@ const _levels = Object.values(Levels.types)
 
 Template.overview.onCreated(function () {
   const instance = this
+
+ 
+  if (!TaskSet.helpers.loaded()) {
+    TaskSet.helpers.load((err, res) => {
+      if (err) {
+        // TODO handle
+        return console.warn(err)
+      }
+      instance.state.set('allTasksLoaded', !!res)
+    })
+  } else {
+    instance.state.set('allTasksLoaded', true)
+  }
 
   instance.autorun(() => {
     const sessionSub = Session.publications.current.subscribe()
@@ -68,7 +82,8 @@ Template.overview.helpers({
   // DIMENSIONS
   // ---------------------- // ----------------------
   dimensions () {
-    return _dimensions
+    const allSetsLoaded = Template.getState('allTasksLoaded')
+    return allSetsLoaded && _dimensions
   },
   dimensionSelected () {
     return Template.getState('dimension')
@@ -76,6 +91,9 @@ Template.overview.helpers({
   isSelectedDimension (name) {
     const dimension = Template.getState('dimension')
     return dimension && dimension.name === name
+  },
+  dimensionDisabled (dimension) {
+    return !TaskSet.helpers.hasSet({ dimension })
   },
   // ---------------------- // ----------------------
   // LEVELS
@@ -95,6 +113,9 @@ Template.overview.helpers({
     const dimension = instance.state.get('dimension')
     const level = instance.state.get('level')
     return level && dimension && dimension.descriptions[ level.name ]
+  },
+  levelDisabled (dimension, level) {
+    return !TaskSet.helpers.hasSet({ dimension, level })
   },
   // ---------------------- // ----------------------
   // SESSION
