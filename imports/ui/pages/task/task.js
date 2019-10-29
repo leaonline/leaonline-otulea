@@ -15,6 +15,13 @@ import '../../renderer/factory/TaskRendererFactory'
 import './task.html'
 import { isTaskRoute } from '../../../utils/routeUtils'
 
+function abortTask (instance) {
+  const route = instance.data.prev()
+  fadeOut('.lea-task-container', instance, () => {
+    Router.go(route)
+  })
+}
+
 Template.task.onCreated(function () {
   const instance = this
   const currentPageCount = Router.queryParam('p') || 0
@@ -22,24 +29,23 @@ Template.task.onCreated(function () {
   instance.autorun(() => {
     const data = Template.currentData()
     const { taskId } = data.params
-    Task.helpers.load(taskId, (err, taskDoc) => {
-      if (err) {
-        return console.error(err) // TODO handle
-      }
-      if (taskDoc) {
-        instance.state.set('taskDoc', taskDoc)
-        instance.state.set('taskStory', taskDoc.story)
-        instance.state.set('maxPages', taskDoc.pages.length)
-        instance.state.set('currentPageCount', currentPageCount)
-        instance.state.set('currentPage', taskDoc.pages[ currentPageCount ])
-        instance.state.set('hasNext', taskDoc.pages.length > currentPageCount + 1)
-      } else {
-        const route = instance.data.prev()
-        fadeOut('.lea-task-container', instance, () => {
-          Router.go(route)
-        })
-      }
-    })
+    Task.helpers.load(taskId)
+      .then(taskDoc => {
+        if (taskDoc) {
+          instance.state.set('taskDoc', taskDoc)
+          instance.state.set('taskStory', taskDoc.story)
+          instance.state.set('maxPages', taskDoc.pages.length)
+          instance.state.set('currentPageCount', currentPageCount)
+          instance.state.set('currentPage', taskDoc.pages[ currentPageCount ])
+          instance.state.set('hasNext', taskDoc.pages.length > currentPageCount + 1)
+        } else {
+          abortTask(instance)
+        }
+      })
+      .catch(err => {
+        console.error(err)
+        abortTask(instance)
+      })
   })
 
   instance.autorun(() => {
