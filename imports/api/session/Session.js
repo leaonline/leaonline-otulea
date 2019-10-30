@@ -57,11 +57,19 @@ Session.schema = {
     type: Array,
     optional: true
   },
-  'responses.$': String
+  'responses.$': String,
+
+  /**
+   * Optional entry to flag a session, that has been superseeded by a "restart"
+   */
+  cancelled: {
+    type: Boolean,
+    optional: true
+  }
 }
 
 Session.helpers = {
-  current ({ dimension, level, completedAt } = {}) {
+  current ({ dimension, level, completedAt = { $exists: false } } = {}) {
     check(dimension, Match.Maybe(String))
     check(level, Match.Maybe(String))
     return Session.collection().findOne({ dimension, level, completedAt }, { sort: { statedAt: -1 } })
@@ -90,7 +98,7 @@ Session.methods.start = {
   schema: {
     dimension: String,
     level: String,
-    restart: {
+    continueAborted: {
       type: Boolean,
       optional: true
     }
@@ -99,19 +107,25 @@ Session.methods.start = {
   timeInterval: 1000,
   roles: [ Role.runSession.value, Role.test.value ],
   group: Group.field.value,
-  run: onServer(function ({ dimension, level, restart }) {
+  run: onServer(function ({ dimension, level, continueAborted }) {
     const { userId } = this
     const SessionCollection = Session.collection()
 
-    if (!restart) {
-      const cancelledSession = SessionCollection.findOne({ userId, dimension, level, completedAt: { $exists: false } })
-      if (cancelledSession) {
-        return cancelledSession.currentTask
+    const abortedSession = SessionCollection.findOne({ userId, dimension, level, completedAt: { $exists: false } })
+    if (abortedSession) {
+      if (continueAborted) {
+        return abortedSession.currentTask
+      } else {
+        SessionCollection.update(abortedSession._id, { $set: { cancelled: true } })
       }
     }
 
     const startedAt = new Date()
     const initialTasksDoc = TaskSet.helpers.getInitialSet({ dimension, level })
+    if (!initialTasksDoc) {
+      throw new Error('Expected a taskSet document to exist')
+    }
+
     const { tasks } = initialTasksDoc
     const currentTask = Session.helpers.getNextTask({ tasks })
 
@@ -119,8 +133,8 @@ Session.methods.start = {
     const newSessionId = SessionCollection.insert(insertDoc)
     return newSessionId && currentTask
   }),
-  call: onClient(function ({ dimension, level, restart }, cb) {
-    Meteor.call(Session.methods.start.name, { dimension, level, restart }, cb)
+  call: onClient(function ({ dimension, level, continueAborted }, cb) {
+    Meteor.call(Session.methods.start.name, { dimension, level, continueAborted }, cb)
   })
 }
 
@@ -197,7 +211,7 @@ Session.methods.recent = {
   roles: [ Role.readSessions.value ],
   group: Group.team.value,
   isPublic: true,
-  run: onServer(function ({userId}) {
+  run: onServer(function ({ userId }) {
     return Session.collection().find({
       userId: userId,
       startedAt: { $exists: true }
@@ -221,8 +235,15 @@ Session.publications.current = {
     const { userId } = this
     return Session.collection().find({
       userId: userId,
-      startedAt: { $exists: true },
-      completedAt: { $exists: false }
+      startedAt: {
+        $exists: true
+      },
+      completedAt: {
+        $exists: false
+      },
+      cancelled: {
+        $exists: false
+      }
     }, {
       sort: { startedAt: -1 }
     })

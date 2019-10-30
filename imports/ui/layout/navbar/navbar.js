@@ -10,6 +10,11 @@ import './navbar.html'
 
 const _dimensions = Object.values(Dimensions)
 
+Template.navbar.onDestroyed(function () {
+  const instance = this
+  instance.state.clear()
+})
+
 Template.navbar.onCreated(function () {
   const instance = this
   instance.progress = new ReactiveVar()
@@ -28,8 +33,8 @@ Template.navbar.onCreated(function () {
 
     const { currentTask } = sessionDoc
     const { tasks } = sessionDoc
-    const dimension = Dimensions[ sessionDoc.dimension ]
-    const level = Levels[ sessionDoc.level ]
+    const dimension = Dimensions.types[ sessionDoc.dimension ]
+    const level = Levels.types[ sessionDoc.level ]
 
     instance.progress.set({
       value: Session.helpers.getProgress(sessionDoc),

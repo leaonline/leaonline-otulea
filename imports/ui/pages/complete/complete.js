@@ -25,7 +25,7 @@ Template.complete.onCreated(function () {
     if (err) {
       return console.error(err) // TODO handle
     }
-    const dimension = Dimensions[ sessionDoc.dimension ]
+    const dimension = Dimensions.types[ sessionDoc.dimension ]
 
     instance.state.set('results', results)
     instance.state.set('currentType', dimension && dimension.type)

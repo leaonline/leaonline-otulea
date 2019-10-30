@@ -5,13 +5,13 @@ import { Levels } from '../../api/session/Levels'
 
 createCollection(Session)
 
-const _dimensions = Object.values(Dimensions)
+const _dimensions = Object.values(Dimensions.types)
 
 Template.registerHelper('dimensions', function () {
   return _dimensions
 })
 
-const _levels = Object.values(Levels)
+const _levels = Object.values(Levels.types)
 
 Template.registerHelper('levels', function () {
   return _levels

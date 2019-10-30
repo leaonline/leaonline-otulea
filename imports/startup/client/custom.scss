@@ -2,6 +2,7 @@
 /* import the necessary Bootstrap files */
 @import "{}/node_modules/bootstrap/scss/functions";
 @import "{}/node_modules/bootstrap/scss/variables";
+@import "{}/node_modules/bootstrap/scss/mixins/buttons";
 @import "./leacolors";
 
 /* -------begin customization-------- */
@@ -21,10 +22,26 @@ $theme-colors: (
         gray: $lea-gray
 );
 
+@each $color, $value in $theme-colors {
+  .btn-#{$color} {
+    &:hover {
+      color: white !important;
+    }
+  }
+}
+
+@each $color, $value in $theme-colors {
+  .btn-outline-#{$color} {
+    &:hover {
+      color: white !important;
+    }
+  }
+}
+
+
 .border-gray {
   border: solid $lea-gray !important;
 }
-
 
 .lea-outline-secondary {
   background: white !important;

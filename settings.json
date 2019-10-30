@@ -8,6 +8,11 @@
     },
     "tts": {
       "url": "http://localhost:3030/tts"
+    },
+    "hosts": {
+      "content": {
+        "url": "http://localhost:3030"
+      }
     }
   },
   "oauth": {

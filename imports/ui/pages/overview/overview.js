@@ -6,6 +6,7 @@ import { Router } from '../../../api/routing/Router'
 import { TTSEngine } from '../../../api/tts/TTSEngine'
 import { dataTarget } from '../../../utils/eventUtils'
 import { fadeOut } from '../../../utils/animationUtils'
+import { TaskSet } from '../../../api/session/TaskSet'
 
 import '../../components/container/container'
 import '../../components/actionButton/actionButton'
@@ -13,11 +14,29 @@ import '../../components/textgroup/textgroup'
 import './overview.scss'
 import './overview.html'
 
-const _dimensions = Object.values(Dimensions)
-const _levels = Object.values(Levels)
+const _dimensions = Object.values(Dimensions.types)
+const _levels = Object.values(Levels.types)
+
+Template.overview.onDestroyed(function () {
+  const instance = this
+  instance.state.clear()
+})
 
 Template.overview.onCreated(function () {
   const instance = this
+
+ 
+  if (!TaskSet.helpers.loaded()) {
+    TaskSet.helpers.load((err, res) => {
+      if (err) {
+        // TODO handle
+        return console.warn(err)
+      }
+      instance.state.set('allTasksLoaded', !!res)
+    })
+  } else {
+    instance.state.set('allTasksLoaded', true)
+  }
 
   instance.autorun(() => {
     const sessionSub = Session.publications.current.subscribe()
@@ -68,7 +87,8 @@ Template.overview.helpers({
   // DIMENSIONS
   // ---------------------- // ----------------------
   dimensions () {
-    return _dimensions
+    const allSetsLoaded = Template.getState('allTasksLoaded')
+    return allSetsLoaded && _dimensions
   },
   dimensionSelected () {
     return Template.getState('dimension')
@@ -76,6 +96,9 @@ Template.overview.helpers({
   isSelectedDimension (name) {
     const dimension = Template.getState('dimension')
     return dimension && dimension.name === name
+  },
+  dimensionDisabled (dimension) {
+    return !TaskSet.helpers.hasSet({ dimension })
   },
   // ---------------------- // ----------------------
   // LEVELS
@@ -96,6 +119,9 @@ Template.overview.helpers({
     const level = instance.state.get('level')
     return level && dimension && dimension.descriptions[ level.name ]
   },
+  levelDisabled (dimension, level) {
+    return !TaskSet.helpers.hasSet({ dimension, level })
+  },
   // ---------------------- // ----------------------
   // SESSION
   // ---------------------- // ----------------------
@@ -114,7 +140,7 @@ Template.overview.events({
   'click .lea-dimension-button' (event, templateInstance) {
     event.preventDefault()
     const dimensionName = dataTarget(event, templateInstance, 'dimension')
-    const dimension = Dimensions[ dimensionName ]
+    const dimension = Dimensions.types[ dimensionName ]
     const d = dimension.index
     Router.queryParam({ d })
   },
@@ -136,7 +162,7 @@ Template.overview.events({
   'click .lea-level-button' (event, templateInstance) {
     event.preventDefault()
     const levelName = dataTarget(event, templateInstance, 'level')
-    const level = Levels[ levelName ]
+    const level = Levels.types[ levelName ]
 
     const l = level.index
     Router.queryParam({ l })
@@ -149,7 +175,9 @@ Template.overview.events({
     const restart = Boolean(restartStr)
 
     templateInstance.state.set('starting', true)
-    Session.methods.start.call({ dimension: dimension.name, level: level.name, restart }, (err, taskId) => {
+    const options = { dimension: dimension.name, level: level.name, continueAborted: !restart }
+    console.log(options)
+    Session.methods.start.call(options, (err, taskId) => {
       if (err) {
         console.error(err)
         templateInstance.state.set('starting', false)
