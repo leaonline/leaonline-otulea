@@ -17,7 +17,7 @@
 				<div class="card my-2">
 					<div class="card-body row">
 						{{#each storyElement in this}}
-							<div class="{{element.width}} mx-auto p-0 element-container">
+							<div class="col-12 col-md-{{storyElement.width}} mx-auto p-1 element-container">
 								{{> TaskRendererFactory content=storyElement type=currentType}}
 							</div>
 						{{/each}}
@@ -40,7 +40,7 @@
 						<div class="card my-2">
 							<div class="card-body row">
 								{{#each stimuli in this}}
-									<div class="{{element.width}} mx-auto p-0 element-container">
+									<div class="col-12 col-md-{{stimuli.width}} mx-auto p-1 element-container">
 										{{> TaskRendererFactory content=stimuli type=currentType}}
 									</div>
 								{{/each}}
@@ -53,7 +53,7 @@
 							<div class="card-body d-flex align-items-center">
 							<span class="w-100 row">
 								{{#each instruction in this}}
-									<div class="{{element.width}} mx-auto p-0 element-container">
+									<div class="col-12 col-md-{{instruction.width}} mx-auto p-1 element-container">
 										{{> TaskRendererFactory content=instruction type=currentType}}
 									</div>
 								{{/each}}
@@ -74,7 +74,7 @@
 							{{#with currentPage}}
 								<div class="card-body row w-100 h-100 lea-task-current-content">
 									{{#each taskContent in this}}
-										<div class="{{element.width}} mx-auto p-0 element-container">
+										<div class="col-12 col-md-{{taskContent.width}} mx-auto p-1 element-container">
 											{{> TaskRendererFactory content=taskContent type=currentType}}
 										</div>
 									{{/each}}
