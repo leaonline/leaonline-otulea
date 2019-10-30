@@ -15,8 +15,10 @@
 			{{/with}}
 		{{/if}}
 		<span class="ml-auto no-wrap">
-			{{> actionButton class="mr-1" outline=true btnClass="navbar-help-button btn-sm" sound=false title=(i18n "common.help") icon="question"}}
-			{{> actionButton outline=true btnClass="navbar-overview-button btn-sm" sound=false title=(i18n "common.toOverview") icon="times"}}
+			{{#onComplete complete=loadComplete}}
+				{{> actionButton class="mr-1" outline=true btnClass="navbar-help-button btn-sm" sound=false title=(i18n "common.help") icon="question"}}
+				{{> actionButton outline=true btnClass="navbar-overview-button btn-sm" sound=false title=(i18n "common.toOverview") icon="times"}}
+			{{/onComplete}}
 		</span>
 	</div>
 </template>

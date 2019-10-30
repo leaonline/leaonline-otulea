@@ -6,7 +6,11 @@ import { Routes } from '../../../api/routing/Routes'
 import { Router } from '../../../api/routing/Router'
 import { Session } from '../../../api/session/Session'
 import { fadeOut } from '../../../utils/animationUtils'
+import { LeaCoreLib } from '../../../api/core/LeaCoreLib'
 import './navbar.html'
+
+const components = LeaCoreLib.components
+const loaded = components.load([ components.template.actionButton ])
 
 const _dimensions = Object.values(Dimensions)
 
@@ -52,6 +56,9 @@ Template.navbar.onCreated(function () {
 })
 
 Template.navbar.helpers({
+  loadComplete () {
+    return loaded.get()
+  },
   showProgress () {
     return Template.instance().data.showProgress !== false
   },

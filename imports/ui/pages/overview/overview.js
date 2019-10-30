@@ -7,12 +7,15 @@ import { TTSEngine } from '../../../api/tts/TTSEngine'
 import { dataTarget } from '../../../utils/eventUtils'
 import { fadeOut } from '../../../utils/animationUtils'
 import { TaskSet } from '../../../api/session/TaskSet'
-
+import { LeaCoreLib } from '../../../api/core/LeaCoreLib'
 import '../../components/container/container'
-import '../../components/actionButton/actionButton'
-import '../../components/textgroup/textgroup'
 import './overview.scss'
 import './overview.html'
+
+const components = LeaCoreLib.components
+components.load([
+  components.template.actionButton,
+  components.template.textGroup ])
 
 const _dimensions = Object.values(Dimensions.types)
 const _levels = Object.values(Levels.types)
@@ -25,7 +28,6 @@ Template.overview.onDestroyed(function () {
 Template.overview.onCreated(function () {
   const instance = this
 
- 
   if (!TaskSet.helpers.loaded()) {
     TaskSet.helpers.load((err, res) => {
       if (err) {
@@ -193,10 +195,9 @@ Template.overview.events({
 
       setTimeout(() => {
 
-
-      fadeOut('.lea-overview-container', templateInstance, () => {
-        Router.go(route)
-      })
+        fadeOut('.lea-overview-container', templateInstance, () => {
+          Router.go(route)
+        })
       }, 100)
     })
   }

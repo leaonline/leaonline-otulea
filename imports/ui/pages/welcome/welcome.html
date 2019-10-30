@@ -1,125 +1,129 @@
 <template name="welcome">
 	<div class="w-100 lea-welcome-container">
-	{{#if intro}}
-		<div class="bg-dark w-100">
-			<div class="container">
-				<div class="intro-video-container embed-responsive embed-responsive-16by9 mh-50">
-					<video controls preload="none" class="embed-responsive-item" allowfullscreen>
-						<source src="{{video "welcome"}}" type="video/mp4">
-						Your browser does not support the video tag.
-					</video>
+		{{#if loading}}
+			{{> loading}}
+		{{/if}}
+
+		{{#if intro}}
+			<div class="bg-dark w-100">
+				<div class="container">
+					<div class="intro-video-container embed-responsive embed-responsive-16by9 mh-50">
+						<video controls preload="none" class="embed-responsive-item" allowfullscreen>
+							<source src="{{video "welcome"}}" type="video/mp4">
+							Your browser does not support the video tag.
+						</video>
+					</div>
 				</div>
 			</div>
-		</div>
 
-		{{#unless currentUser}}
-			<div class="container welcome-intro-container my-3">
+			{{#unless currentUser}}
+				<div class="container welcome-intro-container my-3">
+					<div class="card">
+						<div class="card-body">
+							{{> textGroup tts="pages.welcome.introduction"}}
+						</div>
+					</div>
+
+					<div class="card-body mt-3 row {{#if (or login newCode)}}d-unavailable{{/if}}">
+						<div class="col">
+							{{#if login}}
+								{{> actionButton class="w-100" block=true outline=true tts="common.yes" label=(i18n "common.yes") btnClass="lea-welcome-yes active" sndBtnClass="border-0" }}
+							{{else}}
+								{{> actionButton class="w-100" block=true outline=true tts="common.yes" label=(i18n "common.yes") btnClass="lea-welcome-yes" sndBtnClass="border-0"  }}
+							{{/if}}
+						</div>
+						<div class="col">
+							{{#if newCode}}
+								{{> actionButton class="w-100" block=true outline=true tts="common.no" label=(i18n "common.no") btnClass="lea-welcome-no active" sndBtnClass="border-0" }}
+							{{else}}
+								{{> actionButton class="w-100" block=true outline=true tts="common.no" label=(i18n "common.no") btnClass="lea-welcome-no" sndBtnClass="border-0" }}
+							{{/if}}
+						</div>
+					</div>
+				</div>
+			{{/unless}}
+		{{/if}}
+
+		{{#if loggedIn}}
+			<div class="container my-3">
 				<div class="card">
 					<div class="card-body">
-						{{> textGroup tts="pages.welcome.introduction"}}
-					</div>
-				</div>
-
-				<div class="card-body mt-3 row {{#if (or login newCode)}}d-unavailable{{/if}}">
-					<div class="col">
-						{{#if login}}
-							{{> actionButton class="w-100" block=true outline=true tts="common.yes" label=(i18n "common.yes") btnClass="lea-welcome-yes active" sndBtnClass="border-0" }}
-						{{else}}
-							{{> actionButton class="w-100" block=true outline=true tts="common.yes" label=(i18n "common.yes") btnClass="lea-welcome-yes" sndBtnClass="border-0"  }}
-						{{/if}}
-					</div>
-					<div class="col">
-						{{#if newCode}}
-							{{> actionButton class="w-100" block=true outline=true tts="common.no" label=(i18n "common.no") btnClass="lea-welcome-no active" sndBtnClass="border-0" }}
-						{{else}}
-							{{> actionButton class="w-100" block=true outline=true tts="common.no" label=(i18n "common.no") btnClass="lea-welcome-no" sndBtnClass="border-0" }}
-						{{/if}}
-					</div>
-				</div>
-			</div>
-		{{/unless}}
-	{{/if}}
-
-	{{#if loggedIn}}
-		<div class="container my-3">
-			<div class="card">
-				<div class="card-body">
-					{{> textGroup tts="pages.welcome.loggedIn" }}
-				</div>
-				<div class="card-body text-center">
-					<h1>{{currentUser.username}}</h1>
-				</div>
-				<div class="card-body">
-					{{> actionButton type="primary" class="w-100" block=true outline=true
-							label=(i18n "navigation.toOverview")
-							tts="navigation.toOverview" icon="arrow-right" btnClass="to-overview-button" }}
-				</div>
-				<div class="card-body text-center">
-					{{> actionButton outline=true tts="pages.welcome.wrongUser" label=(i18n "pages.welcome.wrongUser") btnClass="lea-logout-button" sm=true sndBtnClass="border-0" }}
-				</div>
-			</div>
-		</div>
-	{{/if}}
-
-	{{#if loginRequired}}
-		<div class="container">
-			<div class="card">
-				{{#if login}}
-					<div class="card-body">
-						{{#textGroup tts="pages.welcome.enterCode"}}
-							{{> actionButton outline=true tts="common.back" icon="arrow-up" btnClass="lea-back-button" sndBtnClass="border-0" }}
-						{{/textGroup}}
-					</div>
-				{{/if}}
-
-				{{#if newCode}}
-					<div class="card-body d-flex align-items-start">
-						{{#textGroup tts="pages.welcome.newCode"}}
-							{{> actionButton outline=true tts="common.back" icon="arrow-up" btnClass="lea-back-button" sndBtnClass="border-0" }}
-						{{/textGroup}}
+						{{> textGroup tts="pages.welcome.loggedIn" }}
 					</div>
 					<div class="card-body text-center">
-						{{#with randomCode}}
-							{{> text src=this class="lea-text-xl"}}
-						{{/with}}
+						<h1>{{currentUser.username}}</h1>
 					</div>
-				{{/if}}
-
-
-				<div class="card-body welcome-login-container my-3 row">
-					<div class="input-group input-group-lg col col-md-8 col-lg-6 col-xl-4 mx-auto">
-						<input type="text" data-index="0" maxlength="1"
-							   class="login-field text-uppercase form-control text-center mr-2" autofocus />
-						<input type="text" data-index="1" maxlength="1"
-							   class="login-field text-uppercase form-control text-center mx-2" />
-						<input type="text" data-index="2" maxlength="1"
-							   class="login-field text-uppercase form-control text-center mx-2" />
-						<input type="text" data-index="3" maxlength="1"
-							   class="login-field text-uppercase form-control text-center mx-2" />
-						<input type="text" data-index="4" maxlength="1"
-							   class="login-field text-uppercase form-control text-center ml-2" />
+					<div class="card-body">
+						{{> actionButton type="primary" class="w-100" block=true outline=true
+								label=(i18n "navigation.toOverview")
+								tts="navigation.toOverview" icon="arrow-right" btnClass="to-overview-button" }}
+					</div>
+					<div class="card-body text-center">
+						{{> actionButton outline=true tts="pages.welcome.wrongUser" label=(i18n "pages.welcome.wrongUser") btnClass="lea-logout-button" sm=true sndBtnClass="border-0" }}
 					</div>
 				</div>
+			</div>
+		{{/if}}
 
-				{{#if loginFail}}
-					<div class="card-body">
-						{{> textGroup tts="pages.welcome.loginFail" type="warning" class="w-100 alert alert-warning"}}
+		{{#if loginRequired}}
+			<div class="container">
+				<div class="card">
+					{{#if login}}
+						<div class="card-body">
+							{{#textGroup tts="pages.welcome.enterCode"}}
+								{{> actionButton outline=true tts="common.back" icon="arrow-up" btnClass="lea-back-button" sndBtnClass="border-0" }}
+							{{/textGroup}}
+						</div>
+					{{/if}}
+
+					{{#if newCode}}
+						<div class="card-body d-flex align-items-start">
+							{{#textGroup tts="pages.welcome.newCode"}}
+								{{> actionButton outline=true tts="common.back" icon="arrow-up" btnClass="lea-back-button" sndBtnClass="border-0" }}
+							{{/textGroup}}
+						</div>
+						<div class="card-body text-center">
+							{{#with randomCode}}
+								{{> text src=this class="lea-text-xl"}}
+							{{/with}}
+						</div>
+					{{/if}}
+
+
+					<div class="card-body welcome-login-container my-3 row">
+						<div class="input-group input-group-lg col col-md-8 col-lg-6 col-xl-4 mx-auto">
+							<input type="text" data-index="0" maxlength="1"
+								   class="login-field text-uppercase form-control text-center mr-2" autofocus />
+							<input type="text" data-index="1" maxlength="1"
+								   class="login-field text-uppercase form-control text-center mx-2" />
+							<input type="text" data-index="2" maxlength="1"
+								   class="login-field text-uppercase form-control text-center mx-2" />
+							<input type="text" data-index="3" maxlength="1"
+								   class="login-field text-uppercase form-control text-center mx-2" />
+							<input type="text" data-index="4" maxlength="1"
+								   class="login-field text-uppercase form-control text-center ml-2" />
+						</div>
 					</div>
-				{{/if}}
-			</div>
 
-			<div class="card-body">
-				{{#if loggingIn}}
-				{{> actionButton class="lea-welcome-login-container w-100 mt-3 d-unavailable"
-						lg=true block=true outline=true tts="pages.welcome.login" sndBtnClass="border-0"
-						label=(i18n "pages.welcome.loggingIn") icon="spinner fa-pulse" btnClass="lea-welcome-login" }}
-				{{else}}
-					{{> actionButton class="lea-welcome-login-container w-100 mt-3 d-none"
-							lg=true block=true outline=true tts="pages.welcome.login" sndBtnClass="border-0"
-							label=(i18n "pages.welcome.login") btnClass="lea-welcome-login" }}
-				{{/if}}
+					{{#if loginFail}}
+						<div class="card-body">
+							{{> textGroup tts="pages.welcome.loginFail" type="warning" class="w-100 alert alert-warning"}}
+						</div>
+					{{/if}}
+				</div>
+
+				<div class="card-body">
+					{{#if loggingIn}}
+						{{> actionButton class="lea-welcome-login-container w-100 mt-3 d-unavailable"
+								lg=true block=true outline=true tts="pages.welcome.login" sndBtnClass="border-0"
+								label=(i18n "pages.welcome.loggingIn") icon="spinner fa-pulse" btnClass="lea-welcome-login" }}
+					{{else}}
+						{{> actionButton class="lea-welcome-login-container w-100 mt-3 d-none"
+								lg=true block=true outline=true tts="pages.welcome.login" sndBtnClass="border-0"
+								label=(i18n "pages.welcome.login") btnClass="lea-welcome-login" }}
+					{{/if}}
+				</div>
 			</div>
-		</div>
-	{{/if}}
+		{{/if}}
 	</div>
 </template>

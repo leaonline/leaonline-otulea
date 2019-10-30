@@ -5,15 +5,20 @@ import { Response } from '../../../api/session/Response'
 import { Router } from '../../../api/routing/Router'
 import { Dimensions } from '../../../api/session/Dimensions'
 import { Levels } from '../../../api/session/Levels'
+import { LeaCoreLib } from '../../../api/core/LeaCoreLib'
 import { fadeOut, fadeIn } from '../../../utils/animationUtils'
 import { dataTarget } from '../../../utils/eventUtils'
-
-import '../../components/container/container'
-import '../../components/actionButton/actionButton'
-import '../../layout/navbar/navbar'
-import '../../renderer/factory/TaskRendererFactory'
-import './task.html'
 import { isTaskRoute } from '../../../utils/routeUtils'
+import '../../components/container/container'
+import '../../layout/navbar/navbar'
+import './task.html'
+
+const components = LeaCoreLib.components
+const renderers = LeaCoreLib.renderers
+const loaded = components.load([ components.template.actionButton ])
+
+const tfLoaded = new ReactiveVar(false)
+renderers.factory.load().then(() => tfLoaded.set(true)).catch(e => console.error(e))
 
 function abortTask (instance) {
   const route = instance.data.prev()
@@ -90,7 +95,7 @@ Template.task.onDestroyed(function () {
 Template.task.helpers({
   loadComplete () {
     const instance = Template.instance()
-    return instance.state.get('sessionDoc') && instance.state.get('taskDoc')
+    return tfLoaded.get() && loaded.get() && instance.state.get('sessionDoc') && instance.state.get('taskDoc')
   },
   taskStory () {
     return Template.getState('taskStory')

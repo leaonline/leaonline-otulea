@@ -5,23 +5,28 @@ import { Random } from 'meteor/random'
 import { Users } from '../../../api/accounts/User'
 import { Router } from '../../../api/routing/Router'
 import { TTSEngine } from '../../../api/tts/TTSEngine'
+import { LeaCoreLib } from '../../../api/core/LeaCoreLib'
 import { loggedIn } from '../../../utils/accountUtils'
 import { fadeOut } from '../../../utils/animationUtils'
 
-import '../../components/soundbutton/soundbutton'
-import '../../components/actionButton/actionButton'
-import '../../components/textgroup/textgroup'
-import '../../components/text/text'
-
 import './welcome.scss'
 import './welcome.html'
+
+const components = LeaCoreLib.components
+const loaded = components.load([
+  components.template.soundbutton,
+  components.template.actionButton,
+  components.template.textGroup,
+  components.template.text ])
 
 const MAX_INPUTS = 5
 let originalVideoHeight
 
 Template.welcome.onCreated(function () {
   const instance = this
+  instance.state.set('loading', true)
   instance.newUser = new ReactiveVar(Random.id(MAX_INPUTS).toUpperCase())
+
   instance.wizard = {
     intro (value) {
       instance.state.set({ intro: value })
@@ -33,10 +38,18 @@ Template.welcome.onCreated(function () {
       instance.state.set({ login: value })
     }
   }
-  instance.wizard.intro(true)
+
+  instance.autorun(() => {
+    if (!loaded.get()) return
+    instance.state.set('loading', false)
+    instance.wizard.intro(true)
+  })
 })
 
 Template.welcome.helpers({
+  loading () {
+    return Template.instance().state.get('loading')
+  },
   intro () {
     return Template.instance().state.get('intro')
   },

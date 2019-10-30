@@ -1,4 +1,4 @@
-import {LeaCoreLib} from 'meteor/leaonline:corelib'
+import { LeaCoreLib } from '../../api/core/LeaCoreLib'
 import { i18n } from '../../api/i18n/I18n'
 
 Meteor.startup(() => {

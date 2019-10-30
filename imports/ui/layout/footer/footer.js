@@ -2,9 +2,13 @@ import { Template } from 'meteor/templating'
 import { Legal } from '../../../api/config/Legal'
 import { dataTarget } from '../../../utils/eventUtils'
 import { Logos } from '../../../api/config/Logos'
-import '../../components/image/image'
-import '../../components/soundbutton/soundbutton'
+import { LeaCoreLib } from '../../../api/core/LeaCoreLib'
 import './footer.html'
+
+const components = LeaCoreLib.components
+const loaded = components.load([
+  components.template.soundbutton, components.template.image
+])
 
 const mapSource = logo => {
   logo.src = `/logos/${logo.name}`
@@ -29,6 +33,9 @@ Template.footer.onCreated(function () {
 })
 
 Template.footer.helpers({
+  loadComplete () {
+    return loaded.get()
+  },
   logos () {
     const logoDoc = Template.getState('logoDoc')
     return logoDoc && logoDoc.footerLogos
@@ -42,7 +49,7 @@ Template.footer.helpers({
   },
   currentLegalLabel () {
     const key = Template.getState('currentLegalData')
-    return key && Legal.schema[key].label
+    return key && Legal.schema[ key ].label
   }
 })
 

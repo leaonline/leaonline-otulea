@@ -4,10 +4,15 @@ import { Router } from '../../../api/routing/Router'
 import { Dimensions } from '../../../api/session/Dimensions'
 
 import '../../components/container/container'
-import '../../components/textgroup/textgroup'
-import '../../components/actionButton/actionButton'
 import '../../layout/navbar/navbar'
 import './complete.html'
+import { LeaCoreLib } from '../../../api/core/LeaCoreLib'
+
+const components = LeaCoreLib.components
+const loaded = components.load([
+  components.template.actionButton,
+  components.template.textGroup
+])
 
 const states = {
   showResults: 'showResults',
@@ -21,21 +26,26 @@ Template.complete.onCreated(function () {
   const instance = this
 
   const { sessionId } = instance.data.params
-  Session.methods.results.call({ sessionId }, (err, { sessionDoc, results }) => {
-    if (err) {
-      return console.error(err) // TODO handle
-    }
-    const dimension = Dimensions.types[ sessionDoc.dimension ]
 
-    instance.state.set('results', results)
-    instance.state.set('currentType', dimension && dimension.type)
-    instance.state.set('sessionDoc', sessionDoc)
+  instance.autorun(() => {
+    if (!loaded) return
+
+    Session.methods.results.call({ sessionId }, (err, { sessionDoc, results }) => {
+      if (err) {
+        return console.error(err) // TODO handle
+      }
+      const dimension = Dimensions.types[ sessionDoc.dimension ]
+
+      instance.state.set('results', results)
+      instance.state.set('currentType', dimension && dimension.type)
+      instance.state.set('sessionDoc', sessionDoc)
+    })
   })
 
   instance.autorun(() => {
     const data = Template.currentData()
     const v = data.queryParams.v || 0
-    const currentView = _states[parseInt(v,10)]
+    const currentView = _states[ parseInt(v, 10) ]
 
     if (currentView && states[ currentView ]) {
       instance.state.set('view', currentView)
@@ -78,19 +88,19 @@ Template.complete.helpers({
 Template.complete.events({
   'click .lea-showresults-forward-button' (event, templateInstance) {
     event.preventDefault()
-    Router.queryParam({ v: _states.indexOf(states.showPrint)})
+    Router.queryParam({ v: _states.indexOf(states.showPrint) })
   },
   'click .lea-showprint-back-button' (event, templateInstance) {
     event.preventDefault()
-    Router.queryParam({ v: _states.indexOf(states.showResults)})
+    Router.queryParam({ v: _states.indexOf(states.showResults) })
   },
   'click .lea-showprint-forward-button' (event, templateInstance) {
     event.preventDefault()
-    Router.queryParam({ v: _states.indexOf(states.showDecision)})
+    Router.queryParam({ v: _states.indexOf(states.showDecision) })
   },
   'click .lea-showdecision-back-button' (event, templateInstance) {
     event.preventDefault()
-    Router.queryParam({ v: _states.indexOf(states.showPrint)})
+    Router.queryParam({ v: _states.indexOf(states.showPrint) })
   },
   'click .lea-end-button' (event, templateInstance) {
     event.preventDefault()
