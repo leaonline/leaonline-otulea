@@ -17,6 +17,11 @@ import './overview.html'
 const _dimensions = Object.values(Dimensions.types)
 const _levels = Object.values(Levels.types)
 
+Template.overview.onDestroyed(function () {
+  const instance = this
+  instance.state.clear()
+})
+
 Template.overview.onCreated(function () {
   const instance = this
 
@@ -170,7 +175,9 @@ Template.overview.events({
     const restart = Boolean(restartStr)
 
     templateInstance.state.set('starting', true)
-    Session.methods.start.call({ dimension: dimension.name, level: level.name, restart }, (err, taskId) => {
+    const options = { dimension: dimension.name, level: level.name, continueAborted: !restart }
+    console.log(options)
+    Session.methods.start.call(options, (err, taskId) => {
       if (err) {
         console.error(err)
         templateInstance.state.set('starting', false)
