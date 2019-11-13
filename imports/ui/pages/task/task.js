@@ -1,4 +1,5 @@
 import { Template } from 'meteor/templating'
+import { ReactiveVar } from 'meteor/reactive-var'
 import { Session } from '../../../api/session/Session'
 import { Task } from '../../../api/session/Task'
 import { Response } from '../../../api/session/Response'
@@ -36,6 +37,7 @@ Template.task.onCreated(function () {
     const { taskId } = data.params
     Task.helpers.load(taskId)
       .then(taskDoc => {
+        console.log('task loaded', taskDoc)
         if (taskDoc) {
           instance.state.set('taskDoc', taskDoc)
           instance.state.set('taskStory', taskDoc.story)
@@ -57,11 +59,12 @@ Template.task.onCreated(function () {
     const taskDoc = instance.state.get('taskDoc')
     if (!taskDoc) return
 
-    const { dimension } = taskDoc
-    const { level } = taskDoc
+    const data = Template.currentData()
+    const { sessionId } = data.params
+
     const sessionSub = Session.publications.current.subscribe()
     if (sessionSub.ready()) {
-      const sessionDoc = Session.helpers.current({ dimension, level })
+      const sessionDoc = Session.helpers.byId(sessionId)
       if (sessionDoc) {
         const { currentTask } = sessionDoc
         const { tasks } = sessionDoc
@@ -71,9 +74,7 @@ Template.task.onCreated(function () {
         instance.state.set('maxTasksCount', tasks.length)
         instance.state.set('sessionDoc', sessionDoc)
         if (instance.state.get('fadedOut')) {
-          fadeIn('.lea-task-container', instance, () => {
-
-          })
+          fadeIn('.lea-task-container', instance, () => {})
         }
       } else {
         const route = instance.data.prev()

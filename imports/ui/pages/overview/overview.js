@@ -179,14 +179,14 @@ Template.overview.events({
     templateInstance.state.set('starting', true)
     const options = { dimension: dimension.name, level: level.name, continueAborted: !restart }
     console.log(options)
-    Session.methods.start.call(options, (err, taskId) => {
+    Session.methods.start.call(options, (err, { taskId, sessionId }) => {
       if (err) {
         console.error(err)
         templateInstance.state.set('starting', false)
         return
       }
 
-      const route = templateInstance.data.next({ taskId: taskId })
+      const route = templateInstance.data.next({ taskId, sessionId })
       if (err || !taskId) {
         console.log(err)
         return

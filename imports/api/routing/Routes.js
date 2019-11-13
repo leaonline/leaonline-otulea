@@ -27,7 +27,6 @@ Routes.notFound = {
   }
 }
 
-
 /**
  * Reroute to notFound route in case an unknown / non-maching url has been detected.
  * @type {{path: (function(): string), label: *, triggersEnter: (function(): *[]), load(), target: null, template:
@@ -88,8 +87,8 @@ Routes.overview = {
     window.scrollTo(0, 0)
   },
   data: {
-    next ({ taskId }) {
-      return Routes.task.path(taskId)
+    next ({ sessionId, taskId }) {
+      return Routes.task.path(sessionId, taskId)
     }
   }
 }
@@ -99,8 +98,8 @@ Routes.overview = {
  */
 
 Routes.task = {
-  path: (taskId = ':taskId') => {
-    return `${settings.task}/${taskId}`
+  path: (sessionId = ':sessionId', taskId = ':taskId') => {
+    return `${settings.task}/${sessionId}/${taskId}`
   },
   label: 'pages.task.title',
   triggersEnter: () => [
@@ -116,8 +115,8 @@ Routes.task = {
     window.scrollTo(0, 0)
   },
   data: {
-    next ({ taskId }) {
-      return Routes.task.path(taskId)
+    next ({ sessionId, taskId }) {
+      return Routes.task.path(sessionId, taskId)
     },
     prev () {
       return Routes.overview

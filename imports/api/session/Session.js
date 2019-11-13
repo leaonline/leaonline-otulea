@@ -74,6 +74,10 @@ Session.helpers = {
     check(level, Match.Maybe(String))
     return Session.collection().findOne({ dimension, level, completedAt }, { sort: { statedAt: -1 } })
   },
+  byId (sessionId) {
+    check(sessionId, String)
+    return Session.collection().findOne(sessionId)
+  },
   getProgress ({ currentTask, tasks }) {
     const index = tasks.indexOf(currentTask) + 1
     return Math.floor(100 * (index / (tasks.length)))
@@ -114,7 +118,7 @@ Session.methods.start = {
     const abortedSession = SessionCollection.findOne({ userId, dimension, level, completedAt: { $exists: false } })
     if (abortedSession) {
       if (continueAborted) {
-        return abortedSession.currentTask
+        return { sessionId: abortedSession._id, taskId: abortedSession.currentTask }
       } else {
         SessionCollection.update(abortedSession._id, { $set: { cancelled: true } })
       }
@@ -131,7 +135,7 @@ Session.methods.start = {
 
     const insertDoc = { userId, startedAt, dimension, level, tasks, currentTask }
     const newSessionId = SessionCollection.insert(insertDoc)
-    return newSessionId && currentTask
+    return newSessionId && currentTask && { sessionId: newSessionId, taskId: currentTask }
   }),
   call: onClient(function ({ dimension, level, continueAborted }, cb) {
     Meteor.call(Session.methods.start.name, { dimension, level, continueAborted }, cb)
