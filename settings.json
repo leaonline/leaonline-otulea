@@ -12,6 +12,9 @@
     "hosts": {
       "content": {
         "url": "http://localhost:3030"
+      },
+      "items": {
+        "renderUrl": "http://localhost:8080/play?contentId="
       }
     }
   },

@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor'
 import { Template } from 'meteor/templating'
 import { ReactiveVar } from 'meteor/reactive-var'
 import { Session } from '../../../api/session/Session'
@@ -15,8 +16,11 @@ import '../../layout/navbar/navbar'
 import './task.html'
 
 const components = LeaCoreLib.components
-const renderers = LeaCoreLib.renderers
 const loaded = components.load([ components.template.actionButton ])
+
+const renderers = LeaCoreLib.renderers
+const renderUrl = Meteor.settings.public.hosts.items.renderUrl
+renderers.h5p.configure({ renderUrl })
 
 const tfLoaded = new ReactiveVar(false)
 renderers.factory.load().then(() => tfLoaded.set(true)).catch(e => console.error(e))

@@ -1,9 +1,0 @@
-<template name="gridRenderer">
-	<div class="row">
-		{{#each entry in value}}
-			<div class="col">
-				{{> TaskRendererFactory type=type content=entry}}
-			</div>
-		{{/each}}
-	</div>
-</template>
