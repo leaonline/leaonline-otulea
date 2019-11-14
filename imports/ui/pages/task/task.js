@@ -153,6 +153,15 @@ Template.task.helpers({
   },
   progress () {
     return Template.getState('progress')
+  },
+  itemData (content) {
+    const instance = Template.instance()
+    const sessionDoc = instance.state.get('sessionDoc')
+    const sessionId = sessionDoc._id
+    const taskDoc = instance.state.get('taskDoc')
+    const taskId = taskDoc._id
+    const userId = Meteor.userId()
+    return Object.assign({}, content, { userId, sessionId, taskId })
   }
 })
 
