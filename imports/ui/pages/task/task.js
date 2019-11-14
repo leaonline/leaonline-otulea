@@ -103,10 +103,10 @@ Template.task.helpers({
     return tfLoaded.get() && loaded.get() && instance.state.get('sessionDoc') && instance.state.get('taskDoc')
   },
   taskStory () {
-    return Template.getState('taskStory')
+    return loaded.get() && Template.getState('taskStory')
   },
   taskDoc () {
-    return Template.getState('taskDoc')
+    return loaded.get() && Template.getState('taskDoc')
   },
   currentTaskCount () {
     return Template.getState('currentTaskCount')
