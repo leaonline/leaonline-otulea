@@ -13,7 +13,7 @@ import './overview.scss'
 import './overview.html'
 
 const components = LeaCoreLib.components
-components.load([
+const componentsLoaded = components.load([
   components.template.actionButton,
   components.template.textGroup ])
 
@@ -85,6 +85,9 @@ Template.overview.onCreated(function () {
 })
 
 Template.overview.helpers({
+  loadComplete () {
+    return componentsLoaded.get()
+  },
   // ---------------------- // ----------------------
   // DIMENSIONS
   // ---------------------- // ----------------------
