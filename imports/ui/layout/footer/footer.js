@@ -7,7 +7,7 @@ import './footer.html'
 
 const components = LeaCoreLib.components
 const loaded = components.load([
-  components.template.soundbutton, components.template.image
+  components.template.soundbutton, components.template.actionButton, components.template.image
 ])
 
 const mapSource = logo => {

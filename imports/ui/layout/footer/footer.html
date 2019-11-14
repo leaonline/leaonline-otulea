@@ -26,9 +26,14 @@
 				</small>
 					{{#if currentUser}}
 						<ul class="navbar-nav ml-auto">
-							<li class="nav-item active">
-								<a class="btn btn-outline-secondary nav-link logout-button" href="#">{{i18n
-										"common.logout"}}</a>
+							<li class="nav-item d-flex align-items-center">
+                            {{#onComplete complete=loadComplete}}
+                                {{>soundbutton tts="common.logout" sm=true outline=true}}
+                                <a class="nav-link logout-button" href="#">
+                                    <span>{{i18n "common.logout"}}</span>
+                                    <i class="fa fas fa-fw fa-sign-out-alt"></i>
+                                </a>
+                            {{/onComplete}}
 							</li>
 						</ul>
 					{{/if}}
