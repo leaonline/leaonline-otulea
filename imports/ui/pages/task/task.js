@@ -16,14 +16,17 @@ import '../../layout/navbar/navbar'
 import './task.html'
 
 const components = LeaCoreLib.components
-const loaded = components.load([ components.template.actionButton ])
+const coreComponentsLoaded = components.load([ components.template.actionButton ])
 
 const renderers = LeaCoreLib.renderers
 const renderUrl = Meteor.settings.public.hosts.items.renderUrl
 renderers.h5p.configure({ renderUrl })
 
-const tfLoaded = new ReactiveVar(false)
-renderers.factory.load().then(() => tfLoaded.set(true)).catch(e => console.error(e))
+const taskRendererFactoryLoaded = new ReactiveVar(false)
+renderers.factory.load().then(() => taskRendererFactoryLoaded.set(true)).catch(e => {
+  console.error('could not load TaskRendererFactory')
+  console.error(e)
+})
 
 function abortTask (instance) {
   const route = instance.data.prev()
@@ -100,13 +103,14 @@ Template.task.onDestroyed(function () {
 Template.task.helpers({
   loadComplete () {
     const instance = Template.instance()
-    return tfLoaded.get() && loaded.get() && instance.state.get('sessionDoc') && instance.state.get('taskDoc')
+    return taskRendererFactoryLoaded.get() && coreComponentsLoaded.get() &&
+      instance.state.get('sessionDoc') && instance.state.get('taskDoc')
   },
   taskStory () {
-    return loaded.get() && Template.getState('taskStory')
+    return taskRendererFactoryLoaded.get() && coreComponentsLoaded.get() && Template.getState('taskStory')
   },
   taskDoc () {
-    return loaded.get() && Template.getState('taskDoc')
+    return taskRendererFactoryLoaded.get() && coreComponentsLoaded.get() && Template.getState('taskDoc')
   },
   currentTaskCount () {
     return Template.getState('currentTaskCount')
