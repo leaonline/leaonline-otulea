@@ -1,8 +1,8 @@
 <template name="welcome">
 	<div class="w-100 lea-welcome-container">
-		{{#if loading}}
+		{{#unless loadComplete}}
 			{{> loading}}
-		{{/if}}
+		{{/unless}}
 
 		{{#if intro}}
 			<div class="bg-dark w-100">

@@ -8,12 +8,11 @@ import { TTSEngine } from '../../../api/tts/TTSEngine'
 import { LeaCoreLib } from '../../../api/core/LeaCoreLib'
 import { loggedIn } from '../../../utils/accountUtils'
 import { fadeOut } from '../../../utils/animationUtils'
-
 import './welcome.scss'
 import './welcome.html'
 
 const components = LeaCoreLib.components
-const loaded = components.load([
+const coreComponentsLoaded = components.load([
   components.template.soundbutton,
   components.template.actionButton,
   components.template.textGroup,
@@ -24,7 +23,7 @@ let originalVideoHeight
 
 Template.welcome.onCreated(function () {
   const instance = this
-  instance.state.set('loading', true)
+  instance.state.set('loadComplete', false)
   instance.newUser = new ReactiveVar(Random.id(MAX_INPUTS).toUpperCase())
 
   instance.wizard = {
@@ -40,15 +39,15 @@ Template.welcome.onCreated(function () {
   }
 
   instance.autorun(() => {
-    if (!loaded.get()) return
-    instance.state.set('loading', false)
+    if (!coreComponentsLoaded.get()) return
+    instance.state.set('loadComplete', true)
     instance.wizard.intro(true)
   })
 })
 
 Template.welcome.helpers({
-  loading () {
-    return Template.instance().state.get('loading')
+  loadComplete () {
+    return Template.instance().state.get('loadComplete')
   },
   intro () {
     return Template.instance().state.get('intro')

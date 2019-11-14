@@ -116,6 +116,7 @@ function createRoute (routeDef, onError) {
     },
     triggersEnter: routeDef.triggersEnter && routeDef.triggersEnter(),
     action (params, queryParams) {
+      console.log(routeDef)
       // if we have loaded the template but it is not available
       // on the rendering pipeline through Template.<name> we
       // just skip the action and wait for the next rendering cycle

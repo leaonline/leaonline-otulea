@@ -40,7 +40,7 @@ Routes.fallback = {
     createNotFoundTrigger(Routes.notFound)
   ],
   async load () {
-    return true
+    return import('../../ui/pages/loading/loading')
   },
   target: null,
   template: 'loading',
@@ -189,7 +189,7 @@ Routes.root = {
     createLoggedinTrigger(Routes.overview)
   ],
   async load () {
-    return true
+    return import('../../ui/pages/loading/loading')
   },
   target: null,
   template: 'loading',
