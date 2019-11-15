@@ -163,9 +163,10 @@ Template.task.helpers({
     const sessionDoc = instance.state.get('sessionDoc')
     const sessionId = sessionDoc._id
     const taskDoc = instance.state.get('taskDoc')
-    const taskId = taskDoc._id
+    const page = instance.state.get('currentPageCount')
+    const taskId = taskDoc.taskId
     const userId = Meteor.userId()
-    return Object.assign({}, content, { userId, sessionId, taskId })
+    return Object.assign({}, content, { userId, sessionId, taskId, page })
   }
 })
 

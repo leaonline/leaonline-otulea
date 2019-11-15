@@ -15,6 +15,9 @@
       },
       "items": {
         "renderUrl": "http://localhost:8080/play?contentId="
+      },
+      "sessions": {
+        "evalUrl": "http://localhost:6060/eval"
       }
     }
   },
