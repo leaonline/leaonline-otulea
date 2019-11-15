@@ -3,7 +3,7 @@ import { Template } from 'meteor/templating'
 import { Videos } from '../../api/config/Videos'
 
 Template.registerHelper('video', function (name) {
-  console.log("get video", name, Videos.helpers.get(name))
+  console.log('get video', name, Videos.helpers.get(name))
   return Videos.helpers.get(name)
 })
 

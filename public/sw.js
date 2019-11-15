@@ -1,3 +1,4 @@
+/* global self caches Response Headers fetch */
 const HTMLToCache = '/'
 const version = 'MSW V0.3'
 

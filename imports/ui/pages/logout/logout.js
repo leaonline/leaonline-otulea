@@ -4,7 +4,7 @@ import { LeaCoreLib } from '../../../api/core/LeaCoreLib'
 import './logout.html'
 
 const components = LeaCoreLib.components
-const loaded = components.load([ components.template.textGroup ])
+const loaded = components.load([components.template.textGroup])
 
 Template.logout.onCreated(function () {
   Meteor.logout(err => {

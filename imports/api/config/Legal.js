@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor'
 import { getCollection } from '../../utils/collectionuUtils'
 import { onClient, onServer } from '../../utils/archUtils'
 
@@ -58,7 +59,7 @@ Legal.collection = function () {
 Legal.helpers = {}
 
 Legal.helpers.init = function (collection) {
-  if (collection) {_collection = collection}
+  if (collection) { _collection = collection }
   const configDoc = Legal.collection().findOne()
   if (!configDoc) {
     Legal.collection().insert({
@@ -123,6 +124,6 @@ Legal.methods.get = {
     }
   }),
   call: onClient(function (name, cb) {
-    Meteor.call(Legal.methods.get.name, {name}, cb)
+    Meteor.call(Legal.methods.get.name, { name }, cb)
   })
 }

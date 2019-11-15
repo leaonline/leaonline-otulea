@@ -16,7 +16,7 @@ const coreComponentsLoaded = components.load([
   components.template.soundbutton,
   components.template.actionButton,
   components.template.textGroup,
-  components.template.text ])
+  components.template.text])
 
 const MAX_INPUTS = 5
 let originalVideoHeight

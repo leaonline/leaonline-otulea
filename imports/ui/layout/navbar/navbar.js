@@ -1,5 +1,6 @@
 /* global $ */
 import { Template } from 'meteor/templating'
+import { ReactiveVar } from 'meteor/reactive-var'
 import { Dimensions } from '../../../api/session/Dimensions'
 import { Levels } from '../../../api/session/Levels'
 import { Routes } from '../../../api/routing/Routes'
@@ -10,7 +11,7 @@ import { LeaCoreLib } from '../../../api/core/LeaCoreLib'
 import './navbar.html'
 
 const components = LeaCoreLib.components
-const loaded = components.load([ components.template.actionButton ])
+const loaded = components.load([components.template.actionButton])
 
 const _dimensions = Object.values(Dimensions)
 
@@ -37,8 +38,8 @@ Template.navbar.onCreated(function () {
 
     const { currentTask } = sessionDoc
     const { tasks } = sessionDoc
-    const dimension = Dimensions.types[ sessionDoc.dimension ]
-    const level = Levels.types[ sessionDoc.level ]
+    const dimension = Dimensions.types[sessionDoc.dimension]
+    const level = Levels.types[sessionDoc.level]
 
     instance.progress.set({
       value: Session.helpers.getProgress(sessionDoc),

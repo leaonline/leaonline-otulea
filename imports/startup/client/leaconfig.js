@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor'
 import { LeaCoreLib } from '../../api/core/LeaCoreLib'
 import { i18n } from '../../api/i18n/I18n'
 

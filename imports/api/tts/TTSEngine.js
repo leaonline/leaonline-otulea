@@ -1,3 +1,3 @@
-import {LeaCoreLib} from 'meteor/leaonline:corelib'
+import { LeaCoreLib } from 'meteor/leaonline:corelib'
 
 export const TTSEngine = LeaCoreLib.ttsEngine

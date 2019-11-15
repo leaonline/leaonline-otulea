@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor'
 import { Legal } from '../../api/config/Legal'
 import { BackendConfig } from '../../api/config/BackendConfig'
 import { createCollection } from '../../factories/collection/createCollection'
@@ -34,19 +35,18 @@ BackendConfig.add({
       schema: JSON.stringify(Legal.schema, replacer)
     }
   },
-  roles: [ 'editLegal' ], // TODO put in Roles
+  roles: ['editLegal'], // TODO put in Roles
   group: 'editors', // TODO put in Groups,
   isFilesCollection: false,
   mainCollection: Legal.name,
   collections: [
     Legal.name
   ],
-  publications: [ {
+  publications: [{
     name: Legal.publications.single.name
-  } ]
+  }]
 })
 
-
-Meteor.startup(() =>{
+Meteor.startup(() => {
   Legal.helpers.init(LegalCollection)
 })

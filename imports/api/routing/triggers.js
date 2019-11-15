@@ -1,4 +1,3 @@
-/* global Roles */
 import { check } from 'meteor/check'
 import { Router } from './Router'
 import { loggedIn, loggedOut } from '../../utils/accountUtils'

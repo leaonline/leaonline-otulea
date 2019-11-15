@@ -16,7 +16,7 @@ import '../../layout/navbar/navbar'
 import './task.html'
 
 const components = LeaCoreLib.components
-const coreComponentsLoaded = components.load([ components.template.actionButton ])
+const coreComponentsLoaded = components.load([components.template.actionButton])
 
 const renderers = LeaCoreLib.renderers
 const renderUrl = Meteor.settings.public.hosts.items.renderUrl
@@ -50,7 +50,7 @@ Template.task.onCreated(function () {
           instance.state.set('taskStory', taskDoc.story)
           instance.state.set('maxPages', taskDoc.pages.length)
           instance.state.set('currentPageCount', currentPageCount)
-          instance.state.set('currentPage', taskDoc.pages[ currentPageCount ])
+          instance.state.set('currentPage', taskDoc.pages[currentPageCount])
           instance.state.set('hasNext', taskDoc.pages.length > currentPageCount + 1)
         } else {
           abortTask(instance)
@@ -96,7 +96,7 @@ Template.task.onCreated(function () {
 Template.task.onDestroyed(function () {
   const instance = this
   instance.state.set({
-    'fadedOut': null
+    fadedOut: null
   })
 })
 
@@ -125,19 +125,19 @@ Template.task.helpers({
     const sessionDoc = Template.getState('sessionDoc')
     if (!sessionDoc) return
 
-    return Dimensions.types[ sessionDoc.dimension ]
+    return Dimensions.types[sessionDoc.dimension]
   },
   level () {
     const sessionDoc = Template.getState('sessionDoc')
     if (!sessionDoc) return
 
-    return Levels.types[ sessionDoc.level ]
+    return Levels.types[sessionDoc.level]
   },
   currentType () {
     const sessionDoc = Template.getState('sessionDoc')
     if (!sessionDoc) return
 
-    const dimension = Dimensions.types[ sessionDoc.dimension ]
+    const dimension = Dimensions.types[sessionDoc.dimension]
     return dimension && dimension.type
   },
   currentPage () {
@@ -179,13 +179,13 @@ Template.task.events({
 
     if (action === 'next') {
       newPage.currentPageCount = currentPageCount + 1
-      newPage.currentPage = taskDoc.pages[ newPage.currentPageCount ]
+      newPage.currentPage = taskDoc.pages[newPage.currentPageCount]
       newPage.hasNext = (newPage.currentPageCount + 1) < taskDoc.pages.length
     }
 
     if (action === 'back') {
       newPage.currentPageCount = currentPageCount - 1
-      newPage.currentPage = taskDoc.pages[ newPage.currentPageCount ]
+      newPage.currentPage = taskDoc.pages[newPage.currentPageCount]
       newPage.hasNext = (newPage.currentPageCount + 1) < taskDoc.pages.length
     }
 

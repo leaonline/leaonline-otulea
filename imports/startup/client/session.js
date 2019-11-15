@@ -1,4 +1,5 @@
-import {Session} from '../../api/session/Session'
+import { Template } from 'meteor/templating'
+import { Session } from '../../api/session/Session'
 import { createCollection } from '../../factories/collection/createCollection'
 import { Dimensions } from '../../api/session/Dimensions'
 import { Levels } from '../../api/session/Levels'

@@ -1,6 +1,5 @@
 import settings from '../../../resources/i18n/i18n_routes' // TODO load dynamically using i18n locale
 import { createLoggedinTrigger, createLoginTrigger, createNotFoundTrigger } from './triggers'
-import { NotImplementedError } from '../errors/NotImplemented'
 
 export const Routes = {}
 
@@ -198,5 +197,5 @@ Routes.root = {
 }
 
 Object.keys(Routes).forEach(key => {
-  Routes[ key ].key = key
+  Routes[key].key = key
 })

@@ -1,4 +1,4 @@
-import { check, Match } from 'meteor/check'
+import { check } from 'meteor/check'
 import ValidatedMethod from './ValidatedMethod'
 import { isObject, maybe } from '../../utils/matchUtils'
 import { Schema } from '../../api/schema/Schema'

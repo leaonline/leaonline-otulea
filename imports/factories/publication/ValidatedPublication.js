@@ -1,3 +1,4 @@
+/* global Roles */
 import { Meteor } from 'meteor/meteor'
 
 export const ValidatedPublication = ({ name, validate, run, roles, group, isPublic }) => {

@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor'
 import { i18n } from '../../api/i18n/I18n'
 import i18nConfig from '../../../resources/i18n/i18n_config'
 import i18nDE from '../../../resources/i18n/i18n_de' // TODO load from backend

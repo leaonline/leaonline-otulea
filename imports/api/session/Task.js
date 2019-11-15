@@ -1,8 +1,8 @@
-import { getCollection } from '../../utils/collectionuUtils'
+import { Mongo } from 'meteor/mongo'
 import { Task } from 'meteor/leaonline:interfaces/Task'
 import { UrlService } from '../urls/UrlService'
 
-let _TaskCollection = new Mongo.Collection(null)
+const _TaskCollection = new Mongo.Collection(null)
 
 Task.collection = () => _TaskCollection
 

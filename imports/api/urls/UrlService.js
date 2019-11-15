@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor'
+import { HTTP } from 'meteor/http'
+
 export const UrlService = {}
 
 const contentServer = Meteor.settings.public.hosts.content

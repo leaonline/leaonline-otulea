@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor'
+import { Mongo } from 'meteor/mongo'
+
 import { TaskSet } from 'meteor/leaonline:interfaces/TaskSet'
 import { UrlService } from '../urls/UrlService'
 
@@ -14,7 +17,7 @@ TaskSet.helpers.load = callback => {
     if (err) {
       return callback(err)
     }
-    ;(allSets || []).forEach(setDoc =>   {
+    (allSets || []).forEach(setDoc => {
       if (_localCollection.findOne(setDoc._id)) {
         _localCollection.upsert(setDoc._id, setDoc)
       } else {
@@ -40,7 +43,6 @@ TaskSet.helpers.hasSet = ({ dimension, level }) => {
   }
   return _localCollection.findOne(query)
 }
-
 
 if (Meteor.isServer) {
   Meteor.startup(() => {

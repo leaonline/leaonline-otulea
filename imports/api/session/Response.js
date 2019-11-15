@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor'
 import { Session } from './Session'
 import { Role } from '../accounts/Role'
 import { Group } from '../accounts/Group'
@@ -25,7 +26,6 @@ Response.schema = {
   'answers.$.interactionId': String,
   'answers.$.value': String
 }
-
 
 let _ResponseCollection
 
@@ -56,13 +56,13 @@ Response.methods.send = {
   numRequests: 1,
   timeInterval: 1000,
   run: onServer(function ({ sessionId, taskId, answers }) {
-    const {userId} = this
+    const { userId } = this
     const sessionDoc = Session.collection().findOne(sessionId)
     if (userId !== sessionDoc.userId) {
       throw new PermissionDeniedError(PermissionDeniedError.NOT_OWNER)
     }
 
-    const existingResponse = Response.collection().findOne({sessionId, taskId, userId})
+    const existingResponse = Response.collection().findOne({ sessionId, taskId, userId })
     if (existingResponse) {
       // TODO should we check for a diff in the answers prop and update?
       return existingResponse._id
@@ -74,6 +74,6 @@ Response.methods.send = {
     return Response.collection().insert({ userId, sessionId, taskId, answers, startedAt, completedAt })
   }),
   call: onClient(function ({ sessionId, taskId, answers }, cb) {
-    Meteor.call(Response.methods.send.name, {sessionId, taskId, answers }, cb)
+    Meteor.call(Response.methods.send.name, { sessionId, taskId, answers }, cb)
   })
 }

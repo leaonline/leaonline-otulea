@@ -10,7 +10,6 @@ Logos.collection = function () {
   return LogosCollection
 }
 
-
 const methods = Object.values(Logos.methods)
 createMethods(methods)
 rateLimitMethods(methods)
@@ -38,14 +37,14 @@ BackendConfig.add({
       schema: JSON.stringify(Logos.methods.update.schema, replacer)
     }
   },
-  roles: [ 'editLogos' ], // TODO put in Roles
+  roles: ['editLogos'], // TODO put in Roles
   group: 'editors', // TODO put in Groups,
   isFilesCollection: false,
   mainCollection: Logos.name,
   collections: [
     Logos.name
   ],
-  publications: [ {
+  publications: [{
     name: Logos.publications.single.name
-  } ]
+  }]
 })

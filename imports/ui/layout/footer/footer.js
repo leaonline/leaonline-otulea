@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor'
 import { Template } from 'meteor/templating'
 import { Legal } from '../../../api/config/Legal'
 import { dataTarget } from '../../../utils/eventUtils'
@@ -10,12 +11,8 @@ const loaded = components.load([
   components.template.soundbutton, components.template.actionButton, components.template.image
 ])
 
-const mapSource = logo => {
-  logo.src = `/logos/${logo.name}`
-  return logo
-}
 const legalRoutes = Object.keys(Legal.schema).map(key => {
-  const value = Legal.schema[ key ]
+  const value = Legal.schema[key]
   return {
     name: key,
     label: value.label
@@ -28,6 +25,7 @@ Template.footer.onCreated(function () {
   const instance = this
 
   Logos.methods.get.call((err, logoDoc) => {
+    if (err) console.error(err)
     instance.state.set('logoDoc', logoDoc)
   })
 })
@@ -45,16 +43,16 @@ Template.footer.helpers({
   },
   currentLegalData () {
     const key = Template.getState('currentLegalData')
-    return legalData[ key ]
+    return legalData[key]
   },
   currentLegalLabel () {
     const key = Template.getState('currentLegalData')
-    return key && Legal.schema[ key ].label
+    return key && Legal.schema[key].label
   }
 })
 
 Template.footer.events({
-  'click .logout-button' (event, templateInstance) {
+  'click .logout-button' (event) {
     event.preventDefault()
     Meteor.logout(err => {
       if (err) {
@@ -68,11 +66,12 @@ Template.footer.events({
 
     const key = dataTarget(event, templateInstance, 'key')
 
-    if (legalData[ key ]) {
+    if (legalData[key]) {
       templateInstance.state.set('currentLegalData', key)
     } else {
       Legal.methods.get.call(key, (err, content) => {
-        legalData[ key ] = content
+        if (err) return console.error(err)
+        legalData[key] = content
         templateInstance.state.set('currentLegalData', key)
       })
     }

@@ -42,7 +42,7 @@ ErrorLog.methods = {}
 ErrorLog.methods.send = {
   name: 'errorLog.methods.send',
   schema: ErrorLog.schema,
-  roles: [ Role.runSession.value, Role.test.value ],
+  roles: [Role.runSession.value, Role.test.value],
   group: Group.field.value,
   numRequests: 10,
   timeInterval: 500,

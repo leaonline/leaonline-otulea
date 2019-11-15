@@ -15,7 +15,7 @@ import './overview.html'
 const components = LeaCoreLib.components
 const componentsLoaded = components.load([
   components.template.actionButton,
-  components.template.textGroup ])
+  components.template.textGroup])
 
 const _dimensions = Object.values(Dimensions.types)
 const _levels = Object.values(Levels.types)
@@ -122,7 +122,7 @@ Template.overview.helpers({
     const instance = Template.instance()
     const dimension = instance.state.get('dimension')
     const level = instance.state.get('level')
-    return level && dimension && dimension.descriptions[ level.name ]
+    return level && dimension && dimension.descriptions[level.name]
   },
   levelDisabled (dimension, level) {
     return !TaskSet.helpers.hasSet({ dimension, level })
@@ -145,7 +145,7 @@ Template.overview.events({
   'click .lea-dimension-button' (event, templateInstance) {
     event.preventDefault()
     const dimensionName = dataTarget(event, templateInstance, 'dimension')
-    const dimension = Dimensions.types[ dimensionName ]
+    const dimension = Dimensions.types[dimensionName]
     const d = dimension.index
     Router.queryParam({ d })
   },
@@ -167,7 +167,7 @@ Template.overview.events({
   'click .lea-level-button' (event, templateInstance) {
     event.preventDefault()
     const levelName = dataTarget(event, templateInstance, 'level')
-    const level = Levels.types[ levelName ]
+    const level = Levels.types[levelName]
 
     const l = level.index
     Router.queryParam({ l })
@@ -197,7 +197,6 @@ Template.overview.events({
       TTSEngine.stop()
 
       setTimeout(() => {
-
         fadeOut('.lea-overview-container', templateInstance, () => {
           Router.go(route)
         })

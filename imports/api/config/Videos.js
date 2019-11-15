@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor'
 import { onClient, onServer } from '../../utils/archUtils'
 import { getCollection } from '../../utils/collectionuUtils'
 
@@ -10,23 +11,23 @@ export const Videos = {
 Videos.schema = {
   welcome: {
     type: String,
-    optional: true,
+    optional: true
   },
   overview: {
     type: String,
-    optional: true,
+    optional: true
   },
   task: {
     type: String,
-    optional: true,
+    optional: true
   },
   complete: {
     type: String,
-    optional: true,
+    optional: true
   },
   notFound: {
     type: String,
-    optional: true,
+    optional: true
   }
 }
 
@@ -107,5 +108,5 @@ Videos.helpers.load = function (cb = () => {}) {
 }
 
 Videos.helpers.get = function (name) {
-  return _conf && _conf[ name ]
+  return _conf && _conf[name]
 }

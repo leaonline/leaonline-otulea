@@ -37,14 +37,14 @@ BackendConfig.add({
       schema: JSON.stringify(Videos.methods.update.schema, replacer)
     }
   },
-  roles: [ 'editVideos' ], // TODO put in Roles
+  roles: ['editVideos'], // TODO put in Roles
   group: 'editors', // TODO put in Groups,
   isFilesCollection: false,
   mainCollection: Videos.name,
   collections: [
     Videos.name
   ],
-  publications: [ {
+  publications: [{
     name: Videos.publications.single.name
-  } ]
+  }]
 })

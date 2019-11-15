@@ -34,7 +34,7 @@ Template.complete.onCreated(function () {
       if (err) {
         return console.error(err) // TODO handle
       }
-      const dimension = Dimensions.types[ sessionDoc.dimension ]
+      const dimension = Dimensions.types[sessionDoc.dimension]
 
       instance.state.set('results', results)
       instance.state.set('currentType', dimension && dimension.type)
@@ -45,9 +45,9 @@ Template.complete.onCreated(function () {
   instance.autorun(() => {
     const data = Template.currentData()
     const v = data.queryParams.v || 0
-    const currentView = _states[ parseInt(v, 10) ]
+    const currentView = _states[parseInt(v, 10)]
 
-    if (currentView && states[ currentView ]) {
+    if (currentView && states[currentView]) {
       instance.state.set('view', currentView)
     } else {
       instance.state.set('view', states.showResults)

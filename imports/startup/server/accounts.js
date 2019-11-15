@@ -1,3 +1,5 @@
+/* global ServiceConfiguration */
+import { Meteor } from 'meteor/meteor'
 import { Users } from '../../api/accounts/User'
 import { Accounts } from 'meteor/accounts-base'
 import { RateLimiterRegistry } from '../../factories/ratelimit/RateLimiterRegistry'
