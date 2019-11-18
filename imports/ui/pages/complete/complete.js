@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor'
 import { Template } from 'meteor/templating'
 import { HTTP } from 'meteor/http'
 import { Session } from '../../../api/session/Session'
