@@ -1,14 +1,13 @@
 import { Meteor } from 'meteor/meteor'
 import { Template } from 'meteor/templating'
-import { HTTP } from 'meteor/http'
 import { Session } from '../../../api/session/Session'
 import { Router } from '../../../api/routing/Router'
 import { Dimensions } from '../../../api/session/Dimensions'
+import { LeaCoreLib } from '../../../api/core/LeaCoreLib'
 
 import '../../components/container/container'
 import '../../layout/navbar/navbar'
 import './complete.html'
-import { LeaCoreLib } from '../../../api/core/LeaCoreLib'
 
 const components = LeaCoreLib.components
 const loaded = components.load([
@@ -21,38 +20,31 @@ const states = {
   showPrint: 'showPrint',
   showDecision: 'showDecision'
 }
-
 const _states = Object.values(states)
-
-const { evalUrl } = Meteor.settings.public.hosts.sessions
 
 Template.complete.onCreated(function () {
   const instance = this
-
   const { sessionId } = instance.data.params
 
-  instance.autorun(() => {
-    const userId = Meteor.userId()
-    if (!userId) return
-    console.log(evalUrl)
-    HTTP.post(evalUrl, {
-      data: { userId, sessionId }
-    }, (err, res) => {
-      console.log(err, res)
-    })
-  })
-
+  let dimension
   instance.autorun(() => {
     if (!loaded) return
+
+    // fix to immediately display the navbar
+    const alreadyExistingSessionDoc = Session.helpers.byId(sessionId)
+    if (alreadyExistingSessionDoc) {
+      dimension = Dimensions.types[ alreadyExistingSessionDoc.dimension ]
+      instance.state.set('currentType', dimension && dimension.type)
+      instance.state.set('sessionDoc', alreadyExistingSessionDoc)
+    }
 
     Session.methods.results.call({ sessionId }, (err, { sessionDoc, results }) => {
       if (err) {
         return console.error(err) // TODO handle
       }
-      const dimension = Dimensions.types[ sessionDoc.dimension ]
-
-      instance.state.set('results', results)
+      dimension = Dimensions.types[ sessionDoc.dimension ]
       instance.state.set('currentType', dimension && dimension.type)
+      instance.state.set('results', JSON.parse(results))
       instance.state.set('sessionDoc', sessionDoc)
     })
   })
@@ -79,8 +71,7 @@ Template.complete.helpers({
   },
   showResults () {
     const instance = Template.instance()
-    return instance.state.get('sessionDoc') &&
-      instance.state.get('view') === states.showResults
+    return instance.state.get('view') === states.showResults
   },
   showDecision () {
     const instance = Template.instance()

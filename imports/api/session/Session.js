@@ -6,7 +6,6 @@ import { onClient, onServer } from '../../utils/archUtils'
 import { getCollection } from '../../utils/collectionuUtils'
 import { TaskSet } from './TaskSet'
 import { PermissionDeniedError } from '../errors/PermissionDenied'
-import exampleResults from '../../../resources/lea/exampleResults'
 import { SubsManager } from '../subscriptions/SubsManager'
 
 export const Session = {
@@ -88,13 +87,13 @@ Session.helpers = {
       return
     }
     if (!currentTask) {
-      return tasks[0]
+      return tasks[ 0 ]
     }
     const index = tasks.indexOf(currentTask)
     if (index === -1 || index >= tasks.length - 1) {
       return
     }
-    return tasks[index + 1]
+    return tasks[ index + 1 ]
   }
 }
 
@@ -110,7 +109,7 @@ Session.methods.start = {
   },
   numRequests: 1,
   timeInterval: 1000,
-  roles: [Role.runSession.value, Role.test.value],
+  roles: [ Role.runSession.value, Role.test.value ],
   group: Group.field.value,
   run: onServer(function ({ dimension, level, continueAborted }) {
     const { userId } = this
@@ -151,7 +150,7 @@ Session.methods.update = {
   },
   numRequests: 1,
   timeInterval: 1000,
-  roles: [Role.runSession.value],
+  roles: [ Role.runSession.value ],
   group: Group.field.value,
   run: onServer(function ({ sessionId, responseId }) {
     const { userId } = this
@@ -183,6 +182,10 @@ Session.methods.update = {
   })
 }
 
+
+const sessionCredential = Meteor.settings.sessionCredential
+const evalUrl = Meteor.settings.public.hosts.sessions.evalUrl
+
 Session.methods.results = {
   name: 'session.methods.results',
   schema: {
@@ -190,12 +193,23 @@ Session.methods.results = {
   },
   numRequests: 1,
   timeInterval: 1000,
-  roles: [Role.runSession.value],
+  roles: [ Role.runSession.value ],
   group: Group.field.value,
   run: onServer(function ({ sessionId }) {
-    // FIXME replace these fixtures with real data from eval serv
+    const { userId } = this
     const sessionDoc = Session.collection().findOne(sessionId)
-    return { sessionDoc, results: exampleResults }
+    if (!sessionDoc) throw new Error('docNotFound')
+    if (!sessionDoc.completedAt) throw new Error('session.errors.notCompleted')
+
+    console.log(sessionDoc)
+    const results = HTTP.post(evalUrl, {
+      data: { sessionId, userId },
+      headers: {
+        'X-Auth-Token': sessionCredential
+      }
+    })
+
+    return { sessionDoc, results: results && results.content }
   }),
   call: onClient(function ({ sessionId }, cb) {
     // TODO replace later with POST request to eval server
@@ -213,7 +227,7 @@ Session.methods.recent = {
   },
   numRequests: 1,
   timeInterval: 1000,
-  roles: [Role.readSessions.value],
+  roles: [ Role.readSessions.value ],
   group: Group.team.value,
   isPublic: true,
   run: onServer(function ({ userId }) {
@@ -234,7 +248,7 @@ Session.publications.current = {
   projection: {},
   numRequests: 1,
   timeInterval: 1000,
-  roles: [Role.runSession.value],
+  roles: [ Role.runSession.value ],
   group: Group.field.value,
   run: onServer(function () {
     const { userId } = this
