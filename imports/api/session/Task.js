@@ -1,10 +1,10 @@
 import { Mongo } from 'meteor/mongo'
-import { HTTP } from 'meteor/http'
 import { Task } from 'meteor/leaonline:interfaces/Task'
 import { UrlService } from '../urls/UrlService'
 import { onServer } from '../../utils/archUtils'
 import { Role } from '../accounts/Role'
 import { Group } from '../accounts/Group'
+import { SessionsHost } from '../hosts/SessionsHost'
 
 const _TaskCollection = new Mongo.Collection(null)
 
@@ -32,9 +32,6 @@ Task.helpers.load = async (taskId) => {
   })
 }
 
-const sessionCredential = Meteor.settings.sessionCredential
-const responseUrl = Meteor.settings.public.hosts.sessions.responseUrl
-
 Task.methods.submit = {
   name: 'task.methods.submit',
   schema: {
@@ -58,12 +55,7 @@ Task.methods.submit = {
   numRequests: 10,
   timeInterval: 1000,
   run: onServer(function ({ userId, sessionId, type, taskId, responses, contentId, page }) {
-    return HTTP.post(responseUrl, {
-      data: { userId, sessionId, type, taskId, responses, contentId, page: page.toString(10) },
-      headers: {
-        'X-Auth-Token': sessionCredential
-      }
-    })
+    return SessionsHost.methods.submitResponse({ userId, sessionId, type, taskId, responses, contentId, page })
   })
 }
 

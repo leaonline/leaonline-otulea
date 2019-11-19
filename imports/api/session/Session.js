@@ -7,6 +7,7 @@ import { getCollection } from '../../utils/collectionuUtils'
 import { TaskSet } from './TaskSet'
 import { PermissionDeniedError } from '../errors/PermissionDenied'
 import { SubsManager } from '../subscriptions/SubsManager'
+import { SessionsHost } from '../hosts/SessionsHost'
 
 export const Session = {
   name: 'session',
@@ -182,10 +183,6 @@ Session.methods.update = {
   })
 }
 
-
-const sessionCredential = Meteor.settings.sessionCredential
-const evalUrl = Meteor.settings.public.hosts.sessions.evalUrl
-
 Session.methods.results = {
   name: 'session.methods.results',
   schema: {
@@ -200,19 +197,10 @@ Session.methods.results = {
     const sessionDoc = Session.collection().findOne(sessionId)
     if (!sessionDoc) throw new Error('docNotFound')
     if (!sessionDoc.completedAt) throw new Error('session.errors.notCompleted')
-
-    console.log(sessionDoc)
-    const results = HTTP.post(evalUrl, {
-      data: { sessionId, userId },
-      headers: {
-        'X-Auth-Token': sessionCredential
-      }
-    })
-
-    return { sessionDoc, results: results && results.content }
+    const results = SessionsHost.methods.evaluate({ userId, sessionId })
+    return { sessionDoc, results }
   }),
   call: onClient(function ({ sessionId }, cb) {
-    // TODO replace later with POST request to eval server
     Meteor.call(Session.methods.results.name, { sessionId }, cb)
   })
 }
