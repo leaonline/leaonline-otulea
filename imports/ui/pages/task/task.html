@@ -74,7 +74,7 @@
 							{{#with currentPage}}
 								<div class="card-body row w-100 h-100 lea-task-current-content">
 									{{#each taskContent in this}}
-										<div class="col-12 col-md-{{taskContent.width}} mx-auto p-1 element-container">
+										<div class="col-12 col-md-{{taskContent.width}} mx-auto p-1 element-container lea-text">
 											{{> TaskRendererFactory content=(itemData taskContent) type=currentType}}
 										</div>
 									{{/each}}
