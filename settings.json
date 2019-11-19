@@ -34,7 +34,9 @@
   "hosts": {
     "backend": {
       "urlRegEx": "^http:\/\/.*$"
+    },
+    "sessions": {
+      "secret": "01234567890123456789"
     }
-  },
-  "sessionCredential": "01234567890123456789"
+  }
 }
