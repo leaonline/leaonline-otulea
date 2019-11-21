@@ -42,9 +42,16 @@ Template.complete.onCreated(function () {
       if (err) {
         return console.error(err) // TODO handle
       }
+
+      const { userResponse } = results
+      const lines = userResponse.split('\n')
+      lines.forEach(line => {
+        console.log(line.split(/\s+/g))
+      })
+
       dimension = Dimensions.types[ sessionDoc.dimension ]
       instance.state.set('currentType', dimension && dimension.type)
-      instance.state.set('results', JSON.parse(results))
+      instance.state.set('results', results)
       instance.state.set('sessionDoc', sessionDoc)
     })
   })
