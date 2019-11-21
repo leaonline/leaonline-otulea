@@ -121,22 +121,24 @@ Session.methods.start = {
       if (continueAborted) {
         return { sessionId: abortedSession._id, taskId: abortedSession.currentTask }
       } else {
-        SessionCollection.update(abortedSession._id, { $set: { cancelled: true } })
+        // completedAt indicates in this case when it has been cancelled
+        SessionCollection.update(abortedSession._id, { $set: { cancelled: true, completedAt: new Date() } })
       }
     }
 
     const startedAt = new Date()
-    const initialTasksDoc = TaskSet.helpers.getInitialSet({ dimension, level })
-    if (!initialTasksDoc) {
+    const taskSet = TaskSet.helpers.getInitialSet({ dimension, level })
+    if (!taskSet) {
       throw new Error('Expected a taskSet document to exist')
     }
 
-    const { tasks } = initialTasksDoc
-    const currentTask = Session.helpers.getNextTask({ tasks })
+    const { tasks } = taskSet
+    const currentTask = tasks[0]
 
     const insertDoc = { userId, startedAt, dimension, level, tasks, currentTask }
+    console.log("new session:", insertDoc)
     const newSessionId = SessionCollection.insert(insertDoc)
-    return newSessionId && currentTask && { sessionId: newSessionId, taskId: currentTask }
+    return { sessionId: newSessionId, taskId: currentTask }
   }),
   call: onClient(function ({ dimension, level, continueAborted }, cb) {
     Meteor.call(Session.methods.start.name, { dimension, level, continueAborted }, cb)

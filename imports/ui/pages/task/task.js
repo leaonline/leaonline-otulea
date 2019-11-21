@@ -84,6 +84,8 @@ Template.task.onCreated(function () {
         const { currentTask } = sessionDoc
         const { tasks } = sessionDoc
 
+        const dimensionType = Dimensions.types[ sessionDoc.dimension ]
+        instance.state.set('color', dimensionType.type)
         instance.state.set('progress', Session.helpers.getProgress(sessionDoc))
         instance.state.set('currentTaskCount', tasks.indexOf(currentTask) + 1)
         instance.state.set('maxTasksCount', tasks.length)
@@ -174,7 +176,8 @@ Template.task.helpers({
     const page = instance.state.get('currentPageCount')
     const taskId = taskDoc.taskId
     const userId = Meteor.userId()
-    return Object.assign({}, content, { userId, sessionId, taskId, page, onInput: onInput.bind(this) })
+    const color = instance.state.get('color')
+    return Object.assign({}, content, { userId, sessionId, taskId, page, color, onInput: onInput.bind(this) })
   }
 })
 

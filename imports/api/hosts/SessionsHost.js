@@ -2,7 +2,7 @@ import { Meteor } from "meteor/meteor"
 import { HTTP } from "meteor/http"
 
 const settings = Meteor.settings.public.hosts.sessions
-const sessionCredential = Meteor.settings.hosts.sessions.secret
+const sessionCredential = Meteor.settings.public.hosts.sessions.secret
 const evalUrl = settings.evalUrl
 const responseUrl = settings.responseUrl
 
