@@ -29,5 +29,5 @@ SessionsHost.methods.evaluate = function ({ userId, sessionId }) {
   if (!results) return
 
   // we expect result's content to be a JSON
-  return results.content && JSON.stringify(results.content)
+  return results.content && JSON.parse(results.content)
 }
