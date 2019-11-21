@@ -227,44 +227,35 @@ Template.task.events({
   },
   'click .lea-pagenav-finish-button' (event, templateInstance) {
     event.preventDefault()
-    const { taskId } = templateInstance.data.params
     const sessionDoc = templateInstance.state.get('sessionDoc')
-    const answers = [] // TODO
     const sessionId = sessionDoc._id
 
     // WHEN A TASK IS FINISHED, THE FOLLOWING
     // STEPS ARE TAKEN
-    // 1. SEND RESPONSES
-    // 2. UPDATE SESSION
-    // 3. CHECK IF SESSION IS COMPLETE
+    // 1. UPDATE SESSION
+    // 2. CHECK IF SESSION IS COMPLETE
     //  a - if complete call finish()
     //  b - else call next()
-    Response.methods.send.call({ taskId, sessionId, answers }, (err, responseId) => {
+    Session.methods.update.call({ sessionId }, (err, taskId) => {
       if (err) {
         console.error(err)
         return
       }
-      Session.methods.update.call({ sessionId, responseId }, (err, taskId) => {
-        if (err) {
-          console.error(err)
-          return
-        }
-        const route = taskId
-          ? templateInstance.data.next({ taskId })
-          : templateInstance.data.finish({ sessionId })
+      const route = taskId
+        ? templateInstance.data.next({ sessionId, taskId })
+        : templateInstance.data.finish({ sessionId })
 
-        // we check if the route is to another task
-        // se we would fade the navbar only when the
-        // result page (or another pahe) will be shown
-        const fadeTarget = isTaskRoute(route)
-          ? '.lea-task-content-container'
-          : '.lea-task-container'
+      // we check if the route is to another task
+      // se we would fade the navbar only when the
+      // result page (or another pahe) will be shown
+      const fadeTarget = isTaskRoute(route)
+        ? '.lea-task-content-container'
+        : '.lea-task-container'
 
-        fadeOut(fadeTarget, templateInstance, () => {
-          templateInstance.state.set('taskDoc', null)
-          templateInstance.state.set('fadedOut', true)
-          Router.go(route)
-        })
+      fadeOut(fadeTarget, templateInstance, () => {
+        templateInstance.state.set('taskDoc', null)
+        templateInstance.state.set('fadedOut', true)
+        Router.go(route)
       })
     })
   }
