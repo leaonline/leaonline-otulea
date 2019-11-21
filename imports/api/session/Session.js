@@ -48,17 +48,14 @@ Session.schema = {
 
   tasks: Array,
   'tasks.$': String,
-  currentTask: String,
 
   /**
-   * References to response documents. Initially empty
+   * The current task to solve. If not set the Session is considered finished (all Tasks done)
    */
-
-  responses: {
-    type: Array,
+  currentTask: {
+    type: String,
     optional: true
   },
-  'responses.$': String,
 
   /**
    * Optional entry to flag a session, that has been superseeded by a "restart"
@@ -133,10 +130,10 @@ Session.methods.start = {
     }
 
     const { tasks } = taskSet
-    const currentTask = tasks[0]
+    const currentTask = tasks[ 0 ]
 
     const insertDoc = { userId, startedAt, dimension, level, tasks, currentTask }
-    console.log("new session:", insertDoc)
+    console.log('new session:', insertDoc)
     const newSessionId = SessionCollection.insert(insertDoc)
     return { sessionId: newSessionId, taskId: currentTask }
   }),
@@ -148,14 +145,13 @@ Session.methods.start = {
 Session.methods.update = {
   name: 'session.methods.update',
   schema: {
-    sessionId: String,
-    responseId: String
+    sessionId: String
   },
   numRequests: 1,
   timeInterval: 1000,
   roles: [ Role.runSession.value ],
   group: Group.field.value,
-  run: onServer(function ({ sessionId, responseId }) {
+  run: onServer(function ({ sessionId }) {
     const { userId } = this
     const sessionDoc = Session.collection().findOne(sessionId)
 
@@ -164,24 +160,21 @@ Session.methods.update = {
     }
 
     const nextTask = Session.helpers.getNextTask(sessionDoc)
-    const update = {
-      $addToSet: {
-        response: responseId
-      },
-      $set: {}
-    }
+    const update = {}
 
     if (nextTask) {
-      update.$set.currentTask = nextTask
+      update.$set = { currentTask: nextTask }
     } else {
-      update.$set.completedAt = new Date()
+      update.$set = { completedAt: new Date() }
+      update.$unset = { currentTask: '' }
     }
 
+    console.log("update sesison", update)
     Session.collection().update(sessionDoc._id, update)
     return nextTask
   }),
-  call: onClient(function ({ sessionId, responseId }, cb) {
-    Meteor.call(Session.methods.update.name, { sessionId, responseId }, cb)
+  call: onClient(function ({ sessionId }, cb) {
+    Meteor.call(Session.methods.update.name, { sessionId }, cb)
   })
 }
 
