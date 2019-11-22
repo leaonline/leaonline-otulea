@@ -18,34 +18,27 @@
 					</div>
 				</div>
 
-				{{#with evaluationResults}}
-					{{#with this.fulfilled}}
-						<div class="card my-4">
-							<div class="card-header bg-white font-weight-bold">
-								{{> textGroup tts="competencies.fulfilled" label=(i18n "competencies.fulfilled")
-										groupClass="w-100" type=currentType}}
+				{{!-- iterate all possible feedback levels --}}
+				{{#with feedbackLevels}}
+					{{#each feedbackLevel in this}}
+						{{#if hasFeedback feedbackLevel.index}}
+							<div class="card my-4">
+								<div class="card-header bg-white font-weight-bold">
+									{{> textGroup text=feedbackLevel.text label=feedbackLevel.text groupClass="w-100" type=currentType}}
+								</div>
+								<div class="card-body">
+									{{#each feedback in getFeedback feedbackLevel.index}}
+										<string>{{feedback.id}}</string>
+										<!--{{> textGroup tts=competency.label center=true label=(i18n competency.label) type=currentType}}-->
+									{{else}}
+										<h1 class="text-center">
+											<i class="fa fas fa-fw fa-spinner fa-pulse"></i>
+										</h1>
+									{{/each}}
+								</div>
 							</div>
-							<div class="card-body">
-								{{#each competency in this}}
-									{{> textGroup tts=competency.label center=true label=(i18n competency.label) type=currentType}}
-								{{/each}}
-							</div>
-						</div>
-					{{/with}}
-
-					{{#with this.toImprove}}
-						<div class="card my-4">
-							<div class="card-header bg-white font-weight-bold">
-								{{> textGroup tts="competencies.toImprove" label=(i18n "competencies.toImprove")
-										groupClass="w-100" type=currentType}}
-							</div>
-							<div class="card-body">
-								{{#each competency in this}}
-									{{> textGroup tts=competency.label center=true label=(i18n competency.label) type=currentType}}
-								{{/each}}
-							</div>
-						</div>
-					{{/with}}
+						{{/if}}
+					{{/each}}
 				{{else}}
 					<div class="card my-4">
 						<div class="card-body d-flex">

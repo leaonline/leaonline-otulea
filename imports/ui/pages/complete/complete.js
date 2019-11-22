@@ -8,6 +8,7 @@ import { LeaCoreLib } from '../../../api/core/LeaCoreLib'
 import '../../components/container/container'
 import '../../layout/navbar/navbar'
 import './complete.html'
+import { Feedback } from '../../../api/config/Feedback'
 
 const components = LeaCoreLib.components
 const loaded = components.load([
@@ -45,14 +46,23 @@ Template.complete.onCreated(function () {
 
       const { userResponse } = results
       const lines = userResponse.split('\n')
-      lines.forEach(line => {
-        console.log(line.split(/\s+/g))
+      const hasFeedback = {}
+      const feedback = lines.map(line => {
+        const split = line.split(/\s+/g)
+        const value = parseInt(split[ 2 ], 10)
+        hasFeedback[ value ] = true
+        return {
+          id: split[ 1 ],
+          value: value
+        }
       })
 
       dimension = Dimensions.types[ sessionDoc.dimension ]
       instance.state.set('currentType', dimension && dimension.type)
       instance.state.set('results', results)
       instance.state.set('sessionDoc', sessionDoc)
+      instance.state.set('currentFeedback', feedback)
+      instance.state.set('hasFeedback', hasFeedback)
     })
   })
 
@@ -67,9 +77,36 @@ Template.complete.onCreated(function () {
       instance.state.set('view', states.showResults)
     }
   })
+
+  instance.autorun(() => {
+    const feedback = instance.state.get('currentFeedback')
+    if (!feedback) return
+
+    // TODO load feedback from server
+  })
+
+  Feedback.methods.get.call((err, { levels }) => {
+    if (err) {
+      // TODO set state to "eval currently unavailable"
+      console.error(err)
+      return
+    }
+    instance.state.set('feedbackLevels', levels && levels.map((text, index) => ({ text, index })).reverse())
+  })
 })
 
 Template.complete.helpers({
+  feedbackLevels () {
+    return Template.getState('feedbackLevels')
+  },
+  hasFeedback (index) {
+    const map = Template.getState('hasFeedback')
+    return map && map[ index ]
+  },
+  getFeedback (index) {
+    const feedback = Template.getState('currentFeedback')
+    return feedback && feedback.filter(entry => entry.value === index)
+  },
   printOptions () {
     return Template.getState('printOptions')
   },
