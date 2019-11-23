@@ -11,6 +11,9 @@
     },
     "hosts": {
       "content": {
+        "base": "http://localhost:3030",
+        "tts": "/tts",
+        "competency": "/competency",
         "url": "http://localhost:3030"
       },
       "items": {
