@@ -1,6 +1,8 @@
 import { Meteor } from 'meteor/meteor'
 import { onClient, onServer } from '../../utils/archUtils'
 import { getCollection } from '../../utils/collectionuUtils'
+import { MediaLib } from '../medialib/MediaLib'
+import { ContentHost } from '../hosts/ContentHost'
 
 export const Logos = {
   name: 'logos',
@@ -9,17 +11,35 @@ export const Logos = {
 }
 
 Logos.schema = {
-  mainLogo: {
-    type: String,
-    optional: true
-  },
   footerLogos: {
     type: Array,
+    label: 'logos.footer',
     optional: true
   },
   'footerLogos.$': {
-    type: String
-  }
+    type: Object
+  },
+  'footerLogos.$.src': {
+    type: String,
+    label: 'logos.logoSrc',
+    autoform: {
+      type: 'imageSelect',
+      imagesCollection: MediaLib.name,
+      save: 'url',
+      uriBase: ContentHost.baseUrl(),
+      version: 'original'
+    }
+  },
+  'footerLogos.$.title': {
+    type: String,
+    label: 'logos.logoTitle',
+    optional: true
+  },
+  'footerLogos.$.url': {
+    type: String,
+    label: 'logos.logoUrl',
+    optional: true
+  },
 }
 
 let _collection

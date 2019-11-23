@@ -5,6 +5,8 @@ const competencyUrl = `${baseUrl}${content.competency}`
 
 export const ContentHost = {}
 
+ContentHost.baseUrl = () => baseUrl
+
 ContentHost.methods = {}
 
 ContentHost.methods.getCompetencies = function (competencies = []) {

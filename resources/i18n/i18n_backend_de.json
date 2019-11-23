@@ -4,5 +4,19 @@
       "title": "otu.lea",
       "description": "Förderdiagnostik"
     }
+  },
+  "legal": {
+    "title": "Rechtliches",
+    "imprint": "Impressum",
+    "privacy": "Datenschutz",
+    "terms": "Nutzungsbedingungen",
+    "contact": "Kontakt"
+  },
+  "logos": {
+    "title": "Logos",
+    "footer": "Fußzeilen-Logos",
+    "logoSrc": "Verlinktes Bild",
+    "logoTitle": "Titel",
+    "logoUrl": "Verlinkte URL"
   }
 }
