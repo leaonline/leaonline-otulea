@@ -18,5 +18,17 @@
     "logoSrc": "Verlinktes Bild",
     "logoTitle": "Titel",
     "logoUrl": "Verlinkte URL"
+  },
+  "feedback": {
+    "title": "Rückmeldung",
+    "levels": "Levels"
+  },
+  "videos": {
+    "title": "Hilfevideos",
+    "welcome": "Willkommensseite",
+    "overview": "Übersichtsseite",
+    "task": "Aufgabenseite",
+    "complete": "Ergebnissseite",
+    "notFound": "Seite nicht gefunden"
   }
 }
