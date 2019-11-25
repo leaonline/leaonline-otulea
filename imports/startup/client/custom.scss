@@ -24,7 +24,11 @@ $theme-colors: (
 
 @each $color, $value in $theme-colors {
   .btn-#{$color} {
+    color: white !important;
     &:hover {
+      color: white !important;
+    }
+    &.active {
       color: white !important;
     }
   }
@@ -33,6 +37,9 @@ $theme-colors: (
 @each $color, $value in $theme-colors {
   .btn-outline-#{$color} {
     &:hover {
+      color: white !important;
+    }
+    &.active {
       color: white !important;
     }
   }
