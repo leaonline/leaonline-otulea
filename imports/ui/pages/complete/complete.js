@@ -9,6 +9,7 @@ import '../../components/container/container'
 import '../../layout/navbar/navbar'
 import './complete.html'
 import { Feedback } from '../../../api/config/Feedback'
+import { ContentHost } from '../../../api/hosts/ContentHost'
 
 const components = LeaCoreLib.components
 const loaded = components.load([
@@ -78,11 +79,21 @@ Template.complete.onCreated(function () {
     }
   })
 
+  const toIds = entry => entry.id
   instance.autorun(() => {
     const feedback = instance.state.get('currentFeedback')
     if (!feedback) return
 
-    // TODO load feedback from server
+    ContentHost.methods.getCompetencies(feedback.map(toIds), (err, competencies) => {
+      if (err) {
+        return console.error(err) // TODO handle
+      }
+      const mappedCompetencies = {}
+      competencies.forEach(entry => {
+        mappedCompetencies[entry.competencyId] = entry
+      })
+      instance.state.set('competencies', mappedCompetencies)
+    })
   })
 
   Feedback.methods.get.call((err, { levels }) => {
@@ -96,6 +107,10 @@ Template.complete.onCreated(function () {
 })
 
 Template.complete.helpers({
+  competency (id) {
+    const competencies = Template.getState('competencies')
+    return competencies && competencies[id]
+  },
   feedbackLevels () {
     return Template.getState('feedbackLevels')
   },

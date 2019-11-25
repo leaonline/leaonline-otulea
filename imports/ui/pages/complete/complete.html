@@ -28,8 +28,14 @@
 								</div>
 								<div class="card-body">
 									{{#each feedback in getFeedback feedbackLevel.index}}
-										<string>{{feedback.id}}</string>
-										<!--{{> textGroup tts=competency.label center=true label=(i18n competency.label) type=currentType}}-->
+										{{#with competency feedback.id}}
+											{{> textGroup text=this.descriptionLearner
+													label=(i18n this.descriptionLearner) type=currentType}}
+										{{else}}
+											<span>
+												<i class="fa fas fa-fw fa-spinner fa-pulse"></i>
+											</span>
+										{{/with}}
 									{{else}}
 										<h1 class="text-center">
 											<i class="fa fas fa-fw fa-spinner fa-pulse"></i>
