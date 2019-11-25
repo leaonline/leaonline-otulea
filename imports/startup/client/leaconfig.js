@@ -6,8 +6,20 @@ import Detector from 'detect-os'
 Meteor.startup(() => {
   const detector = new Detector()
   detector.detect()
-  console.log(detector.detected)
+  const detected = detector.detected
+  const types = Detector.types
+  let mode
+  switch (detected.os) {
+    case types.macos.os:
+    case types.windows.os:
+    case types.ios.os:
+    case types.android.os:
+      mode = LeaCoreLib.ttsEngine.modes.browser
+      break
+    default:
+      mode = LeaCoreLib.ttsEngine.modes.server
+  }
 
   LeaCoreLib.i18n.load(i18n)
-  LeaCoreLib.ttsEngine.configure({ ttsUrl: Meteor.settings.public.tts.url })
+  LeaCoreLib.ttsEngine.configure({ ttsUrl: Meteor.settings.public.tts.url, mode })
 })
