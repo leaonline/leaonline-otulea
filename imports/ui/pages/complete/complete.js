@@ -1,15 +1,13 @@
-import { Meteor } from 'meteor/meteor'
 import { Template } from 'meteor/templating'
 import { Session } from '../../../api/session/Session'
 import { Router } from '../../../api/routing/Router'
 import { Dimensions } from '../../../api/session/Dimensions'
 import { LeaCoreLib } from '../../../api/core/LeaCoreLib'
-
+import { Feedback } from '../../../api/config/Feedback'
+import { ContentHost } from '../../../api/hosts/ContentHost'
 import '../../components/container/container'
 import '../../layout/navbar/navbar'
 import './complete.html'
-import { Feedback } from '../../../api/config/Feedback'
-import { ContentHost } from '../../../api/hosts/ContentHost'
 
 const components = LeaCoreLib.components
 const loaded = components.load([
@@ -28,45 +26,7 @@ Template.complete.onCreated(function () {
   const instance = this
   const { sessionId } = instance.data.params
 
-  let dimension
-  instance.autorun(() => {
-    if (!loaded) return
-
-    // fix to immediately display the navbar
-    const alreadyExistingSessionDoc = Session.helpers.byId(sessionId)
-    if (alreadyExistingSessionDoc) {
-      dimension = Dimensions.types[ alreadyExistingSessionDoc.dimension ]
-      instance.state.set('currentType', dimension && dimension.type)
-      instance.state.set('sessionDoc', alreadyExistingSessionDoc)
-    }
-
-    Session.methods.results.call({ sessionId }, (err, { sessionDoc, results }) => {
-      if (err) {
-        return console.error(err) // TODO handle
-      }
-
-      const { userResponse } = results
-      const lines = userResponse.split('\n')
-      const hasFeedback = {}
-      const feedback = lines.map(line => {
-        const split = line.split(/\s+/g)
-        const value = parseInt(split[ 2 ], 10)
-        hasFeedback[ value ] = true
-        return {
-          id: split[ 1 ],
-          value: value
-        }
-      })
-
-      dimension = Dimensions.types[ sessionDoc.dimension ]
-      instance.state.set('currentType', dimension && dimension.type)
-      instance.state.set('results', results)
-      instance.state.set('sessionDoc', sessionDoc)
-      instance.state.set('currentFeedback', feedback)
-      instance.state.set('hasFeedback', hasFeedback)
-    })
-  })
-
+  // basic routes / state handling
   instance.autorun(() => {
     const data = Template.currentData()
     const v = data.queryParams.v || 0
@@ -79,6 +39,64 @@ Template.complete.onCreated(function () {
     }
   })
 
+  // call the sessionDoc first, so we can already display
+  // navbar, category / dimension and some messages
+  instance.autorun(() => {
+    const sessionSub = Session.publications.current.subscribe({ sessionId })
+    if (sessionSub.ready()) {
+      const sessionDoc = Session.helpers.byId(sessionId)
+      if (!sessionDoc) {
+        instance.state.set('failed', new Error(`sessionDoc not found by id ${sessionId}`))
+      }
+
+      const dimension = Dimensions.types[ sessionDoc.dimension ]
+      instance.state.set('currentType', dimension && dimension.type)
+      instance.state.set('sessionDoc', sessionDoc)
+    }
+  })
+
+  instance.autorun(() => {
+    const sessionDoc = instance.state.get('sessionDoc')
+    if (!sessionDoc) return
+
+    Session.methods.results.call({ sessionId }, (err, { sessionDoc, results }) => {
+      if (err) {
+        instance.state.set('failed', err)
+        return console.error(err)
+      }
+
+      // if we can't get anything out of the response
+      // we set the internal state to failed
+      if (!results || !results.userResponse) {
+        instance.state.set('failed', new Error('no response received'))
+        return
+      }
+
+      const { userResponse } = results
+      try {
+        const lines = userResponse.split('\n')
+        const hasFeedback = {}
+        const feedback = lines.map(line => {
+          const split = line.split(/\s+/g)
+          const value = parseInt(split[ 2 ], 10)
+          hasFeedback[ value ] = true
+          return {
+            id: split[ 1 ],
+            value: value
+          }
+        })
+        instance.state.set('results', results)
+        instance.state.set('currentFeedback', feedback)
+        instance.state.set('hasFeedback', hasFeedback)
+      } catch (e) {
+        instance.state.set('failed', e)
+      }
+    })
+  })
+
+  // if we have a current feedback id-list
+  // we can load the feedback-translations
+  // from the remote content server
   const toIds = entry => entry.id
   instance.autorun(() => {
     const feedback = instance.state.get('currentFeedback')
@@ -86,19 +104,21 @@ Template.complete.onCreated(function () {
 
     ContentHost.methods.getCompetencies(feedback.map(toIds), (err, competencies) => {
       if (err) {
-        return console.error(err) // TODO handle
+        instance.state.set('failed', err)
+        return console.error(err)
       }
       const mappedCompetencies = {}
       competencies.forEach(entry => {
-        mappedCompetencies[entry.competencyId] = entry
+        mappedCompetencies[ entry.competencyId ] = entry
       })
       instance.state.set('competencies', mappedCompetencies)
     })
   })
 
+  // finally we call all feedback categories once
   Feedback.methods.get.call((err, { levels }) => {
     if (err) {
-      // TODO set state to "eval currently unavailable"
+      instance.state.set('failed', err)
       console.error(err)
       return
     }
@@ -107,9 +127,12 @@ Template.complete.onCreated(function () {
 })
 
 Template.complete.helpers({
+  failed () {
+    return Template.getState('failed')
+  },
   competency (id) {
     const competencies = Template.getState('competencies')
-    return competencies && competencies[id]
+    return competencies && competencies[ id ]
   },
   feedbackLevels () {
     return Template.getState('feedbackLevels')
@@ -153,7 +176,11 @@ Template.complete.helpers({
 Template.complete.events({
   'click .lea-showresults-forward-button' (event, templateInstance) {
     event.preventDefault()
-    Router.queryParam({ v: _states.indexOf(states.showPrint) })
+    if (templateInstance.state.get('failed')) {
+      Router.queryParam({ v: _states.indexOf(states.showDecision) })
+    } else {
+      Router.queryParam({ v: _states.indexOf(states.showPrint) })
+    }
   },
   'click .lea-showprint-back-button' (event, templateInstance) {
     event.preventDefault()
@@ -165,7 +192,11 @@ Template.complete.events({
   },
   'click .lea-showdecision-back-button' (event, templateInstance) {
     event.preventDefault()
-    Router.queryParam({ v: _states.indexOf(states.showPrint) })
+    if (templateInstance.state.get('failed')) {
+      Router.queryParam({ v: _states.indexOf(states.showResults) })
+    } else {
+      Router.queryParam({ v: _states.indexOf(states.showPrint) })
+    }
   },
   'click .lea-end-button' (event, templateInstance) {
     event.preventDefault()

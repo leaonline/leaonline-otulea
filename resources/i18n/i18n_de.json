@@ -110,7 +110,8 @@
       "printResults": "Ergebnis ausdrucken",
       "printResultsTeacher": "Für Kursleitende ausdrucken",
       "youCanPrint": "Sie können Ihr Ergebnis hier ausdrucken.",
-      "continueOrEnd": "Was möchten Sie als nächstes tun?"
+      "continueOrEnd": "Was möchten Sie als nächstes tun?",
+      "failed": "Es kann derzeit keine Bewertung Ihrer Ergenbisse erzeugt werden. Das Lea Team ist informiert und wird die Auswertung in Kürze wieder zur Verfügung stellen."
     }
   }
 }

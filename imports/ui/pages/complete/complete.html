@@ -18,6 +18,18 @@
 					</div>
 				</div>
 
+				{{!-- we display a failed state container to indicate to get feedback at a later point --}}
+				{{#if failed}}
+					<div class="card my-4">
+						<div class="card-body">
+							{{#with currentType}}
+								{{> textGroup tts="pages.complete.failed" label=(i18n "pages.complete.failed")
+										type=this}}
+							{{/with}}
+						</div>
+					</div>
+				{{/if}}
+
 				{{!-- iterate all possible feedback levels --}}
 				{{#with feedbackLevels}}
 					{{#each feedbackLevel in this}}
@@ -47,7 +59,7 @@
 					{{/each}}
 				{{else}}
 					<div class="card my-4">
-						<div class="card-body d-flex">
+						<div class="card-body">
 							<h1 class="text-center">
 								<i class="fa fas fa-fw fa-spinner fa-pulse"></i>
 							</h1>
