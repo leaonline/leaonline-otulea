@@ -169,7 +169,7 @@ Session.methods.update = {
       update.$unset = { currentTask: '' }
     }
 
-    console.log("update sesison", update)
+    console.log('update sesison', update)
     Session.collection().update(sessionDoc._id, update)
     return nextTask
   }),
@@ -227,31 +227,47 @@ Session.methods.recent = {
 
 Session.publications.current = {
   name: 'session.publications.current',
-  schema: {},
+  schema: {
+    sessionId: {
+      type: String,
+      optional: true
+    }
+  },
   projection: {},
   numRequests: 1,
   timeInterval: 1000,
   roles: [ Role.runSession.value ],
   group: Group.field.value,
-  run: onServer(function () {
+  run: onServer(function ({ sessionId } = {}) {
     const { userId } = this
-    return Session.collection().find({
-      userId: userId,
-      startedAt: {
-        $exists: true
-      },
-      completedAt: {
-        $exists: false
-      },
-      cancelled: {
-        $exists: false
-      }
-    }, {
-      sort: { startedAt: -1 }
-    })
+    const projection = {
+      sort: { startedAt: -1 },
+      limit: 1
+    }
+
+    if (sessionId) {
+      return Session.collection().find({
+        _id: sessionId,
+        userId: userId
+      })
+    } else {
+      return Session.collection().find({
+        userId: userId,
+        startedAt: {
+          $exists: true
+        },
+        completedAt: {
+          $exists: false
+        },
+        cancelled: {
+          $exists: false
+        }
+      }, projection)
+    }
   }),
-  subscribe: onClient(function () {
-    return SubsManager.subscribe(Session.publications.current.name)
+  subscribe: onClient(function ({ sessionId } = {}) {
+    const options = sessionId && { sessionId }
+    return SubsManager.subscribe(Session.publications.current.name, options)
   })
 }
 
