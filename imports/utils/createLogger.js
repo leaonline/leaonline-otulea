@@ -1,0 +1,1 @@
+export { createLogger } from 'leaonline:utils/lib/debug'
