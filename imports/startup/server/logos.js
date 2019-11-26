@@ -38,7 +38,7 @@ BackendConfig.add({
       schema: JSON.stringify(Logos.methods.update.schema, replacer)
     }
   },
-  roles: [ 'editLogos' ], // TODO put in Roles
+  roles: ['editLogos'], // TODO put in Roles
   group: 'editors', // TODO put in Groups,
   isFilesCollection: false,
   mainCollection: Logos.name,
@@ -46,10 +46,10 @@ BackendConfig.add({
     Logos.name,
     { name: MediaLib.name, isFilesCollection: true }
   ],
-  publications: [ {
+  publications: [{
     name: Logos.publications.single.name
   }, {
     name: MediaLib.publications.all.name,
     schema: MediaLib.publications.all.schema
-  } ]
+  }]
 })

@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor'
 import { onClient, onServer } from '../../utils/archUtils'
-import { getCollection } from '../../utils/collectionuUtils'
 
 export const Feedback = {
   name: 'feedback',

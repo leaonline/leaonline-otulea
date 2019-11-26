@@ -85,13 +85,13 @@ Session.helpers = {
       return
     }
     if (!currentTask) {
-      return tasks[ 0 ]
+      return tasks[0]
     }
     const index = tasks.indexOf(currentTask)
     if (index === -1 || index >= tasks.length - 1) {
       return
     }
-    return tasks[ index + 1 ]
+    return tasks[index + 1]
   }
 }
 
@@ -107,7 +107,7 @@ Session.methods.start = {
   },
   numRequests: 1,
   timeInterval: 1000,
-  roles: [ Role.runSession.value, Role.test.value ],
+  roles: [Role.runSession.value, Role.test.value],
   group: Group.field.value,
   run: onServer(function ({ dimension, level, continueAborted }) {
     const { userId } = this
@@ -130,7 +130,7 @@ Session.methods.start = {
     }
 
     const { tasks } = taskSet
-    const currentTask = tasks[ 0 ]
+    const currentTask = tasks[0]
 
     const insertDoc = { userId, startedAt, dimension, level, tasks, currentTask }
     console.log('new session:', insertDoc)
@@ -149,7 +149,7 @@ Session.methods.update = {
   },
   numRequests: 1,
   timeInterval: 1000,
-  roles: [ Role.runSession.value ],
+  roles: [Role.runSession.value],
   group: Group.field.value,
   run: onServer(function ({ sessionId }) {
     const { userId } = this
@@ -185,7 +185,7 @@ Session.methods.results = {
   },
   numRequests: 1,
   timeInterval: 1000,
-  roles: [ Role.runSession.value ],
+  roles: [Role.runSession.value],
   group: Group.field.value,
   run: onServer(function ({ sessionId }) {
     const { userId } = this
@@ -210,7 +210,7 @@ Session.methods.recent = {
   },
   numRequests: 1,
   timeInterval: 1000,
-  roles: [ Role.readSessions.value ],
+  roles: [Role.readSessions.value],
   group: Group.team.value,
   isPublic: true,
   run: onServer(function ({ userId }) {
@@ -236,7 +236,7 @@ Session.publications.current = {
   projection: {},
   numRequests: 1,
   timeInterval: 1000,
-  roles: [ Role.runSession.value ],
+  roles: [Role.runSession.value],
   group: Group.field.value,
   run: onServer(function ({ sessionId } = {}) {
     const { userId } = this

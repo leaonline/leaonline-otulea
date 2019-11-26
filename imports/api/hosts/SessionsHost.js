@@ -1,5 +1,5 @@
-import { Meteor } from "meteor/meteor"
-import { HTTP } from "meteor/http"
+import { Meteor } from 'meteor/meteor'
+import { HTTP } from 'meteor/http'
 
 const settings = Meteor.settings.public.hosts.sessions
 const sessionCredential = Meteor.isServer && Meteor.settings.hosts.sessions.secret
@@ -10,7 +10,7 @@ export const SessionsHost = {}
 
 SessionsHost.methods = {}
 
-SessionsHost.methods.submitResponse = function ({ userId, sessionId, taskId, type, contentId, responses , page}) {
+SessionsHost.methods.submitResponse = function ({ userId, sessionId, taskId, type, contentId, responses, page }) {
   return HTTP.post(responseUrl, {
     data: { userId, sessionId, type, taskId, responses, contentId, page: page.toString(10) },
     headers: {

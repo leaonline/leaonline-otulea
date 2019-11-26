@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor'
 import { Feedback } from '../../api/config/Feedback'
 import { BackendConfig } from '../../api/config/BackendConfig'
 import { createCollection } from '../../factories/collection/createCollection'
@@ -38,14 +37,14 @@ BackendConfig.add({
       schema: JSON.stringify(Feedback.schema, replacer)
     }
   },
-  roles: [ 'editFeedback' ], // TODO put in Roles
+  roles: ['editFeedback'], // TODO put in Roles
   group: 'editors', // TODO put in Groups,
   isFilesCollection: false,
   mainCollection: Feedback.name,
   collections: [
     Feedback.name
   ],
-  publications: [ {
+  publications: [{
     name: Feedback.publications.single.name
-  } ]
+  }]
 })

@@ -39,7 +39,7 @@ Logos.schema = {
     type: String,
     label: 'logos.logoUrl',
     optional: true
-  },
+  }
 }
 
 let _collection

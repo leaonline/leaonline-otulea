@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor'
 import { check } from 'meteor/check'
 import { HTTP } from 'meteor/http'
 
@@ -12,7 +13,7 @@ ContentHost.baseUrl = () => baseUrl
 ContentHost.methods = {}
 
 ContentHost.methods.getCompetencies = function (competencies, callback) {
-  check(competencies, [ String ])
+  check(competencies, [String])
   HTTP.post(competencyUrl, {
     data: { ids: competencies }
   }, (err, res) => {

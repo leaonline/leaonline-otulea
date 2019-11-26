@@ -3,7 +3,6 @@ import { Template } from 'meteor/templating'
 import { ReactiveVar } from 'meteor/reactive-var'
 import { Session } from '../../../api/session/Session'
 import { Task } from '../../../api/session/Task'
-import { Response } from '../../../api/session/Response'
 import { Router } from '../../../api/routing/Router'
 import { Dimensions } from '../../../api/session/Dimensions'
 import { Levels } from '../../../api/session/Levels'
@@ -16,13 +15,11 @@ import '../../layout/navbar/navbar'
 import './task.html'
 
 const components = LeaCoreLib.components
-const coreComponentsLoaded = components.load([ components.template.actionButton ])
+const coreComponentsLoaded = components.load([components.template.actionButton])
 
 const renderers = LeaCoreLib.renderers
-const renderUrl = Meteor.settings.public.hosts.items.renderUrl
+const renderUrl = Meteor.settings.public.hosts.items.renderUrl // TODO move to own host class
 renderers.h5p.configure({ renderUrl })
-
-const responseUrl = Meteor.settings.public.hosts.sessions.responseUrl
 
 const taskRendererFactoryLoaded = new ReactiveVar(false)
 renderers.factory.load().then(() => taskRendererFactoryLoaded.set(true)).catch(e => {
@@ -58,7 +55,7 @@ Template.task.onCreated(function () {
           instance.state.set('taskStory', taskDoc.story)
           instance.state.set('maxPages', taskDoc.pages.length)
           instance.state.set('currentPageCount', currentPageCount)
-          instance.state.set('currentPage', taskDoc.pages[ currentPageCount ])
+          instance.state.set('currentPage', taskDoc.pages[currentPageCount])
           instance.state.set('hasNext', taskDoc.pages.length > currentPageCount + 1)
         } else {
           abortTask(instance)
@@ -84,7 +81,7 @@ Template.task.onCreated(function () {
         const { currentTask } = sessionDoc
         const { tasks } = sessionDoc
 
-        const dimensionType = Dimensions.types[ sessionDoc.dimension ]
+        const dimensionType = Dimensions.types[sessionDoc.dimension]
         instance.state.set('color', dimensionType.type)
         instance.state.set('progress', Session.helpers.getProgress(sessionDoc))
         instance.state.set('currentTaskCount', tasks.indexOf(currentTask) + 1)
@@ -135,19 +132,19 @@ Template.task.helpers({
     const sessionDoc = Template.getState('sessionDoc')
     if (!sessionDoc) return
 
-    return Dimensions.types[ sessionDoc.dimension ]
+    return Dimensions.types[sessionDoc.dimension]
   },
   level () {
     const sessionDoc = Template.getState('sessionDoc')
     if (!sessionDoc) return
 
-    return Levels.types[ sessionDoc.level ]
+    return Levels.types[sessionDoc.level]
   },
   currentType () {
     const sessionDoc = Template.getState('sessionDoc')
     if (!sessionDoc) return
 
-    const dimension = Dimensions.types[ sessionDoc.dimension ]
+    const dimension = Dimensions.types[sessionDoc.dimension]
     return dimension && dimension.type
   },
   currentPage () {
@@ -191,13 +188,13 @@ Template.task.events({
 
     if (action === 'next') {
       newPage.currentPageCount = currentPageCount + 1
-      newPage.currentPage = taskDoc.pages[ newPage.currentPageCount ]
+      newPage.currentPage = taskDoc.pages[newPage.currentPageCount]
       newPage.hasNext = (newPage.currentPageCount + 1) < taskDoc.pages.length
     }
 
     if (action === 'back') {
       newPage.currentPageCount = currentPageCount - 1
-      newPage.currentPage = taskDoc.pages[ newPage.currentPageCount ]
+      newPage.currentPage = taskDoc.pages[newPage.currentPageCount]
       newPage.hasNext = (newPage.currentPageCount + 1) < taskDoc.pages.length
     }
 

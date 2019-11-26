@@ -50,7 +50,7 @@ Task.methods.submit = {
     },
     page: Number
   },
-  roles: [ Role.runSession.value, Role.test.value ],
+  roles: [Role.runSession.value, Role.test.value],
   group: Group.field.value,
   numRequests: 10,
   timeInterval: 1000,

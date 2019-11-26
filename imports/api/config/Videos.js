@@ -11,27 +11,27 @@ export const Videos = {
 Videos.schema = {
   welcome: {
     type: String,
-    label:"videos.welcome",
+    label: 'videos.welcome',
     optional: true
   },
   overview: {
     type: String,
-    label:"videos.overview",
+    label: 'videos.overview',
     optional: true
   },
   task: {
     type: String,
-    label:"videos.task",
+    label: 'videos.task',
     optional: true
   },
   complete: {
     type: String,
-    label:"videos.complete",
+    label: 'videos.complete',
     optional: true
   },
   notFound: {
     type: String,
-    label:"videos.notFound",
+    label: 'videos.notFound',
     optional: true
   }
 }

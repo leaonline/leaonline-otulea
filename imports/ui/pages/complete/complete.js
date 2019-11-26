@@ -30,9 +30,9 @@ Template.complete.onCreated(function () {
   instance.autorun(() => {
     const data = Template.currentData()
     const v = data.queryParams.v || 0
-    const currentView = _states[ parseInt(v, 10) ]
+    const currentView = _states[parseInt(v, 10)]
 
-    if (currentView && states[ currentView ]) {
+    if (currentView && states[currentView]) {
       instance.state.set('view', currentView)
     } else {
       instance.state.set('view', states.showResults)
@@ -49,7 +49,7 @@ Template.complete.onCreated(function () {
         instance.state.set('failed', new Error(`sessionDoc not found by id ${sessionId}`))
       }
 
-      const dimension = Dimensions.types[ sessionDoc.dimension ]
+      const dimension = Dimensions.types[sessionDoc.dimension]
       instance.state.set('currentType', dimension && dimension.type)
       instance.state.set('sessionDoc', sessionDoc)
     }
@@ -78,10 +78,10 @@ Template.complete.onCreated(function () {
         const hasFeedback = {}
         const feedback = lines.map(line => {
           const split = line.split(/\s+/g)
-          const value = parseInt(split[ 2 ], 10)
-          hasFeedback[ value ] = true
+          const value = parseInt(split[2], 10)
+          hasFeedback[value] = true
           return {
-            id: split[ 1 ],
+            id: split[1],
             value: value
           }
         })
@@ -109,7 +109,7 @@ Template.complete.onCreated(function () {
       }
       const mappedCompetencies = {}
       competencies.forEach(entry => {
-        mappedCompetencies[ entry.competencyId ] = entry
+        mappedCompetencies[entry.competencyId] = entry
       })
       instance.state.set('competencies', mappedCompetencies)
     })
@@ -132,14 +132,14 @@ Template.complete.helpers({
   },
   competency (id) {
     const competencies = Template.getState('competencies')
-    return competencies && competencies[ id ]
+    return competencies && competencies[id]
   },
   feedbackLevels () {
     return Template.getState('feedbackLevels')
   },
   hasFeedback (index) {
     const map = Template.getState('hasFeedback')
-    return map && map[ index ]
+    return map && map[index]
   },
   getFeedback (index) {
     const feedback = Template.getState('currentFeedback')
@@ -152,15 +152,18 @@ Template.complete.helpers({
     return Template.getState('results')
   },
   showResults () {
+    if (!loaded.get()) return false
     const instance = Template.instance()
     return instance.state.get('view') === states.showResults
   },
   showDecision () {
+    if (!loaded.get()) return false
     const instance = Template.instance()
     return instance.state.get('sessionDoc') &&
       instance.state.get('view') === states.showDecision
   },
   showPrint () {
+    if (!loaded.get()) return false
     const instance = Template.instance()
     return instance.state.get('sessionDoc') &&
       instance.state.get('view') === states.showPrint
