@@ -14,6 +14,7 @@ import '../../components/container/container'
 import '../../layout/navbar/navbar'
 import './task.html'
 
+
 const components = LeaCoreLib.components
 const coreComponentsLoaded = components.load([components.template.actionButton])
 
@@ -35,13 +36,17 @@ function abortTask (instance) {
 }
 
 function onInput ({ userId, sessionId, taskId, page, type, responses }) {
+  console.log('input', responses)
   Meteor.call(Task.methods.submit.name, { userId, sessionId, taskId, page, type, responses }, (err) => {
     if (err && Meteor.isDevelopment) console.error(err)
   })
 }
 
+
 Template.task.onCreated(function () {
   const instance = this
+  instance.collector = new EventTarget()
+
   const currentPageCount = Router.queryParam('p') || 0
 
   instance.autorun(() => {
@@ -174,7 +179,8 @@ Template.task.helpers({
     const taskId = taskDoc.taskId
     const userId = Meteor.userId()
     const color = instance.state.get('color')
-    return Object.assign({}, content, { userId, sessionId, taskId, page, color, onInput: onInput.bind(this) })
+    const collector  = instance.collector
+    return Object.assign({}, content, { userId, sessionId, taskId, page, color, onInput: onInput.bind(this), collector: collector})
   }
 })
 
@@ -202,6 +208,8 @@ Template.task.events({
       throw new Error(`Undefined page for current index ${newPage.currentPageCount}`)
     }
 
+    templateInstance.collector.dispatchEvent(new Event('collect'))
+
     const $current = templateInstance.$('.lea-task-current-content-container')
     const currentHeight = $current.height()
     const oldContainerCss = $current.css('height') || ''
@@ -226,6 +234,8 @@ Template.task.events({
     event.preventDefault()
     const sessionDoc = templateInstance.state.get('sessionDoc')
     const sessionId = sessionDoc._id
+
+    templateInstance.collector.dispatchEvent(new Event('collect'))
 
     // WHEN A TASK IS FINISHED, THE FOLLOWING
     // STEPS ARE TAKEN
