@@ -24,7 +24,15 @@
         "evalUrl": "http://localhost:6060/eval",
         "responseUrl": "http://localhost:6060/response"
       }
+    },
+    "log": {
+      "level": "debug",
+      "name": "app"
     }
+  },
+  "log": {
+    "level": "debug",
+    "name": "app"
   },
   "oauth": {
     "clientId": "abcdefghijklmnop",

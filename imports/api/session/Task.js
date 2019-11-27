@@ -5,8 +5,10 @@ import { onServer } from '../../utils/archUtils'
 import { Role } from '../accounts/Role'
 import { Group } from '../accounts/Group'
 import { SessionsHost } from '../hosts/SessionsHost'
+import { createLogger } from '../../utils/createLogger'
 
 const _TaskCollection = new Mongo.Collection(null)
+const Logger = createLogger('task')
 
 Task.collection = () => _TaskCollection
 
@@ -55,6 +57,7 @@ Task.methods.submit = {
   numRequests: 10,
   timeInterval: 1000,
   run: onServer(function ({ userId, sessionId, type, taskId, responses, contentId, page }) {
+    Logger.debug(`response sessionId=${sessionId}, type=${type}`, responses)
     return SessionsHost.methods.submitResponse({ userId, sessionId, type, taskId, responses, contentId, page })
   })
 }
