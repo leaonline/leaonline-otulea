@@ -33,29 +33,39 @@
 				{{!-- iterate all possible feedback levels --}}
 				{{#with feedbackLevels}}
 					{{#each feedbackLevel in this}}
-						{{#if hasFeedback feedbackLevel.index}}
-							<div class="card my-4">
-								<div class="card-header bg-white font-weight-bold">
-									{{> textGroup text=feedbackLevel.text label=feedbackLevel.text groupClass="w-100" type=currentType}}
-								</div>
-								<div class="card-body">
-									{{#each feedback in getFeedback feedbackLevel.index}}
-										{{#with competency feedback.id}}
-											{{> textGroup text=this.descriptionLearner
-													label=(i18n this.descriptionLearner) type=currentType}}
+						<div class="card my-4">
+							<div class="card-header bg-white font-weight-bold d-flex">
+								{{> textGroup text=feedbackLevel.text label=feedbackLevel.text groupClass="w-100" type=currentType}}
+								<span class="ml-auto">({{feedbackLevel.index}})</span>
+							</div>
+							<div class="card-body">
+								{{#each feedback in getFeedback feedbackLevel.index}}
+									{{#with competency feedback.competencyId}}
+										{{> textGroup text=this.descriptionLearner
+												label=(i18n this.descriptionLearner) type=currentType}}
+									{{else}}
+										{{#if competenciesLoaded}}
+											<div class="d-block ml-5 my-3">
+												<span>{{i18n "pages.complete.definitionMissing"}}: </span>
+												<span>{{feedback.competencyId}}</span>
+											</div>
 										{{else}}
 											<span>
 												<i class="fa fas fa-fw fa-spinner fa-pulse"></i>
 											</span>
-										{{/with}}
+										{{/if}}
+									{{/with}}
+								{{else}}
+									{{#if competenciesLoaded}}
+										<span class="ml-5">{{i18n "pages.complete.noEntries"}}</span>
 									{{else}}
-										<h1 class="text-center">
+										<span>
 											<i class="fa fas fa-fw fa-spinner fa-pulse"></i>
-										</h1>
-									{{/each}}
-								</div>
+										</span>
+									{{/if}}
+								{{/each}}
 							</div>
-						{{/if}}
+						</div>
 					{{/each}}
 				{{else}}
 					<div class="card my-4">

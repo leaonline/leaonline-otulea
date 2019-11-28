@@ -8,6 +8,7 @@ import { ContentHost } from '../../../api/hosts/ContentHost'
 import '../../components/container/container'
 import '../../layout/navbar/navbar'
 import './complete.html'
+import { ResponseParser } from './responseParser'
 
 const components = LeaCoreLib.components
 const loaded = components.load([
@@ -75,15 +76,11 @@ Template.complete.onCreated(function () {
       const { userResponse } = results
       try {
         const lines = userResponse.split('\n')
+        lines.shift()
+        const feedback = ResponseParser.parse(lines)
         const hasFeedback = {}
-        const feedback = lines.map(line => {
-          const split = line.split(/\s+/g)
-          const value = parseInt(split[2], 10)
-          hasFeedback[value] = true
-          return {
-            id: split[1],
-            value: value
-          }
+        feedback.forEach(entry => {
+          hasFeedback[entry.status] = true
         })
         instance.state.set('results', results)
         instance.state.set('currentFeedback', feedback)
@@ -97,7 +94,7 @@ Template.complete.onCreated(function () {
   // if we have a current feedback id-list
   // we can load the feedback-translations
   // from the remote content server
-  const toIds = entry => entry.id
+  const toIds = entry => entry.competencyId
   instance.autorun(() => {
     const feedback = instance.state.get('currentFeedback')
     if (!feedback) return
@@ -112,17 +109,26 @@ Template.complete.onCreated(function () {
         mappedCompetencies[entry.competencyId] = entry
       })
       instance.state.set('competencies', mappedCompetencies)
+      instance.state.set('competenciesLoaded', true)
     })
   })
 
   // finally we call all feedback categories once
-  Feedback.methods.get.call((err, { levels }) => {
+  Feedback.methods.get.call((err, { notEvaluable, levels }) => {
     if (err) {
       instance.state.set('failed', err)
       console.error(err)
       return
     }
-    instance.state.set('feedbackLevels', levels && levels.map((text, index) => ({ text, index })).reverse())
+    if (!levels) {
+      const noLevelsErr = new Error('no levels')
+      instance.state.set('failed', noLevelsErr)
+      console.error(noLevelsErr)
+      return
+    }
+    levels.unshift(notEvaluable)
+    const feedbackLevels = levels && levels.map((text, index) => ({ text, index: index - 1 })).reverse()
+    instance.state.set('feedbackLevels', feedbackLevels)
   })
 })
 
@@ -141,9 +147,12 @@ Template.complete.helpers({
     const map = Template.getState('hasFeedback')
     return map && map[index]
   },
+  competenciesLoaded() {
+    return Template.getState('competenciesLoaded')
+  },
   getFeedback (index) {
     const feedback = Template.getState('currentFeedback')
-    return feedback && feedback.filter(entry => entry.value === index)
+    return feedback && feedback.filter(entry => entry.status === index)
   },
   printOptions () {
     return Template.getState('printOptions')

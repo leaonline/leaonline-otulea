@@ -8,6 +8,10 @@ export const Feedback = {
 }
 
 Feedback.schema = {
+  notEvaluable: {
+    label: 'feedback.notEvaluable',
+    type: String
+  },
   levels: {
     type: Array,
     label: 'feedback.levels'
@@ -48,13 +52,13 @@ Feedback.methods.update = {
       optional: true
     }
   }),
-  run: onServer(function ({ levels }) {
+  run: onServer(function ({ notEvaluable, levels }) {
     const FeedbackCollection = Feedback.collection()
     const feedbackDoc = FeedbackCollection.findOne()
     if (!feedbackDoc) {
-      return FeedbackCollection.insert({ levels })
+      return FeedbackCollection.insert({ notEvaluable, levels })
     } else {
-      return FeedbackCollection.update(feedbackDoc._id, { $set: { levels } })
+      return FeedbackCollection.update(feedbackDoc._id, { $set: { notEvaluable, levels } })
     }
   })
 }
