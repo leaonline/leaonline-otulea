@@ -59,3 +59,9 @@ ccorcos:subs-cache
 
 # connection
 http
+
+#========================================
+# SECURITY
+#========================================
+audit-argument-checks
+force-ssl

@@ -15,3 +15,5 @@ routes.json
 # proprietary stuff
 public/fonts/
 public/logos/
+
+.deploy
