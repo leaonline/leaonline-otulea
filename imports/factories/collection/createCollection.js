@@ -1,9 +1,4 @@
-import { Mongo } from 'meteor/mongo'
+import { getCreateCollection } from 'meteor/leaonline:factories/collection/createCollection'
 import { Schema } from '../../api/schema/Schema'
 
-export const createCollection = ({ name, schema }) => {
-  const collection = new Mongo.Collection(name)
-  const collectionSchema = Schema.create(schema)
-  collection.attachSchema(collectionSchema)
-  return collection
-}
+export const createCollection = getCreateCollection(Schema.create)

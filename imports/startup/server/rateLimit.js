@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor'
-import { RateLimiterRegistry } from '../../factories/ratelimit/RateLimiterRegistry'
+import { runRateLimiter } from '../../factories/ratelimit/rateLimit'
 
 const logAttempt = (...args) => console.log(...args)
 
 Meteor.startup(() => {
-  RateLimiterRegistry.run(function callback (reply, input) {
+  runRateLimiter(function callback (reply, input) {
     if (reply.allowed) {
       return undefined
     } else {
