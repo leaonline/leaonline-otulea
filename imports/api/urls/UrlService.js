@@ -12,9 +12,9 @@ UrlService.content.url = function (path) {
   return `${contentRoot}${path}`
 }
 
-UrlService.content.call = function ({ path, method }, params, callback) {
+UrlService.content.call = function ({ path, method, headers }, params, callback) {
   const url = UrlService.content.url(path)
-  return HTTP.call(method, url, { params }, (err, res) => {
+  return HTTP.call(method, url, { headers, params }, (err, res) => {
     if (err) {
       return callback(err)
     }
