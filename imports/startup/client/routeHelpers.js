@@ -29,3 +29,9 @@ Template.registerHelper('log', function (...args) {
   args.pop()
   console.log(...args)
 })
+
+Template.registerHelper('url', function (path) {
+  return Meteor.absoluteUrl(path, {
+    secure: Meteor.isProduction
+  })
+})
