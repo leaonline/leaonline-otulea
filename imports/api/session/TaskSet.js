@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor'
 import { Mongo } from 'meteor/mongo'
 
 import { TaskSet } from 'meteor/leaonline:interfaces/TaskSet'
@@ -12,12 +11,19 @@ TaskSet.collection = () => _localCollection
 
 TaskSet.helpers.loaded = () => _loaded
 
+const origin = Meteor.absoluteUrl()
+const headers = { headers: { origin: origin } }
+
 TaskSet.helpers.load = callback => {
-  UrlService.content.call(TaskSet.httpRoutes.all, {}, (err, allSets) => {
+  const callRequest = Meteor.isClient ? TaskSet.httpRoutes.all : Object.assign({}, TaskSet.httpRoutes.all, headers)
+  UrlService.content.call(callRequest, {}, (err, allSets) => {
     if (err) {
       return callback(err)
     }
-    (allSets || []).forEach(setDoc => {
+    if (!allSets || allSets.length === 0) {
+      return callback(new Error(`Expected to receive sets but got nothing or empty.`))
+    }
+    allSets.forEach(setDoc => {
       if (_localCollection.findOne(setDoc._id)) {
         _localCollection.upsert(setDoc._id, setDoc)
       } else {
@@ -42,18 +48,6 @@ TaskSet.helpers.hasSet = ({ dimension, level }) => {
     query.level = level
   }
   return _localCollection.findOne(query)
-}
-
-if (Meteor.isServer) {
-  Meteor.startup(() => {
-    TaskSet.helpers.load((err, res) => {
-      if (err) {
-        return console.warn(err)
-      } else {
-        console.info(`[TaskSet]: loaded sets: ${res}`)
-      }
-    })
-  })
 }
 
 export { TaskSet }
