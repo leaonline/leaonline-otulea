@@ -1,3 +1,4 @@
+/* global EventTarget Event */
 import { Meteor } from 'meteor/meteor'
 import { Template } from 'meteor/templating'
 import { ReactiveVar } from 'meteor/reactive-var'
@@ -13,7 +14,6 @@ import { isTaskRoute } from '../../../utils/routeUtils'
 import '../../components/container/container'
 import '../../layout/navbar/navbar'
 import './task.html'
-
 
 const components = LeaCoreLib.components
 const coreComponentsLoaded = components.load([components.template.actionButton])
@@ -41,7 +41,6 @@ function onInput ({ userId, sessionId, taskId, page, type, responses }) {
     if (err && Meteor.isDevelopment) console.error(err)
   })
 }
-
 
 Template.task.onCreated(function () {
   const instance = this
@@ -179,8 +178,8 @@ Template.task.helpers({
     const taskId = taskDoc.taskId
     const userId = Meteor.userId()
     const color = instance.state.get('color')
-    const collector  = instance.collector
-    return Object.assign({}, content, { userId, sessionId, taskId, page, color, onInput: onInput.bind(this), collector: collector})
+    const collector = instance.collector
+    return Object.assign({}, content, { userId, sessionId, taskId, page, color, onInput: onInput.bind(this), collector: collector })
   }
 })
 

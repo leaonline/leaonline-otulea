@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor'
 import { Template } from 'meteor/templating'
 import { Routes } from '../../api/routing/Routes'
 import { Router } from '../../api/routing/Router'

@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor'
 import { Mongo } from 'meteor/mongo'
 
 import { TaskSet } from 'meteor/leaonline:interfaces/TaskSet'
@@ -21,7 +22,7 @@ TaskSet.helpers.load = callback => {
       return callback(err)
     }
     if (!allSets || allSets.length === 0) {
-      return callback(new Error(`Expected to receive sets but got nothing or empty.`))
+      return callback(new Error('Expected to receive sets but got nothing or empty.'))
     }
     allSets.forEach(setDoc => {
       if (_localCollection.findOne(setDoc._id)) {

@@ -133,7 +133,6 @@ Session.methods.start = {
     const currentTask = tasks[0]
 
     const insertDoc = { userId, startedAt, dimension, level, tasks, currentTask }
-    console.log('new session:', insertDoc)
     const newSessionId = SessionCollection.insert(insertDoc)
     return { sessionId: newSessionId, taskId: currentTask }
   }),

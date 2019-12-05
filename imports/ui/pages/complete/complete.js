@@ -147,7 +147,7 @@ Template.complete.helpers({
     const map = Template.getState('hasFeedback')
     return map && map[index]
   },
-  competenciesLoaded() {
+  competenciesLoaded () {
     return Template.getState('competenciesLoaded')
   },
   getFeedback (index) {
