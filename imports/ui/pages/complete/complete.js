@@ -60,19 +60,21 @@ Template.complete.onCreated(function () {
     const sessionDoc = instance.state.get('sessionDoc')
     if (!sessionDoc) return
 
-    Session.methods.results.call({ sessionId }, (err, { sessionDoc, results }) => {
+    Session.methods.results.call({ sessionId }, (err, res) => {
       if (err) {
         instance.state.set('failed', err)
         return console.error(err)
       }
-
       // if we can't get anything out of the response
       // we set the internal state to failed
-      if (!results || !results.userResponse) {
-        instance.state.set('failed', new Error('no response received'))
+      if (!res || !res.results || !res.results.userResponse) {
+        const noResErr = new Error(`Expected result from ${Session.methods.results.name}`)
+        instance.state.set('failed', noResErr)
+        console.error(noResErr)
         return
       }
 
+      const { results } = res
       const { userResponse } = results
       try {
         const lines = userResponse.split('\n')
@@ -114,12 +116,19 @@ Template.complete.onCreated(function () {
   })
 
   // finally we call all feedback categories once
-  Feedback.methods.get.call((err, { notEvaluable, levels }) => {
+  Feedback.methods.get.call((err, res) => {
     if (err) {
       instance.state.set('failed', err)
       console.error(err)
       return
     }
+    if (!res) {
+      const noResErr = new Error(`Expected result from ${Feedback.methods.get.name}`)
+      instance.state.set('failed', noResErr)
+      console.error(noResErr)
+      return
+    }
+    const { notEvaluable, levels } = res
     if (!levels) {
       const noLevelsErr = new Error('no levels')
       instance.state.set('failed', noLevelsErr)

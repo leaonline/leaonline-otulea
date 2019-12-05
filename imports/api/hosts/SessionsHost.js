@@ -10,11 +10,14 @@ export const SessionsHost = {}
 
 SessionsHost.methods = {}
 
+const origin = Meteor.absoluteUrl()
+
 SessionsHost.methods.submitResponse = function ({ userId, sessionId, taskId, type, contentId, responses, page }) {
   return HTTP.post(responseUrl, {
     data: { userId, sessionId, type, taskId, responses, contentId, page: page.toString(10) },
     headers: {
-      'X-Auth-Token': sessionCredential
+      'X-Auth-Token': sessionCredential,
+      origin: Meteor.isServer && origin
     }
   })
 }
@@ -23,7 +26,8 @@ SessionsHost.methods.evaluate = function ({ userId, sessionId }) {
   const results = HTTP.post(evalUrl, {
     data: { sessionId, userId },
     headers: {
-      'X-Auth-Token': sessionCredential
+      'X-Auth-Token': sessionCredential,
+      origin: Meteor.isServer && origin
     }
   })
   if (!results) return
