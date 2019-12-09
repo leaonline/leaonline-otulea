@@ -5,9 +5,9 @@
 		{{/unless}}
 
 		{{#if intro}}
-			<div class="bg-dark w-100">
+			<div class="w-100">
 				<div class="container">
-					<div class="intro-video-container embed-responsive embed-responsive-16by9 mh-50">
+					<div class="intro-video-container embed-responsive embed-responsive-16by9 mh-50 shadow shadow-sm">
 						<video controls preload="none" class="embed-responsive-item" allowfullscreen>
 							<source src="{{video "welcome"}}" type="video/mp4">
 							Your browser does not support the video tag.
@@ -17,7 +17,7 @@
 			</div>
 
 			{{#unless currentUser}}
-				<div class="container welcome-intro-container my-3">
+				<div class="container welcome-intro-container my-5">
 					<div class="card">
 						<div class="card-body">
 							{{> textGroup tts="pages.welcome.introduction"}}
@@ -70,7 +70,7 @@
 				<div class="card">
 					{{#if login}}
 						<div class="card-body">
-							{{#textGroup tts="pages.welcome.enterCode"}}
+							{{#textGroup tts="pages.welcome.enterCode" class="w-100"}}
 								{{> actionButton outline=true tts="common.back" icon="arrow-up" btnClass="lea-back-button" sndBtnClass="border-0" }}
 							{{/textGroup}}
 						</div>
