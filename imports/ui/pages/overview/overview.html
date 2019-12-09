@@ -32,8 +32,8 @@
 				{{#if loadComplete}}
 					<div class="card">
 						<div class="card-body">
-							{{#textGroup tts="pages.overview.chooseLevel"}}
-								{{> actionButton outline=true tts="common.back" icon="arrow-up" data-target=".overview-level-container"
+							{{#textGroup tts="pages.overview.chooseLevel" type=this.type }}
+								{{> actionButton outline=true tts="common.back" type=this.type icon="arrow-up" data-target=".overview-level-container"
 										btnClass="lea-back-button" data-type="dimension" }}
 							{{/textGroup}}
 						</div>
@@ -60,9 +60,9 @@
 					{{#if loadComplete}}
 						<div class="card">
 							<div class="card-body mt-3 overview-level-description">
-								{{#textGroup tts=dimensionLevel class="w-100"}}
+								{{#textGroup tts=dimensionLevel class="w-100" type=this.type}}
 									{{> actionButton outline=true tts="common.back" data-target=".overview-session-container"
-											icon="arrow-up" btnClass="lea-back-button" data-type="dimension" }}
+											icon="arrow-up" btnClass="lea-back-button" data-type="dimension" type=this.type}}
 								{{/textGroup}}
 							</div>
 						</div>
@@ -71,14 +71,14 @@
 							{{#if sessionLoadComplete}}
 								{{#if sessionAlreadyRunning}}
 									<div class="alert alert-{{this.type}} shadow-sm">
-										{{> textGroup tts="pages.overview.sessionFound"}}
+										{{> textGroup tts="pages.overview.sessionFound" type=this.type}}
 									</div>
 									<div class="card-body">
 										<div class="row">
 											<div class="col">
 												{{> actionButton class="lea-overview-continue-container w-100 mt-3"
 														data-restart=""
-														lg=true block=true type=this.type  tts="common.continue"
+														lg=true block=true type=this.type outline=true tts="common.continue"
 														label=(i18n "common.continue") btnClass="lea-overview-confirm-button" }}
 											</div>
 											<div class="col">
