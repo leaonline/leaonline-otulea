@@ -10,7 +10,6 @@ Meteor.startup(() => {
     detector.detect()
     const detected = detector.detected
     const types = Detector.types
-    let mode
     switch (detected.os) {
       case types.macos.os:
       case types.windows.os:
@@ -28,6 +27,7 @@ Meteor.startup(() => {
     console.error(error)
     mode = LeaCoreLib.ttsEngine.modes.server
   }
+
   LeaCoreLib.i18n.load(i18n)
   LeaCoreLib.ttsEngine.configure({ ttsUrl: Meteor.settings.public.tts.url, mode })
 })
