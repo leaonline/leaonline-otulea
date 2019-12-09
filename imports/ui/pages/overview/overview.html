@@ -14,7 +14,7 @@
 									{{> actionButton class="d-block overview-button" block=true icon=dimension.icon type=dimension.type
 											iconClass="d-block ml-auto mr-auto my-2 fa-2x"
 											outline=true data-dimension=dimension.name active=(isSelectedDimension dimension.name)
-											tts=dimension.label label=(i18n dimension.label) btnClass="lea-dimension-button font-weight-bold" }}
+											tts=dimension.label label=(i18n dimension.label) btnClass="lea-dimension-button font-weight-bold border-thick" }}
 								</div>
 							{{else}}
 								{{> loading}}
@@ -44,7 +44,7 @@
 																						   level.name}}d-unavailable{{/if}}">
 										{{> actionButton class="w-100 overview-button" block=true type=this.type outline=true data-level=level.name
 												active=(isSelectedLevel level.name)
-												tts=level.label label=(i18n level.label) btnClass="lea-level-button p-5 font-weight-bold" }}
+												tts=level.label label=(i18n level.label) btnClass="lea-level-button p-5 font-weight-bold border-thick" }}
 									</div>
 								{{/each}}
 							</div>

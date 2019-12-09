@@ -81,3 +81,7 @@ body, wrapper {
 .trapezoid {
   transform: perspective(3px) rotateX(-1deg);
 }
+
+.border-thick {
+  border-width: thick !important;
+}
