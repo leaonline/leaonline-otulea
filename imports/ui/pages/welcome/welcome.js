@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor'
 import { Template } from 'meteor/templating'
 import { ReactiveVar } from 'meteor/reactive-var'
+import { ReactiveDict } from 'meteor/reactive-dict'
 import { Random } from 'meteor/random'
 import { Users } from '../../../api/accounts/User'
 import { Router } from '../../../api/routing/Router'
-import { TTSEngine } from '../../../api/tts/TTSEngine'
 import { LeaCoreLib } from '../../../api/core/LeaCoreLib'
 import { loggedIn } from '../../../utils/accountUtils'
 import { fadeOut } from '../../../utils/animationUtils'
@@ -23,6 +23,8 @@ let originalVideoHeight
 
 Template.welcome.onCreated(function () {
   const instance = this
+  instance.state = new ReactiveDict()
+  instance.state.set('loginCode', null)
   instance.state.set('loadComplete', false)
   instance.newUser = new ReactiveVar(Random.id(MAX_INPUTS).toUpperCase())
 
@@ -63,7 +65,12 @@ Template.welcome.helpers({
     return args.some(entry => !!entry)
   },
   randomCode () {
-    return Template.instance().newUser.get().split('').join(' ')
+    const newUser = Template.instance().newUser.get()
+    if (!newUser) return
+    const split = newUser.split('')
+    const text = split.join(' ')
+    const tts = split.join(', ')
+    return { text, tts }
   },
   loginFail () {
     return Template.getState('loginFail')
@@ -84,6 +91,11 @@ Template.welcome.helpers({
   },
   loggingIn () {
     return Template.getState('logginIn')
+  },
+  loginTTS () {
+    const loginCode = Template.getState('loginCode')
+    if (!loginCode || !loginCode.length) return ''
+    return loginCode.split('').join(', ')
   }
 })
 
@@ -115,6 +127,12 @@ Template.welcome.events({
     })
   },
   'keydown .login-field' (event, templateInstance) {
+    // skip everything on Tab to keep
+    // accessibility in standard mode
+    if (event.code === 'Tab') {
+      return true
+    }
+
     event.preventDefault()
     const $target = templateInstance.$(event.currentTarget)
     const indexStr = $target.data('index')
@@ -130,8 +148,12 @@ Template.welcome.events({
         $prev.focus()
       }
     } else if (event.code.indexOf('Key') > -1 || event.code.indexOf('Digit') > -1) {
+      // update values
       $target.val(event.key)
-      TTSEngine.play({ text: event.key })
+      const loginCode = getLoginCode(templateInstance)
+      templateInstance.state.set('loginCode', loginCode)
+
+      // update pointer
       if (index < MAX_INPUTS - 1) {
         const $next = templateInstance.$(`input[data-index="${index + 1}"]`)
         $next.focus()
@@ -152,10 +174,7 @@ Template.welcome.events({
 
     templateInstance.state.set('logginIn', true)
 
-    let loginCode = ''
-    templateInstance.$('.login-field').each(function (index, input) {
-      loginCode += templateInstance.$(input).val()
-    })
+    const loginCode = getLoginCode(templateInstance)
 
     const newCode = templateInstance.state.get('newCode')
     if (newCode) {
@@ -179,6 +198,14 @@ Template.welcome.events({
     })
   }
 })
+
+function getLoginCode (templateInstance) {
+  let loginCode = ''
+  templateInstance.$('.login-field').each(function (index, input) {
+    loginCode += templateInstance.$(input).val()
+  })
+  return loginCode
+}
 
 function resetInputs (templateInstance) {
   templateInstance.$('.login-field').each(function (index, input) {

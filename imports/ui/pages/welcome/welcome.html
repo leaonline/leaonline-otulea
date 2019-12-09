@@ -82,32 +82,37 @@
 								{{> actionButton outline=true tts="common.back" icon="arrow-up" btnClass="lea-back-button" sndBtnClass="border-0" }}
 							{{/textGroup}}
 						</div>
-						<div class="card-body text-center">
+						<div class="card-body row">
 							{{#with randomCode}}
-								{{> text src=this class="lea-text-xl"}}
+								<div class="col col-md-8 col-lg-6 mx-auto d-flex">
+									{{> soundbutton text=this.tts lg=true outline=true}}
+									{{> text src=this.text class="lea-text-xl ml-3 flex-fill d-flex" tokenClass="flex-fill text-center"}}
+								</div>
 							{{/with}}
 						</div>
 					{{/if}}
 
-
 					<div class="card-body welcome-login-container my-3 row">
-						<div class="input-group input-group-lg col col-md-8 col-lg-6 col-xl-4 mx-auto">
-							<input type="text" data-index="0" maxlength="1"
-								   class="login-field text-uppercase form-control text-center mr-2" autofocus />
-							<input type="text" data-index="1" maxlength="1"
-								   class="login-field text-uppercase form-control text-center mx-2" />
-							<input type="text" data-index="2" maxlength="1"
-								   class="login-field text-uppercase form-control text-center mx-2" />
-							<input type="text" data-index="3" maxlength="1"
-								   class="login-field text-uppercase form-control text-center mx-2" />
-							<input type="text" data-index="4" maxlength="1"
-								   class="login-field text-uppercase form-control text-center ml-2" />
+						<div class="col col-md-8 col-lg-6 mx-auto d-flex">
+							{{> soundbutton text=loginTTS lg=true outline=true }}
+							<div class="input-group input-group-lg ml-3">
+								<input type="text" data-index="0" maxlength="1" autofocus
+									   class="login-field text-uppercase form-control text-center mr-2" />
+								<input type="text" data-index="1" maxlength="1"
+									   class="login-field text-uppercase form-control text-center mx-2" />
+								<input type="text" data-index="2" maxlength="1"
+									   class="login-field text-uppercase form-control text-center mx-2" />
+								<input type="text" data-index="3" maxlength="1"
+									   class="login-field text-uppercase form-control text-center mx-2" />
+								<input type="text" data-index="4" maxlength="1"
+									   class="login-field text-uppercase form-control text-center ml-2" />
+							</div>
 						</div>
 					</div>
 
 					{{#if loginFail}}
 						<div class="card-body">
-							{{> textGroup tts="pages.welcome.loginFail" type="warning" class="w-100 alert alert-warning"}}
+							{{> textGroup tts="pages.welcome.loginFail" type="warning" class="w-100 p-3 alert-warning"}}
 						</div>
 					{{/if}}
 				</div>
