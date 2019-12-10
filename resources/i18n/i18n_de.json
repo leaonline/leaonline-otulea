@@ -97,7 +97,7 @@
     },
     "overview": {
       "chooseDimension": "Bitte wählen Sie eine Kategorie aus.",
-      "chooseLevel": "Wir möchten die Aufgaben möglichst passend für Sie zusammenstellen. Bitte schätzen Sie hier Ihre Fähigkeiten ein. Wenn Sie mit dem Mauszeiger auf die Lautsprechersymbole klicken, werden ihnen der jeweiligen Schwierigkeitsgrade vorgelesen. Nachdem Sie auf eine Auswahlfläche geklickt haben, wird Ihnen noch ein kurzes Beispiel angezeigt, welches Sie sich ebenfalls durch Klicken auf das Lautsprechersymbol vorlesen lassen können.",
+      "chooseLevel": "Wir möchten die Aufgaben möglichst passend für Sie zusammenstellen. Bitte schätzen Sie hier Ihre Fähigkeiten ein. Wenn Sie mit dem Mauszeiger auf die Lautsprechersymbole klicken, werden Ihnen der jeweiligen Schwierigkeitsgrade vorgelesen. Nachdem Sie auf eine Auswahlfläche geklickt haben, wird Ihnen noch ein kurzes Beispiel angezeigt, welches Sie sich ebenfalls durch Klicken auf das Lautsprechersymbol vorlesen lassen können.",
       "confirm": "Aufgaben starten",
       "sessionFound": "Es läuft bereits eine Bearbeitung für diese Auswahl. Möchten Sie die Bearbeitung fortsetzen oder neu starten?"
     },
