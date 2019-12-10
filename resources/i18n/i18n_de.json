@@ -97,7 +97,7 @@
     },
     "overview": {
       "chooseDimension": "Bitte wählen Sie eine Kategorie aus.",
-      "chooseLevel": "Wir möchten die Aufgaben möglichst passend für Sie zusammenstellen. Bitte schätzen Sie hier Ihre Fähigkeiten ein. Wenn Sie mit dem Mauszeiger über die Schaltflächen fahren, werden Ihnen Beipsiele genannt. Bitte klicken Sie mit der linken Maustaste die Schaltfläche an, die Ihre Fähigkeit am ehesten beschreibt.",
+      "chooseLevel": "Wir möchten die Aufgaben möglichst passend für Sie zusammenstellen. Bitte schätzen Sie hier Ihre Fähigkeiten ein. Wenn Sie mit dem Mauszeiger auf die Lautsprechersymbole klicken, werden ihnen der jeweiligen Schwierigkeitsgrade vorgelesen. Nachdem Sie auf eine Auswahlfläche geklickt haben, wird Ihnen noch ein kurzes Beispiel angezeigt, welches Sie sich ebenfalls durch Klicken auf das Lautsprechersymbol vorlesen lassen können.",
       "confirm": "Aufgaben starten",
       "sessionFound": "Es läuft bereits eine Bearbeitung für diese Auswahl. Möchten Sie die Bearbeitung fortsetzen oder neu starten?"
     },
@@ -111,7 +111,7 @@
       "printResultsTeacher": "Für Kursleitende ausdrucken",
       "youCanPrint": "Sie können Ihr Ergebnis hier ausdrucken.",
       "continueOrEnd": "Was möchten Sie als nächstes tun?",
-      "failed": "Es kann derzeit keine Bewertung Ihrer Ergenbisse erzeugt werden. Das Lea Team ist informiert und wird die Auswertung in Kürze wieder zur Verfügung stellen.",
+      "failed": "Es kann derzeit keine Bewertung Ihrer Ergebnisse erzeugt werden. Das Lea Team ist informiert und wird die Auswertung in Kürze wieder zur Verfügung stellen.",
       "definitionMissing": "Kompetenz ermittelt aber Definition fehlt",
       "noEntries": "Nicht bewertet, da nicht in den bearbeiteten Aufgaben enthalten"
     }
