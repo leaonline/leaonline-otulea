@@ -25,6 +25,15 @@
         "responseUrl": "http://localhost:6060/response"
       }
     },
+    "evaluation": {
+      "parse": {
+        "index": 0,
+        "competencyId": 2,
+        "status": 3,
+        "occurrences": 5,
+        "correct": 4
+      }
+    },
     "log": {
       "level": "debug",
       "name": "app"

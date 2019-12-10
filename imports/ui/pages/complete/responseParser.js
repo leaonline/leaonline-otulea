@@ -1,40 +1,27 @@
 /*
-I20191127-15:52:25.980(1)?        KB Status bearbeitet korrekt bearbeitet_01
-I20191127-15:52:25.981(1)? 1  S.1.06     -1          0       0             0
-I20191127-15:52:25.981(1)? 21 S.1.07     -1          1       0             0
-I20191127-15:52:25.981(1)? 11 S.1.08     -1          0       0             0
-I20191127-15:52:25.981(1)? 8  S.1.09     -1          2       0             0
-I20191127-15:52:25.981(1)? 20 S.1.10     -1          1       0             0
-I20191127-15:52:25.981(1)? 2  S.1.12     -1          1       0             0
-I20191127-15:52:25.981(1)? 12 S.1.13     -1          0       0             0
-I20191127-15:52:25.981(1)? 16 S.2.01     -1          0       0             0
-I20191127-15:52:25.981(1)? 5  S.2.03     -1          2       0             0
-I20191127-15:52:25.981(1)? 29 S.2.04     -1          0       0             0
-I20191127-15:52:25.981(1)? 3  S.2.05     -1          0       0             0
-I20191127-15:52:25.981(1)? 4  S.2.06     -1          1       0             0
-I20191127-15:52:25.981(1)? 7  S.2.07     -1          4       0             0
-I20191127-15:52:25.981(1)? 9  S.2.08     -1          3       0             0
-I20191127-15:52:25.981(1)? 27 S.2.09     -1          0       0             0
-I20191127-15:52:25.981(1)? 28 S.2.10     -1          0       0             0
-I20191127-15:52:25.982(1)? 14 S.3.01     -1          1       0             0
-I20191127-15:52:25.982(1)? 15 S.3.02     -1          0       0             0
-I20191127-15:52:25.982(1)? 6  S.3.05     -1          0       0             0
-I20191127-15:52:25.982(1)? 18 S.3.06     -1          1       0             0
-I20191127-15:52:25.982(1)? 22 S.3.07     -1          0       0             0
-I20191127-15:52:25.982(1)? 10 S.3.09     -1          2       0             0
-I20191127-15:52:25.982(1)? 24 S.4.03     -1          0       0             0
-I20191127-15:52:25.982(1)? 33 S.4.04     -1          0       0             0
-I20191127-15:52:25.982(1)? 23 S.4.05     -1          0       0             0
-I20191127-15:52:25.982(1)? 26 S.4.06     -1          0       0             0
-I20191127-15:52:25.982(1)? 17 S.4.07     -1          1       0             0
-I20191127-15:52:25.982(1)? 30 S.4.09     -1          0       0             0
-I20191127-15:52:25.982(1)? 19 S.4.11     -1          0       0             0
-I20191127-15:52:25.982(1)? 31 S.5.01     -1          0       0             0
-I20191127-15:52:25.982(1)? 13 S.5.03     -1          0       0             0
-I20191127-15:52:25.982(1)? 25 S.5.04     -1          0       0             0
-I20191127-15:52:25.982(1)? 32 S.5.10     -1          0       0             0
+   ID     KB Status korrekt bewertet uebersprungen unbewertet gesehen
+10 CD S.2.07      3       6        6             0          0       6
+12 CD S.2.08      2       4        5             0          0       5
+3  CD  L.4.2     -1       0        0             0          0       0
+1  CD  L.4.3     -1       0        0             0          0       0
+2  CD  L.4.4     -1       0        0             0          0       0
+4  CD S.1.06     -1       0        0             0          1       1
+*/
+const settings = Meteor.settings.public.evaluation.parse
 
- */
+const toInt = value => {
+  if (typeof value === 'undefined' || value === null) {
+    return -1
+  } else {
+    return parseInt(value, 10)
+  }
+}
+
+const index = (arr) => toInt(arr[settings.index])
+const competencyId = (arr) => arr[settings.competencyId]
+const status = (arr) => toInt(arr[settings.status])
+const occurrences = (arr) => toInt(arr[settings.occurrences])
+const correct = (arr) => toInt(arr[settings.correct])
 
 export const ResponseParser = {}
 
@@ -42,12 +29,13 @@ ResponseParser.parse = function (lines, { skipNonOccurred = true } = {}) {
   return lines
     .map(line => {
       const split = line.split(/\s+/g)
-      const index = parseInt(split[0], 10)
-      const competencyId = split[1]
-      const status = parseInt(split[2], 10)
-      const occurrences = parseInt(split[3], 10)
-      const correct = parseInt(split[3], 10)
-      return { index, competencyId, status, occurrences, correct }
+      return {
+        index: index(split),
+        competencyId: competencyId(split),
+        status: status(split),
+        occurrences: occurrences(split),
+        correct: correct(split)
+      }
     })
     .filter(entry => {
       if (skipNonOccurred && entry.occurrences === 0) {

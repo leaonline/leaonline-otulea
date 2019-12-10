@@ -71,6 +71,7 @@ Template.complete.onCreated(function () {
         const noResErr = new Error(`Expected result from ${Session.methods.results.name}`)
         instance.state.set('failed', noResErr)
         console.error(noResErr)
+        console.info(res)
         return
       }
 
@@ -79,11 +80,13 @@ Template.complete.onCreated(function () {
       try {
         const lines = userResponse.split('\n')
         lines.shift()
-        const feedback = ResponseParser.parse(lines)
+
         const hasFeedback = {}
+        const feedback = ResponseParser.parse(lines)
         feedback.forEach(entry => {
           hasFeedback[entry.status] = true
         })
+
         instance.state.set('results', results)
         instance.state.set('currentFeedback', feedback)
         instance.state.set('hasFeedback', hasFeedback)
