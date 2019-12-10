@@ -181,7 +181,6 @@ Template.overview.events({
 
     templateInstance.state.set('starting', true)
     const options = { dimension: dimension.name, level: level.name, continueAborted: !restart }
-    console.log(options)
     Session.methods.start.call(options, (err, { taskId, sessionId }) => {
       if (err) {
         console.error(err)

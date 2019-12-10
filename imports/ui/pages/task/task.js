@@ -36,7 +36,6 @@ function abortTask (instance) {
 }
 
 function onInput ({ userId, sessionId, taskId, page, type, responses }) {
-  console.log('input', responses)
   Meteor.call(Task.methods.submit.name, { userId, sessionId, taskId, page, type, responses }, (err) => {
     if (err && Meteor.isDevelopment) console.error(err)
   })
@@ -53,7 +52,6 @@ Template.task.onCreated(function () {
     const { taskId } = data.params
     Task.helpers.load(taskId)
       .then(taskDoc => {
-        console.log('task loaded', taskDoc)
         if (taskDoc) {
           instance.state.set('taskDoc', taskDoc)
           instance.state.set('taskStory', taskDoc.story)
