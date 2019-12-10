@@ -113,7 +113,7 @@
       "continueOrEnd": "Was möchten Sie als nächstes tun?",
       "failed": "Es kann derzeit keine Bewertung Ihrer Ergebnisse erzeugt werden. Das Lea Team ist informiert und wird die Auswertung in Kürze wieder zur Verfügung stellen.",
       "definitionMissing": "Kompetenz ermittelt aber Definition fehlt",
-      "noEntries": "Nicht bewertet, da nicht in den bearbeiteten Aufgaben enthalten"
+      "noEntries": "Es sind hierzu keine Einträge in der Rückmeldung enthalten."
     }
   }
 }
