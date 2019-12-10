@@ -69,7 +69,11 @@
 
 						<div class="mt-4 overview-level-decision">
 							{{#if sessionLoadComplete}}
+
 								{{#if sessionAlreadyRunning}}
+								{{! ======================================================================= }}
+								{{!-- DISPLAY CONTINUTE / RESTART OPTIONS WHEN THERE IS ALREADY A SESSION --}}
+								{{! ======================================================================= }}
 									<div class="alert alert-{{this.type}} shadow-sm">
 										{{> textGroup tts="pages.overview.sessionFound" type=this.type}}
 									</div>
@@ -83,8 +87,8 @@
 											</div>
 											<div class="col">
 												{{> actionButton class="lea-overview-confirm-container w-100 mt-3"
+														lg=true block=true outline=true type=this.type  tts="common.restart"
 														data-restart="true"
-														lg=true block=true type=this.type  outline=true tts="common.restart"
 														label=(i18n "common.restart") btnClass="lea-overview-confirm-button" }}
 											</div>
 										</div>

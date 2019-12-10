@@ -23,6 +23,11 @@ $theme-colors: (
 );
 
 @each $color, $value in $theme-colors {
+
+  /*
+        default buttons
+  */
+
   .btn-#{$color} {
     color: white !important;
     &:hover {
@@ -32,9 +37,11 @@ $theme-colors: (
       color: white !important;
     }
   }
-}
 
-@each $color, $value in $theme-colors {
+  /*
+        outline buttons
+  */
+
   .btn-outline-#{$color} {
     &:hover {
       color: white !important;
@@ -43,20 +50,46 @@ $theme-colors: (
       color: white !important;
     }
   }
+
+  /*
+        lea action buttons
+  */
+
+  .lea-action-btn-#{$color} {
+    color: $value !important;
+    background-color: white !important;
+    &:hover {
+      background-color: $value !important;
+      color: white !important;
+    }
+    &.active {
+      background-color: $value !important;
+      color: white !important;
+    }
+  }
+
+  /*
+        lea action outlines buttons
+  */
+
+  .lea-action-btn-outline-#{$color} {
+    color: $value !important;
+    background-color: white !important;
+    &:hover {
+      background-color:$value !important;
+      color: white !important;
+    }
+    &.active {
+      background-color: $value !important;
+      color: white !important;
+    }
+  }
 }
+
 
 
 .border-gray {
   border: solid $lea-gray !important;
-}
-
-.lea-outline-secondary {
-  background: white !important;
-}
-
-.lea-outline-secondary:hover {
-  background: $lea-secondary !important;
-  color: white !important;
 }
 
 .card {
