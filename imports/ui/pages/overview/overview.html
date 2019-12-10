@@ -40,7 +40,7 @@
 						<div class="card-body mt-3">
 							<div class="row">
 								{{#each level in levels}}
-									<div class="col col-xs-12 col-md-6 col-lg-4 my-1 {{#if levelDisabled dimension.name
+									<div class="col col-xs-12 col-md-6 col-lg-4 my-1 {{#if levelDisabled ../name
 																						   level.name}}d-unavailable{{/if}}">
 										{{> actionButton class="w-100 overview-button" block=true type=this.type outline=true data-level=level.name
 												active=(isSelectedLevel level.name)
