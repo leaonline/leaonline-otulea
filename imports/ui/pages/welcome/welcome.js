@@ -142,10 +142,14 @@ Template.welcome.events({
       if (index === 0) {
         return true
       } else {
+        // update field and position
         const $prev = templateInstance.$(`input[data-index="${index - 1}"]`)
         $target.val('')
         $prev.val('')
         $prev.focus()
+        // update logincode
+        const loginCode = getLoginCode(templateInstance)
+        templateInstance.state.set('loginCode', loginCode)
       }
     } else if (event.code.indexOf('Key') > -1 || event.code.indexOf('Digit') > -1) {
       // update values
@@ -164,9 +168,13 @@ Template.welcome.events({
   },
   'keydown .lea-welcome-login' (event, templateInstance) {
     if (event.code === 'Backspace') {
+      // update field and position
       const $prev = templateInstance.$(`input[data-index="${MAX_INPUTS - 1}"]`)
       $prev.val('')
       $prev.focus()
+      // update logincode
+      const loginCode = getLoginCode(templateInstance)
+      templateInstance.state.set('loginCode', loginCode)
     }
   },
   'click .lea-welcome-login' (event, templateInstance) {
@@ -211,6 +219,9 @@ function resetInputs (templateInstance) {
   templateInstance.$('.login-field').each(function (index, input) {
     templateInstance.$(input).val(null)
   })
+  // update logincode
+  const loginCode = getLoginCode(templateInstance)
+  templateInstance.state.set('loginCode', loginCode)
 }
 
 function focusInput (templateInstance) {

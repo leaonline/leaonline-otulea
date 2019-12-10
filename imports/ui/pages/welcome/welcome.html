@@ -94,7 +94,11 @@
 
 					<div class="card-body welcome-login-container my-3 row">
 						<div class="col col-md-8 col-lg-6 mx-auto d-flex">
-							{{> soundbutton text=loginTTS lg=true outline=true }}
+							{{#with loginTTS}}
+								{{> soundbutton text=loginTTS lg=true outline=true }}
+							{{else}}
+								{{> soundbutton text=loginTTS lg=true outline=true disabled=true class="active"}}
+							{{/with}}
 							<div class="input-group input-group-lg ml-3">
 								<input type="text" data-index="0" maxlength="1" autofocus
 									   class="login-field text-uppercase form-control text-center mr-2" />
