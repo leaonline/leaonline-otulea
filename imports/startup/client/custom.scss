@@ -96,6 +96,14 @@ $theme-colors: (
   border-radius: 0px !important;
 }
 
+a {
+  color: #183B5D !important;
+}
+
+a:hover {
+  color: #ACACAC !important;
+}
+
 /* -------end customization-------- */
 
 /* finally, import Bootstrap to set the changes! */
