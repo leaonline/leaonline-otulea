@@ -26,8 +26,10 @@
 
 				<div class="row mt-5">
 					<div class="col-12 col-lg-6 offset-lg-3">
-						{{> actionButton type=currentType block=true tts="pages.task.continueToTask" btnClass="lea-task-finishstory-button"
-								type=currentType icon="arrow-right" iconPos="right" label=(i18n "pages.task.continueToTask") }}
+						{{#with currentType}}
+						{{> actionButton type=this block=true outline=true tts="pages.task.continueToTask" btnClass="lea-task-finishstory-button"
+								icon="arrow-right" iconPos="right" label=(i18n "pages.task.continueToTask") }}
+						{{/with}}
 					</div>
 				</div>
 			{{/container}}
