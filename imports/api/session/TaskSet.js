@@ -16,14 +16,20 @@ const origin = Meteor.absoluteUrl()
 const headers = { headers: { origin: origin } }
 
 TaskSet.helpers.load = callback => {
-  const callRequest = Meteor.isClient ? TaskSet.httpRoutes.all : Object.assign({}, TaskSet.httpRoutes.all, headers)
+  // the method can be called from the client, too
+  // se we may add headers with the origin
+  const callRequest = Meteor.isClient
+    ? TaskSet.httpRoutes.all
+    : Object.assign({}, TaskSet.httpRoutes.all, headers)
+
   UrlService.content.call(callRequest, {}, (err, allSets) => {
-    if (err) {
-      return callback(err)
-    }
+    if (err) return callback(err)
+
+    // skip further processing if no tassk have been received
     if (!allSets || allSets.length === 0) {
-      return callback(new Error('Expected to receive sets but got nothing or empty.'))
+      return callback(undefined, allSets)
     }
+
     allSets.forEach(setDoc => {
       if (_localCollection.findOne(setDoc._id)) {
         _localCollection.upsert(setDoc._id, setDoc)
@@ -31,8 +37,9 @@ TaskSet.helpers.load = callback => {
         _localCollection.insert(setDoc)
       }
     })
+
     _loaded = allSets && allSets.length > 0
-    callback(null, _loaded)
+    callback(null, _loaded && allSets.length)
   })
 }
 
