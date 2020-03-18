@@ -10,17 +10,17 @@
     "lint:fix": "standard --fix | snazzy"
   },
   "dependencies": {
-    "@babel/runtime": "^7.3.4",
-    "@fortawesome/fontawesome-free": "^5.10.2",
-    "bcrypt": "^3.0.6",
-    "bootstrap": "^4.3.1",
+    "@babel/runtime": "^7.8.7",
+    "@fortawesome/fontawesome-free": "^5.12.1",
+    "bcrypt": "^4.0.1",
+    "bootstrap": "^4.4.1",
     "debug": "^4.1.1",
     "detect-os": "^1.1.1",
     "jquery": "^3.4.1",
-    "lozad": "^1.9.0",
-    "meteor-node-stubs": "^0.4.1",
-    "popper.js": "^1.15.0",
-    "simpl-schema": "^1.5.5"
+    "lozad": "^1.14.0",
+    "meteor-node-stubs": "^1.0.0",
+    "popper.js": "^1.16.1",
+    "simpl-schema": "^1.5.7"
   },
   "meteor": {
     "mainModule": {
@@ -31,6 +31,6 @@
   },
   "devDependencies": {
     "snazzy": "^8.0.0",
-    "standard": "^14.1.0"
+    "standard": "^14.3.3"
   }
 }
