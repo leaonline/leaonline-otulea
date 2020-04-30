@@ -16,7 +16,7 @@
     "bootstrap": "^4.4.1",
     "debug": "^4.1.1",
     "detect-os": "^1.1.1",
-    "jquery": "^3.4.1",
+    "jquery": "^3.5.0",
     "lozad": "^1.14.0",
     "meteor-node-stubs": "^1.0.0",
     "popper.js": "^1.16.1",
