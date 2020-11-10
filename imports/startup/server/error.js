@@ -10,7 +10,8 @@ console.dev = (...args) => {
   }
 }
 
-createCollection(ErrorLog)
+const collection = createCollection(ErrorLog)
+ErrorLog.collection = () => collection
 
 const methods = Object.values(ErrorLog.methods)
 createMethods(methods)

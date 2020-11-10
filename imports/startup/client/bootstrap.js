@@ -1,5 +1,10 @@
-import 'bootstrap'
-import popper from 'popper.js'
-import './custom.scss'
+import { Meteor } from 'meteor/meteor'
 
-global.Popper = global.Popper || popper
+Meteor.startup(async () => {
+  await import('bootstrap')
+  const popper = (await import('popper.js')).default
+  global.Popper = global.Popper || popper
+  await import('./theme.scss')
+})
+
+

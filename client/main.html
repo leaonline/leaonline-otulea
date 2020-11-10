@@ -17,6 +17,7 @@
 
 <body>
 <noscript>Sorry, your browser does not support JavaScript!</noscript>
+<!--
 <style>
     @font-face {
         font-family: 'Semikolon';
@@ -24,7 +25,7 @@
         src: local('SemikolonPlus-Regular.otf'), url({{url '/fonts/SemikolonPlus-Regular.otf'}});
     }
 </style>
-
+-->
 </body>
 
 <template name="main-render-target">
@@ -32,6 +33,6 @@
         <main class="w-100 main-container flex-fill">
             {{> yield}}
         </main>
-        {{>footer}}
+        {{> footer}}
     </wrapper>
 </template>

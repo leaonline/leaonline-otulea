@@ -1,6 +1,8 @@
 {
   "actions": {
-    "close": "Schließen"
+    "close": "Schließen",
+    "continue": "Fortsetzen",
+    "restart": "Neu starten"
   },
   "aria": {
     "readText": "Text als Audio abspielen"
@@ -60,10 +62,8 @@
     "no": "Nein",
     "back": "Zurück",
     "forward": "Weiter",
-    "continue": "Fortsetzen",
     "end": "Beenden",
     "logout": "Abmelden",
-    "restart": "Neu starten",
     "finish": "Weiter zur nächsten Aufgabe",
     "toOverview": "Zur Übersicht",
     "toWelcome": "Zur Startseite",

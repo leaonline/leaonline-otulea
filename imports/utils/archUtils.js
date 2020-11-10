@@ -1,1 +1,3 @@
-export { onServer, onClient } from 'meteor/leaonline:utils/lib/arch'
+export {
+  onServer, onServerExec, onClient, isomorph
+}from 'meteor/leaonline:utils/lib/arch'

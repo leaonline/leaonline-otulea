@@ -27,15 +27,6 @@ Response.schema = {
   'answers.$.value': String
 }
 
-let _ResponseCollection
-
-Response.collection = function () {
-  if (!_ResponseCollection) {
-    _ResponseCollection = getCollection(Response)
-  }
-  return _ResponseCollection
-}
-
 Response.methods = {}
 
 Response.methods.send = {

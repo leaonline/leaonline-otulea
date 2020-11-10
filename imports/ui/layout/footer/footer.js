@@ -3,13 +3,8 @@ import { Template } from 'meteor/templating'
 import { Legal } from '../../../api/config/Legal'
 import { dataTarget } from '../../../utils/eventUtils'
 import { Logos } from '../../../api/config/Logos'
-import { LeaCoreLib } from '../../../api/core/LeaCoreLib'
 import './footer.html'
 
-const components = LeaCoreLib.components
-const loaded = components.load([
-  components.template.soundbutton, components.template.actionButton, components.template.image
-])
 
 const legalRoutes = Object.keys(Legal.schema).map(key => {
   const value = Legal.schema[key]
@@ -31,12 +26,9 @@ Template.footer.onCreated(function () {
 })
 
 Template.footer.helpers({
-  loadComplete () {
-    return loaded.get()
-  },
   logos () {
     const logoDoc = Template.getState('logoDoc')
-    return logoDoc && logoDoc.footerLogos
+    return logoDoc && logoDoc.footer
   },
   legalRoutes () {
     return legalRoutes

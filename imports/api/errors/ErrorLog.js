@@ -28,14 +28,6 @@ ErrorLog.schema = {
   }
 }
 
-let _ErrorLogCollection
-
-ErrorLog.collection = function () {
-  if (_ErrorLogCollection) {
-    _ErrorLogCollection = getCollection(ErrorLog)
-  }
-  return _ErrorLogCollection
-}
 
 ErrorLog.methods = {}
 

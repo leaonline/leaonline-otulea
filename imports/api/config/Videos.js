@@ -5,51 +5,47 @@ import { getCollection } from '../../utils/collectionuUtils'
 export const Videos = {
   name: 'videos',
   label: 'videos.title',
-  icon: 'video'
+  icon: 'video',
+  isConfigDoc: true
 }
 
 Videos.schema = {
   welcome: {
     type: String,
     label: 'videos.welcome',
-    optional: true
+    optional: true,
+    isMediaUrl: true
   },
   overview: {
     type: String,
     label: 'videos.overview',
-    optional: true
+    optional: true,
+    isMediaUrl: true
   },
   task: {
     type: String,
     label: 'videos.task',
-    optional: true
+    optional: true,
+    isMediaUrl: true
   },
   complete: {
     type: String,
     label: 'videos.complete',
-    optional: true
+    optional: true,
+    isMediaUrl: true
   },
   notFound: {
     type: String,
     label: 'videos.notFound',
-    optional: true
+    optional: true,
+    isMediaUrl: true
   }
-}
-
-let _collection
-
-Videos.collection = function () {
-  if (_collection) {
-    _collection = getCollection(Videos)
-  }
-  return _collection
 }
 
 Videos.publications = {}
 
 Videos.publications.single = {
   name: 'videos.publications.single',
-  isPublic: true, // FIXME only backend editors and admins
   schema: {},
   numRequests: 1,
   timeInterval: 250,
@@ -62,7 +58,6 @@ Videos.methods = {}
 
 Videos.methods.update = {
   name: 'videos.methods.update',
-  isPublic: true, // FIXME only backend editors and admins
   numRequests: 1,
   timeInterval: 250,
   schema: Object.assign({}, Videos.schema, {

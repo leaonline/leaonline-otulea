@@ -5,7 +5,7 @@ import { ReactiveVar } from 'meteor/reactive-var'
 import { Session } from '../../../api/session/Session'
 import { Task } from '../../../api/session/Task'
 import { Router } from '../../../api/routing/Router'
-import { Dimensions } from '../../../api/session/Dimensions'
+import { Dimensions } from '../../../api/session/Dimension'
 import { Levels } from '../../../api/session/Levels'
 import { LeaCoreLib } from '../../../api/core/LeaCoreLib'
 import { fadeOut, fadeIn } from '../../../utils/animationUtils'
@@ -13,7 +13,7 @@ import { dataTarget } from '../../../utils/eventUtils'
 import { isTaskRoute } from '../../../utils/routeUtils'
 import '../../components/container/container'
 import '../../layout/navbar/navbar'
-import './task.html'
+import './unit.html'
 
 const components = LeaCoreLib.components
 const coreComponentsLoaded = components.load([components.template.actionButton])
@@ -41,7 +41,7 @@ function onInput ({ userId, sessionId, taskId, page, type, responses }) {
   })
 }
 
-Template.task.onCreated(function () {
+Template.unit.onCreated(function () {
   const instance = this
   instance.collector = new EventTarget()
 
@@ -102,14 +102,14 @@ Template.task.onCreated(function () {
   })
 })
 
-Template.task.onDestroyed(function () {
+Template.unit.onDestroyed(function () {
   const instance = this
   instance.state.set({
     fadedOut: null
   })
 })
 
-Template.task.helpers({
+Template.unit.helpers({
   loadComplete () {
     const instance = Template.instance()
     return taskRendererFactoryLoaded.get() && coreComponentsLoaded.get() &&
@@ -181,7 +181,7 @@ Template.task.helpers({
   }
 })
 
-Template.task.events({
+Template.unit.events({
   'click .lea-pagenav-button' (event, templateInstance) {
     event.preventDefault()
     const action = dataTarget(event, templateInstance, 'action')

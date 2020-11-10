@@ -5,55 +5,31 @@ import { onClient, onServer } from '../../utils/archUtils'
 export const Legal = {
   name: 'legal',
   label: 'legal.title',
-  icon: 'info'
+  icon: 'info',
+  isConfigDoc: true
 }
 
 Legal.schema = {
   imprint: {
     type: String,
     label: 'legal.imprint',
-    optional: true,
-    max: 5000,
-    autoform: {
-      type: 'markdown'
-    }
   },
   privacy: {
     type: String,
     label: 'legal.privacy',
-    optional: true,
-    max: 5000,
-    autoform: {
-      type: 'markdown'
-    }
+    //optional: true,
+    //richText: true,
+    //max: 5000
   },
   terms: {
     type: String,
     label: 'legal.terms',
-    optional: true,
-    max: 5000,
-    autoform: {
-      type: 'markdown'
-    }
+
   },
   contact: {
     type: String,
     label: 'legal.contact',
-    optional: true,
-    max: 5000,
-    autoform: {
-      type: 'markdown'
-    }
   }
-}
-
-let _collection
-
-Legal.collection = function () {
-  if (_collection) {
-    _collection = getCollection(Legal)
-  }
-  return _collection
 }
 
 Legal.helpers = {}
@@ -92,7 +68,9 @@ Legal.methods.update = {
   numRequests: 1,
   timeInterval: 250,
   schema: {
-    _id: String,
+    _id: {
+      type: String
+    },
     imprint: Legal.schema.imprint,
     privacy: Legal.schema.privacy,
     terms: Legal.schema.terms,

@@ -2,7 +2,7 @@
   "welcome": "/willkommen",
   "notFound": "/seite-nicht-gefunden",
   "overview": "/auswahl-aufgaben",
-  "task": "/aufgabe",
+  "unit": "/aufgabe",
   "complete": "/ergebnisse",
   "logout": "/abgemeldet"
 }

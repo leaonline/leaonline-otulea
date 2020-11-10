@@ -4,7 +4,8 @@ import { onClient, onServer } from '../../utils/archUtils'
 export const Feedback = {
   name: 'feedback',
   label: 'feedback.title',
-  icon: 'star-half-alt'
+  icon: 'star-half-alt',
+  isConfigDoc: true
 }
 
 Feedback.schema = {
@@ -20,10 +21,6 @@ Feedback.schema = {
     type: String,
     label: 'feedback.levelDescription'
   }
-}
-
-Feedback.collection = function () {
-  throw new Error('not yet implemented')
 }
 
 Feedback.publications = {}

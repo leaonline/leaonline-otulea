@@ -1,5 +1,6 @@
 import settings from '../../../resources/i18n/i18n_routes' // TODO load dynamically using i18n locale
 import { createLoggedinTrigger, createLoginTrigger, createNotFoundTrigger } from './triggers'
+import { gotoRoute } from './gotoRoute'
 
 export const Routes = {}
 
@@ -86,42 +87,42 @@ Routes.overview = {
     window.scrollTo(0, 0)
   },
   data: {
-    next ({ sessionId, taskId }) {
-      return Routes.task.path(sessionId, taskId)
+    next ({ sessionId, unitId }) {
+      gotoRoute(Routes.unit, sessionId, unitId)
     }
   }
 }
 
 /**
- * Task process page, where all tasks are dynamically rendered and processed.
+ * Unit process page, where all units are dynamically rendered and processed.
  */
 
-Routes.task = {
-  path: (sessionId = ':sessionId', taskId = ':taskId') => {
-    return `${settings.task}/${sessionId}/${taskId}`
+Routes.unit = {
+  path: (sessionId = ':sessionId', unitId = ':unitId') => {
+    return `${settings.unit}/${sessionId}/${unitId}`
   },
   label: 'pages.task.title',
   triggersEnter: () => [
     createLoginTrigger(Routes.welcome)
   ],
   async load () {
-    return import('../../ui/pages/task/task')
+    return import('../../ui/pages/unit/unit')
   },
   target: null,
-  template: 'task',
+  template: 'unit',
   roles: null,
   onAction () {
     window.scrollTo(0, 0)
   },
   data: {
-    next ({ sessionId, taskId }) {
-      return Routes.task.path(sessionId, taskId)
+    next () {
+      throw new Error('not implemented')
     },
     prev () {
-      return Routes.overview
+      throw new Error('not implemented')
     },
-    finish ({ sessionId }) {
-      return Routes.complete.path(sessionId)
+    finish () {
+      throw new Error('not implemented')
     }
   }
 }

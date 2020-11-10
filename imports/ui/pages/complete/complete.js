@@ -1,7 +1,7 @@
 import { Template } from 'meteor/templating'
 import { Session } from '../../../api/session/Session'
 import { Router } from '../../../api/routing/Router'
-import { Dimensions } from '../../../api/session/Dimensions'
+import { Dimensions } from '../../../api/session/Dimension'
 import { LeaCoreLib } from '../../../api/core/LeaCoreLib'
 import { Feedback } from '../../../api/config/Feedback'
 import { ContentHost } from '../../../api/hosts/ContentHost'

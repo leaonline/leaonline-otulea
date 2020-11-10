@@ -1,54 +1,34 @@
 import { Meteor } from 'meteor/meteor'
 import { onClient, onServer } from '../../utils/archUtils'
 import { getCollection } from '../../utils/collectionuUtils'
-import { MediaLib } from '../medialib/MediaLib'
-import { ContentHost } from '../hosts/ContentHost'
 
 export const Logos = {
   name: 'logos',
   label: 'logos.title',
-  icon: 'images'
+  icon: 'images',
+  isConfigDoc: true
 }
 
 Logos.schema = {
-  footerLogos: {
+  footer: {
     type: Array,
     label: 'logos.footer',
-    optional: true
+    optional: false
   },
-  'footerLogos.$': {
-    type: Object
+  'footer.$': {
+    type: Object,
+    label: 'common.entry'
   },
-  'footerLogos.$.src': {
+  'footer.$.url': {
     type: String,
-    label: 'logos.logoSrc',
-    autoform: {
-      type: 'imageSelect',
-      imagesCollection: MediaLib.name,
-      save: 'url',
-      uriBase: ContentHost.baseUrl(),
-      version: 'original'
-    }
+    label: 'logos.logoUrl',
+    isMediaUrl: true
   },
-  'footerLogos.$.title': {
+  'footer.$.title': {
     type: String,
     label: 'logos.logoTitle',
     optional: true
-  },
-  'footerLogos.$.url': {
-    type: String,
-    label: 'logos.logoUrl',
-    optional: true
   }
-}
-
-let _collection
-
-Logos.collection = function () {
-  if (_collection) {
-    _collection = getCollection(Logos)
-  }
-  return _collection
 }
 
 Logos.publications = {}
@@ -68,7 +48,6 @@ Logos.methods = {}
 
 Logos.methods.update = {
   name: 'logos.methods.update',
-  isPublic: true, // FIXME only backend editors and admins
   numRequests: 1,
   timeInterval: 250,
   schema: Object.assign({}, Logos.schema, {
@@ -77,13 +56,13 @@ Logos.methods.update = {
       optional: true
     }
   }),
-  run: onServer(function ({ mainLogo, footerLogos }) {
+  run: onServer(function ({ mainLogo, footer }) {
     const LogoCollection = Logos.collection()
     const logoDoc = LogoCollection.findOne()
     if (!logoDoc) {
-      return LogoCollection.insert({ mainLogo, footerLogos })
+      return LogoCollection.insert({ mainLogo, footer })
     } else {
-      return LogoCollection.update(logoDoc._id, { $set: { mainLogo, footerLogos } })
+      return LogoCollection.update(logoDoc._id, { $set: { mainLogo, footer } })
     }
   })
 }

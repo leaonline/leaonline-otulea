@@ -5,18 +5,11 @@ import { ReactiveDict } from 'meteor/reactive-dict'
 import { Random } from 'meteor/random'
 import { Users } from '../../../api/accounts/User'
 import { Router } from '../../../api/routing/Router'
-import { LeaCoreLib } from '../../../api/core/LeaCoreLib'
 import { loggedIn } from '../../../utils/accountUtils'
 import { fadeOut } from '../../../utils/animationUtils'
 import './welcome.scss'
 import './welcome.html'
 
-const components = LeaCoreLib.components
-const coreComponentsLoaded = components.load([
-  components.template.soundbutton,
-  components.template.actionButton,
-  components.template.textGroup,
-  components.template.text])
 
 const MAX_INPUTS = 5
 let originalVideoHeight
@@ -40,16 +33,24 @@ Template.welcome.onCreated(function () {
     }
   }
 
-  instance.autorun(() => {
-    if (!coreComponentsLoaded.get()) return
-    instance.state.set('loadComplete', true)
-    instance.wizard.intro(true)
+  instance.state.set('loadComplete', true)
+  instance.wizard.intro(true)
+
+  instance.initDependencies({
+    language: true,
+    tts: true,
+    onComplete: () => {
+      instance.state.set('dependenciesComplete', true)
+    }
   })
 })
 
 Template.welcome.helpers({
   loadComplete () {
     return Template.instance().state.get('loadComplete')
+  },
+  dependenciesComplete () {
+    return Template.instance().state.get('dependenciesComplete')
   },
   intro () {
     return Template.instance().state.get('intro')

@@ -1,7 +1,7 @@
 /* global $ */
 import { Template } from 'meteor/templating'
 import { ReactiveVar } from 'meteor/reactive-var'
-import { Dimensions } from '../../../api/session/Dimensions'
+import { Dimensions } from '../../../api/session/Dimension'
 import { Levels } from '../../../api/session/Levels'
 import { Routes } from '../../../api/routing/Routes'
 import { Router } from '../../../api/routing/Router'

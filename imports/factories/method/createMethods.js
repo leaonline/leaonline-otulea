@@ -1,5 +1,13 @@
-import { ValidatedMethod } from 'meteor/mdg:validated-method'
-import { getCreateMethods } from 'meteor/leaonline:factories'
+import { createMethodFactory } from 'meteor/leaonline:method-factory'
 import { Schema } from '../../api/schema/Schema'
+import { checkPermissions } from '../../api/mixins/checkPermissions'
 
-export const createMethods = getCreateMethods(ValidatedMethod, Schema.create)
+export const createMethod = createMethodFactory({
+  schemaFactory: Schema.create,
+  mixins: [checkPermissions]
+})
+
+export const createMethods = methods => methods.forEach(methodDef => {
+  console.info(`[methodFactory]: create ${methodDef.name}`)
+  createMethod(methodDef)
+})

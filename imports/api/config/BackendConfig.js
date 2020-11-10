@@ -1,1 +1,1 @@
-export { BackendConfig } from 'meteor/leaonline:interfaces/BackendConfig'
+export { ServiceRegistry } from 'meteor/leaonline:service-registry'
