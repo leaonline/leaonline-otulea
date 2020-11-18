@@ -80,3 +80,8 @@ jkuester:http
 audit-argument-checks@1.0.7
 force-ssl@1.1.0
 jquery@3.0.0!
+
+#========================================
+# testing
+#========================================
+meteortesting:mocha
