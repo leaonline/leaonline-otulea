@@ -1,37 +1,40 @@
 import { Template } from 'meteor/templating'
-import { Session } from '../../../api/session/Session'
-import { Router } from '../../../api/routing/Router'
-import { Dimensions } from '../../../api/session/Dimension'
-import { LeaCoreLib } from '../../../api/core/LeaCoreLib'
+import { Session } from '../../../contexts/session/Session'
 import { Feedback } from '../../../api/config/Feedback'
 import { ContentHost } from '../../../api/hosts/ContentHost'
+import { ResponseParser } from './responseParser'
+import { Dimension } from '../../../contexts/Dimension'
+
 import '../../components/container/container'
 import '../../layout/navbar/navbar'
 import './complete.html'
-import { ResponseParser } from './responseParser'
-
-const components = LeaCoreLib.components
-const loaded = components.load([
-  components.template.actionButton,
-  components.template.textGroup
-])
 
 const states = {
   showResults: 'showResults',
   showPrint: 'showPrint',
-  showDecision: 'showDecision'
+  showDecision: 'showDecision',
+  showFailed: 'showFailed'
 }
-const _states = Object.values(states)
+const stateValues = Object.values(states)
 
 Template.complete.onCreated(function () {
   const instance = this
-  const { sessionId } = instance.data.params
+  
+  const { api } = instance.initDependencies({
+    language: true,
+    tts: true,
+    contexts: [Dimension],
+    onComplete () {
+      instance.state.set('dependenciesComplete', true)
+    }
+  })
+
+  const { queryParam } = api
 
   // basic routes / state handling
   instance.autorun(() => {
-    const data = Template.currentData()
-    const v = data.queryParams.v || 0
-    const currentView = _states[parseInt(v, 10)]
+    const v = queryParam('v') || 0
+    const currentView = stateValues[parseInt(v, 10)]
 
     if (currentView && states[currentView]) {
       instance.state.set('view', currentView)
@@ -40,21 +43,12 @@ Template.complete.onCreated(function () {
     }
   })
 
-  // call the sessionDoc first, so we can already display
-  // navbar, category / dimension and some messages
-  instance.autorun(() => {
-    const sessionSub = Session.publications.current.subscribe({ sessionId })
-    if (sessionSub.ready()) {
-      const sessionDoc = Session.helpers.byId(sessionId)
-      if (!sessionDoc) {
-        instance.state.set('failed', new Error(`sessionDoc not found by id ${sessionId}`))
-      }
+  const onFailed = err => instance.state.set('failed', err || true)
+  onFailed()
 
-      const dimension = Dimensions.types[sessionDoc.dimension]
-      instance.state.set('currentType', dimension && dimension.type)
-      instance.state.set('sessionDoc', sessionDoc)
-    }
-  })
+  /*
+  const { sessionId } = instance.data.params
+
 
   instance.autorun(() => {
     const sessionDoc = instance.state.get('sessionDoc')
@@ -142,9 +136,14 @@ Template.complete.onCreated(function () {
     const feedbackLevels = levels && levels.map((text, index) => ({ text, index: index - 1 })).reverse()
     instance.state.set('feedbackLevels', feedbackLevels)
   })
+
+  */
 })
 
 Template.complete.helpers({
+  loadComplete () {
+    return Template.getState('dependenciesComplete')
+  },
   failed () {
     return Template.getState('failed')
   },
@@ -172,21 +171,28 @@ Template.complete.helpers({
   evaluationResults () {
     return Template.getState('results')
   },
+  showThanks () {
+    const viewState = Template.getState('view')
+    const failed = Template.getState('failed')
+    return viewState === states.showResults || failed
+  },
   showResults () {
-    if (!loaded.get()) return false
     const instance = Template.instance()
-    return instance.state.get('view') === states.showResults
+    const failed = instance.state.get('failed')
+    return instance.state.get('view') === states.showResults && !failed
   },
   showDecision () {
-    if (!loaded.get()) return false
     const instance = Template.instance()
-    return instance.state.get('sessionDoc') &&
+    const failed = instance.state.get('failed')
+    return !failed &&
+      instance.state.get('sessionDoc') &&
       instance.state.get('view') === states.showDecision
   },
   showPrint () {
-    if (!loaded.get()) return false
     const instance = Template.instance()
-    return instance.state.get('sessionDoc') &&
+    const failed = instance.state.get('failed')
+    return !failed &&
+      instance.state.get('sessionDoc') &&
       instance.state.get('view') === states.showPrint
   },
   sessionDoc () {
@@ -200,36 +206,42 @@ Template.complete.helpers({
 Template.complete.events({
   'click .lea-showresults-forward-button' (event, templateInstance) {
     event.preventDefault()
+    const { queryParam } = templateInstance.api
     if (templateInstance.state.get('failed')) {
-      Router.queryParam({ v: _states.indexOf(states.showDecision) })
+      queryParam({ v: stateValues.indexOf(states.showDecision) })
     } else {
-      Router.queryParam({ v: _states.indexOf(states.showPrint) })
+      queryParam({ v: stateValues.indexOf(states.showPrint) })
     }
   },
   'click .lea-showprint-back-button' (event, templateInstance) {
     event.preventDefault()
-    Router.queryParam({ v: _states.indexOf(states.showResults) })
+    const { queryParam } = templateInstance.api
+    queryParam({ v: stateValues.indexOf(states.showResults) })
   },
   'click .lea-showprint-forward-button' (event, templateInstance) {
     event.preventDefault()
-    Router.queryParam({ v: _states.indexOf(states.showDecision) })
+    const { queryParam } = templateInstance.api
+    queryParam({ v: stateValues.indexOf(states.showDecision) })
   },
   'click .lea-showdecision-back-button' (event, templateInstance) {
     event.preventDefault()
+    const { queryParam } = templateInstance.api
     if (templateInstance.state.get('failed')) {
-      Router.queryParam({ v: _states.indexOf(states.showResults) })
+      queryParam({ v: stateValues.indexOf(states.showResults) })
     } else {
-      Router.queryParam({ v: _states.indexOf(states.showPrint) })
+      queryParam({ v: stateValues.indexOf(states.showPrint) })
     }
   },
   'click .lea-end-button' (event, templateInstance) {
     event.preventDefault()
-    const route = templateInstance.data.end()
-    Router.go(route)
+    templateInstance.api.fadeOut('.lea-complete-container', () => templateInstance.data?.end  ())
   },
   'click .lea-continue-button' (event, templateInstance) {
     event.preventDefault()
-    const route = templateInstance.data.next()
-    Router.go(route)
+    templateInstance.api.fadeOut('.lea-complete-container', () => templateInstance.data?.next())
+  },
+  'click .lea-to-overview-button' (event, templateInstance) {
+    event.preventDefault()
+    templateInstance.api.fadeOut('.lea-complete-container', () => templateInstance.data?.next())
   }
 })

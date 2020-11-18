@@ -8,6 +8,7 @@ import { loadAllContentDocs } from '../../api/loading/loadAllContentDocs'
 import { Router } from '../../api/routing/Router'
 import { fadeOut } from '../../utils/animationUtils'
 import { callMethod } from '../../infrastructure/methods/callMethod'
+import { loadContentDoc } from '../../api/loading/loadContentDoc'
 
 // if we use the autoload functionality we don't need to explicitly load basic
 // and generic (stateless) templates, since they are loaded at runtime using
@@ -50,6 +51,7 @@ Blaze.TemplateInstance.prototype.initDependencies =
     instance.api.queryParam = value => Router.queryParam(value)
     instance.api.callMethod = callMethod
     instance.api.loadAllContentDocs = loadAllContentDocs
+    instance.api.loadContentDoc = loadContentDoc
     instance.api.fadeOut = function (target, callback) {
       return fadeOut(target, instance, callback)
     }
@@ -77,7 +79,7 @@ Blaze.TemplateInstance.prototype.initDependencies =
     instance.autorun(c => {
       if (allComplete.every(rv => rv.get())) {
         c.stop()
-        instance.api.info('deps load complete')
+        instance.api.info('call dependencies onComplete')
         onComplete()
       }
     })

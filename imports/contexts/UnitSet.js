@@ -1,21 +1,11 @@
 import { UnitSet } from 'meteor/leaonline:corelib/contexts/UnitSet'
-import { onServer, onServerExec } from '../../utils/archUtils'
+import { onServer, onServerExec } from '../utils/archUtils'
 
 // This app is stateless with the UnitSet content, which is why we define it
 // only as local collection. The docs will get deleted after caches are emptied.
 UnitSet.isLocalCollection = true
 
 UnitSet.helpers = UnitSet.helpers || {}
-
-onServerExec(function () {
-  import { createContentCache } from '../../infrastructure/cache/createContentCache'
-
-  const cache = createContentCache({ context: UnitSet })
-
-  UnitSet.helpers.getDocument = unitId => cache.get(unitId)
-  UnitSet.helpers.releaseDocument = unitId => cache.bust(unitId)
-  UnitSet.helpers.releaseContext = () => cache.bust(null)
-})
 
 function validateDoc (unitSetDoc) {
   if (!unitSetDoc) {
@@ -26,6 +16,7 @@ function validateDoc (unitSetDoc) {
 
 function validateUnits (unitSetDoc) {
   if (!unitSetDoc.units || unitSetDoc.units.length === 0) {
+    console.warn('invalid units')
     throw new Meteor.Error('unitSet.showStory.error', 'unitSet.noUnits', { unitSetDoc })
   }
   return unitSetDoc

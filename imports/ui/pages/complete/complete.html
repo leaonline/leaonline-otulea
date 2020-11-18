@@ -1,147 +1,175 @@
 <template name="complete">
-	<div class="lea-complete-container">
+    <div class="lea-complete-container">
 
-		{{#with sessionDoc}}
-			{{#container}}
-				{{>navbar sessionDoc=.. showProgress=false root=".lea-complete-container" }}
-			{{/container}}
-		{{/with}}
+        {{#with sessionDoc}}
+            {{#container}}
+                {{>navbar sessionDoc=.. showProgress=false root=".lea-complete-container" }}
+            {{/container}}
+        {{/with}}
 
-		{{#if showResults}}
-			{{#container}}
-				<div class="card my-4">
-					<div class="card-body">
-						{{#with currentType}}
-							{{> textGroup tts="pages.complete.thankYou" label=(i18n "pages.complete.thankYou")
-									type=this}}
-						{{/with}}
-					</div>
-				</div>
+        {{#if showThanks}}
+            {{#container}}
+                <div class="card my-4">
+                    <div class="card-body">
+                        {{#onComplete complete=loadComplete}}
+                            {{> textGroup tts="pages.complete.thankYou" label=(i18n "pages.complete.thankYou")
+                                    type=this}}
+                        {{/onComplete}}
+                    </div>
+                </div>
+            {{/container}}
+        {{/if}}
 
-				{{!-- we display a failed state container to indicate to get feedback at a later point --}}
-				{{#if failed}}
-					<div class="card my-4">
-						<div class="card-body">
-							{{#with currentType}}
-								{{> textGroup tts="pages.complete.failed" label=(i18n "pages.complete.failed")
-										type=this}}
-							{{/with}}
-						</div>
-					</div>
-				{{/if}}
+        {{!-- we display a failed state container to indicate to get feedback at a later point --}}
+        {{#if failed}}
+            {{#container}}
+                <div class="card my-4">
+                    <div class="card-body">
+                        {{#onComplete complete=loadComplete}}
+                            {{> textGroup tts="pages.complete.failed"
+                                    label=(i18n "pages.complete.failed")
+                                    type=currentType}}
+                        {{/onComplete}}
 
-				{{!-- iterate all possible feedback levels --}}
-				{{#with feedbackLevels}}
-					{{#each feedbackLevel in this}}
-						<div class="card my-4">
-							<div class="card-header bg-white font-weight-bold d-flex">
-								{{> textGroup text=feedbackLevel.text label=feedbackLevel.text groupClass="w-100" type=currentType}}
-								<span class="ml-auto">({{feedbackLevel.index}})</span>
-							</div>
-							<div class="card-body">
-								{{#each feedback in getFeedback feedbackLevel.index}}
-									{{#with competency feedback.competencyId}}
-										{{> textGroup text=this.descriptionLearner
-												label=(i18n this.descriptionLearner) type=currentType}}
-									{{else}}
-										{{#if competenciesLoaded}}
-											<div class="d-block ml-5 my-3">
-												<span>{{i18n "pages.complete.definitionMissing"}}: </span>
-												<span>{{feedback.competencyId}}</span>
-											</div>
-										{{else}}
-											<span>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    {{#onComplete complete=loadComplete}}
+                        {{> actionButton tts="common.toOverview"
+                                label=(i18n "common.toOverview")
+                                type=currentType
+                                block=true
+                                btnClass="lea-to-overview-button"}}
+                    {{/onComplete}}
+                </div>
+            {{/container}}
+        {{/if}}
+
+        {{#if showResults}}
+            {{#container}}
+
+            {{!-- iterate all possible feedback levels --}}
+                {{#with feedbackLevels}}
+                    {{#each feedbackLevel in this}}
+                        <div class="card my-4">
+                            <div class="card-header bg-white font-weight-bold d-flex">
+                                {{> textGroup text=feedbackLevel.text label=feedbackLevel.text groupClass="w-100" type=currentType}}
+                                <span class="ml-auto">({{feedbackLevel.index}}
+                                    )</span>
+                            </div>
+                            <div class="card-body">
+                                {{#each feedback in getFeedback
+                                        feedbackLevel.index}}
+                                    {{#with competency feedback.competencyId}}
+                                        {{> textGroup text=this.descriptionLearner
+                                                label=(i18n this.descriptionLearner) type=currentType}}
+                                    {{else}}
+                                        {{#if competenciesLoaded}}
+                                            <div class="d-block ml-5 my-3">
+                                                <span>{{i18n
+                                                        "pages.complete.definitionMissing"}}
+                                                    : </span>
+                                                <span>{{feedback.competencyId}}</span>
+                                            </div>
+                                        {{else}}
+                                            <span>
 												<i class="fa fas fa-fw fa-spinner fa-pulse"></i>
 											</span>
-										{{/if}}
-									{{/with}}
-								{{else}}
-									{{#if competenciesLoaded}}
-										<span class="ml-5">{{i18n "pages.complete.noEntries"}}</span>
-									{{else}}
-										<span>
+                                        {{/if}}
+                                    {{/with}}
+                                {{else}}
+                                    {{#if competenciesLoaded}}
+                                        <span class="ml-5">{{i18n
+                                                "pages.complete.noEntries"}}</span>
+                                    {{else}}
+                                        <span>
 											<i class="fa fas fa-fw fa-spinner fa-pulse"></i>
 										</span>
-									{{/if}}
-								{{/each}}
-							</div>
-						</div>
-					{{/each}}
-				{{else}}
-					<div class="card my-4">
-						<div class="card-body">
-							<h1 class="text-center">
-								<i class="fa fas fa-fw fa-spinner fa-pulse"></i>
-							</h1>
-						</div>
-					</div>
-				{{/with}}
+                                    {{/if}}
+                                {{/each}}
+                            </div>
+                        </div>
+                    {{/each}}
+                {{else}}
+                    <div class="card my-4">
+                        <div class="card-body">
+                            <h1 class="text-center">
+                                <i class="fa fas fa-fw fa-spinner fa-pulse"></i>
+                            </h1>
+                        </div>
+                    </div>
+                {{/with}}
 
 
-				<div class="card-body">
-					{{#with currentType}}
-						{{> actionButton tts="common.forward" label=(i18n "common.forward") block=true btnClass="lea-showresults-forward-button" class="ml-auto" type=this}}
-					{{/with}}
-				</div>
-			{{/container}}
-		{{/if}}
+                <div class="card-body">
+                    {{#with currentType}}
+                        {{> actionButton tts="common.forward" label=(i18n "common.forward") block=true btnClass="lea-showresults-forward-button" class="ml-auto" type=this}}
+                    {{/with}}
+                </div>
+            {{/container}}
+        {{/if}}
 
 
-		{{#if showPrint}}
-			{{#container}}
-				<div class="card lea-complete-showprint-container">
-					<div class="card-body">
-						{{#with currentType}}
-							{{> textGroup tts="pages.complete.youCanPrint" type=this}}
-						{{/with}}
-					</div>
-					<div class="card-body">
-						{{#textGroup tts="pages.complete.printResults" groupClass="w-100"
-									 label=(i18n "pages.complete.printResults") type=currentType}}
-							<button class="ml-auto btn btn-outline-{{currentType}}">
-								<i class="fa fas fa-fw fa-print"></i>
-							</button>
-						{{/textGroup}}
-					</div>
-					<div class="card-body">
-						{{#textGroup tts="pages.complete.printResultsTeacher" groupClass="w-100"
-									 label=(i18n "pages.complete.printResultsTeacher") type=currentType}}
-							<button class="ml-auto btn btn-outline-{{currentType}}">
-								<i class="fa fas fa-fw fa-print"></i>
-							</button>
-						{{/textGroup}}
-					</div>
-				</div>
+        {{#if showPrint}}
+            {{#container}}
+                <div class="card lea-complete-showprint-container">
+                    <div class="card-body">
+                        {{#with currentType}}
+                            {{> textGroup tts="pages.complete.youCanPrint" type=this}}
+                        {{/with}}
+                    </div>
+                    <div class="card-body">
+                        {{#textGroup tts="pages.complete.printResults"
+                                     groupClass="w-100"
+                                     label=(i18n "pages.complete.printResults")
+                                     type=currentType}}
+                            <button class="ml-auto btn btn-outline-{{currentType}}">
+                                <i class="fa fas fa-fw fa-print"></i>
+                            </button>
+                        {{/textGroup}}
+                    </div>
+                    <div class="card-body">
+                        {{#textGroup tts="pages.complete.printResultsTeacher"
+                                     groupClass="w-100"
+                                     label=(i18n "pages.complete.printResultsTeacher")
+                                     type=currentType}}
+                            <button class="ml-auto btn btn-outline-{{currentType}}">
+                                <i class="fa fas fa-fw fa-print"></i>
+                            </button>
+                        {{/textGroup}}
+                    </div>
+                </div>
 
-				<div class="card-body d-flex justify-content-between">
-					{{> actionButton tts="common.back" label=(i18n "common.back") type=currentType
-							btnClass="lea-showprint-back-button" outline=true}}
+                <div class="card-body d-flex justify-content-between">
+                    {{> actionButton tts="common.back" label=(i18n "common.back") type=currentType
+                            btnClass="lea-showprint-back-button" outline=true}}
 
-					{{> actionButton tts="common.forward" label=(i18n "common.forward") type=currentType
-							btnClass="lea-showprint-forward-button"}}
-				</div>
-			{{/container}}
-		{{/if}}
+                    {{> actionButton tts="common.forward" label=(i18n "common.forward") type=currentType
+                            btnClass="lea-showprint-forward-button"}}
+                </div>
+            {{/container}}
+        {{/if}}
 
-		{{#if showDecision}}
-			{{#container}}
-				<div class="card lea-complete-showprint-container">
-					<div class="card-body">
-						{{#with currentType}}
-							{{> textGroup tts="pages.complete.continueOrEnd" type=this }}
-						{{/with}}
-					</div>
-				</div>
+        {{#if showDecision}}
+            {{#container}}
+                <div class="card lea-complete-showprint-container">
+                    <div class="card-body">
+                        {{#with currentType}}
+                            {{> textGroup tts="pages.complete.continueOrEnd" type=this }}
+                        {{/with}}
+                    </div>
+                </div>
 
-				<div class="card-body d-flex justify-content-between">
-					{{> actionButton tts="common.back" label=(i18n "common.back") type=currentType
-							btnClass="lea-showdecision-back-button" outline=true}}
-					{{> actionButton tts="common.end" label=(i18n "common.end") type=currentType
-							btnClass="lea-end-button" outline=true}}
-					{{> actionButton tts="common.continue" label=(i18n "common.continue") type=currentType
-							btnClass="lea-continue-button"}}
-				</div>
-			{{/container}}
-		{{/if}}
-	</div>
+                <div class="card-body d-flex justify-content-between">
+                    {{> actionButton tts="common.back" label=(i18n "common.back") type=currentType
+                            btnClass="lea-showdecision-back-button" outline=true}}
+                    {{> actionButton tts="common.end" label=(i18n "common.end") type=currentType
+                            btnClass="lea-end-button" outline=true}}
+                    {{> actionButton tts="common.continue" label=(i18n "common.continue") type=currentType
+                            btnClass="lea-continue-button"}}
+                </div>
+            {{/container}}
+        {{/if}}
+    </div>
 </template>

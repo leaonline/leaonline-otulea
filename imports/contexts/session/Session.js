@@ -1,13 +1,12 @@
 import { Meteor } from 'meteor/meteor'
 import { check, Match } from 'meteor/check'
-import { Role } from '../accounts/Role'
-import { Group } from '../accounts/Group'
+import { Role } from '../../api/accounts/Role'
+import { Group } from '../../api/accounts/Group'
 import { onClient, onServer, onServerExec } from '../../utils/archUtils'
 import { getCollection } from '../../utils/collectionuUtils'
-import { PermissionDeniedError } from '../errors/PermissionDenied'
-import { DocumentNotFoundError } from '../errors/DocumentNotFoundError'
-import { SessionsHost } from '../hosts/SessionsHost'
-import { UnitSet } from './UnitSet'
+import { PermissionDeniedError } from '../../api/errors/PermissionDenied'
+import { DocumentNotFoundError } from '../../api/errors/DocumentNotFoundError'
+import { UnitSet } from '../UnitSet'
 
 export const Session = {
   name: 'session',
@@ -30,6 +29,14 @@ Session.schema = {
    */
 
   startedAt: Date,
+
+  /**
+   * See the last time the session has been updated
+   */
+  updatedAt: {
+    type: Date,
+    optional: true
+  },
 
   /**
    * Optional flag to indicate, that this is a continued session
@@ -96,10 +103,6 @@ Session.helpers = {
     check(sessionId, String)
     return Session.collection().findOne(sessionId)
   },
-  getProgress ({ currentTask, tasks }) {
-    const index = tasks.indexOf(currentTask) + 1
-    return Math.floor(100 * (index / (tasks.length)))
-  },
   getNextTask ({ currentTask, tasks }) {
     if (!tasks || tasks.length === 0) {
       return
@@ -112,6 +115,9 @@ Session.helpers = {
       return
     }
     return tasks[index + 1]
+  },
+  isComplete ({ completedAt }) {
+    return Object.prototype.toString.call(completedAt) === '[object Date]'
   }
 }
 
@@ -123,9 +129,6 @@ Session.methods.exists = {
   numRequests: 1,
   timeInterval: 1000,
   run: onServerExec(function () {
-    import { UnitSet } from './UnitSet'
-
-    const getUnitSetDoc = docId => UnitSet.helpers.getDocument(docId)
 
     /**
      *
@@ -145,6 +148,22 @@ Session.methods.exists = {
   })
 }
 
+Session.methods.currentById = {
+  name: 'session.methods.currentById',
+  schema: {
+    sessionId: String
+  },
+  numRequests: 1,
+  timeInterval: 1000,
+  run: onServer(function ({ sessionId }) {
+    const { userId } = this
+    return Session.collection().findOne({
+      _id: sessionId,
+      userId: userId,
+    })
+  })
+}
+
 Session.methods.start = {
   name: 'session.start',
   schema: {
@@ -153,9 +172,9 @@ Session.methods.start = {
   numRequests: 1,
   timeInterval: 1000,
   run: onServerExec(function () {
-    import { UnitSet } from './UnitSet'
+    import { UnitSet } from '../UnitSet'
 
-    const getUnitSetDoc = docId => UnitSet.helpers.getDocument(docId)
+    const getUnitSetDoc = docId => UnitSet.collection().findOne(docId)
 
     /**
      *
@@ -214,7 +233,7 @@ Session.methods.cancel = {
   numRequests: 1,
   timeInterval: 1000,
   run: onServerExec(function () {
-    import { Response } from './Response'
+    import { Response } from '../Response'
 
     const hasResponses = sessionId => Response.collection().find({ sessionId }).count() > 0
 
@@ -261,6 +280,7 @@ Session.methods.continue = {
   })
 }
 
+
 Session.methods.update = {
   name: 'session.methods.update',
   schema: {
@@ -269,45 +289,49 @@ Session.methods.update = {
   numRequests: 1,
   timeInterval: 1000,
   run: onServerExec(function () {
-    import { UnitSet } from './UnitSet'
+    import { UnitSet } from '../UnitSet'
+    import { getSessionDoc } from './getSessionDoc'
 
-    /**
-     *
-     * @param sessionId
-     * @return {any}
-     */
+    const getUnitSetDoc = docId => UnitSet.collection().findOne(docId)
+
     return function ({ sessionId }) {
       const { userId, info } = this
-      const sessionDoc = Session.collection().findOne(sessionId)
+      const sessionDoc = getSessionDoc({ sessionId, userId })
+      const { unitSet, currentUnit } = sessionDoc
+      const unitSetDoc = getUnitSetDoc(unitSet)
 
-      if (userId !== sessionDoc.userId) {
-        throw new PermissionDeniedError(PermissionDeniedError.NOT_OWNER)
+      if (!unitSetDoc || !unitSetDoc.units) {
+        throw new DocumentNotFoundError(UnitSet.name, { sessionId, unitSet })
       }
 
-      const { unitSet } = sessionDoc
-      const unitSetDoc = UnitSet.helpers.getDocument(unitSet)
-      const { currentUnit } = unitSetDoc
+      info('update', currentUnit, unitSetDoc.units)
+      const timestamp = new Date()
+      const isLastUnit = UnitSet.helpers.isLastUnit(currentUnit, unitSetDoc)
+
+      if (isLastUnit) {
+        Session.collection().update(sessionDoc._id, {
+          $set: {
+            currentUnit: null,
+            updatedAt: timestamp,
+            completedAt: timestamp
+          }
+        })
+
+        info('session -> complete', sessionId)
+        return { nextUnitId: null, completed: true }
+      }
+
       const nextUnit = UnitSet.helpers.getNextUnit(currentUnit, unitSetDoc)
-      const update = {}
-
-      if (nextUnit) {
-        update.$set = {
-          currentUnit: nextUnit
+      Session.collection().update(sessionDoc._id, {
+        $set: {
+          currentUnit: nextUnit,
+          updatedAt: timestamp
         }
-      } else {
-        update.$set = {
-          currentUnit: null,
-          completedAt: new Date()
-        }
-      }
+      })
 
-      info('update session', sessionId, update)
-      Session.collection().update(sessionDoc._id, update)
-      return Session.collection.findOne(sessionId)
+      info('session -> next', sessionId, nextUnit)
+      return { nextUnitId: nextUnit, completed: false }
     }
-  }),
-  call: onClient(function ({ sessionId }, cb) {
-    Meteor.call(Session.methods.update.name, { sessionId }, cb)
   })
 }
 
@@ -318,15 +342,17 @@ Session.methods.results = {
   },
   numRequests: 1,
   timeInterval: 1000,
-  roles: [Role.runSession.value],
-  group: Group.field.value,
-  run: onServer(function ({ sessionId }) {
-    const { userId } = this
-    const sessionDoc = Session.collection().findOne(sessionId)
-    if (!sessionDoc) throw new Error('docNotFound')
-    if (!sessionDoc.completedAt) throw new Error('session.errors.notCompleted')
-    const results = SessionsHost.methods.evaluate({ userId, sessionId })
-    return { sessionDoc, results }
+  run: onServerExec(function() {
+    import { SessionsHost } from '../../api/hosts/SessionsHost'
+
+    return function ({ sessionId }) {
+      const { userId } = this
+      const sessionDoc = Session.collection().findOne(sessionId)
+      if (!sessionDoc) throw new Error('docNotFound')
+      if (!sessionDoc.completedAt) throw new Error('session.errors.notCompleted')
+      const results = SessionsHost.methods.evaluate({ userId, sessionId })
+      return { sessionDoc, results }
+    }
   }),
   call: onClient(function ({ sessionId }, cb) {
     Meteor.call(Session.methods.results.name, { sessionId }, cb)

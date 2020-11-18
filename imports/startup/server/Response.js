@@ -1,4 +1,4 @@
-import { Response } from '../../api/session/Response'
+import { Response } from '../../contexts/Response'
 import { createCollection } from '../../factories/collection/createCollection'
 import { createMethods } from '../../factories/method/createMethods'
 import { rateLimitMethods } from '../../factories/ratelimit/rateLimit'

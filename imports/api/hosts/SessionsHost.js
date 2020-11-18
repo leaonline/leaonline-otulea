@@ -1,23 +1,34 @@
 import { Meteor } from 'meteor/meteor'
 import { HTTP } from 'meteor/http'
+import { createFixedHMAC } from '../../infrastructure/crypto/createFixedHMAC'
 
-const settings = Meteor.settings.public.hosts.sessions
-const sessionCredential = Meteor.isServer && Meteor.settings.hosts.sessions.secret
-const evalUrl = settings.evalUrl
-const responseUrl = settings.responseUrl
-
+/**
+ * This file is intended to be executed Server-only!
+ */
 export const SessionsHost = {}
+
+// define request urls and header values
+const { evalUrl, responseUrl } = Meteor.settings.public.hosts.sessions
+const origin = Meteor.absoluteUrl()
+const getAuthToken = createFixedHMAC(Meteor.settings.hosts.sessions.secret)
 
 SessionsHost.methods = {}
 
-const origin = Meteor.absoluteUrl()
 
 SessionsHost.methods.submitResponse = function ({ userId, sessionId, taskId, type, contentId, responses, page }) {
   return HTTP.post(responseUrl, {
-    data: { userId, sessionId, type, taskId, responses, contentId, page: page.toString(10) },
+    data: {
+      userId,
+      sessionId,
+      type,
+      taskId,
+      responses,
+      contentId,
+      page: page.toString(10)
+    },
     headers: {
-      'X-Auth-Token': sessionCredential,
-      origin: Meteor.isServer && origin
+      // 'X-Auth-Token': getAuthToken(),
+      origin: origin
     }
   })
 }
@@ -26,8 +37,8 @@ SessionsHost.methods.evaluate = function ({ userId, sessionId }) {
   const results = HTTP.post(evalUrl, {
     data: { sessionId, userId },
     headers: {
-      'X-Auth-Token': sessionCredential,
-      origin: Meteor.isServer && origin
+      'X-Auth-Token': getAuthToken(),
+      origin: origin
     }
   })
   if (!results) return

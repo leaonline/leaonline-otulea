@@ -1,18 +1,21 @@
 import { Template } from 'meteor/templating'
-import { Router } from '../../../api/routing/Router'
 import { fadeOut } from '../../../utils/animationUtils'
-import { LeaCoreLib } from '../../../api/core/LeaCoreLib'
 import './notFound.html'
 
-const components = LeaCoreLib.components
-const loaded = components.load([
-  components.template.actionButton,
-  components.template.textGroup
-])
+Template.notFound.onCreated(function () {
+  const instance = this
+  instance.initDependencies({
+    tts: true,
+    language: true,
+    onComplete() {
+      instance.state.set('dependenciesComplete', true)
+    }
+  })
+})
 
 Template.notFound.helpers({
   loadComplete () {
-    return loaded.get()
+    return Template.getState('dependenciesComplete')
   }
 })
 
@@ -21,8 +24,7 @@ Template.notFound.events({
     event.preventDefault()
 
     fadeOut('.lea-pagenotfound-container', templateInstance, () => {
-      const route = templateInstance.data.next()
-      Router.go(route)
+      templateInstance.data.next()
     })
   }
 })

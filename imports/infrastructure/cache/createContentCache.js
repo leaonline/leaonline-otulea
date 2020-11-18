@@ -19,7 +19,7 @@ export const createContentCache = ({ context, map = new Map() }) => ({
     const options = { params, headers }
     const response = HTTP.get(url, options)
     const document = response.data
-    console.log(document)
+    
     if (document) {
       map.set(docId, document)
     }

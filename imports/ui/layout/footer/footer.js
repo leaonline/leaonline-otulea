@@ -3,6 +3,7 @@ import { Template } from 'meteor/templating'
 import { Legal } from '../../../api/config/Legal'
 import { dataTarget } from '../../../utils/eventUtils'
 import { Logos } from '../../../api/config/Logos'
+import './footer.scss'
 import './footer.html'
 
 
@@ -19,6 +20,14 @@ const legalData = {}
 Template.footer.onCreated(function () {
   const instance = this
 
+  instance.initDependencies({
+    tts: true,
+    language: true,
+    onComplete () {
+      instance.state.set('dependenciesComplete', true)
+    }
+  })
+
   Logos.methods.get.call((err, logoDoc) => {
     if (err) console.error(err)
     instance.state.set('logoDoc', logoDoc)
@@ -26,11 +35,15 @@ Template.footer.onCreated(function () {
 })
 
 Template.footer.helpers({
+  loadComplete () {
+    return Template.getState('dependenciesComplete')
+  },
   logos () {
     const logoDoc = Template.getState('logoDoc')
     return logoDoc && logoDoc.footer
   },
   legalRoutes () {
+    Template.getState('dependenciesComplete')
     return legalRoutes
   },
   currentLegalData () {

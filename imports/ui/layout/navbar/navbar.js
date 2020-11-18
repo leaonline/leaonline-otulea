@@ -1,19 +1,7 @@
 /* global $ */
 import { Template } from 'meteor/templating'
-import { ReactiveVar } from 'meteor/reactive-var'
-import { Dimensions } from '../../../api/session/Dimension'
-import { Levels } from '../../../api/session/Levels'
-import { Routes } from '../../../api/routing/Routes'
-import { Router } from '../../../api/routing/Router'
-import { Session } from '../../../api/session/Session'
-import { fadeOut } from '../../../utils/animationUtils'
-import { LeaCoreLib } from '../../../api/core/LeaCoreLib'
+import { ColorType } from '../../../types/ColorType'
 import './navbar.html'
-
-const components = LeaCoreLib.components
-const loaded = components.load([components.template.actionButton])
-
-const _dimensions = Object.values(Dimensions)
 
 Template.navbar.onDestroyed(function () {
   const instance = this
@@ -22,69 +10,68 @@ Template.navbar.onDestroyed(function () {
 
 Template.navbar.onCreated(function () {
   const instance = this
-  instance.progress = new ReactiveVar()
-  instance.labels = new ReactiveVar()
+
+  instance.initDependencies({
+    language: true,
+    tts: true,
+    onComplete: () => instance.state.set('dependenciesLoaded', true)
+  })
 
   instance.autorun(() => {
     const data = Template.currentData()
-    const { sessionDoc } = data
-    const { showProgress } = data
+    const { sessionDoc, showProgress, dimensionDoc, levelDoc, unitSetDoc } = data
 
-    if (!sessionDoc) {
+    if (!showProgress || !sessionDoc || !unitSetDoc || !dimensionDoc || !levelDoc) {
       return instance.state.set({
         showProgress: false
       })
     }
 
-    const { currentTask } = sessionDoc
-    const { tasks } = sessionDoc
-    const dimension = Dimensions.types[sessionDoc.dimension]
-    const level = Levels.types[sessionDoc.level]
+    const colorType = ColorType.byIndex(dimensionDoc.colorType)?.type || 'primary'
 
-    instance.progress.set({
-      value: Session.helpers.getProgress(sessionDoc),
-      current: tasks.indexOf(currentTask) + 1,
-      max: tasks.length,
-      type: dimension.type
-    })
-    instance.labels.set({
-      dimension: dimension.label,
-      level: level.label,
-      type: dimension.type
-    })
-    instance.state.set({ showProgress })
+    const { currentUnit } = sessionDoc
+    const { units } = unitSetDoc
+    const current = units.indexOf(currentUnit) + 1
+    const max = units.length
+    const value = (current / (max + 1)) * 100
+    const progress = {
+      current, max, value,
+      type: colorType
+    }
+
+    const labels = {
+      dimension: dimensionDoc?.title,
+      level: levelDoc?.title,
+      type: colorType
+    }
+
+    const loadComplete = true
+    instance.state.set({ showProgress, progress, labels, loadComplete })
   })
 })
 
 Template.navbar.helpers({
   loadComplete () {
-    return loaded.get()
+    const instance = Template.instance()
+    return instance.state.get('dependenciesLoaded') &&
+      instance.state.get('loadComplete')
   },
   showProgress () {
-    return Template.instance().data.showProgress !== false
+    return Template.getState('showProgress')
   },
   progress () {
-    return Template.instance().progress.get()
+    return Template.getState('progress')
   },
   labels () {
-    return Template.instance().labels.get()
-  },
-  dimensions () {
-    return _dimensions
+    return Template.getState('labels')
   }
 })
 
 Template.navbar.events({
   'click .navbar-overview-button' (event, templateInstance) {
     event.preventDefault()
-    const root = templateInstance.data.root
-    const route = Routes.overview
-    if (root) {
-      fadeOut(root, { $ }, () => {
-        Router.go(route)
-      })
-    } else {
-      Router.go(route)
+    if (templateInstance.data.onExit) {
+      templateInstance.data.onExit()
     }
   }
 })

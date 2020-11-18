@@ -22,7 +22,7 @@ Routes.notFound = {
   roles: null,
   data: {
     next () {
-      return Routes.overview
+      gotoRoute(Routes.overview)
     }
   }
 }
@@ -63,7 +63,7 @@ Routes.welcome = {
   roles: null,
   data: {
     next () {
-      return Routes.overview
+      gotoRoute(Routes.overview)
     }
   }
 }
@@ -101,7 +101,7 @@ Routes.unit = {
   path: (sessionId = ':sessionId', unitId = ':unitId') => {
     return `${settings.unit}/${sessionId}/${unitId}`
   },
-  label: 'pages.task.title',
+  label: 'pages.unit.title',
   triggersEnter: () => [
     createLoginTrigger(Routes.welcome)
   ],
@@ -115,21 +115,31 @@ Routes.unit = {
     window.scrollTo(0, 0)
   },
   data: {
-    next () {
-      throw new Error('not implemented')
+    next ({ sessionId, unitId, completed }) {
+      if (!sessionId) {
+        return gotoRoute(Routes.overview)
+      }
+
+      return (!unitId || completed)
+        ? gotoRoute(Routes.complete, sessionId)
+        : gotoRoute(Routes.unit, sessionId, unitId)
     },
-    prev () {
-      throw new Error('not implemented')
+    exit () {
+      gotoRoute(Routes.overview)
     },
-    finish () {
-      throw new Error('not implemented')
+    finish ({ sessionId }) {
+      return sessionId
+        ? gotoRoute(Routes.complete, sessionId)
+        : gotoRoute(Routes.overview)
     }
   }
 }
 
 Routes.complete = {
   path: (sessionId = ':sessionId') => {
-    return `${settings.complete}/${sessionId}`
+    const path = `${settings.complete}/${sessionId}`
+    console.log(path)
+    return path
   },
   label: 'pages.complete.title',
   triggersEnter: () => [
@@ -149,7 +159,7 @@ Routes.complete = {
       return Routes.logout
     },
     next () {
-      return Routes.overview
+      gotoRoute(Routes.overview)
     }
   }
 }

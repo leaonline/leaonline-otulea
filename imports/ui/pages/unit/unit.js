@@ -2,103 +2,159 @@
 import { Meteor } from 'meteor/meteor'
 import { Template } from 'meteor/templating'
 import { ReactiveVar } from 'meteor/reactive-var'
-import { Session } from '../../../api/session/Session'
-import { Task } from '../../../api/session/Task'
-import { Router } from '../../../api/routing/Router'
-import { Dimensions } from '../../../api/session/Dimension'
-import { Levels } from '../../../api/session/Levels'
-import { LeaCoreLib } from '../../../api/core/LeaCoreLib'
+import { Session } from '../../../contexts/session/Session'
+import { ColorType } from '../../../types/ColorType'
+import { Response } from '../../../contexts/Response'
+import { UnitSet } from '../../../contexts/UnitSet'
+import { Dimension } from '../../../contexts/Dimension'
+import { Level } from '../../../contexts/Level'
 import { fadeOut, fadeIn } from '../../../utils/animationUtils'
 import { dataTarget } from '../../../utils/eventUtils'
-import { isTaskRoute } from '../../../utils/routeUtils'
+import { TaskRenderers } from '../../renderers/TaskRenderers'
+import { Unit } from '../../../contexts/Unit'
+import { ResponseCache } from './cache/ResponseCache'
+import { UnitPageCache } from './cache/UnitPageCache'
+import { callMethod } from '../../../infrastructure/methods/callMethod'
+import { isCurrentUnit } from '../../../contexts/session/isCurrentUnit'
+import { createItemLoad } from './item/createItemLoad'
+import { createItemInput } from './item/createItemInput'
+import { createItemSubmit } from './item/createItemSubmit'
 import '../../components/container/container'
 import '../../layout/navbar/navbar'
 import './unit.html'
 
-const components = LeaCoreLib.components
-const coreComponentsLoaded = components.load([components.template.actionButton])
-
-const renderers = LeaCoreLib.renderers
-const renderUrl = Meteor.settings.public.hosts.items.renderUrl // TODO move to own host class
-renderers.h5p.configure({ renderUrl })
-
-const taskRendererFactoryLoaded = new ReactiveVar(false)
-renderers.factory.load().then(() => taskRendererFactoryLoaded.set(true)).catch(e => {
-  console.error('could not load TaskRendererFactory')
-  console.error(e)
-})
-
-function abortTask (instance) {
-  const route = instance.data.prev()
-  fadeOut('.lea-task-container', instance, () => {
-    Router.go(route)
-  })
-}
-
-function onInput ({ userId, sessionId, taskId, page, type, responses }) {
-  Meteor.call(Task.methods.submit.name, { userId, sessionId, taskId, page, type, responses }, (err) => {
-    if (err && Meteor.isDevelopment) console.error(err)
-  })
-}
+const renderersLoaded = new ReactiveVar()
+const responseCache = ResponseCache.create(window.localStorage)
+const pageCache = UnitPageCache.create(window.localStorage)
+const submitItems = createItemSubmit({ cache: responseCache })
 
 Template.unit.onCreated(function () {
   const instance = this
   instance.collector = new EventTarget()
+  instance.state.setDefault('currentPageCount', -1)
+  instance.state.setDefault('maxPages', -1)
+  instance.dependenciesLoaded = new ReactiveVar(false)
 
-  const currentPageCount = Router.queryParam('p') || 0
+  const { api } = instance.initDependencies({
+    language: true,
+    tts: true,
+    contexts: [Session, Unit, UnitSet, Response, Dimension, Level],
+    onComplete() {
+      instance.dependenciesLoaded.set(true)
+    }
+  })
 
-  instance.autorun(() => {
-    const data = Template.currentData()
-    const { taskId } = data.params
-    Task.helpers.load(taskId)
-      .then(taskDoc => {
-        if (taskDoc) {
-          instance.state.set('taskDoc', taskDoc)
-          instance.state.set('taskStory', taskDoc.story)
-          instance.state.set('maxPages', taskDoc.pages.length)
-          instance.state.set('currentPageCount', currentPageCount)
-          instance.state.set('currentPage', taskDoc.pages[currentPageCount])
-          instance.state.set('hasNext', taskDoc.pages.length > currentPageCount + 1)
-        } else {
-          abortTask(instance)
-        }
-      })
-      .catch(err => {
-        console.error(err)
-        abortTask(instance)
-      })
+  const { loadContentDoc, callMethod, info } = api
+
+  instance.autorun(computation => {
+    if (renderersLoaded.get()) {
+      info('renderers loaded')
+      return computation.stop()
+    }
+
+    TaskRenderers.init()
+      .then(() => renderersLoaded.set(true))
+      .catch(e => console.error(e))
   })
 
   instance.autorun(() => {
-    const taskDoc = instance.state.get('taskDoc')
-    if (!taskDoc) return
-
     const data = Template.currentData()
+    const { unitId } = data.params
+    const unitDoc = instance.state.get('unitDoc')
+    const currentPageCount = pageCache.load(data.params) || 0
+
+    if (!unitId || unitId === unitDoc?._id) {
+      return // skip unnecessary data loading
+    }
+
+    // otherwise reset, so we can display a loading indicator and load all data
+    instance.state.clear()
+
+    loadContentDoc(Unit, unitId)
+      .catch(err => abortUnit(instance, err))
+      .then(unitDoc => {
+        if (!unitDoc) {
+          return abortUnit(instance)
+        }
+
+        instance.state.set('unitDoc', unitDoc)
+        instance.state.set('maxPages', unitDoc.pages.length)
+        instance.state.set('currentPageCount', currentPageCount)
+        instance.state.set('hasNext', unitDoc.pages.length > currentPageCount + 1)
+      })
+  })
+
+  // load the current session, reactivity triggered by url params
+
+  instance.autorun(computation => {
+    const data = Template.currentData()
+    const unitDoc = instance.state.get('unitDoc')
+    const currentSessionDoc = instance.state.get('sessionDoc')
     const { sessionId } = data.params
 
-    const sessionSub = Session.publications.current.subscribe()
-    if (sessionSub.ready()) {
-      const sessionDoc = Session.helpers.byId(sessionId)
-      if (sessionDoc) {
-        const { currentTask } = sessionDoc
-        const { tasks } = sessionDoc
-
-        const dimensionType = Dimensions.types[sessionDoc.dimension]
-        instance.state.set('color', dimensionType.type)
-        instance.state.set('progress', Session.helpers.getProgress(sessionDoc))
-        instance.state.set('currentTaskCount', tasks.indexOf(currentTask) + 1)
-        instance.state.set('maxTasksCount', tasks.length)
-        instance.state.set('sessionDoc', sessionDoc)
-        if (instance.state.get('fadedOut')) {
-          fadeIn('.lea-task-container', instance, () => {})
-        }
-      } else {
-        const route = instance.data.prev()
-        fadeOut('.lea-task-container', instance, () => {
-          Router.go(route)
-        })
-      }
+    if (!unitDoc || !sessionId || (currentSessionDoc && sessionId === currentSessionDoc._id)) {
+      return // skip to prevent unnecessary method call
     }
+
+    callMethod({
+      name: Session.methods.currentById.name,
+      args: { sessionId },
+      failure: er => abortUnit(instance, er),
+      success: sessionDoc => {
+        if (!sessionDoc) {
+          computation.stop()
+          return abortUnit(instance)
+        }
+
+        const { currentUnit } = sessionDoc
+
+        // if we encounter a sessionDoc that is already completed, we just
+        // skip any further attempts to load units and immediately finish
+        if (Session.helpers.isComplete(sessionDoc)) {
+          computation.stop()
+          return instance.data.finish({ sessionId })
+        }
+
+        // if we encounter a unit, that is different from the sessionDoc's
+        // current unit we skip directly to the "next" unit via currentUnit
+        if (!isCurrentUnit({ sessionDoc, unitId: currentUnit })) {
+          computation.stop()
+          return instance.data.next({ unitId: currentUnit, sessionId })
+        }
+
+        // otherwise we're good and can continue with the current session
+        instance.state.set({ sessionDoc })
+      }
+    })
+  })
+
+  // load the associated documents: UnitSet, Dimension, Level
+
+  instance.autorun(() => {
+    const sessionDoc = instance.state.get('sessionDoc')
+    if (!sessionDoc) return
+
+    loadContentDoc(UnitSet, sessionDoc.unitSet)
+      .catch(err => abortUnit(instance, err))
+      .then(unitSetDoc => instance.state.set({ unitSetDoc }))
+  })
+
+  instance.autorun(() => {
+    const unitSetDoc = instance.state.get('unitSetDoc')
+    if (!unitSetDoc) return
+    const { dimension, level } = unitSetDoc
+
+    loadContentDoc(Dimension, dimension)
+      .catch(err => abortUnit(instance, err))
+      .then(dimensionDoc => {
+        const colorType = ColorType.byIndex(dimensionDoc?.colorType)
+        const color = colorType?.type
+        instance.state.set({ dimensionDoc, color })
+      })
+
+    loadContentDoc(Level, level)
+      .catch(err => abortUnit(instance, err))
+      .then(levelDoc => instance.state.set({ levelDoc }))
   })
 })
 
@@ -112,72 +168,62 @@ Template.unit.onDestroyed(function () {
 Template.unit.helpers({
   loadComplete () {
     const instance = Template.instance()
-    return taskRendererFactoryLoaded.get() && coreComponentsLoaded.get() &&
-      instance.state.get('sessionDoc') && instance.state.get('taskDoc')
+    return instance.dependenciesLoaded.get() &&
+      instance.state.get('unitDoc') &&
+      instance.state.get('sessionDoc') &&
+      renderersLoaded.get()
   },
-  taskStory () {
-    return taskRendererFactoryLoaded.get() && coreComponentsLoaded.get() && Template.getState('taskStory')
+  navLoadComplete () {
+    const instance = Template.instance()
+    return instance.state.get('sessionDoc') &&
+      instance.state.get('dimensionDoc') &&
+      instance.state.get('levelDoc')
   },
-  taskDoc () {
-    return taskRendererFactoryLoaded.get() && coreComponentsLoaded.get() && Template.getState('taskDoc')
-  },
-  currentTaskCount () {
-    return Template.getState('currentTaskCount')
-  },
-  maxTasksCount () {
-    return Template.getState('maxTasksCount')
-  },
-  sessionDoc () {
-    return Template.getState('sessionDoc')
-  },
-  dimension () {
-    const sessionDoc = Template.getState('sessionDoc')
-    if (!sessionDoc) return
+  pageContentData () {
+    if (!renderersLoaded.get()) return
 
-    return Dimensions.types[sessionDoc.dimension]
-  },
-  level () {
-    const sessionDoc = Template.getState('sessionDoc')
-    if (!sessionDoc) return
-
-    return Levels.types[sessionDoc.level]
-  },
-  currentType () {
-    const sessionDoc = Template.getState('sessionDoc')
-    if (!sessionDoc) return
-
-    const dimension = Dimensions.types[sessionDoc.dimension]
-    return dimension && dimension.type
-  },
-  currentPage () {
-    return Template.getState('currentPage')
-  },
-  currentPageCount () {
-    return Template.getState('currentPageCount') + 1
-  },
-  maxPages () {
-    return Template.getState('maxPages')
-  },
-  hasNext () {
-    return Template.getState('hasNext')
-  },
-  hasPrev () {
-    return Template.getState('hasPrev')
-  },
-  progress () {
-    return Template.getState('progress')
-  },
-  itemData (content) {
     const instance = Template.instance()
     const sessionDoc = instance.state.get('sessionDoc')
-    const sessionId = sessionDoc._id
-    const taskDoc = instance.state.get('taskDoc')
-    const page = instance.state.get('currentPageCount')
-    const taskId = taskDoc.taskId
-    const userId = Meteor.userId()
+    const unitDoc = instance.state.get('unitDoc')
     const color = instance.state.get('color')
-    const collector = instance.collector
-    return Object.assign({}, content, { userId, sessionId, taskId, page, color, onInput: onInput.bind(this), collector: collector })
+    const currentPageCount = instance.state.get('currentPageCount')
+    const depsComplete = instance.dependenciesLoaded.get()
+    let onInput
+    let onLoad
+
+    if (depsComplete && instance.state.get('sessionDoc')) {
+      onInput = createItemInput({ cache: responseCache })
+      onLoad = createItemLoad({ cache: responseCache })
+    } else {
+      onInput = () => {}
+      onLoad = () => {}
+    }
+
+    return {
+      isPreview: false,
+      currentPageCount: currentPageCount,
+      sessionId: sessionDoc._id,
+      doc: unitDoc,
+      color: color,
+      onInput: onInput,
+      onLoad: onLoad
+    }
+  },
+  navbarData () {
+    const instance = Template.instance()
+    const sessionDoc = instance.state.get('sessionDoc')
+    const levelDoc = instance.state.get('levelDoc')
+    const unitSetDoc = instance.state.get('unitSetDoc')
+    const dimensionDoc = instance.state.get('dimensionDoc')
+
+    return {
+      sessionDoc,
+      levelDoc,
+      unitSetDoc,
+      dimensionDoc,
+      showProgress: true,
+      onExit: instance.data.exit
+    }
   }
 })
 
@@ -185,20 +231,22 @@ Template.unit.events({
   'click .lea-pagenav-button' (event, templateInstance) {
     event.preventDefault()
     const action = dataTarget(event, templateInstance, 'action')
-    const taskDoc = templateInstance.state.get('taskDoc')
+    const unitDoc = templateInstance.state.get('unitDoc')
+    const sessionDoc = templateInstance.state.get('sessionDoc')
+    const sessionId = sessionDoc._id
     const currentPageCount = templateInstance.state.get('currentPageCount')
     const newPage = {}
 
     if (action === 'next') {
       newPage.currentPageCount = currentPageCount + 1
-      newPage.currentPage = taskDoc.pages[newPage.currentPageCount]
-      newPage.hasNext = (newPage.currentPageCount + 1) < taskDoc.pages.length
+      newPage.currentPage = unitDoc.pages[newPage.currentPageCount]
+      newPage.hasNext = (newPage.currentPageCount + 1) < unitDoc.pages.length
     }
 
     if (action === 'back') {
       newPage.currentPageCount = currentPageCount - 1
-      newPage.currentPage = taskDoc.pages[newPage.currentPageCount]
-      newPage.hasNext = (newPage.currentPageCount + 1) < taskDoc.pages.length
+      newPage.currentPage = unitDoc.pages[newPage.currentPageCount]
+      newPage.hasNext = (newPage.currentPageCount + 1) < unitDoc.pages.length
     }
 
     if (!newPage.currentPage) {
@@ -207,60 +255,73 @@ Template.unit.events({
 
     templateInstance.collector.dispatchEvent(new Event('collect'))
 
-    const $current = templateInstance.$('.lea-task-current-content-container')
+    const $current = templateInstance.$('.lea-unit-current-content-container')
     const currentHeight = $current.height()
     const oldContainerCss = $current.css('height') || ''
     $current.css('height', `${currentHeight}px`)
 
-    fadeOut('.lea-task-current-content', templateInstance, () => {
+    submitItems({ sessionId, unitDoc, page: currentPageCount })
+
+    fadeOut('.lea-unit-current-content', templateInstance, () => {
       templateInstance.state.set(newPage)
+      pageCache.save({
+        sessionId,
+        unitId: unitDoc._id
+      }, newPage.currentPageCount)
       setTimeout(() => {
-        fadeIn('.lea-task-current-content', templateInstance, () => {
+        fadeIn('.lea-unit-current-content', templateInstance, () => {
           $current.css('height', oldContainerCss)
         })
       }, 100)
     })
   },
-  'click .lea-task-finishstory-button' (event, templateInstance) {
+  'click .lea-unit-finishstory-button' (event, templateInstance) {
     event.preventDefault()
-    fadeOut('.lea-task-story-container', templateInstance, () => {
-      templateInstance.state.set('taskStory', null)
+    fadeOut('.lea-unit-story-container', templateInstance, () => {
+      templateInstance.state.set('unitStory', null)
     })
   },
-  'click .lea-pagenav-finish-button' (event, templateInstance) {
+  'click .lea-pagenav-finish-button': async function (event, templateInstance) {
     event.preventDefault()
     const sessionDoc = templateInstance.state.get('sessionDoc')
     const sessionId = sessionDoc._id
+    const unitDoc = templateInstance.state.get('unitDoc')
+    const unitId = unitDoc._id
+    const page = templateInstance.state.get('currentPageCount')
 
-    templateInstance.collector.dispatchEvent(new Event('collect'))
+    await submitItems({ sessionId, unitDoc, page })
+    const sessionUpdate = await callMethod({
+      name: Session.methods.update.name,
+      args: { sessionId }
+    })
 
-    // WHEN A TASK IS FINISHED, THE FOLLOWING
-    // STEPS ARE TAKEN
-    // 1. UPDATE SESSION
-    // 2. CHECK IF SESSION IS COMPLETE
-    //  a - if complete call finish()
-    //  b - else call next()
-    Session.methods.update.call({ sessionId }, (err, taskId) => {
-      if (err) {
-        console.error(err)
-        return
-      }
-      const route = taskId
-        ? templateInstance.data.next({ sessionId, taskId })
-        : templateInstance.data.finish({ sessionId })
+    const { nextUnit, completed } = sessionUpdate
+    pageCache.clear({ sessionId, unitId })
 
-      // we check if the route is to another task
-      // se we would fade the navbar only when the
-      // result page (or another pahe) will be shown
-      const fadeTarget = isTaskRoute(route)
-        ? '.lea-task-content-container'
-        : '.lea-task-container'
+    // we check if the route will be to another unit
+    // se we would fade the navbar only when the
+    // result page (or another pahe) will be shown
+    const fadeTarget = completed
+      ? '.lea-unit-container'
+      : '.lea-unit-content-container'
 
-      fadeOut(fadeTarget, templateInstance, () => {
-        templateInstance.state.set('taskDoc', null)
-        templateInstance.state.set('fadedOut', true)
-        Router.go(route)
-      })
+    fadeOut(fadeTarget, templateInstance, () => {
+      templateInstance.state.set('unitDoc', null)
+      templateInstance.state.set('fadedOut', true)
+      templateInstance.data.next({ sessionId, unitId: nextUnit, completed })
     })
   }
 })
+
+function abortUnit (instance, err) {
+  if (err) {
+    console.error('Unit aborted')
+    console.error(err)
+  }
+
+  fadeOut('.lea-unit-container', instance, () => {
+    // there should be a strategy pattern here so we can easily switch depending
+    // on the settings configuration and users needs (tests vs production etc.)
+    throw new Error('not yet implemented')
+  })
+}

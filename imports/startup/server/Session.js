@@ -1,4 +1,4 @@
-import { Session } from '../../api/session/Session'
+import { Session } from '../../contexts/session/Session'
 import { createCollection } from '../../factories/collection/createCollection'
 import { createMethods } from '../../factories/method/createMethods'
 import { rateLimitMethods, rateLimitPublications } from '../../factories/ratelimit/rateLimit'

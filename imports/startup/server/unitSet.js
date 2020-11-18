@@ -1,4 +1,4 @@
-import { UnitSet } from '../../api/session/UnitSet'
+import { UnitSet } from '../../contexts/UnitSet'
 import { createCollection } from '../../factories/collection/createCollection'
 
 const collection = createCollection(UnitSet)
