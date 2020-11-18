@@ -3,12 +3,12 @@
   "name": "otu.lea - lea.online",
   "icons": [
     {
-      "src": "/icons/icons-192.png",
+      "src": "/logo/logo.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "/icons/icons-512.png",
+      "src": "/logo/logo512.png",
       "type": "image/png",
       "sizes": "512x512"
     }
