@@ -33,15 +33,14 @@ export const loadContentDoc = (context, docId) => {
         return reject(error)
       }
 
-      info('response received', !!response?.data)
       const document = response.data
 
       if (!isPlainObject(document)) {
         return reject(document)
       }
 
-      collection.upsert(document._id, { $set: document })
-      resolve(document)
+      collection.upsert({ _id: docId }, { $set: document })
+      resolve(collection.findOne(docId))
     })
   })
 }

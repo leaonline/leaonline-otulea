@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor'
 import { onServerExec } from '../utils/archUtils'
 
 export const Response = {
@@ -37,10 +38,10 @@ Response.methods.submit = {
   numRequests: 10,
   timeInterval: 1000,
   run: onServerExec(function () {
-    import { SessionsHost } from '../api/hosts/SessionsHost'
-    import { scoreResponses } from '../api/scoring/scoreResponses'
-    import { getSessionDoc } from './session/getSessionDoc'
-    import { isCurrentUnit } from './session/isCurrentUnit'
+    const { SessionsHost } = require('../api/hosts/SessionsHost')
+    const { scoreResponses } = require('../api/scoring/scoreResponses')
+    const { getSessionDoc } = require('./session/getSessionDoc')
+    const { isCurrentUnit } = require('./session/isCurrentUnit')
 
     return function (responseDoc) {
       this.unblock()

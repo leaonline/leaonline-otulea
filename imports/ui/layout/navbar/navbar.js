@@ -1,4 +1,3 @@
-/* global $ */
 import { Template } from 'meteor/templating'
 import { ColorType } from '../../../types/ColorType'
 import './navbar.html'
@@ -21,7 +20,7 @@ Template.navbar.onCreated(function () {
     const data = Template.currentData()
     const { sessionDoc, showProgress, dimensionDoc, levelDoc, unitSetDoc } = data
 
-    if (!showProgress || !sessionDoc || !unitSetDoc || !dimensionDoc || !levelDoc) {
+    if (!sessionDoc || !unitSetDoc || !dimensionDoc || !levelDoc) {
       return instance.state.set({
         showProgress: false
       })

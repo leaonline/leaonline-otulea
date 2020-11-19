@@ -2,6 +2,5 @@
 import { environmentExtensionMixin } from './environmentExtensionMixin'
 
 describe(environmentExtensionMixin.name, function () {
-  it ('is not implemented')
+  it('is not implemented')
 })
-

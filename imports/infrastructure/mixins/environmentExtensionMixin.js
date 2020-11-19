@@ -12,7 +12,7 @@ export const environmentExtensionMixin = function (options) {
   const runFct = options.run
   options.run = function run (...args) {
     this.info = info
-
+    info('call', { userId: this.userId })
     return runFct.call(this, ...args)
   }
 

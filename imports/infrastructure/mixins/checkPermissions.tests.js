@@ -2,5 +2,5 @@
 import { checkPermissions } from './checkPermissions'
 
 describe(checkPermissions.name, function () {
-  it ('is not implemented')
+  it('is not implemented')
 })

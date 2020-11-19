@@ -1,7 +1,7 @@
 import { Session } from './Session'
 import { DocumentNotFoundError } from '../../api/errors/DocumentNotFoundError'
 
-export const getSessionDoc = ({ sessionId, userId }) => {
+export const getSessionDoc = function getSessionDoc ({ sessionId, userId }) {
   const sessionDoc = Session.collection().findOne({
     _id: sessionId,
     userId

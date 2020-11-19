@@ -2,5 +2,5 @@
 import { createCollection } from './createCollection'
 
 describe(createCollection.name, function () {
-  it ('is not implemented')
+  it('is not implemented')
 })

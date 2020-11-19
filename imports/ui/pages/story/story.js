@@ -1,13 +1,11 @@
 import { Template } from 'meteor/templating'
-import { ReactiveVar } from "meteor/reactive-var"
+import { ReactiveVar } from 'meteor/reactive-var'
 import { TaskRenderers } from '../../renderers/TaskRenderers'
 import { UnitSet } from '../../../contexts/unitSet/UnitSet'
-import { ColorType } from '../../../types/ColorType'
 import { Dimension } from '../../../contexts/Dimension'
 import { Session } from '../../../contexts/session/Session'
-import { isCurrentUnit } from '../../../contexts/session/isCurrentUnit'
-import { callMethod } from '../../../infrastructure/methods/callMethod'
 import { Level } from '../../../contexts/Level'
+import { createSessionLoader } from '../../../api/loading/createSessionLoader'
 import '../../components/container/container'
 import '../../layout/navbar/navbar'
 import './story.html'
@@ -25,7 +23,8 @@ Template.story.onCreated(function () {
     }
   })
 
-  const { info, loadContentDoc } = api
+  const { info } = api
+  const loadSessionDocs = createSessionLoader({ info })
 
   instance.autorun(computation => {
     if (renderersLoaded.get()) {
@@ -38,74 +37,22 @@ Template.story.onCreated(function () {
       .catch(e => console.error(e))
   })
 
-  instance.autorun(computation => {
+  instance.autorun(() => {
     const data = Template.currentData()
-    const { unitSetId, sessionId } = data.params
+    const { unitId, sessionId } = data.params
 
-    if (!unitSetId || !sessionId) {
+    if (!unitId || !sessionId) {
       return abortStory(instance)
     }
 
-    callMethod({
-      name: Session.methods.currentById.name,
-      args: { sessionId },
-      failure: er => abortStory(instance, er),
-      success: sessionDoc => {
-        if (!sessionDoc) {
-          computation.stop()
+    loadSessionDocs({ sessionId })
+      .catch(err => abortStory(instance, err))
+      .then(({ sessionDoc, unitSetDoc, dimensionDoc, levelDoc, color }) => {
+        if (!sessionDoc || !unitSetDoc || !dimensionDoc || !levelDoc) {
           return abortStory(instance)
         }
-
-        const { currentUnit } = sessionDoc
-
-        // if we encounter a sessionDoc that is already completed, we just
-        // skip any further attempts to load units and immediately finish
-        if (Session.helpers.isComplete(sessionDoc)) {
-          computation.stop()
-          return instance.data.finish({ sessionId })
-        }
-
-        // if we encounter a unit, that is different from the sessionDoc's
-        // current unit we skip directly to the "next" unit via currentUnit
-        if (!isCurrentUnit({ sessionDoc, unitId: currentUnit })) {
-          computation.stop()
-          return instance.data.next({ unitId: currentUnit, sessionId })
-        }
-
-        // otherwise we're good and can continue with the current session
-        instance.state.set({ sessionDoc })
-      }
-    })
-  })
-
-  instance.autorun(() => {
-    const data = Template.currentData()
-    const { unitSetId, sessionId } = data.params
-
-    if (!unitSetId || !sessionId) {
-      return abortStory(instance)
-    }
-
-    loadContentDoc(UnitSet, unitSetId)
-      .catch(err => abortStory(instance, err))
-      .then(unitSetDoc => instance.state.set({ unitSetDoc }))
-  })
-
-  instance.autorun(() => {
-    const unitSetDoc = instance.state.get('unitSetDoc')
-    if (!unitSetDoc) return
-    const { dimension, level } = unitSetDoc
-
-    loadContentDoc(Level, level)
-      .catch(err => abortStory(instance, err))
-      .then(levelDoc => instance.state.set({ levelDoc }))
-
-    loadContentDoc(Dimension, dimension)
-      .catch(err => abortStory(instance, err))
-      .then(dimensionDoc => {
-        const colorType = ColorType.byIndex(dimensionDoc?.colorType)
-        const color = colorType?.type
-        instance.state.set({ dimensionDoc, color })
+        console.log(color)
+        instance.state.set({ sessionDoc, unitSetDoc, dimensionDoc, levelDoc, color })
       })
   })
 })
@@ -127,7 +74,7 @@ Template.story.helpers({
 
     return {
       isPreview: true,
-      currentPageCount: 0,
+      currentPageCount: -1,
       sessionId: sessionDoc._id,
       doc: unitSetDoc,
       color: color
@@ -145,7 +92,7 @@ Template.story.helpers({
       levelDoc,
       unitSetDoc,
       dimensionDoc,
-      showProgress: true,
+      showProgress: false,
       onExit: instance.data.exit
     }
   },
@@ -169,4 +116,5 @@ Template.story.events({
 function abortStory (instance, err) {
   console.error('abort story')
   console.error(err)
+  instance.data?.exit()
 }

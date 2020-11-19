@@ -93,7 +93,7 @@ Routes.overview = {
 }
 
 Routes.story = {
-  path: (sessionId = ':sessionId', unitSetId = ':unitSetId',  unitId = ':unitId') => {
+  path: (sessionId = ':sessionId', unitSetId = ':unitSetId', unitId = ':unitId') => {
     return `${settings.story}/${sessionId}/${unitSetId}/${unitId}`
   },
   label: 'pages.unit.story',

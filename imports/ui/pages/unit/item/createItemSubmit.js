@@ -31,13 +31,13 @@ export const createItemSubmit = ({ cache }) => {
       allResponseDocs.push(responseDoc)
     })
 
-    return Promise.all(allResponseDocs.map(responseDoc => {
+    return Promise.all(allResponseDocs.map(responseDoc =>
       callMethod({
         name: Response.methods.submit.name,
         args: responseDoc,
         failure: console.error,
         success: () => cache.clear(responseDoc)
       })
-    }))
+    ))
   }
 }

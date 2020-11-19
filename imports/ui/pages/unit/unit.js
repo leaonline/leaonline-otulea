@@ -2,7 +2,6 @@
 import { Template } from 'meteor/templating'
 import { ReactiveVar } from 'meteor/reactive-var'
 import { Session } from '../../../contexts/session/Session'
-import { ColorType } from '../../../types/ColorType'
 import { Response } from '../../../contexts/Response'
 import { UnitSet } from '../../../contexts/unitSet/UnitSet'
 import { Dimension } from '../../../contexts/Dimension'
@@ -18,6 +17,7 @@ import { isCurrentUnit } from '../../../contexts/session/isCurrentUnit'
 import { createItemLoad } from './item/createItemLoad'
 import { createItemInput } from './item/createItemInput'
 import { createItemSubmit } from './item/createItemSubmit'
+import { createSessionLoader } from '../../../api/loading/createSessionLoader'
 import '../../components/container/container'
 import '../../layout/navbar/navbar'
 import './unit.html'
@@ -43,7 +43,7 @@ Template.unit.onCreated(function () {
     }
   })
 
-  const { loadContentDoc, callMethod, info } = api
+  const { info } = api
 
   instance.autorun(computation => {
     if (renderersLoaded.get()) {
@@ -56,104 +56,59 @@ Template.unit.onCreated(function () {
       .catch(e => console.error(e))
   })
 
+  const sessionLoader = createSessionLoader({ info })
+
   instance.autorun(() => {
-    const data = Template.currentData()
-    const { unitId } = data.params
-    const unitDoc = instance.state.get('unitDoc')
-    const currentPageCount = pageCache.load(data.params) || 0
+    const { params } = Template.currentData()
+    const { unitId, sessionId } = params
 
-    if (!unitId || unitId === unitDoc?._id) {
-      return // skip unnecessary data loading
+    // simply skip if these params are not set, and let the router take care
+    if (!unitId || !sessionId) {
+      return abortUnit(instance)
     }
 
-    // otherwise reset, so we can display a loading indicator and load all data
+    const currentPageCount = pageCache.load(params) || 0
+
     instance.state.clear()
-
-    loadContentDoc(Unit, unitId)
+    sessionLoader({ sessionId, unitId })
       .catch(err => abortUnit(instance, err))
-      .then(unitDoc => {
-        if (!unitDoc) {
+      .then(responseData => {
+        info(responseData)
+
+        const { sessionDoc, unitDoc, unitSetDoc, dimensionDoc, levelDoc, color } = responseData
+        // first we check for all docs, even one left-out doc is not acceptable
+        if (!sessionDoc || !unitDoc || !unitSetDoc || !dimensionDoc || !levelDoc) {
           return abortUnit(instance)
         }
 
-        instance.state.set('unitDoc', unitDoc)
-        instance.state.set('maxPages', unitDoc.pages.length)
-        instance.state.set('currentPageCount', currentPageCount)
-        instance.state.set('hasNext', unitDoc.pages.length > currentPageCount + 1)
-      })
-  })
-
-  // load the current session, reactivity triggered by url params
-
-  instance.autorun(computation => {
-    const data = Template.currentData()
-    const unitDoc = instance.state.get('unitDoc')
-    const currentSessionDoc = instance.state.get('sessionDoc')
-    const { sessionId } = data.params
-
-    if (!unitDoc || !sessionId || (currentSessionDoc && sessionId === currentSessionDoc._id)) {
-      return // skip to prevent unnecessary method call
-    }
-
-    callMethod({
-      name: Session.methods.currentById.name,
-      args: { sessionId },
-      failure: er => abortUnit(instance, er),
-      success: sessionDoc => {
-        if (!sessionDoc) {
-          computation.stop()
-          return abortUnit(instance)
-        }
-
+        // verify received session doc integrity
         const { currentUnit } = sessionDoc
 
         // if we encounter a sessionDoc that is already completed, we just
         // skip any further attempts to load units and immediately finish
         if (Session.helpers.isComplete(sessionDoc)) {
-          computation.stop()
           return instance.data.finish({ sessionId })
         }
 
         // if we encounter a unit, that is different from the sessionDoc's
         // current unit we skip directly to the "next" unit via currentUnit
         if (!isCurrentUnit({ sessionDoc, unitId: currentUnit })) {
-          computation.stop()
           return instance.data.next({ unitId: currentUnit, sessionId })
         }
 
         // otherwise we're good and can continue with the current session
-        instance.state.set({ sessionDoc })
-      }
-    })
-  })
-
-  // load the associated documents: UnitSet, Dimension, Level
-
-  instance.autorun(() => {
-    const sessionDoc = instance.state.get('sessionDoc')
-    if (!sessionDoc) return
-
-    loadContentDoc(UnitSet, sessionDoc.unitSet)
-      .catch(err => abortUnit(instance, err))
-      .then(unitSetDoc => instance.state.set({ unitSetDoc }))
-  })
-
-  instance.autorun(() => {
-    const unitSetDoc = instance.state.get('unitSetDoc')
-    if (!unitSetDoc) return
-    const { dimension, level } = unitSetDoc
-
-    loadContentDoc(Dimension, dimension)
-      .catch(err => abortUnit(instance, err))
-      .then(dimensionDoc => {
-        const colorType = ColorType.byIndex(dimensionDoc?.colorType)
-        const color = colorType?.type
-        instance.state.set({ dimensionDoc, color })
+        instance.state.set({
+          sessionDoc,
+          unitSetDoc,
+          dimensionDoc,
+          levelDoc,
+          color,
+          unitDoc,
+          currentPageCount,
+          maxPages: unitDoc.pages.length,
+          hasNext: unitDoc.pages.length > currentPageCount + 1
+        })
       })
-
-    loadContentDoc(Level, level)
-      .catch(err => abortUnit(instance, err))
-      .then(levelDoc => instance.state.set({ levelDoc }))
   })
 })
 

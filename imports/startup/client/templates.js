@@ -1,3 +1,4 @@
+import { Blaze } from 'meteor/blaze'
 import { Components } from 'meteor/leaonline:ui/components/Components'
 import { initLanguage } from './language'
 import { initializeTTS } from './leaconfig'
@@ -14,14 +15,6 @@ import { loadContentDoc } from '../../api/loading/loadContentDoc'
 // and generic (stateless) templates, since they are loaded at runtime using
 // dynamic imports.
 Components.autoLoad()
-
-const lazyInitialize = function (initFunction) {
-  let fn
-  return function (...args) {
-    if (!fn) fn = initFunction()
-    return fn(...args)
-  }
-}
 
 /**
  * This is a way to provide a Template-independent way of initializing

@@ -327,7 +327,7 @@ function launch ({ templateInstance, name, args, isFreshStart }) {
         const sessionId = sessionDoc._id
         const unitId = sessionDoc.currentUnit
         const unitSetDoc = UnitSet.collection().findOne(sessionDoc.unitSet)
-        const shouldShowStory =  isFreshStart && showStoryBeforeUnit(unitId, unitSetDoc)
+        const shouldShowStory = isFreshStart && showStoryBeforeUnit(unitId, unitSetDoc)
         const onCompleteHandler = shouldShowStory
           ? () => story({ sessionId, unitId, unitSetId: unitSetDoc._id })
           : () => next({ sessionId, unitId })

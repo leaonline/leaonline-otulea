@@ -14,9 +14,10 @@ Schema.create = isomorph({
     }
   },
   onClient: function () {
-    import { Tracker } from 'meteor/tracker'
+    const { Tracker } = require('meteor/tracker')
+
     return function (schemaDefinition, options) {
       return new SimpleSchema(schemaDefinition, Object.assign({ tracker: Tracker }, options))
     }
-  },
+  }
 })

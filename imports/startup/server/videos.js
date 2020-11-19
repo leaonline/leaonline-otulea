@@ -18,12 +18,4 @@ const publications = Object.values(Videos.publications)
 createPublications(publications)
 rateLimitPublications(publications)
 
-function replacer (name, val) {
-  if (typeof val === 'function') {
-    return val.prototype.constructor.name
-  } else {
-    return val
-  }
-}
-
 ServiceRegistry.register(Videos)

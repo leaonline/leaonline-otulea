@@ -1,12 +1,9 @@
 import { Meteor } from 'meteor/meteor'
 import { Mongo } from 'meteor/mongo'
 import { HTTP } from 'meteor/jkuester:http'
-import { onServerExec } from '../../../utils/archUtils'
 import { toContentServerURI } from '../../../api/loading/toContentServerURI'
 import { createInfoLog } from '../../../api/errors/createInfoLog'
-import { createFixedHMAC } from '../../crypto/createFixedHMAC'
 
-const getAuthToken = createFixedHMAC(Meteor.settings.hosts.content.secret)
 const origin = Meteor.absoluteUrl()
 
 export class LocalCacheCollection extends Mongo.Collection {
@@ -33,7 +30,6 @@ export class LocalCacheCollection extends Mongo.Collection {
       origin: origin,
       mode: 'cors',
       cache: 'no-store'
-      // 'X-Auth-Token': getAuthToken()
     }
 
     const params = { _id: selector._id || selector }

@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor'
+import { Mongo } from 'meteor/mongo'
 import { createCollectionFactory } from 'meteor/leaonline:collection-factory'
 import { Schema } from '../../../api/schema/Schema'
 import { onServerExec } from '../../../utils/archUtils'
@@ -12,7 +14,7 @@ export const createCollection = (context) => {
   if (context.isLocalCollection) {
     context.collection = Meteor.isClient && new Mongo.Collection(null)
     onServerExec(function () {
-      import { LocalCacheCollection } from '../../cache/collection/LocalCacheCollection'
+      const { LocalCacheCollection } = require('../../cache/collection/LocalCacheCollection')
       context.collection = new LocalCacheCollection(context)
     })
   }

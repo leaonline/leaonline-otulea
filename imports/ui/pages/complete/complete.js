@@ -1,8 +1,4 @@
 import { Template } from 'meteor/templating'
-import { Session } from '../../../contexts/session/Session'
-import { Feedback } from '../../../api/config/Feedback'
-import { ContentHost } from '../../../api/hosts/ContentHost'
-import { ResponseParser } from './responseParser'
 import { Dimension } from '../../../contexts/Dimension'
 
 import '../../components/container/container'

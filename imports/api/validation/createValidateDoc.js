@@ -7,5 +7,4 @@ export const createValidateDoc = context => {
     }
     return document
   }
-
 }

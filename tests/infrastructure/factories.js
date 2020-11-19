@@ -1,3 +1,4 @@
+/* eslint-env mocha */
 describe('factories', function () {
-  import '../../imports/infrastructure/factories/collection/createCollection.tests'
+  require('../../imports/infrastructure/factories/collection/createCollection.tests')
 })

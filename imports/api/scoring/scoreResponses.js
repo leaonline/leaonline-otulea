@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor'
 import { Scoring } from '../../contexts/Scoring'
 import { extractItemDefinition } from './extractItemDefinition'
 

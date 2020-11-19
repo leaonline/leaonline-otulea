@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor'
+
 const types = ['log', 'info', 'warn', 'debug', 'error']
 
 export const createLog = ({ name, type = 'info', devOnly } = {}) => {

@@ -3,10 +3,7 @@ import { check, Match } from 'meteor/check'
 import { Role } from '../../api/accounts/Role'
 import { Group } from '../../api/accounts/Group'
 import { onClient, onServer, onServerExec } from '../../utils/archUtils'
-import { getCollection } from '../../utils/collectionuUtils'
-import { PermissionDeniedError } from '../../api/errors/PermissionDenied'
 import { DocumentNotFoundError } from '../../api/errors/DocumentNotFoundError'
-import { UnitSet } from '../unitSet/UnitSet'
 
 export const Session = {
   name: 'session',
@@ -129,7 +126,6 @@ Session.methods.exists = {
   numRequests: 1,
   timeInterval: 1000,
   run: onServerExec(function () {
-
     /**
      *
      * @param unitSetId
@@ -156,11 +152,10 @@ Session.methods.currentById = {
   numRequests: 1,
   timeInterval: 1000,
   run: onServer(function ({ sessionId }) {
-    console.log(this.connection)
     const { userId } = this
     return Session.collection().findOne({
       _id: sessionId,
-      userId: userId,
+      userId: userId
     })
   })
 }
@@ -168,12 +163,12 @@ Session.methods.currentById = {
 Session.methods.start = {
   name: 'session.start',
   schema: {
-    unitSetId: String,
+    unitSetId: String
   },
   numRequests: 1,
   timeInterval: 1000,
   run: onServerExec(function () {
-    import { UnitSet } from '../unitSet/UnitSet'
+    const { UnitSet } = require('../unitSet/UnitSet')
 
     const getUnitSetDoc = docId => UnitSet.collection().findOne(docId)
 
@@ -234,7 +229,7 @@ Session.methods.cancel = {
   numRequests: 1,
   timeInterval: 1000,
   run: onServerExec(function () {
-    import { Response } from '../Response'
+    const { Response } = require('../Response')
 
     const hasResponses = sessionId => Response.collection().find({ sessionId }).count() > 0
 
@@ -281,7 +276,6 @@ Session.methods.continue = {
   })
 }
 
-
 Session.methods.update = {
   name: 'session.methods.update',
   schema: {
@@ -290,14 +284,14 @@ Session.methods.update = {
   numRequests: 1,
   timeInterval: 1000,
   run: onServerExec(function () {
-    import { UnitSet } from '../unitSet/UnitSet'
-    import { getSessionDoc } from './getSessionDoc'
-    import { isLastUnitInSet } from '../unitSet/isLastUnitInSet'
-    import { getNextUnitInSet } from '../unitSet/getNextUnitInSet'
-
+    const { UnitSet } = require('../unitSet/UnitSet')
     const getUnitSetDoc = docId => UnitSet.collection().findOne(docId)
 
     return function ({ sessionId }) {
+      const { getSessionDoc } = require('./getSessionDoc')
+      const { isLastUnitInSet } = require('../unitSet/isLastUnitInSet')
+      const { getNextUnitInSet } = require('../unitSet/getNextUnitInSet')
+
       const { userId, info } = this
       const sessionDoc = getSessionDoc({ sessionId, userId })
       const { unitSet, currentUnit } = sessionDoc
@@ -345,8 +339,8 @@ Session.methods.results = {
   },
   numRequests: 1,
   timeInterval: 1000,
-  run: onServerExec(function() {
-    import { SessionsHost } from '../../api/hosts/SessionsHost'
+  run: onServerExec(function () {
+    const { SessionsHost } = require('../../api/hosts/SessionsHost')
 
     return function ({ sessionId }) {
       const { userId } = this
