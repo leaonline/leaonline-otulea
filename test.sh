@@ -9,11 +9,12 @@ set -e
 # ------------------------------------------
 
 PROJECT_ROOT=$(pwd)
+PARENT_ROOT="$(dirname "$PROJECT_ROOT")"
 PORT=5566
 WATCH_MODE=1
 RUN_ONCE=''
 VERBOSE_MODE=0
-PACKAGE_DIRS="${PROJECT_ROOT}/lib:${PROJECT_ROOT}/libnpm:${PROJECT_ROOT}/liboauth"
+PACKAGE_DIRS="${PARENT_ROOT}/lib:${PARENT_ROOT}/libnpm:${PARENT_ROOT}/liboauth"
 
 # ------------------------------------------
 #
@@ -74,6 +75,5 @@ then
     # in watch mode we neither use a browser driver, nor coverage
     # se we speed up the test reload in the development phase
     # ---------------------------------------------------------------
-    METEOR_PACKAGE_DIRS=${PACKAGE_DIRS} \
-        meteor test --driver-package=meteortesting:mocha --settings=settings.json --port=${PORT}
+    METEOR_PACKAGE_DIRS=${PACKAGE_DIRS} meteor test --driver-package=meteortesting:mocha --settings=settings.json --port=${PORT}
 fi
