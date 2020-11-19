@@ -32,7 +32,7 @@ export class LocalCacheCollection extends Mongo.Collection {
     const headers = {
       origin: origin,
       mode: 'cors',
-      cache: 'no-store',
+      cache: 'no-store'
       // 'X-Auth-Token': getAuthToken()
     }
 
@@ -41,13 +41,11 @@ export class LocalCacheCollection extends Mongo.Collection {
 
     log('request doc', selector, 'from url', url)
 
-    let document = undefined
+    let document
 
     try {
       document = fetchDoc.call(this, url, requestOptions)
-    }
-
-    catch (e) {
+    } catch (e) {
       console.warn(e)
     }
 

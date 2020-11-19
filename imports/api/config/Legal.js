@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor'
-import { getCollection } from '../../utils/collectionuUtils'
 import { onClient, onServer } from '../../utils/archUtils'
 
 export const Legal = {
@@ -12,30 +11,29 @@ export const Legal = {
 Legal.schema = {
   imprint: {
     type: String,
-    label: 'legal.imprint',
+    label: 'legal.imprint'
   },
   privacy: {
     type: String,
-    label: 'legal.privacy',
-    //optional: true,
-    //richText: true,
-    //max: 5000
+    label: 'legal.privacy'
+    // optional: true,
+    // richText: true,
+    // max: 5000
   },
   terms: {
     type: String,
-    label: 'legal.terms',
+    label: 'legal.terms'
 
   },
   contact: {
     type: String,
-    label: 'legal.contact',
+    label: 'legal.contact'
   }
 }
 
 Legal.helpers = {}
 
 Legal.helpers.init = function (collection) {
-  if (collection) { _collection = collection }
   const configDoc = Legal.collection().findOne()
   if (!configDoc) {
     Legal.collection().insert({

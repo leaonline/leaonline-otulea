@@ -39,7 +39,7 @@ Template.unit.onCreated(function () {
     language: true,
     tts: true,
     contexts: [Session, Unit, UnitSet, Response, Dimension, Level],
-    onComplete() {
+    onComplete () {
       instance.dependenciesLoaded.set(true)
     }
   })

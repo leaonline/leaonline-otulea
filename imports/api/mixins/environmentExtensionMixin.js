@@ -2,7 +2,7 @@ import { createLog } from '../../utils/createLog'
 
 export const environmentExtensionMixin = function (options) {
   const { env } = options
-  if (env === null || env === false ) return options
+  if (env === null || env === false) return options
 
   const envOptions = env || {}
   const { devOnly = true } = envOptions

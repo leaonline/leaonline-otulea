@@ -2,7 +2,6 @@ import { Meteor } from 'meteor/meteor'
 import { Role } from '../accounts/Role'
 import { Group } from '../accounts/Group'
 import { onServer } from '../../utils/archUtils'
-import { getCollection } from '../../utils/collectionuUtils'
 
 export const ErrorLog = {
   name: 'errorLog',
@@ -27,7 +26,6 @@ ErrorLog.schema = {
     optional: true
   }
 }
-
 
 ErrorLog.methods = {}
 

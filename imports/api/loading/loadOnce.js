@@ -1,3 +1,5 @@
+import { ReactiveVar } from 'meteor/reactive-var'
+
 const cache = new Map()
 
 export const loadOnce = function (asyncInitFunc) {

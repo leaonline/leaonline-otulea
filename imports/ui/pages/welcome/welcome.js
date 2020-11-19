@@ -10,7 +10,6 @@ import { fadeOut } from '../../../utils/animationUtils'
 import './welcome.scss'
 import './welcome.html'
 
-
 const MAX_INPUTS = 5
 let originalVideoHeight
 

@@ -7,7 +7,7 @@ Template.notFound.onCreated(function () {
   instance.initDependencies({
     tts: true,
     language: true,
-    onComplete() {
+    onComplete () {
       instance.state.set('dependenciesComplete', true)
     }
   })

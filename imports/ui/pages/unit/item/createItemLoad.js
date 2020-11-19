@@ -1,7 +1,7 @@
 /**
  * Revives an item state from response cache. The returned function is to be
  * passed to the renderer / rendererfactory.
- * 
+ *
  * @param cache The cache used to load the item from
  * @return {function({sessionId: *, unitId: *, page: *, contentId: *}): *}
  */

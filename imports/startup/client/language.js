@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor'
-import { Template } from "meteor/templating"
+import { Template } from 'meteor/templating'
 import { i18n } from '../../api/i18n/I18n'
 
 // also register a language helper for templates

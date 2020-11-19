@@ -26,7 +26,7 @@ export const loadContentDoc = (context, docId) => {
       cache: 'no-store'
     }
 
-    info('load', method, url ,docId)
+    info('load', method, url, docId)
     HTTP.call(method, url, requestOptions, (error, response) => {
       if (error) {
         info(error)

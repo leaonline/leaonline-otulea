@@ -6,7 +6,6 @@ import { Logos } from '../../../api/config/Logos'
 import './footer.scss'
 import './footer.html'
 
-
 const legalRoutes = Object.keys(Legal.schema).map(key => {
   const value = Legal.schema[key]
   return {

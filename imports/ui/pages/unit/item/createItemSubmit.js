@@ -8,7 +8,6 @@ import { Response } from '../../../../contexts/Response'
  * @return {function({sessionId?: *, unitDoc: *, page?: *}): *}
  */
 export const createItemSubmit = ({ cache }) => {
-
   /**
    *
    * @param sessionId {String} The current {Session} id
@@ -40,6 +39,5 @@ export const createItemSubmit = ({ cache }) => {
         success: () => cache.clear(responseDoc)
       })
     }))
-
   }
 }

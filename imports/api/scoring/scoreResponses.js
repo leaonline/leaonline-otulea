@@ -10,6 +10,5 @@ export const scoreResponses = function (responseDoc) {
     throw new Meteor.Error('scoreResponses.error', 'items.expectedItemDefinition', responseDoc)
   }
 
-
   return Scoring.run(itemDoc.subtype, itemDoc.value, responseDoc)
 }

@@ -59,7 +59,6 @@ Blaze.TemplateInstance.prototype.initDependencies =
     // if any context is added we initialize it immediately sync-style
     contexts.forEach(ctx => initClientContext(ctx))
 
-
     if (language) {
       allComplete.push(loadOnce(initLanguage))
     }

@@ -25,7 +25,7 @@ export const initializeTTS = async () => {
   } catch (error) {
     console.error('Failed to detect os, use fallback')
     console.error(error)
-    console.error("Debug: ", window.navigator.userAgent, window.navigator.platform)
+    console.error('Debug: ', window.navigator.userAgent, window.navigator.platform)
     mode = TTSEngine.modes.server
   }
 

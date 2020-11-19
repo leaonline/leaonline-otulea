@@ -35,7 +35,9 @@ Template.navbar.onCreated(function () {
     const max = units.length
     const value = (current / (max + 1)) * 100
     const progress = {
-      current, max, value,
+      current,
+      max,
+      value,
       type: colorType
     }
 

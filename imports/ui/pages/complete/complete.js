@@ -19,7 +19,7 @@ const stateValues = Object.values(states)
 
 Template.complete.onCreated(function () {
   const instance = this
-  
+
   const { api } = instance.initDependencies({
     language: true,
     tts: true,
@@ -48,7 +48,6 @@ Template.complete.onCreated(function () {
 
   /*
   const { sessionId } = instance.data.params
-
 
   instance.autorun(() => {
     const sessionDoc = instance.state.get('sessionDoc')
@@ -234,7 +233,7 @@ Template.complete.events({
   },
   'click .lea-end-button' (event, templateInstance) {
     event.preventDefault()
-    templateInstance.api.fadeOut('.lea-complete-container', () => templateInstance.data?.end  ())
+    templateInstance.api.fadeOut('.lea-complete-container', () => templateInstance.data?.end())
   },
   'click .lea-continue-button' (event, templateInstance) {
     event.preventDefault()

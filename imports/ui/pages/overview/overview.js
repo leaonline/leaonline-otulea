@@ -264,7 +264,6 @@ Template.overview.events({
       args: { sessionId },
       templateInstance
     })
-
   },
   'click .lea-overview-confirm-button' (event, templateInstance) {
     event.preventDefault()
@@ -299,7 +298,7 @@ function startNewSession (templateInstance) {
   })
 }
 
-function launch({ templateInstance, name, args }) {
+function launch ({ templateInstance, name, args }) {
   templateInstance.api.callMethod({
     name: name,
     args: args,

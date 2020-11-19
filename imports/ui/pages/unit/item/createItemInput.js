@@ -4,7 +4,6 @@
  * @return {onItemInput}
  */
 export const createItemInput = ({ cache }) => {
-
   /**
    * Handler for scoring item inputs
    * @param userId

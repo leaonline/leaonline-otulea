@@ -14,7 +14,6 @@ const getAuthToken = createFixedHMAC(Meteor.settings.hosts.sessions.secret)
 
 SessionsHost.methods = {}
 
-
 SessionsHost.methods.submitResponse = function ({ userId, sessionId, taskId, type, contentId, responses, page }) {
   return HTTP.post(responseUrl, {
     data: {

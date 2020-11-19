@@ -6,5 +6,3 @@ Meteor.startup(async () => {
   global.Popper = global.Popper || popper
   await import('./theme.scss')
 })
-
-

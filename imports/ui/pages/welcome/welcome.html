@@ -1,5 +1,10 @@
 <template name="welcome">
     <div class="w-100 lea-welcome-container">
+
+        <div class="container">
+            {{> image src="/logo/logo-footer.png" alt="logo" class="lea-main-logo w-100"}}
+        </div>
+
         {{#unless loadComplete}}
             {{> loading}}
         {{/unless}}
