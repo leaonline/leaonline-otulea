@@ -1,2 +1,1 @@
-import { TTSEngine } from 'meteor/leaonline:corelib/tts/TTSEngine'
-export { TTSEngine }
+export { TTSEngine } from 'meteor/leaonline:corelib/tts/TTSEngine'

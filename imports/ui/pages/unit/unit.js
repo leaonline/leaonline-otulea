@@ -1,11 +1,10 @@
 /* global EventTarget Event */
-import { Meteor } from 'meteor/meteor'
 import { Template } from 'meteor/templating'
 import { ReactiveVar } from 'meteor/reactive-var'
 import { Session } from '../../../contexts/session/Session'
 import { ColorType } from '../../../types/ColorType'
 import { Response } from '../../../contexts/Response'
-import { UnitSet } from '../../../contexts/UnitSet'
+import { UnitSet } from '../../../contexts/unitSet/UnitSet'
 import { Dimension } from '../../../contexts/Dimension'
 import { Level } from '../../../contexts/Level'
 import { fadeOut, fadeIn } from '../../../utils/animationUtils'

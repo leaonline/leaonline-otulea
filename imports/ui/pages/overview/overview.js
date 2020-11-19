@@ -3,12 +3,14 @@ import { TTSEngine } from '../../../api/tts/TTSEngine'
 import { Dimension } from '../../../contexts/Dimension'
 import { Level } from '../../../contexts/Level'
 import { Session } from '../../../contexts/session/Session'
-import { UnitSet } from '../../../contexts/UnitSet'
+import { UnitSet } from '../../../contexts/unitSet/UnitSet'
 import { ColorType } from '../../../types/ColorType'
 import { dataTarget } from '../../../utils/eventUtils'
 import '../../components/container/container'
 import './overview.scss'
 import './overview.html'
+import { hasSet } from '../../../contexts/unitSet/hasSet'
+import { showStoryBeforeUnit } from '../../../contexts/unitSet/showStoryBeforeUnit'
 
 Template.overview.onDestroyed(function () {
   const instance = this
@@ -157,7 +159,7 @@ Template.overview.helpers({
     return dimension?._id === _id
   },
   dimensionDisabled (dimension) {
-    return !UnitSet.helpers.hasSet({ dimension })
+    return !hasSet({ dimension })
   },
   allDimensions () {
     const instance = Template.instance()
@@ -262,7 +264,8 @@ Template.overview.events({
     launch({
       name: Session.methods.continue.name,
       args: { sessionId },
-      templateInstance
+      templateInstance,
+      isFreshStart: false
     })
   },
   'click .lea-overview-confirm-button' (event, templateInstance) {
@@ -294,11 +297,12 @@ function startNewSession (templateInstance) {
   launch({
     name: Session.methods.start.name,
     args: { unitSetId },
-    templateInstance
+    templateInstance,
+    isFreshStart: true
   })
 }
 
-function launch ({ templateInstance, name, args }) {
+function launch ({ templateInstance, name, args, isFreshStart }) {
   templateInstance.api.callMethod({
     name: name,
     args: args,
@@ -316,11 +320,19 @@ function launch ({ templateInstance, name, args }) {
     success: sessionDoc => {
       TTSEngine.stop()
       const { fadeOut } = templateInstance.api
-      const { next } = templateInstance.data
+      const { next, story } = templateInstance.data
       setTimeout(() => {
+        // a new session can either begin with a story (no items included) or
+        // go to the fist unit, which is decided here but routed externally
         const sessionId = sessionDoc._id
         const unitId = sessionDoc.currentUnit
-        fadeOut('.lea-overview-container', () => next({ sessionId, unitId }))
+        const unitSetDoc = UnitSet.collection().findOne(sessionDoc.unitSet)
+        const shouldShowStory =  isFreshStart && showStoryBeforeUnit(unitId, unitSetDoc)
+        const onCompleteHandler = shouldShowStory
+          ? () => story({ sessionId, unitId, unitSetId: unitSetDoc._id })
+          : () => next({ sessionId, unitId })
+
+        fadeOut('.lea-overview-container', onCompleteHandler)
       }, 100)
     }
   })

@@ -1,8 +1,8 @@
 import { Session } from '../../contexts/session/Session'
-import { createCollection } from '../../factories/collection/createCollection'
-import { createMethods } from '../../factories/method/createMethods'
-import { rateLimitMethods, rateLimitPublications } from '../../factories/ratelimit/rateLimit'
-import { createPublications } from '../../factories/publication/createPublication'
+import { createCollection } from '../../infrastructure/factories/collection/createCollection'
+import { createMethods } from '../../infrastructure/factories/method/createMethods'
+import { rateLimitMethods, rateLimitPublications } from '../../infrastructure/factories/ratelimit/rateLimit'
+import { createPublications } from '../../infrastructure/factories/publication/createPublication'
 
 createCollection(Session)
 

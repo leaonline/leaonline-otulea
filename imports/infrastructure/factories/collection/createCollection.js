@@ -1,6 +1,6 @@
 import { createCollectionFactory } from 'meteor/leaonline:collection-factory'
-import { Schema } from '../../api/schema/Schema'
-import { onServerExec } from '../../utils/archUtils'
+import { Schema } from '../../../api/schema/Schema'
+import { onServerExec } from '../../../utils/archUtils'
 
 const collectionFactory = createCollectionFactory({
   schemaFactory: Schema.create
@@ -12,7 +12,7 @@ export const createCollection = (context) => {
   if (context.isLocalCollection) {
     context.collection = Meteor.isClient && new Mongo.Collection(null)
     onServerExec(function () {
-      import { LocalCacheCollection } from '../../infrastructure/cache/LocalCacheCollection'
+      import { LocalCacheCollection } from '../../cache/collection/LocalCacheCollection'
       context.collection = new LocalCacheCollection(context)
     })
   }

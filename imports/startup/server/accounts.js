@@ -1,8 +1,8 @@
 /* global ServiceConfiguration */
 import { Meteor } from 'meteor/meteor'
 import { Users } from '../../api/accounts/User'
-import { createMethods } from '../../factories/method/createMethods'
-import { rateLimitMethods, rateLimitAccounts } from '../../factories/ratelimit/rateLimit'
+import { createMethods } from '../../infrastructure/factories/method/createMethods'
+import { rateLimitMethods, rateLimitAccounts } from '../../infrastructure/factories/ratelimit/rateLimit'
 import { registerOAuthDDPLoginHandler } from 'meteor/leaonline:ddp-login-handler'
 
 //  //////////////////////////////////////////////////////////

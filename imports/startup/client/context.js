@@ -1,4 +1,4 @@
-import { createCollection } from '../../factories/collection/createCollection'
+import { createCollection } from '../../infrastructure/factories/collection/createCollection'
 
 const created = new Set()
 

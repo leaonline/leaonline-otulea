@@ -6,7 +6,7 @@ import { onClient, onServer, onServerExec } from '../../utils/archUtils'
 import { getCollection } from '../../utils/collectionuUtils'
 import { PermissionDeniedError } from '../../api/errors/PermissionDenied'
 import { DocumentNotFoundError } from '../../api/errors/DocumentNotFoundError'
-import { UnitSet } from '../UnitSet'
+import { UnitSet } from '../unitSet/UnitSet'
 
 export const Session = {
   name: 'session',
@@ -156,6 +156,7 @@ Session.methods.currentById = {
   numRequests: 1,
   timeInterval: 1000,
   run: onServer(function ({ sessionId }) {
+    console.log(this.connection)
     const { userId } = this
     return Session.collection().findOne({
       _id: sessionId,
@@ -172,7 +173,7 @@ Session.methods.start = {
   numRequests: 1,
   timeInterval: 1000,
   run: onServerExec(function () {
-    import { UnitSet } from '../UnitSet'
+    import { UnitSet } from '../unitSet/UnitSet'
 
     const getUnitSetDoc = docId => UnitSet.collection().findOne(docId)
 
@@ -289,8 +290,10 @@ Session.methods.update = {
   numRequests: 1,
   timeInterval: 1000,
   run: onServerExec(function () {
-    import { UnitSet } from '../UnitSet'
+    import { UnitSet } from '../unitSet/UnitSet'
     import { getSessionDoc } from './getSessionDoc'
+    import { isLastUnitInSet } from '../unitSet/isLastUnitInSet'
+    import { getNextUnitInSet } from '../unitSet/getNextUnitInSet'
 
     const getUnitSetDoc = docId => UnitSet.collection().findOne(docId)
 
@@ -306,7 +309,7 @@ Session.methods.update = {
 
       info('update', currentUnit, unitSetDoc.units)
       const timestamp = new Date()
-      const isLastUnit = UnitSet.helpers.isLastUnit(currentUnit, unitSetDoc)
+      const isLastUnit = isLastUnitInSet(currentUnit, unitSetDoc)
 
       if (isLastUnit) {
         Session.collection().update(sessionDoc._id, {
@@ -321,7 +324,7 @@ Session.methods.update = {
         return { nextUnitId: null, completed: true }
       }
 
-      const nextUnit = UnitSet.helpers.getNextUnit(currentUnit, unitSetDoc)
+      const nextUnit = getNextUnitInSet(currentUnit, unitSetDoc)
       Session.collection().update(sessionDoc._id, {
         $set: {
           currentUnit: nextUnit,

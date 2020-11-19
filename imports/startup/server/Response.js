@@ -1,7 +1,7 @@
 import { Response } from '../../contexts/Response'
-import { createCollection } from '../../factories/collection/createCollection'
-import { createMethods } from '../../factories/method/createMethods'
-import { rateLimitMethods } from '../../factories/ratelimit/rateLimit'
+import { createCollection } from '../../infrastructure/factories/collection/createCollection'
+import { createMethods } from '../../infrastructure/factories/method/createMethods'
+import { rateLimitMethods } from '../../infrastructure/factories/ratelimit/rateLimit'
 
 createCollection(Response)
 

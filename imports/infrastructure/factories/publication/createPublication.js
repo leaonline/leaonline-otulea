@@ -1,7 +1,7 @@
 import { createPublicationFactory } from 'meteor/leaonline:publication-factory'
-import { checkPermissions } from '../../api/mixins/checkPermissions'
-import { Schema } from '../../api/schema/Schema'
-import { environmentExtensionMixin } from '../../api/mixins/environmentExtensionMixin'
+import { checkPermissions } from '../../mixins/checkPermissions'
+import { Schema } from '../../../api/schema/Schema'
+import { environmentExtensionMixin } from '../../mixins/environmentExtensionMixin'
 
 export const createPublication = createPublicationFactory({
   schemaFactory: Schema.create,

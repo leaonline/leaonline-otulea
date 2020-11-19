@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor'
-import { runRateLimiter } from '../../factories/ratelimit/rateLimit'
+import { runRateLimiter } from '../../infrastructure/factories/ratelimit/rateLimit'
 
 const logAttempt = (...args) => console.log(...args)
 
