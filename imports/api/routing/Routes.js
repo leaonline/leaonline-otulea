@@ -19,7 +19,6 @@ Routes.notFound = {
   },
   target: null,
   template: 'notFound',
-  roles: null,
   data: {
     next () {
       gotoRoute(Routes.overview)
@@ -44,7 +43,6 @@ Routes.fallback = {
   },
   target: null,
   template: 'loading',
-  roles: null,
   data: null
 }
 
@@ -60,7 +58,6 @@ Routes.welcome = {
   },
   target: null,
   template: 'welcome',
-  roles: null,
   data: {
     next () {
       gotoRoute(Routes.overview)
@@ -82,17 +79,50 @@ Routes.overview = {
   },
   target: null,
   template: 'overview',
-  roles: null,
   onAction () {
     window.scrollTo(0, 0)
   },
   data: {
     next ({ sessionId, unitId }) {
       gotoRoute(Routes.unit, sessionId, unitId)
+    },
+    story ({ sessionId, unitSetId, unitId }) {
+      gotoRoute(Routes.story, sessionId, unitSetId, unitId)
     }
   }
 }
 
+Routes.story = {
+  path: (sessionId = ':sessionId', unitSetId = ':unitSetId',  unitId = ':unitId') => {
+    return `${settings.story}/${sessionId}/${unitSetId}/${unitId}`
+  },
+  label: 'pages.unit.story',
+  triggersEnter: () => [
+    createLoginTrigger(Routes.welcome)
+  ],
+  async load () {
+    return import('../../ui/pages/story/story')
+  },
+  target: null,
+  template: 'story',
+  onAction () {
+    window.scrollTo(0, 0)
+  },
+  data: {
+    next ({ sessionId, unitId }) {
+      if (!sessionId) {
+        return gotoRoute(Routes.overview)
+      }
+
+      return (!unitId)
+        ? gotoRoute(Routes.complete, sessionId)
+        : gotoRoute(Routes.unit, sessionId, unitId)
+    },
+    exit () {
+      gotoRoute(Routes.overview)
+    }
+  }
+}
 /**
  * Unit process page, where all units are dynamically rendered and processed.
  */
@@ -110,7 +140,6 @@ Routes.unit = {
   },
   target: null,
   template: 'unit',
-  roles: null,
   onAction () {
     window.scrollTo(0, 0)
   },
@@ -150,7 +179,6 @@ Routes.complete = {
   },
   target: null,
   template: 'complete',
-  roles: null,
   onAction () {
     window.scrollTo(0, 0)
   },
@@ -175,7 +203,6 @@ Routes.logout = {
   },
   target: null,
   template: 'logout',
-  roles: null,
   onAction () {
     window.scrollTo(0, 0)
   },
@@ -203,7 +230,6 @@ Routes.root = {
   },
   target: null,
   template: 'loading',
-  roles: null,
   data: null
 }
 
