@@ -1,8 +1,8 @@
 .card {
-  -moz-box-shadow: 0px 3px 6px #D6D6D6;
-  -webkit-box-shadow: 0px 3px 6px #D6D6D6;
-  box-shadow: 0px 3px 6px #D6D6D6;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Shadow(Strength=6, Direction=135, Color='#D6D6D6')";
+  box-shadow: 0 3px 6px #d6d6d6;
+  box-shadow: 0 3px 6px #d6d6d6;
+  box-shadow: 0 3px 6px #d6d6d6;
+  filter: "progid:DXImageTransform.Microsoft.Shadow(Strength=6, Direction=135, Color='#D6D6D6')";
   filter: progid:DXImageTransform.Microsoft.Shadow(Strength=6, Direction=135, Color='#D6D6D6');
 }
 
@@ -15,9 +15,8 @@
 }
 
 .d-unavailable {
-  pointer-events: none;
   /* IE 8 */
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
+  filter: 'progid:DXImageTransform.Microsoft.Alpha(Opacity=50)';
 
   /* IE 5-7 */
   filter: alpha(opacity=50);
@@ -30,6 +29,7 @@
 
   /* Good browsers */
   opacity: 0.5;
+  pointer-events: none;
 }
 
 
@@ -54,13 +54,14 @@ h1 {
   font-size: 48px;
 }
 
-body, wrapper {
+body,
+wrapper {
   background-color: #f5f5f5 !important;
   min-height: 100vh;
 }
 
 .card {
-  border: none !important;
+  border: 0 !important;
 }
 
 .vh-25 {
@@ -68,8 +69,8 @@ body, wrapper {
 }
 
 .container-fluid {
-  margin: 0 0 0 0 !important;
-  padding: 0 0 0 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 .trapezoid {
