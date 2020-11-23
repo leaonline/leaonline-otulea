@@ -1,1 +1,1 @@
-export { getCollection } from 'meteor/leaonline:utils/lib/collection'
+export { getCollection } from 'meteor/leaonline:corelib/lib/collection'

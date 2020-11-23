@@ -19,15 +19,12 @@ shell-server@0.5.0            # Server-side component of the `meteor shell` comm
 
 # Base Tools
 leaonline:corelib
-leaonline:errors
-leaonline:utils
 leaonline:ui
 leaonline:service-registry
 leaonline:theme
 
 # factories
 leaonline:collection-factory
-leaonline:files-collection-factory
 leaonline:method-factory
 leaonline:publication-factory
 leaonline:ratelimit-factory
@@ -37,7 +34,8 @@ aldeed:collection2
 dburles:mongo-collection-instances
 
 # files
-ostrio:files
+# ostrio:files
+# leaonline:grid-factory
 
 # Methods
 mdg:validated-method

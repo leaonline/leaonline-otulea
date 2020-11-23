@@ -168,7 +168,7 @@ Session.methods.start = {
   numRequests: 1,
   timeInterval: 1000,
   run: onServerExec(function () {
-    const { UnitSet } = require('../unitSet/UnitSet')
+    import { UnitSet } from '../unitSet/UnitSet'
 
     const getUnitSetDoc = docId => UnitSet.collection().findOne(docId)
 

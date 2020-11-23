@@ -2,7 +2,7 @@
 
 ![lea.online logo, cc-? University of Bremen](https://blogs.uni-bremen.de/leaonline/files/2019/03/cropped-header-lea-online-01-3.png)
 
-![Lint suite](https://github.com/leaonline/leaonline-otulea/workflows/Lint%20suite/badge.svg)
+![Lint suite](https://github.com/leaonline/leaonline-otulea/workflows/Test%20suite/badge.svg)
 [![built with Meteor](https://img.shields.io/badge/Meteor-1.11.1-green?logo=meteor&logoColor=white)](https://meteor.com)
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
