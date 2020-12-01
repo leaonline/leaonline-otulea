@@ -29,5 +29,24 @@ export const initializeTTS = async () => {
     mode = TTSEngine.modes.server
   }
 
-  TTSEngine.configure({ ttsUrl: Meteor.settings.public.tts.url, mode })
+  TTSEngine.configure({ loader: externalServerTTSLoader, mode })
+}
+
+function externalServerTTSLoader (requestText, callback) {
+  const url = Meteor.settings.public.tts.url
+  const options = {
+    params: { text: requestText },
+    headers: {
+      Accept: 'application/json, text/plain, */*',
+      'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+    }
+  }
+
+  HTTP.post(url, options, (err, res) => {
+    if (err) {
+      return callback(err)
+    }
+
+    callback(undefined, res?.data?.url)
+  })
 }
