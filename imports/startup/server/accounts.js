@@ -1,9 +1,15 @@
 /* global ServiceConfiguration */
 import { Meteor } from 'meteor/meteor'
 import { Users } from '../../api/accounts/User'
+import { ServiceRegistry } from '../../api/config/BackendConfig'
 import { createMethods } from '../../infrastructure/factories/method/createMethods'
-import { rateLimitMethods, rateLimitAccounts } from '../../infrastructure/factories/ratelimit/rateLimit'
+import {
+  rateLimitMethods,
+  rateLimitAccounts,
+  rateLimitPublications
+} from '../../infrastructure/factories/ratelimit/rateLimit'
 import { registerOAuthDDPLoginHandler } from 'meteor/leaonline:ddp-login-handler'
+import { createPublications } from '../../infrastructure/factories/publication/createPublication'
 
 //  //////////////////////////////////////////////////////////
 //  CUSTOM USERS METHODS
@@ -11,6 +17,11 @@ import { registerOAuthDDPLoginHandler } from 'meteor/leaonline:ddp-login-handler
 const userMethods = Object.values(Users.methods)
 createMethods(userMethods)
 rateLimitMethods(userMethods)
+
+
+const publications = Object.values(Users.publications)
+createPublications(publications)
+rateLimitPublications(publications)
 
 //  //////////////////////////////////////////////////////////
 //  RATE LIMIT BUILTIN ACCOUNTS
@@ -39,3 +50,6 @@ Meteor.startup(() => {
 
   registerOAuthDDPLoginHandler({ identityUrl: oauth.identityUrl })
 })
+
+
+ServiceRegistry.register(Users)

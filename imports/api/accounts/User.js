@@ -8,12 +8,19 @@ import { SHA256 } from 'meteor/sha'
 export const Users = {
   name: 'users',
   label: 'users.title',
-  icon: 'users',
-  methods: {},
-  publications: {}
+  icon: 'users'
 }
 
 Users.schema = {
+  /**
+   * Users can be created by editors and teachers for testing purposes, so
+   * this field is an optional indicator for test or demo users.
+   */
+  createdBy: {
+    type: String,
+    optional: true,
+    display: 'user'
+  },
   createdAt: Date,
   updatedAt: Date,
   username: String,
@@ -37,6 +44,8 @@ Users.schema = {
   'agents.$.viewPortHeight': Number
 
 }
+
+Users.methods = {}
 
 Users.methods.register = {
   name: 'user.methods.register',
@@ -101,5 +110,26 @@ Users.methods.recent = {
       },
       hint: { $natural: -1 }
     }).fetch()
+  })
+}
+
+
+Users.publications = {}
+
+Users.publications.all = {
+  name: 'users.publications.all',
+  schema: {},
+  run: onServer(function () {
+    if (Meteor.users.find(this.userId).count() > 0) {
+      return this.ready()
+    }
+
+    return Meteor.users.find({}, {
+      fields: {
+        email: 0,
+        services: 0
+      },
+      hint: { $natural: -1 }
+    })
   })
 }
