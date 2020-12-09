@@ -17,10 +17,8 @@
         "competency": "/competencies",
         "url": "http://localhost:3030"
       },
-      "items": {
-        "renderUrl": "http://localhost:8080/play?contentId="
-      },
       "sessions": {
+        "url": "http://localhost:6060",
         "evalUrl": "http://localhost:6060/eval",
         "responseUrl": "http://localhost:6060/response"
       }

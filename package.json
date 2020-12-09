@@ -21,6 +21,7 @@
     "bootstrap": "^4.5.3",
     "debug": "^4.2.0",
     "detect-os": "^1.1.1",
+    "helmet": "^4.2.0",
     "jquery": "^3.5.1",
     "lozad": "^1.16.0",
     "meteor-node-stubs": "^1.0.1",

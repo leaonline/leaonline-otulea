@@ -1,3 +1,4 @@
+import '../imports/startup/server/csp'
 import '../imports/startup/server/error'
 import '../imports/startup/server/validation'
 import '../imports/startup/server/accounts'

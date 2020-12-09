@@ -53,7 +53,11 @@ function fetchDoc (url, requestOptions) {
   const response = HTTP.get(url, requestOptions)
   const doc = response.data
   if (doc) {
-    this.upsert(doc._id, { $set: doc })
+    const docId = doc._id
+    delete doc._id
+    this.upsert(docId, { $set: doc })
   }
+
+  console.info('received', doc)
   return doc
 }
