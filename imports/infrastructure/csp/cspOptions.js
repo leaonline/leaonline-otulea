@@ -47,9 +47,14 @@ export function helmetOptions (externalHostUrls = [], print) {
     contentSecurityPolicy: {
       blockAllMixedContent: true,
       directives: {
+        defaultSrc: [self],
+        scriptSrc: [
+          self,
+          "'unsafe-eval'",
+          `'sha256-${runtimeConfigHash}'`
+        ],
         childSrc: [self],
         connectSrc: connectSources,
-        defaultSrc: [self],
         fontSrc: [self, data],
         formAction: [self],
         frameAncestors: [self],
@@ -62,13 +67,9 @@ export function helmetOptions (externalHostUrls = [], print) {
           'allow-same-origin',
           'allow-scripts',
           'allow-forms',
-          'allow-popups',
-          'allow-popups-to-escape-sandbox'
-        ],
-        scriptSrc: [
-          self,
-          "'unsafe-eval'",
-          `'sha256-${runtimeConfigHash}'`
+          //'allow-popups',
+          //'allow-popups-to-escape-sandbox'
+          'allow-modals'
         ],
         styleSrc: [self, "'unsafe-inline'"],
         workerSrc: [self, 'blob:']

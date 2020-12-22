@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor'
-import { onClient, onServer } from '../../utils/archUtils'
+import { onClient, onServer } from '../utils/archUtils'
 
 export const Legal = {
   name: 'legal',
@@ -33,7 +33,7 @@ Legal.schema = {
 
 Legal.helpers = {}
 
-Legal.helpers.init = function (collection) {
+Legal.helpers.init = function () {
   const configDoc = Legal.collection().findOne()
   if (!configDoc) {
     Legal.collection().insert({
@@ -62,9 +62,6 @@ Legal.methods = {}
 
 Legal.methods.update = {
   name: 'legal.methods.update',
-  isPublic: true, // FIXME only backend editors and admins
-  numRequests: 1,
-  timeInterval: 250,
   schema: {
     _id: {
       type: String
@@ -82,8 +79,6 @@ Legal.methods.update = {
 Legal.methods.get = {
   name: 'legal.methods.get',
   isPublic: true,
-  numRequests: 1,
-  timeInterval: 250,
   schema: {
     name: {
       type: String,

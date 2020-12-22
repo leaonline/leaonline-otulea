@@ -51,13 +51,13 @@ export class LocalCacheCollection extends Mongo.Collection {
 
 function fetchDoc (url, requestOptions) {
   const response = HTTP.get(url, requestOptions)
-  const doc = response.data
+  const doc =  response.data
+
   if (doc) {
     const docId = doc._id
     delete doc._id
     this.upsert(docId, { $set: doc })
   }
 
-  console.info('received', doc)
   return doc
 }

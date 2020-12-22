@@ -60,6 +60,16 @@ wrapper {
   min-height: 100vh;
 }
 
+@media print {
+  body {
+    background: none !important;
+  }
+
+  .d-print-none {
+    display: none !important;
+  }
+}
+
 .card {
   border: 0 !important;
 }

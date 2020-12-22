@@ -21,7 +21,7 @@
   },
   "feedback": {
     "title": "Rückmeldung",
-    "levels": "Levels an Rückmeldung (1 = alles falsch, 3 = alles supi)",
+    "levels": "Levels der Rückmeldung (oben=top, unten=noch üben)",
     "notEvaluable": "Rückmeldung für unbearbeitete aber abgesendete Aufgaben"
   },
   "videos": {

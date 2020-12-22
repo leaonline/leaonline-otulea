@@ -27,7 +27,6 @@ export const createSessionLoader = ({ info = () => {} }) => {
     const finalUnitSetId = (unitSetId || sessionDoc?.unitSet)
     const unitSetDoc = await loadContentDoc(UnitSet, finalUnitSetId)
     const unitDoc = unitId && await loadContentDoc(Unit, unitId)
-    console.log({ unitDoc })
     const levelDoc = unitSetDoc && await loadContentDoc(Level, unitSetDoc?.level)
     const dimensionDoc = unitSetDoc && await loadContentDoc(Dimension, unitSetDoc?.dimension)
 

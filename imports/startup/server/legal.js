@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor'
-import { Legal } from '../../api/config/Legal'
+import { Legal } from '../../contexts/Legal'
 import { ServiceRegistry } from '../../api/config/BackendConfig'
 import { createCollection } from '../../infrastructure/factories/collection/createCollection'
 import { createMethods } from '../../infrastructure/factories/method/createMethods'

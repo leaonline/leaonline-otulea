@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor'
 import { Template } from 'meteor/templating'
-import { Legal } from '../../../api/config/Legal'
+import { Legal } from '../../../contexts/Legal'
 import { dataTarget } from '../../../utils/eventUtils'
-import { Logos } from '../../../api/config/Logos'
+import { Logos } from '../../../contexts/Logos'
 import './footer.scss'
 import './footer.html'
 

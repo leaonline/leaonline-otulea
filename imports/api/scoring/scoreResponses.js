@@ -4,7 +4,6 @@ import { extractItemDefinition } from './extractItemDefinition'
 
 export const scoreResponses = function (responseDoc) {
   const { unitId, contentId, page } = responseDoc
-
   const itemDoc = extractItemDefinition({ unitId, contentId, page })
 
   if (!itemDoc || !itemDoc.value) {

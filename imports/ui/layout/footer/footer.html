@@ -21,12 +21,13 @@
                     {{/each}}
                 </ul>
 
-                {{#if currentUser}}
+                {{#with currentUser}}
                     <ul class="navbar-nav ml-auto">
                         <li class="nav-item d-flex align-items-center">
                             {{#if loadComplete}}
                                 {{>soundbutton tts="common.logout" sm=true outline=true}}
                                 <a class="nav-link logout-button" href="#">
+                                    <span>{{this.username}}</span>
                                     <span>{{i18n "common.logout"}}</span>
                                     <i class="fa fas fa-fw fa-sign-out-alt"></i>
                                 </a>
@@ -35,7 +36,7 @@
                             {{/if}}
                         </li>
                     </ul>
-                {{/if}}
+                {{/with}}
             </div>
         </nav>
     </footer>

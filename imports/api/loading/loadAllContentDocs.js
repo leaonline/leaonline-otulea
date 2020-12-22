@@ -2,7 +2,7 @@ import { toContentServerURI } from './toContentServerURI'
 import { createLog } from '../../utils/createInfoLog'
 import { HTTP } from 'meteor/jkuester:http'
 
-export const loadAllContentDocs = (context, params) => {
+export const loadAllContentDocs = (context, params, debug) => {
   const route = context.routes.all
   const collection = context.collection()
   const url = toContentServerURI(route.path)
@@ -17,8 +17,15 @@ export const loadAllContentDocs = (context, params) => {
     mode: 'cors',
     cache: 'no-store'
   }
+
   if (params) {
     requestOptions.params = params
+  }
+
+  info('start request', method, url)
+
+  if (debug) {
+    info('request options', requestOptions)
   }
 
   return new Promise((resolve, reject) => {
@@ -28,7 +35,7 @@ export const loadAllContentDocs = (context, params) => {
         return reject(error)
       }
 
-      info(response)
+      if (debug) info(response)
       const documents = response.data
 
       if (!Array.isArray(documents)) {
@@ -41,6 +48,7 @@ export const loadAllContentDocs = (context, params) => {
         return resolve(documents)
       }
 
+      info(`received ${documents.length} doc(s)`)
       documents.forEach(doc => collection.upsert(doc._id, { $set: doc }))
       resolve(documents)
     })

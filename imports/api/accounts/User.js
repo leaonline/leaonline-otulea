@@ -1,8 +1,6 @@
 /* global Roles Accounts Meteor */
 import { check } from 'meteor/check'
 import { onClient, onServer } from '../../utils/archUtils'
-import { Role } from './Role'
-import { Group } from './Group'
 import { SHA256 } from 'meteor/sha'
 
 export const Users = {
@@ -57,9 +55,7 @@ Users.methods.register = {
   timeInterval: 1000,
   run: onServer(function ({ code }) {
     check(code, String)
-    const userId = Accounts.createUser({ username: code, password: code })
-    Roles.addUsersToRoles(userId, [Role.runSession.value], Group.field.value)
-    return userId
+    return Accounts.createUser({ username: code, password: code })
   }),
   call: onClient(function ({ code }, cb) {
     Meteor.call(Users.methods.register.name, { code }, cb)
@@ -74,8 +70,6 @@ Users.methods.loggedIn = {
     viewPortWidth: Number,
     viewPortHeight: Number
   },
-  roles: [Role.runSession.value, Role.test.value],
-  group: Group.field.value,
   numRequests: 1,
   timeInterval: 1000,
   run: onServer(function ({ screenWidth, screenHeight, viewPortWidth, viewPortHeight }) {
@@ -96,8 +90,6 @@ Users.methods.loggedIn = {
 Users.methods.recent = {
   name: 'user.methods.recent',
   schema: {},
-  roles: [Role.runSession.value, Role.test.value],
-  group: Group.field.value,
   numRequests: 1,
   timeInterval: 1000,
   run: onServer(function () {
@@ -120,16 +112,17 @@ Users.publications.all = {
   name: 'users.publications.all',
   schema: {},
   run: onServer(function () {
-    if (Meteor.users.find(this.userId).count() > 0) {
+    const user = Meteor.users.findOne(this.userId)
+    if (!user || !user.services || !user.services.lea) {
       return this.ready()
     }
 
-    return Meteor.users.find({}, {
+    const cursor = Meteor.users.find({}, {
       fields: {
-        email: 0,
         services: 0
-      },
-      hint: { $natural: -1 }
+      }
     })
+      console.info('users sub', cursor.count())
+    return cursor
   })
 }

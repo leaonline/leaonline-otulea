@@ -1,15 +1,15 @@
 import { Blaze } from 'meteor/blaze'
 import { Components } from 'meteor/leaonline:ui/components/Components'
+import { Router } from '../../api/routing/Router'
 import { initLanguage } from './language'
 import { initializeTTS } from './leaconfig'
 import { initClientContext } from './context'
 import { loadOnce } from '../../api/loading/loadOnce'
 import { createLog } from '../../utils/createInfoLog'
 import { loadAllContentDocs } from '../../api/loading/loadAllContentDocs'
-import { Router } from '../../api/routing/Router'
+import { loadContentDoc } from '../../api/loading/loadContentDoc'
 import { fadeOut } from '../../utils/animationUtils'
 import { callMethod } from '../../infrastructure/methods/callMethod'
-import { loadContentDoc } from '../../api/loading/loadContentDoc'
 
 // if we use the autoload functionality we don't need to explicitly load basic
 // and generic (stateless) templates, since they are loaded at runtime using
@@ -21,7 +21,8 @@ Components.autoLoad()
  * dependencies like i18n etc. that require a certain loading time.
  * @param language
  * @param tts
- * @param session
+ * @param contexts
+ * @param loaders
  * @param onComplete
  * @return {Blaze.TemplateInstance}
  */

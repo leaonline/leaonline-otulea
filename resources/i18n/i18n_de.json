@@ -107,7 +107,7 @@
     },
     "complete": {
       "thankYou": "Schön, dass Sie teilgenommen haben!",
-      "printResults": "Ergebnis ausdrucken",
+      "printResults": "Für mich ausdrucken",
       "printResultsTeacher": "Für Kursleitende ausdrucken",
       "youCanPrint": "Sie können Ihr Ergebnis hier ausdrucken.",
       "continueOrEnd": "Was möchten Sie als nächstes tun?",
@@ -115,5 +115,8 @@
       "definitionMissing": "Kompetenz ermittelt aber Definition fehlt",
       "noEntries": "Es sind hierzu keine Einträge in der Rückmeldung enthalten."
     }
+  },
+  "users": {
+    "title": "User / TN"
   }
 }

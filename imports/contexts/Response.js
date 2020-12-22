@@ -1,3 +1,4 @@
+import { EJSON } from 'meteor/ejson'
 import { Meteor } from 'meteor/meteor'
 import { onServerExec } from '../utils/archUtils'
 
@@ -44,7 +45,7 @@ Response.methods.submit = {
     const { isCurrentUnit } = require('./session/isCurrentUnit')
 
     return function (responseDoc) {
-      this.unblock()
+      // this.unblock()
       const { userId, info } = this
       const { sessionId, unitId, responses, contentId, page } = responseDoc
 
@@ -57,18 +58,23 @@ Response.methods.submit = {
         })
       }
 
-      const scores = scoreResponses(responseDoc)
+
+      let scores = []
+      try {
+        scores = scoreResponses(responseDoc)
+      } catch (e) {
+        console.info('failed response', EJSON.stringify({ userId, sessionId, unitId, page, contentId }))
+        console.error(e)
+      }
+
       const scoreDoc = { userId, sessionId, unitId, responses, contentId, page, scores }
-      info('submit response', { userId, sessionId, unitId, page, contentId })
 
       // if we could not send the score, due to undefined reasons, we simply
       // store it here and try to send it later (for example on eval)
       try {
         return SessionsHost.methods.submitResponse({ userId, sessionId, unitId, responses, contentId, page, scores })
       } catch (e) {
-        return Response.collection().upsert({ userId, sessionId, unitId, contentId }, {
-          $set: scoreDoc
-        })
+        return Response.collection().upsert({ userId, sessionId, unitId, contentId }, { $set: scoreDoc })
       }
     }
   })

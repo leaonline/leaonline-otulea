@@ -276,6 +276,6 @@ function abortUnit (instance, err) {
   fadeOut('.lea-unit-container', instance, () => {
     // there should be a strategy pattern here so we can easily switch depending
     // on the settings configuration and users needs (tests vs production etc.)
-    throw new Error('not yet implemented')
+    instance.data.exit()
   })
 }

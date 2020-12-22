@@ -1,7 +1,5 @@
 import { Meteor } from 'meteor/meteor'
 import { check, Match } from 'meteor/check'
-import { Role } from '../../api/accounts/Role'
-import { Group } from '../../api/accounts/Group'
 import { onClient, onServer, onServerExec } from '../../utils/archUtils'
 import { DocumentNotFoundError } from '../../api/errors/DocumentNotFoundError'
 
@@ -332,6 +330,7 @@ Session.methods.update = {
   })
 }
 
+// TODO move to Response context
 Session.methods.results = {
   name: 'session.methods.results',
   schema: {
@@ -340,19 +339,19 @@ Session.methods.results = {
   numRequests: 1,
   timeInterval: 1000,
   run: onServerExec(function () {
-    const { SessionsHost } = require('../../api/hosts/SessionsHost')
+    const { Response } = require('../Response')
 
     return function ({ sessionId }) {
       const { userId } = this
-      const sessionDoc = Session.collection().findOne(sessionId)
-      if (!sessionDoc) throw new Error('docNotFound')
-      if (!sessionDoc.completedAt) throw new Error('session.errors.notCompleted')
-      const results = SessionsHost.methods.evaluate({ userId, sessionId })
-      return { sessionDoc, results }
+      const query = { sessionId, userId }
+
+      return Response
+        .collection()
+        .find(query)
+        .map(responseDoc => {
+          return responseDoc.scores
+        })
     }
-  }),
-  call: onClient(function ({ sessionId }, cb) {
-    Meteor.call(Session.methods.results.name, { sessionId }, cb)
   })
 }
 
@@ -366,8 +365,6 @@ Session.methods.recent = {
   },
   numRequests: 1,
   timeInterval: 1000,
-  roles: [Role.readSessions.value],
-  group: Group.team.value,
   isPublic: true,
   run: onServer(function ({ userId }) {
     return Session.collection().find({

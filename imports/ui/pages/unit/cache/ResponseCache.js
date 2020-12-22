@@ -1,3 +1,5 @@
+import { EJSON } from 'meteor/ejson'
+
 /**
  * Keeps responses in a storage (Storage API).
  */
@@ -12,14 +14,14 @@ export class ResponseCache {
 
   save (responseData) {
     const key = getKey(responseData)
-    const value = JSON.stringify(responseData)
+    const value = EJSON.stringify(responseData)
     this.storage.setItem(key, value)
   }
 
   load (responseData) {
     const key = getKey(responseData)
     const value = this.storage.getItem(key)
-    return value && JSON.parse(value)
+    return value && EJSON.parse(value)
   }
 
   clear (responseData) {

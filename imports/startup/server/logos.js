@@ -1,4 +1,4 @@
-import { Logos } from '../../api/config/Logos'
+import { Logos } from '../../contexts/Logos'
 import { ServiceRegistry } from '../../api/config/BackendConfig'
 import { createCollection } from '../../infrastructure/factories/collection/createCollection'
 import { createMethods } from '../../infrastructure/factories/method/createMethods'

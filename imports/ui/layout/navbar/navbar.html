@@ -1,10 +1,12 @@
 <template name="navbar">
 	<div class="w-100 text-center mt-4">
 		{{#with labels}}
-			<span class="lea-text no-wrap text-{{this.type}}">{{this.dimension}} - {{this.level}}</span>
+			<span class="lea-text font-weight-bold no-wrap text-{{this.type}}">
+                {{#if ../showUsername}}{{currentUser.username}} - {{/if}}{{this.dimension}} - {{this.level}}
+            </span>
 		{{/with}}
 	</div>
-	<div class="w-100 d-flex justify-content-between align-items-center mt-2 mb-4">
+	<div class="w-100 d-flex justify-content-between align-items-center mt-2 mb-4 d-print-none">
 		{{#if showProgress}}
 			{{#with progress}}
 				<div class="progress w-100 bg-transparent border border-{{this.type}}">
@@ -14,9 +16,9 @@
 				<span class="mx-3 no-wrap text-{{this.type}}">{{this.current}} / {{this.max}}</span>
 			{{/with}}
 		{{/if}}
-		<span class="ml-auto no-wrap">
+		<span class="ml-auto no-wrap d-print-none">
 			{{#onComplete complete=loadComplete}}
-				{{> actionButton class="mr-1" outline=true btnClass="navbar-help-button btn-sm" sound=false title=(i18n "common.help") icon="question"}}
+				{{! > actionButton class="mr-1" outline=true btnClass="navbar-help-button btn-sm" sound=false title=(i18n "common.help") icon="question"}}
 				{{> actionButton outline=true btnClass="navbar-overview-button btn-sm" sound=false title=(i18n "common.toOverview") icon="times"}}
 			{{/onComplete}}
 		</span>

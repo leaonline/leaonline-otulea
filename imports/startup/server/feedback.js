@@ -1,4 +1,4 @@
-import { Feedback } from '../../api/config/Feedback'
+import { Feedback } from '../../contexts/feedback/Feedback'
 import { ServiceRegistry } from '../../api/config/BackendConfig'
 import { createCollection } from '../../infrastructure/factories/collection/createCollection'
 import { createMethods } from '../../infrastructure/factories/method/createMethods'

@@ -13,6 +13,7 @@ export const createCollection = (context) => {
 
   if (context.isLocalCollection) {
     context.collection = Meteor.isClient && new Mongo.Collection(null)
+
     onServerExec(function () {
       const { LocalCacheCollection } = require('../../cache/collection/LocalCacheCollection')
       context.collection = new LocalCacheCollection(context)

@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor'
 import { onClient, onServer } from '../../utils/archUtils'
 
 export const Feedback = {
@@ -18,9 +17,21 @@ Feedback.schema = {
     label: 'feedback.levels'
   },
   'levels.$': {
+    type: Object,
+    label: 'common.entry'
+  },
+  'levels.$.description': {
     type: String,
-    label: 'feedback.levelDescription'
-  }
+    label: 'common.description'
+  },
+  'levels.$.threshold': {
+    type: Number,
+    label: 'feedback.threshold'
+  },
+  'levels.$.icon': {
+    type: String,
+    label: 'common.icon'
+  },
 }
 
 Feedback.publications = {}
@@ -40,9 +51,6 @@ Feedback.methods = {}
 
 Feedback.methods.update = {
   name: 'feedback.methods.update',
-  isPublic: true, // FIXME only backend editors and admins
-  numRequests: 1,
-  timeInterval: 250,
   schema: Object.assign({}, Feedback.schema, {
     _id: {
       type: String,
@@ -62,14 +70,8 @@ Feedback.methods.update = {
 
 Feedback.methods.get = {
   name: 'feedback.methods.get',
-  isPublic: true,
-  numRequests: 1,
-  timeInterval: 250,
   schema: {},
   run: onServer(function () {
     return Feedback.collection().findOne()
-  }),
-  call: onClient(function (cb) {
-    Meteor.call(Feedback.methods.get.name, cb)
   })
 }

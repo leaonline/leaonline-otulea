@@ -1,6 +1,4 @@
 import { Meteor } from 'meteor/meteor'
-import { Role } from '../accounts/Role'
-import { Group } from '../accounts/Group'
 import { onServer } from '../../utils/archUtils'
 
 export const ErrorLog = {
@@ -32,8 +30,6 @@ ErrorLog.methods = {}
 ErrorLog.methods.send = {
   name: 'errorLog.methods.send',
   schema: ErrorLog.schema,
-  roles: [Role.runSession.value, Role.test.value],
-  group: Group.field.value,
   numRequests: 10,
   timeInterval: 500,
   run: onServer(function ({ error, reason, details, stack }) {

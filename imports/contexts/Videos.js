@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor'
-import { onClient, onServer } from '../../utils/archUtils'
+import { onClient, onServer } from '../utils/archUtils'
 
 export const Videos = {
   name: 'videos',

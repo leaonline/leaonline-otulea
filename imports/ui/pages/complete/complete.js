@@ -1,31 +1,94 @@
 import { Template } from 'meteor/templating'
 import { Dimension } from '../../../contexts/Dimension'
-
+import { Session } from '../../../contexts/session/Session'
+import { Competency } from '../../../contexts/Competency'
+import { Feedback } from '../../../contexts/feedback/Feedback'
+import { feedbackLevelFactory } from '../../../contexts/feedback/feedbackLevelFactory'
+import { createSessionLoader } from '../../../api/loading/createSessionLoader'
 import '../../components/container/container'
 import '../../layout/navbar/navbar'
 import './complete.html'
 
 const states = {
   showResults: 'showResults',
-  showPrint: 'showPrint',
   showDecision: 'showDecision',
   showFailed: 'showFailed'
 }
+
 const stateValues = Object.values(states)
+
+let printJS
+import('print-js')
+  .catch(err => console.err(err))
+  .then(module => {
+    printJS = module.default
+  })
+
+export const printHTMLElement = (target, onClose) => {
+  const cssUrls = []
+  for (let i = 0; i < document.styleSheets.length; i++) {
+    if (document.styleSheets[i].href) {
+      cssUrls.push(document.styleSheets[i].href)
+    }
+  }
+  printJS({
+    printable: target,
+    type: 'html',
+    css: cssUrls,
+    targetStyles: ['*'],
+    onPrintDialogClose: onClose
+  })
+}
 
 Template.complete.onCreated(function () {
   const instance = this
+  const { sessionId } = instance.data.params
 
   const { api } = instance.initDependencies({
     language: true,
     tts: true,
-    contexts: [Dimension],
-    onComplete () {
-      instance.state.set('dependenciesComplete', true)
+    contexts: [Dimension, Session, Competency, Feedback],
+    onComplete() {
+      instance.state.set({
+        dependenciesComplete: true
+      })
     }
   })
 
-  const { queryParam } = api
+  const { queryParam, callMethod, loadAllContentDocs, info } = api
+  const onFailed = err => instance.state.set('failed', err || true)
+
+  // we use the session loader to simply the loading of the session dependencies
+  // such as Dimension, Level, UnitSet, Colors, Unit etc.
+  const sessionLoader = createSessionLoader({ info })
+  sessionLoader({ sessionId })
+    .catch(err => onFailed(err))
+    .then(sessionData => {
+      info(sessionData)
+
+      const { sessionDoc, unitSetDoc, dimensionDoc, levelDoc, color } = sessionData
+      // first we check for all docs, even one left-out doc is not acceptable
+      if (!sessionDoc || !unitSetDoc || !dimensionDoc || !levelDoc) {
+        return // we can safely skip since this information is not viable
+      }
+
+      // if we encounter a sessionDoc that is not completed, we just
+      // skip any further attempts to load and immediately exit
+      if (!Session.helpers.isComplete(sessionDoc)) {
+        return instance.data.exit({ sessionId })
+      }
+
+      // otherwise we're good and can continue with the current session
+      instance.state.set({
+        sessionDoc,
+        dimensionDoc,
+        levelDoc,
+        unitSetDoc,
+        color,
+        sessionLoaded: true
+      })
+    })
+
 
   // basic routes / state handling
   instance.autorun(() => {
@@ -39,122 +102,112 @@ Template.complete.onCreated(function () {
     }
   })
 
-  const onFailed = err => instance.state.set('failed', err || true)
-  onFailed()
+  // first we call for the feedback levels and their respective configurations
+  callMethod({
+    name: Feedback.methods.get,
+    args: {},
+    failure: err => onFailed(err),
+    success: feedbackDoc => {
+      instance.state.set({ feedbackDoc })
+    }
+  })
 
-  /*
-  const { sessionId } = instance.data.params
+  callMethod({
+    name: Session.methods.results,
+    args: { sessionId },
+    failure: err => onFailed(err),
+    success: res => {
+      const aggregatedCompetencies = new Map()
+console.info(res)
+      res.forEach(result => {
+        result.forEach(({ competency, score, isUndefined }) => {
+          const current = aggregatedCompetencies.get(competency) || {
+            limit: 0,
+            count: 0,
+            undef: 0
+          }
 
-  instance.autorun(() => {
-    const sessionDoc = instance.state.get('sessionDoc')
-    if (!sessionDoc) return
+          current.limit += 1
+          current.count += (score === "true" ? 1 : 0)
+          current.undef += (isUndefined === "true" ? 1 : 0)
 
-    Session.methods.results.call({ sessionId }, (err, res) => {
-      if (err) {
-        instance.state.set('failed', err)
-        return console.error(err)
-      }
-      // if we can't get anything out of the response
-      // we set the internal state to failed
-      if (!res || !res.results || !res.results.userResponse) {
-        const noResErr = new Error(`Expected result from ${Session.methods.results.name}`)
-        instance.state.set('failed', noResErr)
-        console.error(noResErr)
-        console.info(res)
-        return
-      }
-
-      const { results } = res
-      const { userResponse } = results
-      try {
-        const lines = userResponse.split('\n')
-        lines.shift()
-
-        const hasFeedback = {}
-        const feedback = ResponseParser.parse(lines)
-        feedback.forEach(entry => {
-          hasFeedback[entry.status] = true
+          aggregatedCompetencies.set(competency, current)
         })
-
-        instance.state.set('results', results)
-        instance.state.set('currentFeedback', feedback)
-        instance.state.set('hasFeedback', hasFeedback)
-      } catch (e) {
-        instance.state.set('failed', e)
-      }
-    })
-  })
-
-  // if we have a current feedback id-list
-  // we can load the feedback-translations
-  // from the remote content server
-  const toIds = entry => entry.competencyId
-  instance.autorun(() => {
-    const feedback = instance.state.get('currentFeedback')
-    if (!feedback) return
-
-    ContentHost.methods.getCompetencies(feedback.map(toIds), (err, competencies) => {
-      if (err) {
-        instance.state.set('failed', err)
-        return console.error(err)
-      }
-      const mappedCompetencies = {}
-      competencies.forEach(entry => {
-        mappedCompetencies[entry.competencyId] = entry
       })
-      instance.state.set('competencies', mappedCompetencies)
-      instance.state.set('competenciesLoaded', true)
+      console.info(aggregatedCompetencies)
+      // GET request to content server to fetch competency documents
+      // which are required to display the related texts
+      const ids = Array.from(aggregatedCompetencies.keys())
+      loadAllContentDocs(Competency, { ids })
+        .catch(error => onFailed(error))
+        .then(competencyDocs => {
+          if (competencyDocs.length === 0) {
+            instance.state.set('competenciesLoaded', true)
+            return onFailed()
+          }
+
+          instance.state.set('aggregatedResults', Object.fromEntries(aggregatedCompetencies.entries()))
+          instance.state.set('competenciesLoaded', true)
+        })
+    }
+  })
+
+  instance.autorun(() => {
+    const feedbackDoc = instance.state.get('feedbackDoc')
+    const aggregatedResults = instance.state.get('aggregatedResults')
+
+    if (!aggregatedResults || !feedbackDoc) return
+
+    // if both are loaded we can resolve competencies by thresholds and
+    // build a fixed structure to be returned to the template view to render
+
+    const getFeedbackIndex = feedbackLevelFactory(feedbackDoc)
+    const resolvedFeedback = []
+    resolvedFeedback.length = feedbackDoc.levels.length
+
+    Object.entries(aggregatedResults).forEach(([competencyId, result]) => {
+      const index = getFeedbackIndex(result)
+
+      if (!resolvedFeedback[index]) {
+        resolvedFeedback[index] = []
+      }
+
+      resolvedFeedback[index].push(competencyId)
     })
-  })
 
-  // finally we call all feedback categories once
-  Feedback.methods.get.call((err, res) => {
-    if (err) {
-      instance.state.set('failed', err)
-      console.error(err)
-      return
-    }
-    if (!res) {
-      const noResErr = new Error(`Expected result from ${Feedback.methods.get.name}`)
-      instance.state.set('failed', noResErr)
-      console.error(noResErr)
-      return
-    }
-    const { notEvaluable, levels } = res
-    if (!levels) {
-      const noLevelsErr = new Error('no levels')
-      instance.state.set('failed', noLevelsErr)
-      console.error(noLevelsErr)
-      return
-    }
-    levels.unshift(notEvaluable)
-    const feedbackLevels = levels && levels.map((text, index) => ({ text, index: index - 1 })).reverse()
-    instance.state.set('feedbackLevels', feedbackLevels)
+    instance.state.set({ resolvedFeedback })
   })
-
-  */
 })
 
 Template.complete.helpers({
   loadComplete () {
-    return Template.getState('dependenciesComplete')
+    const instance = Template.instance()
+    return instance.state.get('dependenciesComplete') &&
+    instance.state.get('competenciesLoaded') &&
+    instance.state.get('sessionLoaded')
   },
   failed () {
     return Template.getState('failed')
   },
-  competency (id) {
-    const competencies = Template.getState('competencies')
-    return competencies && competencies[id]
-  },
   feedbackLevels () {
-    return Template.getState('feedbackLevels')
+    const feedbackDoc = Template.getState('feedbackDoc')
+    return feedbackDoc?.levels
   },
-  hasFeedback (index) {
-    const map = Template.getState('hasFeedback')
-    return map && map[index]
+  getCompetencies (index) {
+    const resolvedFeedback = Template.getState('resolvedFeedback')
+    return resolvedFeedback?.[index]
   },
   competenciesLoaded () {
     return Template.getState('competenciesLoaded')
+  },
+  getCompetency (_id) {
+    const competencyDoc = Competency.collection().findOne(_id)
+    return !!competencyDoc
+      ? {
+        description: competencyDoc.descriptionSimple || competencyDoc.description,
+        example: competencyDoc.example
+      }
+      : { description: _id }
   },
   getFeedback (index) {
     const feedback = Template.getState('currentFeedback')
@@ -183,18 +236,25 @@ Template.complete.helpers({
       instance.state.get('sessionDoc') &&
       instance.state.get('view') === states.showDecision
   },
-  showPrint () {
+  navbarData () {
     const instance = Template.instance()
-    const failed = instance.state.get('failed')
-    return !failed &&
-      instance.state.get('sessionDoc') &&
-      instance.state.get('view') === states.showPrint
-  },
-  sessionDoc () {
-    return Template.getState('sessionDoc')
+    const sessionDoc = instance.state.get('sessionDoc')
+    const levelDoc = instance.state.get('levelDoc')
+    const unitSetDoc = instance.state.get('unitSetDoc')
+    const dimensionDoc = instance.state.get('dimensionDoc')
+
+    return {
+      sessionDoc,
+      levelDoc,
+      unitSetDoc,
+      dimensionDoc,
+      showProgress: false,
+      showUsername: true,
+      onExit: instance.data.exit
+    }
   },
   currentType () {
-    return Template.getState('currentType')
+    return Template.instance().state.get('color')
   }
 })
 
@@ -202,30 +262,17 @@ Template.complete.events({
   'click .lea-showresults-forward-button' (event, templateInstance) {
     event.preventDefault()
     const { queryParam } = templateInstance.api
-    if (templateInstance.state.get('failed')) {
-      queryParam({ v: stateValues.indexOf(states.showDecision) })
-    } else {
-      queryParam({ v: stateValues.indexOf(states.showPrint) })
-    }
-  },
-  'click .lea-showprint-back-button' (event, templateInstance) {
-    event.preventDefault()
-    const { queryParam } = templateInstance.api
-    queryParam({ v: stateValues.indexOf(states.showResults) })
-  },
-  'click .lea-showprint-forward-button' (event, templateInstance) {
-    event.preventDefault()
-    const { queryParam } = templateInstance.api
     queryParam({ v: stateValues.indexOf(states.showDecision) })
   },
   'click .lea-showdecision-back-button' (event, templateInstance) {
     event.preventDefault()
     const { queryParam } = templateInstance.api
-    if (templateInstance.state.get('failed')) {
-      queryParam({ v: stateValues.indexOf(states.showResults) })
-    } else {
-      queryParam({ v: stateValues.indexOf(states.showPrint) })
-    }
+    queryParam({ v: stateValues.indexOf(states.showResults) })
+  },
+  'click .print-simple' (event) {
+    event.preventDefault()
+    if (!printJS) return
+    printHTMLElement('lea-complete-print-root')
   },
   'click .lea-end-button' (event, templateInstance) {
     event.preventDefault()

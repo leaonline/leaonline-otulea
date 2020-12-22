@@ -105,7 +105,7 @@ function createRoute (routeDef, onError) {
         Promise.resolve(routeDef.load()),
         new Promise((resolve) => {
           Tracker.autorun((computation) => {
-            const loadComplete = !Meteor.loggingIn() && Roles.subscription.ready()
+            const loadComplete = !Meteor.loggingIn()
             if (loadComplete) {
               computation.stop()
               resolve()
