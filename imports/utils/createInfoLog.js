@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor'
+import { getProperty } from './object/getProperty'
 
 const types = ['log', 'info', 'warn', 'debug', 'error']
 
@@ -11,7 +12,7 @@ export const createLog = ({ name, type = 'info', devOnly } = {}) => {
     return () => {}
   }
 
-  const target = console[type]
+  const target = getProperty(console, type)
   const infoName = `[${name}]:`
   return (...args) => {
     args.unshift(infoName)

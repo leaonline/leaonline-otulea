@@ -16,7 +16,7 @@ const getConnectSrc = url => {
     `http${s}://${domain}`,
     `ws${s}://${domain}`
   ]
-  
+
   return { domain, s, connectSrc }
 }
 
@@ -67,8 +67,8 @@ export function helmetOptions (externalHostUrls = [], print) {
           'allow-same-origin',
           'allow-scripts',
           'allow-forms',
-          //'allow-popups',
-          //'allow-popups-to-escape-sandbox'
+          // 'allow-popups',
+          // 'allow-popups-to-escape-sandbox'
           'allow-modals'
         ],
         styleSrc: [self, "'unsafe-inline'"],

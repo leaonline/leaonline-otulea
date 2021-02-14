@@ -90,7 +90,8 @@ Legal.methods.get = {
     const config = Legal.collection().findOne()
     if (!name) {
       return config
-    } else {
+    }
+    else {
       return config[name]
     }
   }),

@@ -26,7 +26,8 @@ ContentHost.methods.getCompetencies = function (competencies, callback) {
     if (err) {
       console.error(err)
       callback(err, null)
-    } else {
+    }
+    else {
       info('received result')
       const competencies = res.statusCode === 200 && JSON.parse(res.content)
       callback(null, competencies)

@@ -39,14 +39,14 @@ Response.methods.submit = {
   numRequests: 10,
   timeInterval: 1000,
   run: onServerExec(function () {
-    const { SessionsHost } = require('../api/hosts/SessionsHost')
+    import { SessionsHost } from '../api/hosts/SessionsHost'
     const { scoreResponses } = require('../api/scoring/scoreResponses')
     const { getSessionDoc } = require('./session/getSessionDoc')
     const { isCurrentUnit } = require('./session/isCurrentUnit')
 
     return function (responseDoc) {
       // this.unblock()
-      const { userId, info } = this
+      const { userId } = this
       const { sessionId, unitId, responses, contentId, page } = responseDoc
 
       // we need to make sure, that this data belongs to the current user's
@@ -58,11 +58,11 @@ Response.methods.submit = {
         })
       }
 
-
       let scores = []
       try {
         scores = scoreResponses(responseDoc)
-      } catch (e) {
+      }
+      catch (e) {
         console.info('failed response', EJSON.stringify({ userId, sessionId, unitId, page, contentId }))
         console.error(e)
       }
@@ -73,7 +73,8 @@ Response.methods.submit = {
       // store it here and try to send it later (for example on eval)
       try {
         return SessionsHost.methods.submitResponse({ userId, sessionId, unitId, responses, contentId, page, scores })
-      } catch (e) {
+      }
+      catch (e) {
         return Response.collection().upsert({ userId, sessionId, unitId, contentId }, { $set: scoreDoc })
       }
     }

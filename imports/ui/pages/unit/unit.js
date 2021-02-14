@@ -148,7 +148,8 @@ Template.unit.helpers({
     if (depsComplete && instance.state.get('sessionDoc')) {
       onInput = createItemInput({ cache: responseCache })
       onLoad = createItemLoad({ cache: responseCache })
-    } else {
+    }
+    else {
       onInput = () => {}
       onLoad = () => {}
     }

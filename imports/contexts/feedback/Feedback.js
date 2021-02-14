@@ -31,7 +31,7 @@ Feedback.schema = {
   'levels.$.icon': {
     type: String,
     label: 'common.icon'
-  },
+  }
 }
 
 Feedback.publications = {}
@@ -62,7 +62,8 @@ Feedback.methods.update = {
     const feedbackDoc = FeedbackCollection.findOne()
     if (!feedbackDoc) {
       return FeedbackCollection.insert({ notEvaluable, levels })
-    } else {
+    }
+    else {
       return FeedbackCollection.update(feedbackDoc._id, { $set: { notEvaluable, levels } })
     }
   })

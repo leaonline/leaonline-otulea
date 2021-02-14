@@ -1,5 +1,6 @@
 import { callMethod } from '../../../../infrastructure/methods/callMethod'
 import { Response } from '../../../../contexts/Response'
+import { getProperty } from '../../../../utils/object/getProperty'
 
 /**
  * Returns a submit function that restores values from cache and sends them
@@ -18,7 +19,9 @@ export const createItemSubmit = ({ cache }) => {
   return ({ sessionId, unitDoc, page }) => {
     const unitId = unitDoc._id
     const allResponseDocs = []
-    unitDoc.pages[page].content.forEach(entry => {
+
+    const contentPage = getProperty(unitDoc.pages, page)
+    contentPage.content.forEach(entry => {
       // we iterate the full page stgructure
       // so we skip on any content
       // that is not flagged as item tyoe

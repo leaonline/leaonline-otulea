@@ -5,8 +5,8 @@
     "start": "meteor run",
     "test:once": "meteor test --once --driver-package meteortesting:mocha",
     "test:app": "TEST_WATCH=1 meteor test --full-app --driver-package meteortesting:mocha",
-    "lint:code": "standardx | snazzy",
-    "lint:code-fix": "standardx --fix | snazzy",
+    "lint:code": "standardx -v | snazzy",
+    "lint:code-fix": "standardx --fix -v | snazzy",
     "lint:style": "stylelint \"**/*.scss\"",
     "lint:style-fix": "stylelint --fix \"**/*.scss\"",
     "lint:markdown": "markdownlint \"**/*.md\" --config ./.markdownlint.json",
@@ -40,6 +40,7 @@
     "@babel/core": "^7.12.7",
     "@babel/eslint-parser": "^7.12.1",
     "chai": "^4.2.0",
+    "eslint-plugin-security": "^1.4.0",
     "markdownlint-cli": "^0.25.0",
     "puppeteer": "^5.5.0",
     "sinon": "^9.2.1",
@@ -55,6 +56,21 @@
     "parserOptions": {
       "sourceType": "module",
       "allowImportExportEverywhere": true
+    },
+    "plugins": [
+      "security"
+    ],
+    "extends": [
+      "plugin:security/recommended"
+    ],
+    "rules": {
+      "brace-style": [
+        "error",
+        "stroustrup",
+        {
+          "allowSingleLine": true
+        }
+      ]
     }
   }
 }

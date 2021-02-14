@@ -41,7 +41,8 @@ export class LocalCacheCollection extends Mongo.Collection {
 
     try {
       document = fetchDoc.call(this, url, requestOptions)
-    } catch (e) {
+    }
+    catch (e) {
       console.warn(e)
     }
 
@@ -51,7 +52,7 @@ export class LocalCacheCollection extends Mongo.Collection {
 
 function fetchDoc (url, requestOptions) {
   const response = HTTP.get(url, requestOptions)
-  const doc =  response.data
+  const doc = response.data
 
   if (doc) {
     const docId = doc._id

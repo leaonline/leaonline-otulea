@@ -7,7 +7,8 @@ Meteor.startup(() => {
   runRateLimiter(function callback (reply, input) {
     if (reply.allowed) {
       return undefined
-    } else {
+    }
+    else {
       console.log('rate limit exceeded')
       console.log(reply)
       logAttempt(input)

@@ -84,7 +84,8 @@ Template.overview.onCreated(function () {
         levelFilter: Array.from(levelFilter),
         dimension: dimension
       })
-    } else {
+    }
+    else {
       // otherwise we reset the dimension and the filters for new selection
       instance.state.set({
         dimension: null,
@@ -106,7 +107,8 @@ Template.overview.onCreated(function () {
           behavior: 'smooth'
         })
       }, 50)
-    } else {
+    }
+    else {
       instance.state.set('level', null)
     }
 

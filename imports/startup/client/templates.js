@@ -9,6 +9,7 @@ import { createLog } from '../../utils/createInfoLog'
 import { loadAllContentDocs } from '../../api/loading/loadAllContentDocs'
 import { loadContentDoc } from '../../api/loading/loadContentDoc'
 import { fadeOut } from '../../utils/animationUtils'
+import { hasProperty } from '../../utils/object/hasProperty'
 import { callMethod } from '../../infrastructure/methods/callMethod'
 
 // if we use the autoload functionality we don't need to explicitly load basic
@@ -42,13 +43,16 @@ Blaze.TemplateInstance.prototype.initDependencies =
       type: 'info'
     })
 
-    instance.api.queryParam = value => Router.queryParam(value)
-    instance.api.callMethod = callMethod
-    instance.api.loadAllContentDocs = loadAllContentDocs
-    instance.api.loadContentDoc = loadContentDoc
-    instance.api.fadeOut = function (target, callback) {
-      return fadeOut(target, instance, callback)
-    }
+    Object.assign(instance.api, {
+      queryParam: value => Router.queryParam(value),
+      callMethod,
+      loadAllContentDocs,
+      loadContentDoc,
+      hasProperty,
+      fadeOut: function (target, callback) {
+        return fadeOut(target, instance, callback)
+      }
+    })
 
     // if any context is added we initialize it immediately sync-style
     contexts.forEach(ctx => initClientContext(ctx))

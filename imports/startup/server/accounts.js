@@ -18,7 +18,6 @@ const userMethods = Object.values(Users.methods)
 createMethods(userMethods)
 rateLimitMethods(userMethods)
 
-
 const publications = Object.values(Users.publications)
 createPublications(publications)
 rateLimitPublications(publications)
@@ -50,6 +49,5 @@ Meteor.startup(() => {
 
   registerOAuthDDPLoginHandler({ identityUrl: oauth.identityUrl })
 })
-
 
 ServiceRegistry.register(Users)

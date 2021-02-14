@@ -70,7 +70,8 @@ Videos.methods.update = {
     const logoDoc = LogoCollection.findOne()
     if (!logoDoc) {
       return LogoCollection.insert(updateDoc)
-    } else {
+    }
+    else {
       return LogoCollection.update(logoDoc._id, { $set: updateDoc })
     }
   })
@@ -97,7 +98,8 @@ let _conf
 Videos.helpers.load = function (cb = () => {}) {
   if (_conf) {
     return cb(null, _conf)
-  } else {
+  }
+  else {
     Videos.methods.get.call((err, res) => {
       if (err) return cb(err)
       _conf = res

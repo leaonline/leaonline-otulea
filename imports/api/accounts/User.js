@@ -105,7 +105,6 @@ Users.methods.recent = {
   })
 }
 
-
 Users.publications = {}
 
 Users.publications.all = {
@@ -122,7 +121,7 @@ Users.publications.all = {
         services: 0
       }
     })
-      console.info('users sub', cursor.count())
+    console.info('users sub', cursor.count())
     return cursor
   })
 }

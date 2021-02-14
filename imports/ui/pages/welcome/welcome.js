@@ -141,7 +141,8 @@ Template.welcome.events({
     if (event.code === 'Backspace') {
       if (index === 0) {
         return true
-      } else {
+      }
+      else {
         // update field and position
         const $prev = templateInstance.$(`input[data-index="${index - 1}"]`)
         $target.val('')
@@ -151,7 +152,8 @@ Template.welcome.events({
         const loginCode = getLoginCode(templateInstance)
         templateInstance.state.set('loginCode', loginCode)
       }
-    } else if (event.code.indexOf('Key') > -1 || event.code.indexOf('Digit') > -1) {
+    }
+    else if (event.code.indexOf('Key') > -1 || event.code.indexOf('Digit') > -1) {
       // update values
       $target.val(event.key)
       const loginCode = getLoginCode(templateInstance)
@@ -161,7 +163,8 @@ Template.welcome.events({
       if (index < MAX_INPUTS - 1) {
         const $next = templateInstance.$(`input[data-index="${index + 1}"]`)
         $next.focus()
-      } else {
+      }
+      else {
         showLoginButton(templateInstance)
       }
     }
@@ -187,7 +190,8 @@ Template.welcome.events({
     const newCode = templateInstance.state.get('newCode')
     if (newCode) {
       registerNewUser(loginCode.toUpperCase(), templateInstance)
-    } else {
+    }
+    else {
       loginUser(loginCode.toUpperCase(), templateInstance)
     }
   },
@@ -247,12 +251,14 @@ function registerNewUser (code, templateInstance) {
   const registerCode = templateInstance.newUser.get()
   if (registerCode !== code) {
     return loginFail(templateInstance)
-  } else {
+  }
+  else {
     Users.methods.register.call({ code }, (err) => {
       if (err) {
         console.error(err)
         loginFail(templateInstance)
-      } else {
+      }
+      else {
         loginUser(code, templateInstance)
       }
     })
@@ -264,7 +270,8 @@ function loginUser (code, templateInstance) {
     if (err) {
       console.error(err)
       loginFail(templateInstance)
-    } else {
+    }
+    else {
       onLoggedIn()
       const route = templateInstance.data.next()
       fadeOut('.lea-welcome-container', templateInstance, () => {

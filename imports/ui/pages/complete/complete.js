@@ -1,10 +1,12 @@
 import { Template } from 'meteor/templating'
+import { ReactiveDict } from 'meteor/reactive-dict'
 import { Dimension } from '../../../contexts/Dimension'
 import { Session } from '../../../contexts/session/Session'
 import { Competency } from '../../../contexts/Competency'
 import { Feedback } from '../../../contexts/feedback/Feedback'
 import { feedbackLevelFactory } from '../../../contexts/feedback/feedbackLevelFactory'
 import { createSessionLoader } from '../../../api/loading/createSessionLoader'
+import { printHTMLElement } from '../../utils/printHTMLElement'
 import '../../components/container/container'
 import '../../layout/navbar/navbar'
 import './complete.html'
@@ -17,45 +19,23 @@ const states = {
 
 const stateValues = Object.values(states)
 
-let printJS
-import('print-js')
-  .catch(err => console.err(err))
-  .then(module => {
-    printJS = module.default
-  })
-
-export const printHTMLElement = (target, onClose) => {
-  const cssUrls = []
-  for (let i = 0; i < document.styleSheets.length; i++) {
-    if (document.styleSheets[i].href) {
-      cssUrls.push(document.styleSheets[i].href)
-    }
-  }
-  printJS({
-    printable: target,
-    type: 'html',
-    css: cssUrls,
-    targetStyles: ['*'],
-    onPrintDialogClose: onClose
-  })
-}
-
 Template.complete.onCreated(function () {
   const instance = this
+  instance.resolvedFeedback = new ReactiveDict()
   const { sessionId } = instance.data.params
 
   const { api } = instance.initDependencies({
     language: true,
     tts: true,
     contexts: [Dimension, Session, Competency, Feedback],
-    onComplete() {
+    onComplete () {
       instance.state.set({
         dependenciesComplete: true
       })
     }
   })
 
-  const { queryParam, callMethod, loadAllContentDocs, info } = api
+  const { queryParam, callMethod, loadAllContentDocs, info, hasProperty } = api
   const onFailed = err => instance.state.set('failed', err || true)
 
   // we use the session loader to simply the loading of the session dependencies
@@ -89,15 +69,16 @@ Template.complete.onCreated(function () {
       })
     })
 
-
   // basic routes / state handling
   instance.autorun(() => {
     const v = queryParam('v') || 0
     const currentView = stateValues[parseInt(v, 10)]
 
-    if (currentView && states[currentView]) {
+    if (currentView && hasProperty(states, currentView)) {
       instance.state.set('view', currentView)
-    } else {
+    }
+
+    else {
       instance.state.set('view', states.showResults)
     }
   })
@@ -118,7 +99,7 @@ Template.complete.onCreated(function () {
     failure: err => onFailed(err),
     success: res => {
       const aggregatedCompetencies = new Map()
-console.info(res)
+      console.info(res)
       res.forEach(result => {
         result.forEach(({ competency, score, isUndefined }) => {
           const current = aggregatedCompetencies.get(competency) || {
@@ -128,8 +109,8 @@ console.info(res)
           }
 
           current.limit += 1
-          current.count += (score === "true" ? 1 : 0)
-          current.undef += (isUndefined === "true" ? 1 : 0)
+          current.count += (score === 'true' ? 1 : 0)
+          current.undef += (isUndefined === 'true' ? 1 : 0)
 
           aggregatedCompetencies.set(competency, current)
         })
@@ -162,20 +143,19 @@ console.info(res)
     // build a fixed structure to be returned to the template view to render
 
     const getFeedbackIndex = feedbackLevelFactory(feedbackDoc)
-    const resolvedFeedback = []
-    resolvedFeedback.length = feedbackDoc.levels.length
+    const { resolvedFeedback } = instance
+    resolvedFeedback.clear()
 
     Object.entries(aggregatedResults).forEach(([competencyId, result]) => {
       const index = getFeedbackIndex(result)
-
-      if (!resolvedFeedback[index]) {
-        resolvedFeedback[index] = []
+      let indices = Tracker.nonreactive(() => resolvedFeedback.get(index))
+      if (!indices) {
+        indices = []
       }
 
-      resolvedFeedback[index].push(competencyId)
+      indices.push(competencyId)
+      resolvedFeedback.set(index, indices)
     })
-
-    instance.state.set({ resolvedFeedback })
   })
 })
 
@@ -183,8 +163,8 @@ Template.complete.helpers({
   loadComplete () {
     const instance = Template.instance()
     return instance.state.get('dependenciesComplete') &&
-    instance.state.get('competenciesLoaded') &&
-    instance.state.get('sessionLoaded')
+      instance.state.get('competenciesLoaded') &&
+      instance.state.get('sessionLoaded')
   },
   failed () {
     return Template.getState('failed')
@@ -194,20 +174,21 @@ Template.complete.helpers({
     return feedbackDoc?.levels
   },
   getCompetencies (index) {
-    const resolvedFeedback = Template.getState('resolvedFeedback')
-    return resolvedFeedback?.[index]
+    return Template.instance().resolvedFeedback.get(index)
   },
   competenciesLoaded () {
     return Template.getState('competenciesLoaded')
   },
   getCompetency (_id) {
     const competencyDoc = Competency.collection().findOne(_id)
-    return !!competencyDoc
-      ? {
+    if (competencyDoc) {
+      return {
         description: competencyDoc.descriptionSimple || competencyDoc.description,
         example: competencyDoc.example
       }
-      : { description: _id }
+    }
+
+    return { description: _id }
   },
   getFeedback (index) {
     const feedback = Template.getState('currentFeedback')
@@ -271,7 +252,6 @@ Template.complete.events({
   },
   'click .print-simple' (event) {
     event.preventDefault()
-    if (!printJS) return
     printHTMLElement('lea-complete-print-root')
   },
   'click .lea-end-button' (event, templateInstance) {

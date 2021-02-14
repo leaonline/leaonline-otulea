@@ -18,7 +18,8 @@ export const toContentServerURI = (path, params) => {
           console.info(value, encodeURIComponent(value))
           if (Array.isArray(value)) {
             return value.map(entry => `${fixEncode(key)}=${fixEncode(entry)}`).join('&')
-          } else {
+          }
+          else {
             return `${fixEncode(key)}=${fixEncode(value)}`
           }
         })

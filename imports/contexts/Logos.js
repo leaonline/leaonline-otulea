@@ -60,7 +60,8 @@ Logos.methods.update = {
     const logoDoc = LogoCollection.findOne()
     if (!logoDoc) {
       return LogoCollection.insert({ mainLogo, footer })
-    } else {
+    }
+    else {
       return LogoCollection.update(logoDoc._id, { $set: { mainLogo, footer } })
     }
   })

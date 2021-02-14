@@ -72,7 +72,8 @@ Template.footer.events({
 
     if (legalData[key]) {
       templateInstance.state.set('currentLegalData', key)
-    } else {
+    }
+    else {
       Legal.methods.get.call(key, (err, content) => {
         if (err) return console.error(err)
         legalData[key] = content
