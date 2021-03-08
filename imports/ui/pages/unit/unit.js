@@ -92,7 +92,7 @@ Template.unit.onCreated(function () {
 
         // if we encounter a unit, that is different from the sessionDoc's
         // current unit we skip directly to the "next" unit via currentUnit
-        if (!isCurrentUnit({ sessionDoc, unitId: currentUnit })) {
+        if (!isCurrentUnit({ sessionDoc, unitId })) {
           return instance.data.next({ unitId: currentUnit, sessionId })
         }
 
@@ -209,26 +209,7 @@ Template.unit.events({
     }
 
     templateInstance.collector.dispatchEvent(new Event('collect'))
-
-    const $current = templateInstance.$('.lea-unit-current-content-container')
-    const currentHeight = $current.height()
-    const oldContainerCss = $current.css('height') || ''
-    $current.css('height', `${currentHeight}px`)
-
     submitItems({ sessionId, unitDoc, page: currentPageCount })
-
-    fadeOut('.lea-unit-current-content', templateInstance, () => {
-      templateInstance.state.set(newPage)
-      pageCache.save({
-        sessionId,
-        unitId: unitDoc._id
-      }, newPage.currentPageCount)
-      setTimeout(() => {
-        fadeIn('.lea-unit-current-content', templateInstance, () => {
-          $current.css('height', oldContainerCss)
-        })
-      }, 100)
-    })
   },
   'click .lea-unit-finishstory-button' (event, templateInstance) {
     event.preventDefault()
@@ -250,7 +231,8 @@ Template.unit.events({
       args: { sessionId }
     })
 
-    const { nextUnit, completed } = sessionUpdate
+    console.info('session updated', sessionUpdate)
+    const { nextUnit, nextUnitSet, hasStory, completed } = sessionUpdate
     pageCache.clear({ sessionId, unitId })
 
     // we check if the route will be to another unit
@@ -263,7 +245,7 @@ Template.unit.events({
     fadeOut(fadeTarget, templateInstance, () => {
       templateInstance.state.set('unitDoc', null)
       templateInstance.state.set('fadedOut', true)
-      templateInstance.data.next({ sessionId, unitId: nextUnit, completed })
+      templateInstance.data.next({ sessionId, unitId: nextUnit, unitSetId: nextUnitSet, hasStory, completed })
     })
   }
 })

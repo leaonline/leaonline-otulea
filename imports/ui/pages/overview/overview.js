@@ -4,13 +4,14 @@ import { Dimension } from '../../../contexts/Dimension'
 import { Level } from '../../../contexts/Level'
 import { Session } from '../../../contexts/session/Session'
 import { UnitSet } from '../../../contexts/unitSet/UnitSet'
+import { TestCycle } from '../../../contexts/testcycle/TestCycle'
 import { ColorType } from '../../../types/ColorType'
 import { dataTarget } from '../../../utils/eventUtils'
+import { hasSet } from '../../../contexts/unitSet/hasSet'
+import { showStoryBeforeUnit } from '../../../contexts/unitSet/showStoryBeforeUnit'
 import '../../components/container/container'
 import './overview.scss'
 import './overview.html'
-import { hasSet } from '../../../contexts/unitSet/hasSet'
-import { showStoryBeforeUnit } from '../../../contexts/unitSet/showStoryBeforeUnit'
 
 Template.overview.onDestroyed(function () {
   const instance = this
@@ -22,26 +23,31 @@ Template.overview.onCreated(function () {
   instance.initDependencies({
     language: true,
     tts: true,
-    contexts: [Session, UnitSet, Dimension, Level],
+    contexts: [Session, TestCycle, UnitSet, Dimension, Level],
     onComplete: () => instance.state.set('dependenciesComplete', true)
   })
 
   const { loadAllContentDocs, callMethod } = instance.api
 
+  loadAllContentDocs(TestCycle, { isLegacy: true })
+    .catch(e => console.error(e))
+    .then(allTestCycles => {
+      const dimensionFilter = new Set()
+      allTestCycles.forEach(tstCycleDoc => {
+        dimensionFilter.add(tstCycleDoc.dimension)
+      })
+      instance.state.set({
+        testCyclesComplete: true,
+        dimensionFilter: dimensionFilter
+      })
+    })
+
   // load all dimensions and iterate thorugh them once in order to detect
   // which dimensions are actually in use be the sets we currently have
   loadAllContentDocs(UnitSet, { isLegacy: true })
     .catch(e => console.error(e))
-    .then(allUnitSets => {
-      const dimensionFilter = new Set()
-      allUnitSets.forEach(unitSetDoc => {
-        dimensionFilter.add(unitSetDoc.dimension)
-      })
-
-      instance.state.set({
-        dimensionFilter: Array.from(dimensionFilter),
-        allUnitsLoaded: true
-      })
+    .then(() => {
+      instance.state.set({ allUnitsLoaded: true })
     })
 
   loadAllContentDocs(Dimension)
@@ -76,7 +82,7 @@ Template.overview.onCreated(function () {
       // if a dimension has been selected we create a filter list of
       // the levels that are supported by this dimension (linked in UnitSets)
       const levelFilter = new Set()
-      UnitSet.collection()
+      TestCycle.collection()
         .find({ dimension: d })
         .forEach(({ level }) => levelFilter.add(level))
 
@@ -112,14 +118,14 @@ Template.overview.onCreated(function () {
       instance.state.set('level', null)
     }
 
-    // if both selected, select unitSet
+    // if both selected, select respective test-cyclce
     if (dimension && level) {
-      const unitSet = UnitSet.collection().findOne({ dimension: d, level: l })
+      const testCycle = TestCycle.collection().findOne({ dimension: d, level: l })
 
       instance.api.callMethod({
         name: Session.methods.exists.name,
-        args: { unitSetId: unitSet._id },
-        receive: () => instance.state.set('selectedUnitSet', unitSet),
+        args: { testCycleId: testCycle._id },
+        receive: () => instance.state.set('selectedTestCycle', testCycle),
         failure: err => console.error(err),
         success: sessionDoc => {
           instance.state.set({ sessionDoc })
@@ -131,15 +137,15 @@ Template.overview.onCreated(function () {
   // if we have a UnitSet selected we need to check if there is a recent session
   // that has been aborted
   instance.autorun(() => {
-    const unitSet = instance.state.get('selectedUnitSet')
-    if (!unitSet) return
+    const testCycle = instance.state.get('selectedTestCycle')
+    if (!testCycle) return
 
     callMethod({
-      name: Session.methods.byUnitSet.name,
-      args: { unitSet: unitSet._id },
+      name: Session.methods.byTestCycle.name,
+      args: { testCycleId: testCycle._id },
       failure: err => console.error(err),
       success: sessionDoc => {
-        const abortedSessionDetected = unitSet && sessionDoc && sessionDoc.unitSet === unitSet._id
+        const abortedSessionDetected = testCycle && sessionDoc && sessionDoc.unitSet === testCycle._id
         instance.state.set({ abortedSessionDetected, sessionDoc })
       }
     })
@@ -163,6 +169,10 @@ Template.overview.helpers({
   dimensionDisabled (dimension) {
     return !hasSet({ dimension })
   },
+  
+  // return all dimensions, filtered by those, which are defined by
+  // our received test-cycles
+  
   allDimensions () {
     const instance = Template.instance()
     if (!instance.state.get('dimensionsLoadComplete')) {
@@ -210,11 +220,11 @@ Template.overview.helpers({
   levelLoadComplete () {
     const instance = Template.instance()
     return instance.state.get('dependenciesComplete') &&
-      instance.state.get('selectedUnitSet')
+      instance.state.get('selectedTestCycle')
   },
   levelDescription () {
-    const unitSet = Template.getState('selectedUnitSet')
-    return unitSet?.selfAssessment
+    const testCycleDoc = Template.getState('selectedTestCycle')
+    return testCycleDoc?.selfAssessment
   },
   // ---------------------- // ----------------------
   // SESSION
@@ -294,11 +304,11 @@ function restartSession (templateInstance) {
 }
 
 function startNewSession (templateInstance) {
-  const selectedUnitSet = templateInstance.state.get('selectedUnitSet')
-  const unitSetId = selectedUnitSet._id
+  const selectedTestCycle = templateInstance.state.get('selectedTestCycle')
+  const testCycleId = selectedTestCycle._id
   launch({
     name: Session.methods.start.name,
-    args: { unitSetId },
+    args: { testCycleId },
     templateInstance,
     isFreshStart: true
   })

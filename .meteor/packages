@@ -56,7 +56,7 @@ perak:markdown
 fourseven:scss
 seba:minifiers-autoprefixer
 
-aldeed:autoform
+aldeed:autoform@7.0.0!
 
 ostrio:flow-router-extra
 ostrio:i18n

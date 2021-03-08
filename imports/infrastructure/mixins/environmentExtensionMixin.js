@@ -1,5 +1,14 @@
 import { createLog } from '../../utils/createLog'
+import { getDocument } from './getDocument'
+import { checkDocument } from './checkDocument'
 
+/**
+ * This mixin injects useful generic functions into the method or publication
+ * environment (the funciton's this-context).
+ *
+ * @param options
+ * @return {*}
+ */
 export const environmentExtensionMixin = function (options) {
   const { env } = options
   if (env === null || env === false) return options
@@ -11,7 +20,9 @@ export const environmentExtensionMixin = function (options) {
 
   const runFct = options.run
   options.run = function run (...args) {
-    this.info = info
+    // safe-assign our extensions to the environment document
+    Object.assign(this, { info, getDocument, checkDocument })
+
     info('call', { userId: this.userId })
     return runFct.call(this, ...args)
   }

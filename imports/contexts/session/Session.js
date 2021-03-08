@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor'
 import { check, Match } from 'meteor/check'
 import { onClient, onServer, onServerExec } from '../../utils/archUtils'
 import { DocumentNotFoundError } from '../../api/errors/DocumentNotFoundError'
+import { TestCycle } from '../testcycle/TestCycle'
 
 export const Session = {
   name: 'session',
@@ -50,7 +51,15 @@ Session.schema = {
   },
 
   /**
-   * The current unit set to complete
+   * The current test-cycle this session reflects on
+   */
+
+  testCycle: String,
+
+  /**
+   * The current unit set to complete. There may be more than one unit-sets
+   * for a given test-cycle, because a unit-set is used to summarize a certain
+   * content, while test-cycle summarize a set of tests.
    */
 
   unitSet: String,
@@ -119,7 +128,7 @@ Session.helpers = {
 Session.methods.exists = {
   name: 'session.methods.exists',
   schema: {
-    unitSetId: String
+    testCycleId: String
   },
   numRequests: 1,
   timeInterval: 1000,
@@ -129,12 +138,12 @@ Session.methods.exists = {
      * @param unitSetId
      * @return {any}
      */
-    return function run ({ unitSetId }) {
+    return function run ({ testCycleId }) {
       const { userId } = this
       const SessionCollection = Session.collection()
       return SessionCollection.findOne({
         userId,
-        unitSet: unitSetId,
+        testCycle: testCycleId,
         completedAt: { $exists: false },
         cancelledAt: { $exists: false }
       })
@@ -161,14 +170,14 @@ Session.methods.currentById = {
 Session.methods.start = {
   name: 'session.start',
   schema: {
-    unitSetId: String
+    testCycleId: String
   },
   numRequests: 1,
   timeInterval: 1000,
   run: onServerExec(function () {
+    import { TestCycle } from '../testcycle/TestCycle'
     import { UnitSet } from '../unitSet/UnitSet'
-
-    const getUnitSetDoc = docId => UnitSet.collection().findOne(docId)
+    import { Unit } from '../Unit'
 
     /**
      *
@@ -176,12 +185,13 @@ Session.methods.start = {
      * @param continueAborted
      * @return {any}
      */
-    return function ({ unitSetId }) {
-      const { userId } = this
+    return function ({ testCycleId }) {
+      const API = this
+      const { userId } = API
       const SessionCollection = Session.collection()
       const abortedSessionDoc = SessionCollection.findOne({
         userId,
-        unitSet: unitSetId,
+        testCycle: testCycleId,
         completedAt: { $exists: false },
         cancelledAt: { $exists: false }
       })
@@ -190,7 +200,7 @@ Session.methods.start = {
       if (abortedSessionDoc) {
         throw new Meteor.Error('session.start.error', 'session.sessionExists', {
           sessionId: abortedSessionDoc._id,
-          unitSetId: unitSetId
+          unitSetId: testCycleId
         })
       }
 
@@ -198,19 +208,26 @@ Session.methods.start = {
       // unitSet document in order to store the associated dimension, level and
       // ordered set of units to be solved.
       const startedAt = new Date()
-      const unitSetDoc = getUnitSetDoc(unitSetId)
+      const testCycleDoc = API.getDocument(testCycleId, TestCycle)
+      API.checkDocument(testCycleDoc, TestCycle, { testCycleId })
 
-      // if there has no unit been found we need to raise an error
-      if (!unitSetDoc) {
-        throw new DocumentNotFoundError(UnitSet.name, unitSetId)
-      }
+      // get the initial unit-set
+      const unitSetId = testCycleDoc.unitSets?.[0]
+      const unitSetDoc = API.getDocument(unitSetId, UnitSet)
 
+      // we also strictly require the unitSetDoc to start a session
+      API.checkDocument(unitSetDoc, UnitSet, { unitSetId })
+
+      // get the initial unit
       const currentUnit = unitSetDoc.units?.[0]
-      if (!currentUnit) {
-        throw new Meteor.Error('session.startError', 'session.noUnits')
-      }
+      const unitDoc = API.getDocument(currentUnit, Unit)
 
+      // unit is also strictly required to start a session
+      API.checkDocument(unitDoc, Unit, { currentUnit })
+
+      // if all docs exist, we can create a new session document
       const insertDoc = { userId, startedAt, currentUnit }
+      insertDoc.testCycle = testCycleId
       insertDoc.unitSet = unitSetId
 
       const newSessionId = SessionCollection.insert(insertDoc)
@@ -283,27 +300,43 @@ Session.methods.update = {
   timeInterval: 1000,
   run: onServerExec(function () {
     const { UnitSet } = require('../unitSet/UnitSet')
-    const getUnitSetDoc = docId => UnitSet.collection().findOne(docId)
+    import { TestCycle } from '../testcycle/TestCycle'
+    import { isLastUnitSetInTestCycle } from '../unitSet/isLastUnitSetInTestCycle'
+    import { getNextUnitSetInTestCycle } from '../unitSet/getNextUnitSetInTestCycle'
 
     return function ({ sessionId }) {
       const { getSessionDoc } = require('./getSessionDoc')
       const { isLastUnitInSet } = require('../unitSet/isLastUnitInSet')
       const { getNextUnitInSet } = require('../unitSet/getNextUnitInSet')
 
-      const { userId, info } = this
+      const API = this
+      const { userId, info } = API
       const sessionDoc = getSessionDoc({ sessionId, userId })
-      const { unitSet, currentUnit } = sessionDoc
-      const unitSetDoc = getUnitSetDoc(unitSet)
+      API.checkDocument(sessionDoc, Session, { sessionId, userId })
 
-      if (!unitSetDoc || !unitSetDoc.units) {
-        throw new DocumentNotFoundError(UnitSet.name, { sessionId, unitSet })
-      }
+      const { unitSet, testCycle, currentUnit } = sessionDoc
+
+      // get test cycle doc
+      const testCycleDoc = API.getDocument(testCycle, TestCycle)
+      API.checkDocument(testCycleDoc, TestCycle, {
+        testCycle,
+        sessionId,
+        userId
+      })
+
+      // get unit set doc
+      const unitSetDoc = API.getDocument(unitSet, UnitSet)
+      API.checkDocument(unitSetDoc, UnitSet, { sessionId, unitSet })
 
       info('update', currentUnit, unitSetDoc.units)
       const timestamp = new Date()
+      const isLastUnitSet = isLastUnitSetInTestCycle(unitSet, testCycleDoc)
       const isLastUnit = isLastUnitInSet(currentUnit, unitSetDoc)
 
-      if (isLastUnit) {
+      // if this is the last unit set AND the last unit in this set, we are
+      // through with the session's associated testCycle
+
+      if (isLastUnitSet && isLastUnit) {
         Session.collection().update(sessionDoc._id, {
           $set: {
             currentUnit: null,
@@ -312,8 +345,40 @@ Session.methods.update = {
           }
         })
 
-        info('session -> complete', sessionId)
-        return { nextUnitId: null, completed: true }
+        info('session -> testcycle complete', sessionId)
+        return { nextUnit: null, completed: true }
+      }
+
+      // if we are through with the current unit-set., but there is still
+      // another unit set to get, let's fetch it and return it's first unit
+
+      if (isLastUnit) {
+        const nextUnitSetId = getNextUnitSetInTestCycle(unitSet, testCycleDoc)
+        const nextUnitSetDoc = API.getDocument(nextUnitSetId, UnitSet)
+        API.checkDocument(nextUnitSetDoc, UnitSet, {
+          nextUnitSetId,
+          sessionId,
+          userId
+        })
+
+        const firstUnit = nextUnitSetDoc.units[0]
+
+        Session.collection().update(sessionDoc._id, {
+          $set: {
+            unitSet: nextUnitSetId,
+            currentUnit: firstUnit,
+            updatedAt: timestamp
+          }
+        })
+
+        const hasStory = nextUnitSetDoc.story?.length > 0
+        info('session -> load next unit from new unitSet', sessionId, firstUnit, hasStory)
+        return {
+          nextUnit: firstUnit,
+          nextUnitSet: nextUnitSetId,
+          hasStory,
+          completed: false
+        }
       }
 
       const nextUnit = getNextUnitInSet(currentUnit, unitSetDoc)
@@ -324,8 +389,8 @@ Session.methods.update = {
         }
       })
 
-      info('session -> next', sessionId, nextUnit)
-      return { nextUnitId: nextUnit, completed: false }
+      info('session -> load next unit from current unitSet', sessionId, nextUnit)
+      return { nextUnit, completed: false }
     }
   })
 }
@@ -378,12 +443,12 @@ Session.methods.recent = {
   call: undefined
 }
 
-Session.methods.byUnitSet = {
-  name: 'session.methods.byUnitSet',
+Session.methods.byTestCycle = {
+  name: 'session.methods.byTestCycle',
   schema: {
-    unitSet: String
+    testCycleId: String
   },
-  run: onServer(function ({ unitSet }) {
+  run: onServer(function ({ testCycleId }) {
     const { userId } = this
 
     // TODO maybe add a flag to settings.json with number of days/hours that
@@ -392,7 +457,7 @@ Session.methods.byUnitSet = {
       .collection()
       .findOne({
         userId: userId,
-        unitSet: unitSet,
+        testCycle: testCycleId,
         startedAt: { $exists: true },
         completedAt: { $exists: false },
         cancelled: { $exists: false }

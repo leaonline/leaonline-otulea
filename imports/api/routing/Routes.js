@@ -144,9 +144,15 @@ Routes.unit = {
     window.scrollTo(0, 0)
   },
   data: {
-    next ({ sessionId, unitId, completed }) {
+    next ({ sessionId, unitId, unitSetId, hasStory, completed }) {
       if (!sessionId) {
         return gotoRoute(Routes.overview)
+      }
+
+      // if we have entered a new unitSet and the unitSet is flagged with
+      // having a story, then we need to transit to the story page first
+      if (unitSetId && hasStory) {
+        return gotoRoute(Routes.story, sessionId, unitSetId, unitId)
       }
 
       return (!unitId || completed)
@@ -184,10 +190,13 @@ Routes.complete = {
   },
   data: {
     end () {
-      return Routes.logout
+      gotoRoute(Routes.logout)
     },
     next () {
       gotoRoute(Routes.overview)
+    },
+    exit () {
+      gotoRoute(Routes.logout)
     }
   }
 }
