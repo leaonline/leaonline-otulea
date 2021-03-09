@@ -1,7 +1,6 @@
 /* global Roles Accounts Meteor */
 import { check } from 'meteor/check'
-import { onClient, onServer } from '../../utils/archUtils'
-import { SHA256 } from 'meteor/sha'
+import { onClient, onServer, onServerExec } from '../../utils/archUtils'
 
 export const Users = {
   name: 'users',
@@ -62,6 +61,21 @@ Users.methods.register = {
   })
 }
 
+Users.methods.isDebug = {
+  name: 'users.methods.isDebug',
+  schema: {
+    value: Boolean
+  },
+  numRequests: 1,
+  timeInterval: 1000,
+  run: onServer(function ({ value }) {
+    const { userId } = this
+    return Meteor.users.update(userId, {
+      $set: { debug: value }
+    })
+  })
+}
+
 Users.methods.loggedIn = {
   name: 'user.methods.loggedIn',
   schema: {
@@ -72,18 +86,37 @@ Users.methods.loggedIn = {
   },
   numRequests: 1,
   timeInterval: 1000,
-  run: onServer(function ({ screenWidth, screenHeight, viewPortWidth, viewPortHeight }) {
-    // eslint-disable-next-line
-    const { userId } = this
-    const { connection } = this
-    const origin = SHA256(connection.clientAddress)
-    const name = connection.httpHeaders['user-agent']
-    const updateDoc = { origin, name, screenWidth, screenHeight, viewPortWidth, viewPortHeight }
-    const updatedAt = new Date()
-    return Meteor.users.update(userId, { $set: { updatedAt }, $addToSet: { agents: updateDoc } })
+  run: onServerExec(function () {
+    import { SHA256 } from 'meteor/sha'
+
+    return function ({ screenWidth, screenHeight, viewPortWidth, viewPortHeight }) {
+      // eslint-disable-next-line
+      const { userId } = this
+      const { connection } = this
+      const origin = SHA256(connection.clientAddress)
+      const name = connection.httpHeaders['user-agent']
+      const updateDoc = {
+        origin,
+        name,
+        screenWidth,
+        screenHeight,
+        viewPortWidth,
+        viewPortHeight
+      }
+      const updatedAt = new Date()
+      return Meteor.users.update(userId, {
+        $set: { updatedAt },
+        $addToSet: { agents: updateDoc }
+      })
+    }
   }),
   call: onClient(function ({ screenWidth, screenHeight, viewPortWidth, viewPortHeight }, cb) {
-    Meteor.call(Users.methods.loggedIn.name, { screenWidth, screenHeight, viewPortWidth, viewPortHeight }, cb)
+    Meteor.call(Users.methods.loggedIn.name, {
+      screenWidth,
+      screenHeight,
+      viewPortWidth,
+      viewPortHeight
+    }, cb)
   })
 }
 

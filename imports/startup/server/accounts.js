@@ -1,5 +1,6 @@
 /* global ServiceConfiguration */
 import { Meteor } from 'meteor/meteor'
+import { Accounts } from 'meteor/accounts-base'
 import { Users } from '../../api/accounts/User'
 import { ServiceRegistry } from '../../api/config/BackendConfig'
 import { createMethods } from '../../infrastructure/factories/method/createMethods'
@@ -21,6 +22,19 @@ rateLimitMethods(userMethods)
 const publications = Object.values(Users.publications)
 createPublications(publications)
 rateLimitPublications(publications)
+
+Meteor.publish(null, function () {
+  const { userId } = this
+  if (!userId) return this.ready()
+
+  return Meteor.users.find(userId, {
+    fields: {
+      _id: 1,
+      username: 1,
+      debug: 1
+    }
+  })
+})
 
 //  //////////////////////////////////////////////////////////
 //  RATE LIMIT BUILTIN ACCOUNTS

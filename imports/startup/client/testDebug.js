@@ -1,9 +1,3 @@
-let debug = false
+import { isDebugUser } from '../../api/accounts/isDebugUser'
 
-global.isDebugUser = function (value) {
-  if (typeof value !== 'undefined') {
-    debug = !!value
-  }
-
-  return debug
-}
+Object.assign(global, { isDebugUser })

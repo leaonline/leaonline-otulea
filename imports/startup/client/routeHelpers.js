@@ -36,3 +36,7 @@ Template.registerHelper('url', function (path) {
     secure: Meteor.isProduction
   })
 })
+
+Template.registerHelper('isDebugUser', function () {
+  return global.isDebugUser()
+})

@@ -2,7 +2,6 @@ import { Meteor } from 'meteor/meteor'
 import { check, Match } from 'meteor/check'
 import { onClient, onServer, onServerExec } from '../../utils/archUtils'
 import { DocumentNotFoundError } from '../../api/errors/DocumentNotFoundError'
-import { TestCycle } from '../testcycle/TestCycle'
 
 export const Session = {
   name: 'session',
@@ -141,12 +140,14 @@ Session.methods.exists = {
     return function run ({ testCycleId }) {
       const { userId } = this
       const SessionCollection = Session.collection()
-      return SessionCollection.findOne({
+      const sessionDoc = SessionCollection.findOne({
         userId,
         testCycle: testCycleId,
         completedAt: { $exists: false },
         cancelledAt: { $exists: false }
       })
+      this.info('exists:', !!sessionDoc)
+      return sessionDoc
     }
   })
 }
@@ -300,7 +301,7 @@ Session.methods.update = {
   timeInterval: 1000,
   run: onServerExec(function () {
     const { UnitSet } = require('../unitSet/UnitSet')
-    import { TestCycle } from '../testcycle/TestCycle'
+    
     import { isLastUnitSetInTestCycle } from '../unitSet/isLastUnitSetInTestCycle'
     import { getNextUnitSetInTestCycle } from '../unitSet/getNextUnitSetInTestCycle'
 
@@ -460,7 +461,7 @@ Session.methods.byTestCycle = {
         testCycle: testCycleId,
         startedAt: { $exists: true },
         completedAt: { $exists: false },
-        cancelled: { $exists: false }
+        cancelledAt: { $exists: false }
       }, {
         hint: { $natural: -1 }
       })

@@ -121,16 +121,7 @@ Template.overview.onCreated(function () {
     // if both selected, select respective test-cyclce
     if (dimension && level) {
       const testCycle = TestCycle.collection().findOne({ dimension: d, level: l })
-
-      instance.api.callMethod({
-        name: Session.methods.exists.name,
-        args: { testCycleId: testCycle._id },
-        receive: () => instance.state.set('selectedTestCycle', testCycle),
-        failure: err => console.error(err),
-        success: sessionDoc => {
-          instance.state.set({ sessionDoc })
-        }
-      })
+      instance.state.set('selectedTestCycle', testCycle)
     }
   })
 
@@ -145,6 +136,7 @@ Template.overview.onCreated(function () {
       args: { testCycleId: testCycle._id },
       failure: err => console.error(err),
       success: sessionDoc => {
+        instance.api.debug('session doc loaded', { sessionDoc })
         const abortedSessionDetected = testCycle && sessionDoc && sessionDoc.unitSet === testCycle._id
         instance.state.set({ abortedSessionDetected, sessionDoc })
       }
@@ -169,10 +161,10 @@ Template.overview.helpers({
   dimensionDisabled (dimension) {
     return !hasSet({ dimension })
   },
-  
+
   // return all dimensions, filtered by those, which are defined by
   // our received test-cycles
-  
+
   allDimensions () {
     const instance = Template.instance()
     if (!instance.state.get('dimensionsLoadComplete')) {

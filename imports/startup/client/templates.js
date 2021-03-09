@@ -10,6 +10,7 @@ import { loadAllContentDocs } from '../../api/loading/loadAllContentDocs'
 import { loadContentDoc } from '../../api/loading/loadContentDoc'
 import { fadeOut } from '../../utils/animationUtils'
 import { hasProperty } from '../../utils/object/hasProperty'
+import { isDebugUser } from '../../api/accounts/isDebugUser'
 import { callMethod } from '../../infrastructure/methods/callMethod'
 
 // if we use the autoload functionality we don't need to explicitly load basic
@@ -43,12 +44,24 @@ Blaze.TemplateInstance.prototype.initDependencies =
       type: 'info'
     })
 
+    const logDebug = createLog({
+      name: instance.view.name,
+      type: 'debug',
+      devOnly: false
+    })
+
     Object.assign(instance.api, {
       queryParam: value => Router.queryParam(value),
       callMethod,
       loadAllContentDocs,
       loadContentDoc,
       hasProperty,
+      isDebugUser,
+      debug: (...args) => {
+        if (isDebugUser()) {
+          logDebug(...args)
+        }
+      },
       fadeOut: function (target, callback) {
         return fadeOut(target, instance, callback)
       }
