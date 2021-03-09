@@ -300,8 +300,8 @@ Session.methods.update = {
   numRequests: 1,
   timeInterval: 1000,
   run: onServerExec(function () {
-    const { UnitSet } = require('../unitSet/UnitSet')
-    
+    import { UnitSet } from '../unitSet/UnitSet'
+    import { TestCycle } from '../testcycle/TestCycle'
     import { isLastUnitSetInTestCycle } from '../unitSet/isLastUnitSetInTestCycle'
     import { getNextUnitSetInTestCycle } from '../unitSet/getNextUnitSetInTestCycle'
 
