@@ -41,8 +41,8 @@ Response.methods.submit = {
   run: onServerExec(function () {
     import { SessionsHost } from '../api/hosts/SessionsHost'
     const { scoreResponses } = require('../api/scoring/scoreResponses')
-    const { getSessionDoc } = require('./session/getSessionDoc')
-    const { isCurrentUnit } = require('./session/isCurrentUnit')
+    const { getSessionDoc } = require('./session/utils/getSessionDoc')
+    const { isCurrentUnit } = require('./session/utils/isCurrentUnit')
 
     return function (responseDoc) {
       // this.unblock()
@@ -52,6 +52,7 @@ Response.methods.submit = {
       // we need to make sure, that this data belongs to the current user's
       // session by checking the unit id against the session's current unit
       const sessionDoc = getSessionDoc({ userId, sessionId })
+
       if (!isCurrentUnit({ sessionDoc, unitId })) {
         throw new Meteor.Error('response.submitError', 'session.notCurrentUnit', {
           sessionDoc, unitId

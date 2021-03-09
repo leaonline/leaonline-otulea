@@ -13,7 +13,7 @@ import { Unit } from '../../../contexts/Unit'
 import { ResponseCache } from './cache/ResponseCache'
 import { UnitPageCache } from './cache/UnitPageCache'
 import { callMethod } from '../../../infrastructure/methods/callMethod'
-import { isCurrentUnit } from '../../../contexts/session/isCurrentUnit'
+import { isCurrentUnit } from '../../../contexts/session/utils/isCurrentUnit'
 import { createItemLoad } from './item/createItemLoad'
 import { createItemInput } from './item/createItemInput'
 import { createItemSubmit } from './item/createItemSubmit'
@@ -21,6 +21,7 @@ import { createSessionLoader } from '../../../api/loading/createSessionLoader'
 import '../../components/container/container'
 import '../../layout/navbar/navbar'
 import './unit.html'
+import { sessionIsComplete } from '../../../contexts/session/utils/sessionIsComplete'
 
 const renderersLoaded = new ReactiveVar()
 const responseCache = ResponseCache.create(window.localStorage)
@@ -86,7 +87,7 @@ Template.unit.onCreated(function () {
 
         // if we encounter a sessionDoc that is already completed, we just
         // skip any further attempts to load units and immediately finish
-        if (Session.helpers.isComplete(sessionDoc)) {
+        if (sessionIsComplete(sessionDoc)) {
           return instance.data.finish({ sessionId })
         }
 

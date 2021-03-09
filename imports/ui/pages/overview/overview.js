@@ -7,8 +7,8 @@ import { UnitSet } from '../../../contexts/unitSet/UnitSet'
 import { TestCycle } from '../../../contexts/testcycle/TestCycle'
 import { ColorType } from '../../../types/ColorType'
 import { dataTarget } from '../../../utils/eventUtils'
-import { hasSet } from '../../../contexts/unitSet/hasSet'
-import { showStoryBeforeUnit } from '../../../contexts/unitSet/showStoryBeforeUnit'
+import { getUnitSetForDimensionAndLevel } from '../../../contexts/unitSet/api/getUnitSetForDimensionAndLevel'
+import { showStoryBeforeUnit } from '../../../contexts/unitSet/api/showStoryBeforeUnit'
 import '../../components/container/container'
 import './overview.scss'
 import './overview.html'
@@ -159,7 +159,7 @@ Template.overview.helpers({
     return dimension?._id === _id
   },
   dimensionDisabled (dimension) {
-    return !hasSet({ dimension })
+    return !getUnitSetForDimensionAndLevel({ dimension })
   },
 
   // return all dimensions, filtered by those, which are defined by

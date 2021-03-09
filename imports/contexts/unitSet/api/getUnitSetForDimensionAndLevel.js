@@ -1,6 +1,6 @@
-import { UnitSet } from './UnitSet'
+import { UnitSet } from '../UnitSet'
 
-export const hasSet = ({ dimension, level }) => {
+export const getUnitSetForDimensionAndLevel = ({ dimension, level }) => {
   const query = {}
   if (dimension) {
     query.dimension = dimension

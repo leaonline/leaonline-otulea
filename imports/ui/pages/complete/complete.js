@@ -10,6 +10,7 @@ import { printHTMLElement } from '../../utils/printHTMLElement'
 import '../../components/container/container'
 import '../../layout/navbar/navbar'
 import './complete.html'
+import { sessionIsComplete } from '../../../contexts/session/utils/sessionIsComplete'
 
 const states = {
   showResults: 'showResults',
@@ -54,7 +55,7 @@ Template.complete.onCreated(function () {
 
       // if we encounter a sessionDoc that is not completed, we just
       // skip any further attempts to load and immediately exit
-      if (!Session.helpers.isComplete(sessionDoc)) {
+      if (!sessionIsComplete(sessionDoc)) {
         return instance.data.exit({ sessionId })
       }
 
