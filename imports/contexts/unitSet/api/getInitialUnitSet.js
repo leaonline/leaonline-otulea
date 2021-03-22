@@ -1,4 +1,4 @@
-import { UnitSet } from './UnitSet'
+import { UnitSet } from '../UnitSet'
 
 export const getInitialSet = ({ dimension, level }) => {
   return UnitSet.collection().findOne({ dimension, level })

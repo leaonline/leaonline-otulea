@@ -2,10 +2,7 @@ import { Session } from '../Session'
 import { UnitSet } from '../../unitSet/UnitSet'
 import { TestCycle } from '../../testcycle/TestCycle'
 import { getSessionDoc } from '../utils/getSessionDoc'
-import { isLastUnitInSet } from '../../unitSet/api/isLastUnitInSet'
-import { getNextUnitInSet } from '../../unitSet/api/getNextUnitInSet'
-import { isLastUnitSetInTestCycle } from '../../unitSet/api/isLastUnitSetInTestCycle'
-import { getNextUnitSetInTestCycle } from '../../unitSet/api/getNextUnitSetInTestCycle'
+import { createDocumentList } from '../../../api/lists/createDocumentList'
 
 /**
  * Updates a session document by id.
@@ -43,8 +40,23 @@ export const updateSession = function ({ sessionId }) {
 
   info('update', currentUnit, unitSetDoc.units)
   const timestamp = new Date()
-  const isLastUnitSet = isLastUnitSetInTestCycle(unitSet, testCycleDoc)
-  const isLastUnit = isLastUnitInSet(currentUnit, unitSetDoc)
+
+  const unitSetList = createDocumentList({
+    currentId: unitSet,
+    document: testCycleDoc,
+    context: TestCycle,
+    fieldName: 'unitSets'
+  })
+
+  const unitList = createDocumentList({
+    currentId: currentUnit,
+    document: unitSetDoc,
+    context: UnitSet,
+    fieldName: 'units',
+  })
+
+  const isLastUnitSet = unitSetList.isLast()
+  const isLastUnit = unitList.isLast()
 
   // if this is the last unit set AND the last unit in this set, we are
   // through with the session's associated testCycle
@@ -71,7 +83,7 @@ export const updateSession = function ({ sessionId }) {
   // another unit set to get, let's fetch it and return it's first unit
 
   if (isLastUnit) {
-    const nextUnitSetId = getNextUnitSetInTestCycle(unitSet, testCycleDoc)
+    const nextUnitSetId = unitSetList.getNext()
     const nextUnitSetDoc = API.getDocument(nextUnitSetId, UnitSet)
     API.checkDocument(nextUnitSetDoc, UnitSet, {
       nextUnitSetId,
@@ -99,7 +111,8 @@ export const updateSession = function ({ sessionId }) {
     }
   }
 
-  const nextUnit = getNextUnitInSet(currentUnit, unitSetDoc)
+  const nextUnit = unitList.getNext()
+
   Session.collection().update(sessionDoc._id, {
     $set: {
       currentUnit: nextUnit,
