@@ -7,6 +7,8 @@ SimpleSchema.extendOptions(schemaOptions)
 
 export const Schema = {}
 
+Schema.provider = SimpleSchema
+
 Schema.create = isomorph({
   onServer: function () {
     return function (schemaDefinition, options) {

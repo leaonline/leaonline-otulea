@@ -1,4 +1,4 @@
-import { Response } from '../../Response'
+import { Response } from '../../response/Response'
 
 const hasResponses = sessionId => Response.collection().find({ sessionId }).count() > 0
 

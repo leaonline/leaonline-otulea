@@ -1,7 +1,7 @@
 /* global ServiceConfiguration */
 import { Meteor } from 'meteor/meteor'
 import { Accounts } from 'meteor/accounts-base'
-import { Users } from '../../api/accounts/User'
+import { Users } from '../../contexts/user/User'
 import { ServiceRegistry } from '../../api/config/BackendConfig'
 import { createMethods } from '../../infrastructure/factories/method/createMethods'
 import {

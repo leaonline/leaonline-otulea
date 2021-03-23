@@ -1,7 +1,6 @@
-import { Response } from '../../Response'
+import { Response } from '../../response/Response'
 
-export const getSessionResponses = function getSessionResults ({ sessionId }) {
-  const { userId } = this
+export const getSessionResponses = function getSessionResponses ({ sessionId, userId }) {
   const query = { sessionId, userId }
 
   return Response

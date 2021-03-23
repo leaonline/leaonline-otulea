@@ -1,5 +1,5 @@
 /* global Roles Accounts Meteor */
-import { check } from 'meteor/check'
+import { regExSchema } from '../../api/schema/regExSchema'
 import { onClient, onServer, onServerExec } from '../../utils/archUtils'
 
 export const Users = {
@@ -47,15 +47,20 @@ Users.methods = {}
 Users.methods.register = {
   name: 'user.methods.register',
   schema: {
-    code: String
+    code: {
+      type: String,
+      regEx: regExSchema.idOfLength(5)
+    }
   },
   isPublic: true,
   numRequests: 1,
   timeInterval: 1000,
   run: onServer(function ({ code }) {
-    check(code, String)
     return Accounts.createUser({ username: code, password: code })
   }),
+  /**
+   * @deprecated replace with callMethod function
+   */
   call: onClient(function ({ code }, cb) {
     Meteor.call(Users.methods.register.name, { code }, cb)
   })
@@ -110,6 +115,9 @@ Users.methods.loggedIn = {
       })
     }
   }),
+  /**
+   * @deprecated replace with callMethod function
+   */
   call: onClient(function ({ screenWidth, screenHeight, viewPortWidth, viewPortHeight }, cb) {
     Meteor.call(Users.methods.loggedIn.name, {
       screenWidth,

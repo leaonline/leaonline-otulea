@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor'
 import { Mongo } from 'meteor/mongo'
 import { HTTP } from 'meteor/jkuester:http'
-import { toContentServerURI } from '../../../api/loading/toContentServerURI'
+import { toContentServerURL } from '../../../api/url/toContentServerURL'
 import { createInfoLog } from '../../../api/errors/createInfoLog'
 
 const origin = Meteor.absoluteUrl()
@@ -9,7 +9,7 @@ const origin = Meteor.absoluteUrl()
 export class LocalCacheCollection extends Mongo.Collection {
   constructor (context, options) {
     super(null, options)
-    this.url = toContentServerURI(context.routes.byId.path)
+    this.url = toContentServerURL(context.routes.byId.path)
     this.log = createInfoLog(context.name)
   }
 

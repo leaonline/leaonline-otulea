@@ -17,8 +17,8 @@ export const environmentExtensionMixin = function (options) {
   const { devOnly = true } = envOptions
 
   const info = createLog({ name: options.name, type: 'info', devOnly: devOnly })
-
   const runFct = options.run
+
   options.run = function run (...args) {
     // safe-assign our extensions to the environment document
     Object.assign(this, { info, getDocument, checkDocument })

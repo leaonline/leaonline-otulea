@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor'
-import { onClient, onServer } from '../utils/archUtils'
+import { onClient, onServer } from '../../utils/archUtils'
 
 export const Legal = {
   name: 'legal',
@@ -62,6 +62,7 @@ Legal.methods = {}
 
 Legal.methods.update = {
   name: 'legal.methods.update',
+  backend: true,
   schema: {
     _id: {
       type: String
@@ -95,6 +96,9 @@ Legal.methods.get = {
       return config[name]
     }
   }),
+  /**
+   * @deprecated
+   */
   call: onClient(function (name, cb) {
     Meteor.call(Legal.methods.get.name, { name }, cb)
   })

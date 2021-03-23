@@ -1,5 +1,5 @@
 import { callMethod } from '../../../../infrastructure/methods/callMethod'
-import { Response } from '../../../../contexts/Response'
+import { Response } from '../../../../contexts/response/Response'
 import { getProperty } from '../../../../utils/object/getProperty'
 
 /**

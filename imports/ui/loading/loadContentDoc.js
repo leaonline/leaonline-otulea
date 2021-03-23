@@ -1,7 +1,7 @@
-import { toContentServerURI } from './toContentServerURI'
+import { toContentServerURL } from '../../api/url/toContentServerURL'
 import { createLog } from '../../utils/createInfoLog'
 import { HTTP } from 'meteor/jkuester:http'
-import { isPlainObject } from '../../utils/isPlainObject'
+import { isPlainObject } from '../../utils/object/isPlainObject'
 
 export const loadContentDoc = (context, docId, debug) => {
   return new Promise((resolve, reject) => {
@@ -12,7 +12,7 @@ export const loadContentDoc = (context, docId, debug) => {
 
     const route = context.routes.byId
     const collection = context.collection()
-    const url = toContentServerURI(route.path)
+    const url = toContentServerURL(route.path)
     const info = createLog({
       name: context.name,
       devOnly: true

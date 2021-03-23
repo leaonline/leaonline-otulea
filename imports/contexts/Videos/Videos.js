@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor'
-import { onClient, onServer } from '../utils/archUtils'
+import { onClient, onServer } from '../../utils/archUtils'
 
 export const Videos = {
   name: 'videos',
@@ -57,6 +57,7 @@ Videos.methods = {}
 
 Videos.methods.update = {
   name: 'videos.methods.update',
+  backend: true,
   numRequests: 1,
   timeInterval: 250,
   schema: Object.assign({}, Videos.schema, {

@@ -1,11 +1,11 @@
-import { toContentServerURI } from './toContentServerURI'
+import { toContentServerURL } from '../../api/url/toContentServerURL'
 import { createLog } from '../../utils/createInfoLog'
 import { HTTP } from 'meteor/jkuester:http'
 
 export const loadAllContentDocs = (context, params, debug) => {
   const route = context.routes.all
   const collection = context.collection()
-  const url = toContentServerURI(route.path)
+  const url = toContentServerURL(route.path)
   const info = createLog({
     name: context.name,
     devOnly: true

@@ -1,4 +1,4 @@
-import { Videos } from '../../contexts/Videos'
+import { Videos } from '../../contexts/Videos/Videos'
 import { ServiceRegistry } from '../../api/config/BackendConfig'
 import { createCollection } from '../../infrastructure/factories/collection/createCollection'
 import { createMethods } from '../../infrastructure/factories/method/createMethods'

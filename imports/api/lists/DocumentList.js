@@ -1,9 +1,14 @@
 import { Meteor } from 'meteor/meteor'
+import { check } from 'meteor/check'
 import { checkDocument } from '../../infrastructure/mixins/checkDocument'
 import { getProperty } from '../../utils/object/getProperty'
 
 class DocumentList {
-  constructor ({ context, fieldName }) {
+  constructor ({ context, fieldName } = {}) {
+    check({ contextName: context?.name, fieldName }, {
+      contextName: String,
+      fieldName: String
+    })
     this.context = context
     this.fieldName = fieldName
     return this
@@ -33,7 +38,7 @@ class DocumentList {
 
     // make sure the current doc is even located in this set
     if (this.index === -1 || this.index > this.list.length - 1) {
-      throw new Meteor.Error('getNextInList.error', 'getNextInList.idNotInSet', {
+      throw new Meteor.Error('DocumentList.error', 'DocumentList.idNotInSet', {
         current: this.currentId,
         context: this.context.name,
         document: this.documentId,

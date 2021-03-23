@@ -1,5 +1,5 @@
 import { Template } from 'meteor/templating'
-import { ColorType } from '../../../types/ColorType'
+import { ColorType } from '../../../contexts/types/ColorType'
 import './navbar.html'
 
 Template.navbar.onDestroyed(function () {

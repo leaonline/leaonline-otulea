@@ -38,6 +38,7 @@ ErrorLog.methods.send = {
     return ErrorLog.collection().insert({ error, reason, details, stack, userId, createdAt })
   }),
   /**
+   * @deprecated
    * This method is available on server, as well as client.
    */
 

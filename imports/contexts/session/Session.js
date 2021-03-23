@@ -169,12 +169,16 @@ Session.methods.results = {
   run: onServerExec(function () {
     import { getSessionResponses } from './api/getSessionResponses'
 
-    return getSessionResponses
+    return function ({ sessionId }) {
+      const { userId } = this
+      return getSessionResponses({ sessionId, userId })
+    }
   })
 }
 
 Session.methods.byTestCycle = {
   name: 'session.methods.byTestCycle',
+  backend:true,
   schema: {
     testCycleId: String
   },

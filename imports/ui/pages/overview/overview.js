@@ -5,8 +5,8 @@ import { Level } from '../../../contexts/Level'
 import { Session } from '../../../contexts/session/Session'
 import { UnitSet } from '../../../contexts/unitSet/UnitSet'
 import { TestCycle } from '../../../contexts/testcycle/TestCycle'
-import { ColorType } from '../../../types/ColorType'
-import { dataTarget } from '../../../utils/eventUtils'
+import { ColorType } from '../../../contexts/types/ColorType'
+import { dataTarget } from '../../../utils/dataTarget'
 import { getUnitSetForDimensionAndLevel } from '../../../contexts/unitSet/api/getUnitSetForDimensionAndLevel'
 import { showStoryBeforeUnit } from '../../../contexts/unitSet/api/showStoryBeforeUnit'
 import '../../components/container/container'
@@ -229,13 +229,13 @@ Template.overview.helpers({
 Template.overview.events({
   'click .lea-dimension-button' (event, templateInstance) {
     event.preventDefault()
-    const d = dataTarget(event, templateInstance, 'dimension')
+    const d = dataTarget(event, 'dimension')
     templateInstance.api.queryParam({ d, l: null })
   },
   'click .lea-back-button' (event, templateInstance) {
     event.preventDefault()
-    const type = dataTarget(event, templateInstance, 'type')
-    const target = dataTarget(event, templateInstance)
+    const type = dataTarget(event, 'type')
+    const target = dataTarget(event)
     const queryParams = {}
 
     if (type === 'level') {
@@ -253,7 +253,7 @@ Template.overview.events({
   },
   'click .lea-level-button' (event, templateInstance) {
     event.preventDefault()
-    const l = dataTarget(event, templateInstance, 'level')
+    const l = dataTarget(event, 'level')
     templateInstance.api.queryParam({ l })
   },
   'click .lea-restart-button' (event, templateInstance) {

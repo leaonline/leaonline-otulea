@@ -2,12 +2,12 @@
 import { Template } from 'meteor/templating'
 import { ReactiveVar } from 'meteor/reactive-var'
 import { Session } from '../../../contexts/session/Session'
-import { Response } from '../../../contexts/Response'
+import { Response } from '../../../contexts/response/Response'
 import { UnitSet } from '../../../contexts/unitSet/UnitSet'
 import { Dimension } from '../../../contexts/Dimension'
 import { Level } from '../../../contexts/Level'
 import { fadeOut, fadeIn } from '../../../utils/animationUtils'
-import { dataTarget } from '../../../utils/eventUtils'
+import { dataTarget } from '../../../utils/dataTarget'
 import { TaskRenderers } from '../../renderers/TaskRenderers'
 import { Unit } from '../../../contexts/Unit'
 import { ResponseCache } from './cache/ResponseCache'
@@ -17,7 +17,7 @@ import { isCurrentUnit } from '../../../contexts/session/utils/isCurrentUnit'
 import { createItemLoad } from './item/createItemLoad'
 import { createItemInput } from './item/createItemInput'
 import { createItemSubmit } from './item/createItemSubmit'
-import { createSessionLoader } from '../../../api/loading/createSessionLoader'
+import { createSessionLoader } from '../../loading/createSessionLoader'
 import '../../components/container/container'
 import '../../layout/navbar/navbar'
 import './unit.html'
@@ -186,7 +186,7 @@ Template.unit.helpers({
 Template.unit.events({
   'click .lea-pagenav-button' (event, templateInstance) {
     event.preventDefault()
-    const action = dataTarget(event, templateInstance, 'action')
+    const action = dataTarget(event, 'action')
     const unitDoc = templateInstance.state.get('unitDoc')
     const sessionDoc = templateInstance.state.get('sessionDoc')
     const sessionId = sessionDoc._id

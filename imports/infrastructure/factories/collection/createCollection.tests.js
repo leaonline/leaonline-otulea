@@ -2,5 +2,6 @@
 import { createCollection } from './createCollection'
 
 describe(createCollection.name, function () {
-  it('is not implemented')
+  it('creates a local collection is flagged as such')
+  it('attaches the collection to the context')
 })

@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor'
 import { Template } from 'meteor/templating'
-import { Legal } from '../../../contexts/Legal'
-import { dataTarget } from '../../../utils/eventUtils'
-import { Logos } from '../../../contexts/Logos'
+import { Legal } from '../../../contexts/legal/Legal'
+import { Logos } from '../../../contexts/logos/Logos'
+import { dataTarget } from '../../../utils/dataTarget'
 import './footer.scss'
 import './footer.html'
 
@@ -68,7 +68,7 @@ Template.footer.events({
   'click .legal-link' (event, templateInstance) {
     event.preventDefault()
 
-    const key = dataTarget(event, templateInstance, 'key')
+    const key = dataTarget(event, 'key')
 
     if (legalData[key]) {
       templateInstance.state.set('currentLegalData', key)

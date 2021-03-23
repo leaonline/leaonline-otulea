@@ -26,6 +26,8 @@ Feedback.schema = {
   },
   'levels.$.threshold': {
     type: Number,
+    min: 0,
+    max: 100,
     label: 'feedback.threshold'
   },
   'levels.$.icon': {
@@ -49,8 +51,12 @@ Feedback.publications.single = {
 
 Feedback.methods = {}
 
+/**
+ * This method is defined for the backend only. Updates the feedback doc.
+ */
 Feedback.methods.update = {
   name: 'feedback.methods.update',
+  backend: true,
   schema: Object.assign({}, Feedback.schema, {
     _id: {
       type: String,
@@ -60,9 +66,11 @@ Feedback.methods.update = {
   run: onServer(function ({ notEvaluable, levels }) {
     const FeedbackCollection = Feedback.collection()
     const feedbackDoc = FeedbackCollection.findOne()
+
     if (!feedbackDoc) {
       return FeedbackCollection.insert({ notEvaluable, levels })
     }
+
     else {
       return FeedbackCollection.update(feedbackDoc._id, { $set: { notEvaluable, levels } })
     }

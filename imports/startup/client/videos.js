@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor'
 import { Template } from 'meteor/templating'
-import { Videos } from '../../contexts/Videos'
+import { Videos } from '../../contexts/Videos/Videos'
 
 Template.registerHelper('video', function (name) {
   console.log('get video', name, Videos.helpers.get(name))

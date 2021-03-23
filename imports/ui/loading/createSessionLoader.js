@@ -4,7 +4,7 @@ import { loadContentDoc } from './loadContentDoc'
 import { UnitSet } from '../../contexts/unitSet/UnitSet'
 import { Level } from '../../contexts/Level'
 import { Dimension } from '../../contexts/Dimension'
-import { ColorType } from '../../types/ColorType'
+import { ColorType } from '../../contexts/types/ColorType'
 import { Unit } from '../../contexts/Unit'
 import { initClientContext } from '../../startup/client/context'
 

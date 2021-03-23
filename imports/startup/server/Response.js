@@ -1,4 +1,4 @@
-import { Response } from '../../contexts/Response'
+import { Response } from '../../contexts/response/Response'
 import { createCollection } from '../../infrastructure/factories/collection/createCollection'
 import { createMethods } from '../../infrastructure/factories/method/createMethods'
 import { rateLimitMethods } from '../../infrastructure/factories/ratelimit/rateLimit'

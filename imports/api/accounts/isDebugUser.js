@@ -1,5 +1,5 @@
 import { check } from 'meteor/check'
-import { Users } from './User'
+import { Users } from '../../contexts/user/User'
 
 let debug = false
 
