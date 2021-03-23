@@ -11,12 +11,18 @@ let debug = false
  * @param value {Boolean|undefined} set true/false to enable/disable debug mode
  * @return {boolean} true/false whether debug is enabled/disabled
  */
-export const isDebugUser = value => {
+export const isDebugUser = (value = undefined) => {
   if (typeof value !== 'undefined') {
     check(value,  Boolean)
+    const oldValue = debug
+    debug = value
     Meteor.call(Users.methods.isDebug.name, { value }, (err, res) => {
-      if (err) return console.error(err)
-      console.info('[User]: chaged debbug to ', value, ' success=', !!res)
+      if (err) {
+        debug = oldValue
+        return console.error(err)
+      }
+
+      console.info('[User]: changed debug to ', value, ' success=', !!res)
     })
   }
 
