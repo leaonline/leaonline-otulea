@@ -13,7 +13,7 @@ export const checkPermissions = function (options) {
 
     if (!userId) {
       const user = Meteor.user()
-      userId = user && userId._id
+      userId = user?._id
     }
 
     if (!userId) {
