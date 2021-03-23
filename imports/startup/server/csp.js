@@ -9,4 +9,4 @@ const hostUrls = Object.values(Meteor.settings.public.hosts)
 const cspOptions = helmetOptions(hostUrls, Meteor.isDevelopment)
 
 // Within server side Meter.startup()
-WebApp.connectHandlers.use(helmet(helmetOptions()))
+WebApp.connectHandlers.use(helmet(cspOptions))
