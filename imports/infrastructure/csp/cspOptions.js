@@ -59,8 +59,8 @@ export function helmetOptions () {
           'allow-scripts',
           'allow-forms',
           'allow-modals',
-          //'allow-presentation',
-          //'allow-top-navigation',
+          // 'allow-presentation',
+          // 'allow-top-navigation',
           'allow-popups-to-escape-sandbox'
         ],
         scriptSrc: [
