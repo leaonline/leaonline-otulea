@@ -52,7 +52,7 @@ export const updateSession = function ({ sessionId }) {
     currentId: currentUnit,
     document: unitSetDoc,
     context: UnitSet,
-    fieldName: 'units',
+    fieldName: 'units'
   })
 
   const isLastUnitSet = unitSetList.isLast()

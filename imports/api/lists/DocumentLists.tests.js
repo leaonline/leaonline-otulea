@@ -36,15 +36,14 @@ describe(DocumentList.name, function () {
     })
     it('throws if the document\'s list to be set is not valid', function () {
       expect(() => createDocumentList({ fieldName, context, document: {} }))
-        .to.throw(`DocumentList.noList`)
+        .to.throw('DocumentList.noList')
       expect(() => createDocumentList({
         fieldName,
         context,
         document: { [fieldName]: [] }
-      })).to.throw(`DocumentList.noList`)
+      })).to.throw('DocumentList.noList')
     })
     it('sets the list as internal ref', function () {
-
       const docList = new DocumentList({ fieldName, context })
       docList.setDocument({
         [fieldName]: list

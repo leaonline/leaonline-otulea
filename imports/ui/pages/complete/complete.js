@@ -1,4 +1,5 @@
 import { Template } from 'meteor/templating'
+import { Tracker } from 'meteor/tracker'
 import { ReactiveDict } from 'meteor/reactive-dict'
 import { Dimension } from '../../../contexts/Dimension'
 import { Session } from '../../../contexts/session/Session'

@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor'
+import { HTTP } from 'meteor/jkuester:http'
 
 export const initializeTTS = async () => {
   const { TTSEngine } = await import('../../api/tts/TTSEngine')

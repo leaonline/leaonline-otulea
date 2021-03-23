@@ -41,7 +41,7 @@ class DocumentList {
       throw new Meteor.Error('DocumentList.error', 'DocumentList.idNotInSet', {
         current: this.currentId,
         context: this.context.name,
-        document: this.documentId,
+        document: this.documentId
       })
     }
 

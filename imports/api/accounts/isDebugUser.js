@@ -1,4 +1,5 @@
 import { check } from 'meteor/check'
+import { Meteor } from 'meteor/meteor'
 import { Users } from '../../contexts/user/User'
 
 let debug = false
@@ -13,7 +14,7 @@ let debug = false
  */
 export const isDebugUser = (value = undefined) => {
   if (typeof value !== 'undefined') {
-    check(value,  Boolean)
+    check(value, Boolean)
     const oldValue = debug
     debug = value
     Meteor.call(Users.methods.isDebug.name, { value }, (err, res) => {

@@ -5,7 +5,7 @@ import sinon from 'sinon'
 SimpleSchema.extendOptions(['autoform'])
 
 export const createSchema = (schema, options) => new SimpleSchema(schema, options)
-export const multiSchema = (...defs) =>  SimpleSchema.oneOf(defs)
+export const multiSchema = (...defs) => SimpleSchema.oneOf(defs)
 
 export const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
 export const iterate = (num, fct) => (new Array(num)).forEach(fct)

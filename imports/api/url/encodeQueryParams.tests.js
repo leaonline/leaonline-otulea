@@ -1,6 +1,5 @@
 /* eslint-env mocha */
 import { expect } from 'chai'
-import { Random } from 'meteor/random'
 import { encodeQueryParams } from './encodeQueryParams'
 
 // !'()*

@@ -1,4 +1,4 @@
-import { onClient, onServer } from '../../utils/archUtils'
+import { onServer } from '../../utils/archUtils'
 
 export const Feedback = {
   name: 'feedback',

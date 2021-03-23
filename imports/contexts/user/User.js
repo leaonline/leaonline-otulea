@@ -1,4 +1,5 @@
-/* global Roles Accounts Meteor */
+import { Meteor } from 'meteor/meteor'
+import { Accounts } from 'meteor/accounts-base'
 import { regExSchema } from '../../api/schema/regExSchema'
 import { onClient, onServer, onServerExec } from '../../utils/archUtils'
 

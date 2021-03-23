@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor'
 import { Session } from '../Session'
 import { sessionIsComplete } from '../utils/sessionIsComplete'
 import { sessionIsCancelled } from '../utils/sessionIsCancelled'

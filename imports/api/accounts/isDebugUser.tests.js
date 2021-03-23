@@ -1,4 +1,5 @@
 /* eslint-env mocha */
+import { Meteor } from 'meteor/meteor'
 import { expect } from 'chai'
 import { isDebugUser } from './isDebugUser'
 import { overrideStub, restoreAll, stub } from '../../../tests/helpers.tests'

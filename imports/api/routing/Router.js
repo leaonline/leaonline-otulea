@@ -1,4 +1,3 @@
-/* global Roles */
 import { FlowRouter, RouterHelpers } from 'meteor/ostrio:flow-router-extra'
 import { Meteor } from 'meteor/meteor'
 import { Tracker } from 'meteor/tracker'
