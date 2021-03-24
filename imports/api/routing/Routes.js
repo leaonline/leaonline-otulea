@@ -50,7 +50,6 @@ Routes.demo = {
   path: () => `${settings.demo}`,
   label: 'pages.welcome.title',
   triggersEnter: () => [function () {
-    debugger
     gotoRoute(Routes.welcome, true)
   }],
   load: () => {}

@@ -63,8 +63,8 @@ Users.methods.register = {
   run: onServer(function ({ code, isDemoUser }) {
     const userId = Accounts.createUser({ username: code, password: code })
 
-    if (isDemoUser  === true) {
-      Meteor.users.update(userId, { $set: { isDemoUser }})
+    if (isDemoUser === true) {
+      Meteor.users.update(userId, { $set: { isDemoUser } })
     }
 
     return userId

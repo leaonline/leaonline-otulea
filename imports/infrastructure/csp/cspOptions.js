@@ -86,7 +86,7 @@ export function createCSPOptions (externalHostUrls = []) {
           // 'allow-popups-to-escape-sandbox',
           // 'allow-presentation',
           'allow-same-origin',
-          'allow-scripts',
+          'allow-scripts'
           // 'allow-storage-access-by-user-activation ', // experimental
           // 'allow-top-navigation',
           // 'allow-top-navigation-by-user-activation'
