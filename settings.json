@@ -43,5 +43,15 @@
     "content": {
       "secret": "01234567890123456789"
     }
+  },
+  "accounts": {
+    "config": {
+      "forbidClientAccountCreation": true,
+      "ambiguousErrorMessages": false,
+      "sendVerificationEmail": false,
+      "loginExpirationInDays": 90,
+      "passwordResetTokenExpirationInDays": 1,
+      "passwordEnrollTokenExpirationInDays": 3
+    }
   }
 }

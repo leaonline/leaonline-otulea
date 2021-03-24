@@ -46,6 +46,16 @@ const settingsSchema = schema({
     content: schema({
       secret: String
     })
+  }),
+  accounts: schema({
+    config: schema({
+      "forbidClientAccountCreation": Boolean,
+      "ambiguousErrorMessages": Boolean,
+      "sendVerificationEmail": Boolean,
+      "loginExpirationInDays": SimpleSchema.Integer,
+      "passwordResetTokenExpirationInDays": SimpleSchema.Integer,
+      "passwordEnrollTokenExpirationInDays": SimpleSchema.Integer
+    })
   })
 })
 

@@ -12,6 +12,11 @@ import { registerOAuthDDPLoginHandler } from 'meteor/leaonline:ddp-login-handler
 import { createPublications } from '../../infrastructure/factories/publication/createPublication'
 
 //  //////////////////////////////////////////////////////////
+//  DEFAULT ACCOUNTS CONFIG
+//  //////////////////////////////////////////////////////////
+Accounts.config(Meteor.settings.accounts.config)
+
+//  //////////////////////////////////////////////////////////
 //  CUSTOM USERS METHODS
 //  //////////////////////////////////////////////////////////
 const userMethods = Object.values(Users.methods)
