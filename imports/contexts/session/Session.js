@@ -178,7 +178,6 @@ Session.methods.results = {
 
 Session.methods.byTestCycle = {
   name: 'session.methods.byTestCycle',
-  backend: true,
   schema: {
     testCycleId: String
   },
