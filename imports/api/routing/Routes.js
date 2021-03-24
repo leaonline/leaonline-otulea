@@ -46,11 +46,25 @@ Routes.fallback = {
   data: null
 }
 
+Routes.demo = {
+  path: () => `${settings.demo}`,
+  label: 'pages.welcome.title',
+  triggersEnter: () => [function () {
+    debugger
+    gotoRoute(Routes.welcome, true)
+  }],
+  load: () => {}
+}
+
 /**
  * The starting page of the app
  */
 Routes.welcome = {
-  path: () => `${settings.welcome}`,
+  path: (isDemo = false) => {
+    return isDemo
+      ? `${settings.welcome}?demo=1`
+      : `${settings.welcome}`
+  },
   label: 'pages.welcome.title',
   triggersEnter: () => [],
   async load () {

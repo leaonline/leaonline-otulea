@@ -18,6 +18,7 @@ Template.welcome.onCreated(function () {
   instance.state = new ReactiveDict()
   instance.state.set('loginCode', null)
   instance.state.set('loadComplete', false)
+  instance.state.set('isDemoUser', !!instance.data?.queryParams?.demo)
   instance.newUser = new ReactiveVar(Random.id(MAX_INPUTS).toUpperCase())
 
   instance.wizard = {
@@ -249,11 +250,13 @@ function loginFail (templateInstance) {
 
 function registerNewUser (code, templateInstance) {
   const registerCode = templateInstance.newUser.get()
+  const isDemoUser = templateInstance.state.get('isDemoUser')
+
   if (registerCode !== code) {
     return loginFail(templateInstance)
   }
   else {
-    Users.methods.register.call({ code }, (err) => {
+    Users.methods.register.call({ code, isDemoUser }, (err) => {
       if (err) {
         console.error(err)
         loginFail(templateInstance)

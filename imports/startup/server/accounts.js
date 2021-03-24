@@ -16,6 +16,9 @@ import { createPublications } from '../../infrastructure/factories/publication/c
 //  //////////////////////////////////////////////////////////
 Accounts.config(Meteor.settings.accounts.config)
 
+Accounts._defaultPublishFields.projection.isDemoUser = 1
+Accounts._defaultPublishFields.projection.debug = 1
+
 //  //////////////////////////////////////////////////////////
 //  CUSTOM USERS METHODS
 //  //////////////////////////////////////////////////////////
@@ -26,19 +29,6 @@ rateLimitMethods(userMethods)
 const publications = Object.values(Users.publications)
 createPublications(publications)
 rateLimitPublications(publications)
-
-Meteor.publish(null, function () {
-  const { userId } = this
-  if (!userId) return this.ready()
-
-  return Meteor.users.find(userId, {
-    fields: {
-      _id: 1,
-      username: 1,
-      debug: 1
-    }
-  })
-})
 
 //  //////////////////////////////////////////////////////////
 //  RATE LIMIT BUILTIN ACCOUNTS

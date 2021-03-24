@@ -51,19 +51,29 @@ Users.methods.register = {
     code: {
       type: String,
       regEx: regExSchema.idOfLength(5)
+    },
+    isDemoUser: {
+      type: Boolean,
+      optional: true
     }
   },
   isPublic: true,
   numRequests: 1,
   timeInterval: 1000,
-  run: onServer(function ({ code }) {
-    return Accounts.createUser({ username: code, password: code })
+  run: onServer(function ({ code, isDemoUser }) {
+    const userId = Accounts.createUser({ username: code, password: code })
+
+    if (isDemoUser  === true) {
+      Meteor.users.update(userId, { $set: { isDemoUser }})
+    }
+
+    return userId
   }),
   /**
    * @deprecated replace with callMethod function
    */
-  call: onClient(function ({ code }, cb) {
-    Meteor.call(Users.methods.register.name, { code }, cb)
+  call: onClient(function ({ code, isDemoUser }, cb) {
+    Meteor.call(Users.methods.register.name, { code, isDemoUser }, cb)
   })
 }
 
