@@ -1,27 +1,27 @@
 import { Meteor } from 'meteor/meteor'
 import { Accounts } from 'meteor/accounts-base'
-import { regExSchema } from '../../api/schema/regExSchema'
 import { onClient, onServer, onServerExec } from '../../utils/archUtils'
 
 export const Users = {
   name: 'users',
   label: 'users.title',
-  icon: 'users'
+  icon: 'users',
+  representative: 'username'
 }
 
 Users.schema = {
-  /**
-   * Users can be created by editors and teachers for testing purposes, so
-   * this field is an optional indicator for test or demo users.
-   */
-  createdBy: {
-    type: String,
-    optional: true,
-    display: 'user'
+  username: String,
+  isDemoUser: {
+    type: Boolean,
+    optional: true
+  },
+  debug: {
+    type: Boolean,
+    optional: true
   },
   createdAt: Date,
   updatedAt: Date,
-  username: String,
+
   email: {
     type: String,
     optional: true
@@ -50,7 +50,8 @@ Users.methods.register = {
   schema: {
     code: {
       type: String,
-      regEx: regExSchema.idOfLength(5)
+      min: 5,
+      max: 5
     },
     isDemoUser: {
       type: Boolean,
@@ -157,23 +158,54 @@ Users.methods.recent = {
   })
 }
 
-Users.publications = {}
-
-Users.publications.all = {
-  name: 'users.publications.all',
-  schema: {},
-  run: onServer(function () {
-    const user = Meteor.users.findOne(this.userId)
-    if (!user || !user.services || !user.services.lea) {
-      return this.ready()
+// /////////////////////////////////////////////////////////////////////////////
+//
+//  BACKEND ONLY
+//
+// /////////////////////////////////////////////////////////////////////////////
+Users.methods.getAll = {
+  name: 'users.methods.getAll',
+  schema: {
+    dependencies: {
+      type: Array,
+      optional: true
+    },
+    'dependencies.$': {
+      type: Object,
+      blackbox: true,
+      optional: true
     }
-
-    const cursor = Meteor.users.find({}, {
+  },
+  backend: true,
+  run: onServer(function () {
+    const users = Meteor.users.find({}, {
       fields: {
-        services: 0
+        services: 0,
+        agents: 0
       }
-    })
-    console.info('users sub', cursor.count())
-    return cursor
+    }).fetch()
+
+    return { users }
   })
 }
+
+Users.methods.remove = {
+  name: 'users.methods.remove',
+  schema: {
+    _id: 1
+  },
+  backend: true,
+  run: onServerExec(function () {
+    import { removeUser } from '../../api/accounts/removeUser'
+
+    return function ({ _id }) {
+      return removeUser(_id, this.userId)
+    }
+  })
+}
+
+/**
+ * No publications for now
+ * @private
+ */
+Users.publications = {}

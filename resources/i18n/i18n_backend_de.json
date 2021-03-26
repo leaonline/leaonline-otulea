@@ -31,5 +31,14 @@
     "task": "Aufgabenseite",
     "complete": "Ergebnissseite",
     "notFound": "Seite nicht gefunden"
+  },
+  "users": {
+    "title": "Accounts",
+    "username": "Code",
+    "isDemoUser": "Demo",
+    "debug": "Debug",
+    "createdAt": "Registriert",
+    "updatedAt": "Zuletzt on",
+    "email": "E-Mail"
   }
 }
