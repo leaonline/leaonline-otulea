@@ -182,6 +182,9 @@ Users.methods.getAll = {
       fields: {
         services: 0,
         agents: 0
+      },
+      hint: {
+        $natural: -1
       }
     }).fetch()
 
