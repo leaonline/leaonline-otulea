@@ -83,7 +83,25 @@ jobs:
     runs-on: ubuntu-latest
     needs: [lintcode,lintstyle,lintdocs]
     steps:
-      - name: checkout
+      - name: Checkout corelib repo
+        uses: actions/checkout@v2
+        with:
+          repository: leaonline/corelib
+          path: lib/corelib
+
+      - name: Checkout ui repo
+        uses: actions/checkout@v2
+        with:
+          repository: leaonline/ui
+          path: lib/ui
+
+      - name: Checkout service-regitsry repo
+        uses: actions/checkout@v2
+        with:
+          repository: leaonline/service-registry
+          path: lib/service-registry
+
+      - name: checkout current repo
         uses: actions/checkout@v2
 
       - name: Setup meteor
