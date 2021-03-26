@@ -110,4 +110,4 @@ jobs:
           meteor-release: '1.9.2'
 
       - run: meteor npm install
-      - run: sh ./test.sh -c
+      - run: sh ./test.sh -cv
