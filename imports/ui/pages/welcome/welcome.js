@@ -13,6 +13,7 @@ import './welcome.html'
 const settings = Meteor.settings.public.accounts
 const MAX_INPUTS = settings.code.length
 const inputFieldIndices = [...new Array(MAX_INPUTS)].map((v,i)=>i)
+const whiteSpace = /\s+/g
 let originalVideoHeight
 
 Template.welcome.onCreated(function () {
@@ -132,7 +133,45 @@ Template.welcome.events({
       setTimeout(() => focusInput(templateInstance), 50)
     })
   },
+  'paste .login-field' (event, templateInstance) {
+    let clipboardData
+    let pastedData
+
+    // Stop data actually being pasted
+    event.stopPropagation()
+    event.preventDefault()
+
+    // Get pasted data via clipboard API
+    const target = event.originalEvent || event
+    clipboardData = target.clipboardData || window.clipboardData
+
+    if (!clipboardData) {
+      console.error('No ClipboardData available!')
+      // TODO send to server to log this error along with the detected browser
+    }
+
+    pastedData = clipboardData.getData('Text').replace(whiteSpace, '')
+
+    // we accept only the correct length of usernames
+    if (pastedData.length !== MAX_INPUTS) {
+      console.debug('[Template.welcome]: rejected', pastedData)
+      return false
+    }
+
+    inputFieldIndices.forEach(index => {
+      const value = pastedData.charAt(index)
+      templateInstance.$(`input[data-index="${index}"]`).val(value)
+    })
+
+    templateInstance.state.set('loginCode', pastedData)
+    showLoginButton(templateInstance)
+  },
   'keydown .login-field' (event, templateInstance) {
+    // if there is a paste operation we skip the key-down and bubble to paste
+    if (event.key === 'v' && (event.ctrlKey || event.metaKey)) {
+      return true
+    }
+
     // skip everything on Tab to keep
     // accessibility in standard mode
     if (event.code === 'Tab') {
