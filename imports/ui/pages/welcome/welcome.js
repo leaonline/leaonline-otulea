@@ -10,7 +10,9 @@ import { fadeOut } from '../../../utils/animationUtils'
 import './welcome.scss'
 import './welcome.html'
 
-const MAX_INPUTS = 5
+const settings = Meteor.settings.public.accounts
+const MAX_INPUTS = settings.code.length
+const inputFieldIndices = [...new Array(MAX_INPUTS)].map((v,i)=>i)
 let originalVideoHeight
 
 Template.welcome.onCreated(function () {
@@ -97,6 +99,9 @@ Template.welcome.helpers({
     const loginCode = Template.getState('loginCode')
     if (!loginCode || !loginCode.length) return ''
     return loginCode.split('').join(', ')
+  },
+  inputFieldIndices () {
+    return inputFieldIndices.slice(1, inputFieldIndices.length)
   }
 })
 

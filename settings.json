@@ -1,5 +1,10 @@
 {
   "public": {
+    "accounts": {
+      "code": {
+        "length": 5
+      }
+    },
     "app": {
       "name": "otu.lea",
       "label": "apps.otulea.title",

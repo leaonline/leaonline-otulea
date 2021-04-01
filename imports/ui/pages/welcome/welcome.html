@@ -116,17 +116,10 @@
                                 {{> soundbutton text=loginTTS lg=true outline=true disabled=true class="active"}}
                             {{/with}}
                             <div class="input-group input-group-lg ml-3">
-                                <input type="text" data-index="0" maxlength="1"
-                                       autofocus
-                                       class="login-field text-uppercase form-control text-center mr-2"/>
-                                <input type="text" data-index="1" maxlength="1"
-                                       class="login-field text-uppercase form-control text-center mx-2"/>
-                                <input type="text" data-index="2" maxlength="1"
-                                       class="login-field text-uppercase form-control text-center mx-2"/>
-                                <input type="text" data-index="3" maxlength="1"
-                                       class="login-field text-uppercase form-control text-center mx-2"/>
-                                <input type="text" data-index="4" maxlength="1"
-                                       class="login-field text-uppercase form-control text-center ml-2"/>
+                                <input type="text" data-index="0" maxlength="1" class="login-field text-uppercase form-control text-center mr-2" autofocus/>
+                                {{#each index in inputFieldIndices}}
+                                    <input type="text" data-index="{{index}}" maxlength="1" class="login-field text-uppercase form-control text-center mx-2"/>
+                                {{/each}}
                             </div>
                         </div>
                     </div>

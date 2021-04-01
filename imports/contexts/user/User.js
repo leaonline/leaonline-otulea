@@ -2,6 +2,9 @@ import { Meteor } from 'meteor/meteor'
 import { Accounts } from 'meteor/accounts-base'
 import { onClient, onServer, onServerExec } from '../../utils/archUtils'
 
+const settings = Meteor.settings.public.accounts
+const codeLength = settings.code.length
+
 export const Users = {
   name: 'users',
   label: 'users.title',
@@ -10,7 +13,11 @@ export const Users = {
 }
 
 Users.schema = {
-  username: String,
+  username: {
+    type: String,
+    min: codeLength,
+    max: codeLength
+  },
   isDemoUser: {
     type: Boolean,
     optional: true
@@ -50,8 +57,8 @@ Users.methods.register = {
   schema: {
     code: {
       type: String,
-      min: 5,
-      max: 5
+      min: codeLength,
+      max: codeLength
     },
     isDemoUser: {
       type: Boolean,
