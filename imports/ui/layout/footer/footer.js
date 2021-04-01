@@ -42,7 +42,6 @@ Template.footer.helpers({
     return logoDoc && logoDoc.footer
   },
   legalRoutes () {
-    Template.getState('dependenciesComplete')
     return legalRoutes
   },
   currentLegalData () {

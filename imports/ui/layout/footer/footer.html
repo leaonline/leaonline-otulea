@@ -1,72 +1,69 @@
 <template name="footer">
 
-    <footer class="container-fluid w-100 mt-5">
+    <footer class="container-fluid w-100 mt-5 pb-3">
         <nav class="navbar navbar-expand-lg bg-transparent bg-light">
             <div class="container">
-                {{> image src="/logo/logo-footer.png" alt="logo" class="lea-footer-image"}}
-                {{#each logo in logos}}
-                    <a class="navbar-brand" href="{{logo.url}}" target="_blank">
-                        {{> image src=logo.url title=logo.title alt=logo.title class="mr-4 lea-footer-image" height="30" cors="Anonymous"}}
-                    </a>
-                {{/each}}
-
-                <ul class="navbar-nav ml-auto">
-                    {{#each legalRoute in legalRoutes}}
-                        <li class="nav-item d-flex align-items-center">
-                            {{>soundbutton tts=legalRoute.label sm=true outline=true}}
-                            <a class="ml-n2 mr-4 nav-link legal-link" href="#"
-                               data-key="{{legalRoute.name}}">{{i18n
-                                    legalRoute.label}}</a>
-                        </li>
-                    {{/each}}
-                </ul>
-
-                {{#with currentUser}}
-                    <ul class="navbar-nav ml-auto">
-                        <li class="nav-item d-flex align-items-center">
+                <div class="row w-100">
+                    <div class="col col-12 col-md-4 d-flex flex-wrap align-items-center">
+                        {{> image src="/logo/logo-footer.png"
+                                alt="logo"
+                                class="lea-footer-image d-md-block mr-2"}}
+                        {{#each logo in logos}}
+                            <a class="navbar-brand" href="{{logo.url}}"
+                               target="_blank">
+                                {{> image src=logo.url
+                                        title=logo.title
+                                        alt=logo.title
+                                        class="lea-footer-image mr-auto"
+                                        cors="Anonymous"}}
+                            </a>
+                        {{/each}}
+                    </div>
+                    <div class="col col-12 col-md-8 d-flex flex-wrap align-items-center py-md-0 py-4">
+                        {{#each legalRoute in legalRoutes}}
                             {{#if loadComplete}}
-                                {{>soundbutton tts="common.logout" sm=true outline=true}}
-                                <a class="nav-link logout-button" href="#">
-                                    <span>{{this.username}}</span>
-                                    <span>{{i18n "common.logout"}}</span>
-                                    <i class="fa fas fa-fw fa-sign-out-alt"></i>
-                                </a>
+                                {{#routeButton
+                                    tts=legalRoute.label
+                                    sm=true
+                                    outline=true
+                                    border=true
+                                    group=true
+                                    href=(route legalRoute.name)
+                                    label=(i18n legalRoute.label)
+                                    class="ml-auto mb-2 mb-lg-0"
+                                    labelClass="lea-text-sm"
+                                    data-key=legalRoute.name}}
+                                {{/routeButton}}
                             {{else}}
-                                <span>{{i18n "common.logout"}}</span>
+                                <a href="{{route legalRoute.name}}">
+                                    {{legalRoute.label}}
+                                </a>
                             {{/if}}
-                        </li>
-                    </ul>
-                {{/with}}
+                            {{/each}}
+                        {{#with currentUser}}
+                            {{#if loadComplete}}
+                                {{#routeButton
+                                        tts=(i18n "common.logout")
+                                        sm=true
+                                        type="primary"
+                                        outline=true
+                                        border=true
+                                        group=true
+                                        href="#logout"
+                                        class="logout-button ml-auto no-wrap"}}
+                                    <span class="lea-text-sm">{{this.username}}</span>
+                                    <span class="lea-text-sm">{{i18n "common.logout"}}</span>
+                                    <i class="fa fas fa-fw fa-sign-out-alt"></i>
+                                {{/routeButton}}
+                            {{else}}
+                                <a href="#logout" class="logout-button">
+                                    common.logout
+                                </a>
+                            {{/if}}
+                        {{/with}}
+                    </div>
+                </div>
             </div>
         </nav>
     </footer>
-    <!-- Modal -->
-    <div class="modal fade" id="legalContentModal" tabindex="-1" role="dialog"
-         aria-labelledby="legalContentModalTitle"
-         aria-hidden="true">
-        <div class="modal-dialog modal-dialog-scrollable" role="document">
-            {{#onComplete complete=loadComplete}}
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="legalContentModal">{{i18n
-                                currentLegalLabel}}</h5>
-                        <button type="button" class="close" data-dismiss="modal"
-                                aria-label="{{i18n 'actions.close'}}">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        {{#with currentLegalData}}
-                            {{#markdown}}{{this}}{{/markdown}}
-                        {{/with}}
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary"
-                                data-dismiss="modal">{{i18n
-                                'actions.close'}}</button>
-                    </div>
-                </div>
-            {{/onComplete}}
-        </div>
-    </div>
 </template>
