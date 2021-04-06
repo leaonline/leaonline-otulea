@@ -55,6 +55,7 @@ export const updateSession = function ({ sessionId }) {
     fieldName: 'units'
   })
 
+  const progress = 100 * ((unitList.index + 1) / (testCycleDoc.unitSets.length || 1))
   const isLastUnitSet = unitSetList.isLast()
   const isLastUnit = unitList.isLast()
 
@@ -66,7 +67,8 @@ export const updateSession = function ({ sessionId }) {
       $set: {
         currentUnit: null,
         updatedAt: timestamp,
-        completedAt: timestamp
+        completedAt: timestamp,
+        progress: progress
       }
     })
 
@@ -97,7 +99,8 @@ export const updateSession = function ({ sessionId }) {
       $set: {
         unitSet: nextUnitSetId,
         currentUnit: firstUnit,
-        updatedAt: timestamp
+        updatedAt: timestamp,
+        progress: progress
       }
     })
 
@@ -116,7 +119,8 @@ export const updateSession = function ({ sessionId }) {
   Session.collection().update(sessionDoc._id, {
     $set: {
       currentUnit: nextUnit,
-      updatedAt: timestamp
+      updatedAt: timestamp,
+      progress: progress
     }
   })
 

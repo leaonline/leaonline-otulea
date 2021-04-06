@@ -42,6 +42,7 @@ export const startSession = function startSession ({ testCycleId }) {
   // get the initial unit-set
   const unitSetId = testCycleDoc.unitSets?.[0]
   const unitSetDoc = API.getDocument(unitSetId, UnitSet)
+  const progress = 100 * (1 / (testCycleDoc.unitSets.length || 1))
 
   // we also strictly require the unitSetDoc to start a session
   API.checkDocument(unitSetDoc, UnitSet, { unitSetId })
@@ -54,7 +55,7 @@ export const startSession = function startSession ({ testCycleId }) {
   API.checkDocument(unitDoc, Unit, { currentUnit })
 
   // if all docs exist, we can create a new session document
-  const insertDoc = { userId, startedAt, currentUnit }
+  const insertDoc = { userId, startedAt, currentUnit, progress }
   insertDoc.testCycle = testCycleId
   insertDoc.unitSet = unitSetId
 
