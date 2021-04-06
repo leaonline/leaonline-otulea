@@ -96,6 +96,7 @@
       "loggingIn": "Sie werden angemeldet"
     },
     "overview": {
+      "title": "Übersicht",
       "chooseDimension": "Bitte wählen Sie eine Kategorie aus.",
       "chooseLevel": "Wir möchten die Aufgaben möglichst passend für Sie zusammenstellen. Bitte schätzen Sie hier Ihre Fähigkeiten ein. Wenn Sie mit dem Mauszeiger auf die Lautsprechersymbole klicken, werden Ihnen die jeweiligen Schwierigkeitsgrade vorgelesen. Nachdem Sie auf eine Auswahlfläche geklickt haben, wird Ihnen noch ein kurzes Beispiel angezeigt, welches Sie sich ebenfalls durch Klicken auf das Lautsprechersymbol vorlesen lassen können.",
       "confirm": "Aufgaben starten",
@@ -104,6 +105,9 @@
     "notFound": {
       "title": "Die angefragte Seite wurde nicht gefunden. Das tut uns leid.",
       "description": "Es wurde die angeforderte Seite nicht im System gefunden. Möchten Sie uns den Fehler mitteilen?"
+    },
+    "unit": {
+      "story": "Einleitung"
     },
     "complete": {
       "thankYou": "Schön, dass Sie teilgenommen haben!",

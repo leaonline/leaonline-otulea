@@ -98,7 +98,8 @@ function createRoute (routeDef, onError) {
       // we render by default a "loading" template if the Template has not been loaded yet
       // which can be explicitly prevented by switching showLoading to false
       if (!Template[routeDef.template] && routeDef.showLoading !== false) {
-        this.render(routeDef.target, _loadingTemplate, { title: routeDef.label })
+        const title = routeDef.label && translate(routeDef.label)
+        this.render(routeDef.target, _loadingTemplate, { title })
       }
     },
     waitOn () {
@@ -139,6 +140,15 @@ function createRoute (routeDef, onError) {
 
       const label = translate(routeDef.label)
       document.title = `${_titlePrefix} ${label}`
+
+      // in rare cases the label is not yet available, so we re-assign in .5sec
+      if (label.includes('.')) {
+        setTimeout(() => {
+          const updatedLabel = translate(routeDef.label)
+          document.title = `${_titlePrefix} ${updatedLabel}`
+        }, 500)
+      }
+
 
       try {
         this.render(routeDef.target, routeDef.template, data)
