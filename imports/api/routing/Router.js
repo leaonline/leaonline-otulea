@@ -149,7 +149,6 @@ function createRoute (routeDef, onError) {
         }, 500)
       }
 
-
       try {
         this.render(routeDef.target, routeDef.template, data)
       }

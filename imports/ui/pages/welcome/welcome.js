@@ -12,7 +12,7 @@ import './welcome.html'
 
 const settings = Meteor.settings.public.accounts
 const MAX_INPUTS = settings.code.length
-const inputFieldIndices = [...new Array(MAX_INPUTS)].map((v,i)=>i)
+const inputFieldIndices = [...new Array(MAX_INPUTS)].map((v, i) => i)
 const whiteSpace = /\s+/g
 let originalVideoHeight
 
@@ -134,23 +134,20 @@ Template.welcome.events({
     })
   },
   'paste .login-field' (event, templateInstance) {
-    let clipboardData
-    let pastedData
-
     // Stop data actually being pasted
     event.stopPropagation()
     event.preventDefault()
 
     // Get pasted data via clipboard API
     const target = event.originalEvent || event
-    clipboardData = target.clipboardData || window.clipboardData
+    const clipboardData = target.clipboardData || window.clipboardData
 
     if (!clipboardData) {
       console.error('No ClipboardData available!')
       // TODO send to server to log this error along with the detected browser
     }
 
-    pastedData = clipboardData.getData('Text').replace(whiteSpace, '')
+    const pastedData = clipboardData.getData('Text').replace(whiteSpace, '')
 
     // we accept only the correct length of usernames
     if (pastedData.length !== MAX_INPUTS) {
