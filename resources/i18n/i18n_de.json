@@ -110,6 +110,7 @@
       "story": "Einleitung"
     },
     "complete": {
+      "title": "Fertig",
       "thankYou": "Schön, dass Sie teilgenommen haben!",
       "printResults": "Für mich ausdrucken",
       "printResultsTeacher": "Für Kursleitende ausdrucken",
