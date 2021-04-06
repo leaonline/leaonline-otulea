@@ -29,41 +29,32 @@ Template.overview.onCreated(function () {
 
   const { loadAllContentDocs, callMethod } = instance.api
 
-  loadAllContentDocs(TestCycle, { isLegacy: true })
-    .catch(e => console.error(e))
-    .then(allTestCycles => {
-      const dimensionFilter = new Set()
-      allTestCycles.forEach(tstCycleDoc => {
-        dimensionFilter.add(tstCycleDoc.dimension)
-      })
-      instance.state.set({
-        testCyclesComplete: true,
-        dimensionFilter: dimensionFilter
-      })
+  const loadContentDocuments = async () => {
+    const allTestCycles = await loadAllContentDocs(TestCycle, { isLegacy: true })
+    const dimensions = new Set()
+    const levels = new Set()
+
+    allTestCycles.forEach(tstCycleDoc => {
+      dimensions.add(tstCycleDoc.dimension)
+      levels.add(tstCycleDoc.level)
     })
 
-  // load all dimensions and iterate thorugh them once in order to detect
-  // which dimensions are actually in use be the sets we currently have
-  loadAllContentDocs(UnitSet, { isLegacy: true })
-    .catch(e => console.error(e))
-    .then(() => {
-      instance.state.set({ allUnitsLoaded: true })
+    await loadAllContentDocs(Dimension, {
+      ids: Array.from(dimensions)
     })
 
-  loadAllContentDocs(Dimension)
-    .catch(e => console.error(e))
-    .then(() => instance.state.set('dimensionsLoadComplete', true))
+    await loadAllContentDocs(Level, {
+      ids: Array.from(levels)
+    })
 
-  loadAllContentDocs(Level)
-    .catch(e => console.error(e))
-    .then(() => instance.state.set('levelLoadComplete', true))
+    instance.state.set({
+      contentDocsLoadComplete: true,
+      dimensionFilter: Array.from(dimensions)
+    })
+  }
 
   instance.autorun(() => {
-    const dimensionsLoadComplete = instance.state.get('dimensionsLoadComplete')
-    const allUnitsLoaded = instance.state.get('allUnitsLoaded')
-    const levelLoadComplete = instance.state.get('levelLoadComplete')
-
-    if (!dimensionsLoadComplete || !levelLoadComplete || !allUnitsLoaded) {
+    if (!instance.state.get('contentDocsLoadComplete')) {
       return
     }
 
@@ -73,8 +64,6 @@ Template.overview.onCreated(function () {
 
     let dimension
     let level
-
-    // TODO if dimension not exist, reset queryParam
 
     if (typeof d !== 'undefined') {
       dimension = Dimension.collection().findOne(d)
@@ -125,7 +114,7 @@ Template.overview.onCreated(function () {
     }
   })
 
-  // if we have a UnitSet selected we need to check if there is a recent session
+  // if we have a testCycle selected we need to check if there is a recent session
   // that has been aborted
   instance.autorun(() => {
     const testCycle = instance.state.get('selectedTestCycle')
@@ -137,11 +126,15 @@ Template.overview.onCreated(function () {
       failure: err => console.error(err),
       success: sessionDoc => {
         instance.api.debug('session doc loaded', { sessionDoc })
-        const abortedSessionDetected = testCycle && sessionDoc && sessionDoc.unitSet === testCycle._id
+
+        const abortedSessionDetected = testCycle && sessionDoc && sessionDoc.testCycle === testCycle._id
         instance.state.set({ abortedSessionDetected, sessionDoc })
       }
     })
   })
+
+  loadContentDocuments()
+    .catch(e => console.error(e))
 })
 
 Template.overview.helpers({
@@ -167,7 +160,7 @@ Template.overview.helpers({
 
   allDimensions () {
     const instance = Template.instance()
-    if (!instance.state.get('dimensionsLoadComplete')) {
+    if (!instance.state.get('contentDocsLoadComplete')) {
       return
     }
 
@@ -176,7 +169,7 @@ Template.overview.helpers({
     if (dimensionFilter && dimensionFilter.length > 0) {
       query._id = { $in: dimensionFilter }
     }
-
+    console.info(query)
     return Dimension.collection().find(query)
   },
   colorTypeName ({ colorType }) {
@@ -187,7 +180,7 @@ Template.overview.helpers({
   // ---------------------- // ----------------------
   allLevels () {
     const instance = Template.instance()
-    if (!instance.state.get('levelLoadComplete')) {
+    if (!instance.state.get('contentDocsLoadComplete')) {
       return
     }
 
