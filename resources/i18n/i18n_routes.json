@@ -6,5 +6,12 @@
   "unit": "/aufgabe",
   "complete": "/ergebnisse",
   "logout": "/abgemeldet",
-  "demo": "/demo"
+  "demo": "/demo",
+  "legal": {
+    "title": "/rechtliches",
+    "imprint": "impressum",
+    "terms": "agb",
+    "privacy": "datenschutz",
+    "contact": "kontakt"
+  }
 }

@@ -11,23 +11,27 @@ export const Legal = {
 Legal.schema = {
   imprint: {
     type: String,
-    label: 'legal.imprint'
+    label: 'legal.imprint',
+    richText: true,
+    optional: true
   },
   privacy: {
     type: String,
-    label: 'legal.privacy'
-    // optional: true,
-    // richText: true,
-    // max: 5000
+    label: 'legal.privacy',
+    richText: true,
+    optional: true
   },
   terms: {
     type: String,
-    label: 'legal.terms'
-
+    label: 'legal.terms',
+    richText: true,
+    optional: true
   },
   contact: {
     type: String,
-    label: 'legal.contact'
+    label: 'legal.contact',
+    richText: true,
+    optional: true
   }
 }
 
@@ -43,19 +47,6 @@ Legal.helpers.init = function () {
       contact: 'Contact'
     })
   }
-}
-
-Legal.publications = {}
-
-Legal.publications.single = {
-  name: 'legal.publications.single',
-  isPublic: true,
-  schema: {},
-  numRequests: 1,
-  timeInterval: 250,
-  run: onServer(function () {
-    return Legal.collection().find({}, { limit: 1 })
-  })
 }
 
 Legal.methods = {}
@@ -81,6 +72,10 @@ Legal.methods.get = {
   name: 'legal.methods.get',
   isPublic: true,
   schema: {
+    _id: {
+      type: String,
+      optional: true
+    },
     name: {
       type: String,
       optional: true,
@@ -103,3 +98,5 @@ Legal.methods.get = {
     Meteor.call(Legal.methods.get.name, { name }, cb)
   })
 }
+
+Legal.publications = {}

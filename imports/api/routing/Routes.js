@@ -56,6 +56,31 @@ Routes.demo = {
 }
 
 /**
+ * Legal routes need to be present for all possible sub-types:
+ * - imprint
+ * - terms
+ * - privacy
+ * - contact
+ */
+Routes.legal = {
+  path: (type = ':type') => {
+    return `${settings.legal.title}/${settings.legal[type] || type}`
+  },
+  label: 'legal.title',
+  triggersEnter: () => [],
+  async load () {
+    return import('../../ui/pages/legal/legal')
+  },
+  target: null,
+  template: 'legal',
+  data: {
+    next () {
+      gotoRoute(Routes.overview)
+    }
+  }
+}
+
+/**
  * The starting page of the app
  */
 Routes.welcome = {
@@ -185,9 +210,7 @@ Routes.unit = {
 
 Routes.complete = {
   path: (sessionId = ':sessionId') => {
-    const path = `${settings.complete}/${sessionId}`
-    console.log(path)
-    return path
+    return `${settings.complete}/${sessionId}`
   },
   label: 'pages.complete.title',
   triggersEnter: () => [

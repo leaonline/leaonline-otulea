@@ -1,0 +1,32 @@
+<template name="legal">
+    <div class="container">
+        {{> image src="/logo/logo-footer.png" alt="logo" class="lea-main-logo w-100"}}
+
+        <hr>
+        {{#unless allComplete}}
+            {{> loading}}
+        {{/unless}}
+
+        {{#onComplete complete=dependenciesComplete}}
+            {{#textGroup tts="legal.title" autoText=false align="baseline"}}
+                <h1>{{i18n "legal.title"}}</h1>
+            {{/textGroup}}
+            {{#textGroup tts=legalTitle autoText=false align="baseline"}}
+                <h2>{{i18n legalTitle}}</h2>
+            {{/textGroup}}
+        {{/onComplete}}
+
+        <hr>
+
+        {{#onComplete complete=content}}
+            {{#each line in content}}
+                <p>
+                    {{#each sub in line}}
+                        <div>{{sub}}</div>
+                        {{! > textGroup text=sub }}
+                    {{/each}}
+                </p>
+            {{/each}}
+        {{/onComplete}}
+    </div>
+</template>
