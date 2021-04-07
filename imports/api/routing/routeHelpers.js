@@ -1,5 +1,6 @@
 import { Routes } from './Routes'
-import settings from '../../../resources/i18n/i18n_routes' // TODO load dynamically using i18n locale
+import settings from '../../../resources/i18n/i18n_routes'
+import { Router } from './Router' // TODO load dynamically using i18n locale
 
 export const resolveRoute = function resolve (key, ...optionalArgs) {
   const route = Routes[key]
@@ -7,4 +8,10 @@ export const resolveRoute = function resolve (key, ...optionalArgs) {
     return settings.notFound
   }
   return route && route.path(...optionalArgs)
+}
+
+export const backRoute = function () {
+  const current = Router.current()
+  const { oldRoute } = current
+  return oldRoute.path
 }

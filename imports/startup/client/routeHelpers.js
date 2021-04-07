@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor'
 import { Template } from 'meteor/templating'
 import { Routes } from '../../api/routing/Routes'
 import { Router } from '../../api/routing/Router'
-import { resolveRoute } from '../../api/routing/routeHelpers'
+import { resolveRoute, backRoute } from '../../api/routing/routeHelpers'
 
 Template.registerHelper('route', function (key, ...optionalArgs) {
   return resolveRoute(key, ...optionalArgs)
@@ -10,6 +10,10 @@ Template.registerHelper('route', function (key, ...optionalArgs) {
 
 Template.registerHelper('routeDef', function (key) {
   return Routes[key]
+})
+
+Template.registerHelper('backRoute', function () {
+  return backRoute()
 })
 
 Template.registerHelper('referrer', function () {
