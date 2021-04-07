@@ -1,5 +1,6 @@
 <template name="legal">
     <div class="container">
+
         {{> image src="/logo/logo-footer.png" alt="logo" class="lea-main-logo w-100"}}
 
         <hr>
@@ -7,26 +8,69 @@
             {{> loading}}
         {{/unless}}
 
-        {{#onComplete complete=dependenciesComplete}}
-            {{#textGroup tts="legal.title" autoText=false align="baseline"}}
-                <h1>{{i18n "legal.title"}}</h1>
-            {{/textGroup}}
-            {{#textGroup tts=legalTitle autoText=false align="baseline"}}
-                <h2>{{i18n legalTitle}}</h2>
-            {{/textGroup}}
-        {{/onComplete}}
+        <div class="w-100 d-flex justify-content-between">
+            <span>
+            {{#onComplete complete=dependenciesComplete}}
+                {{#textGroup
+                        tts="legal.title"
+                        autoText=false
+                        align="baseline"}}
+                    <h1>{{i18n "legal.title"}}</h1>
+                {{/textGroup}}
+                {{#textGroup
+                        tts=legalTitle
+                        autoText=false
+                        align="baseline"}}
+                    <h2>{{i18n legalTitle}}</h2>
+                {{/textGroup}}
+            {{/onComplete}}
+            </span>
+            <span>
+            {{#onComplete complete=dependenciesComplete}}
+                {{> routeButton
+                        outline=true
+                        type="secondary"
+                        href=backRoute
+                        class="back-button"
+                        tts=(i18n "common.back")
+                        label=(i18n "common.back")
+                        icon="caret-left"}}
+                {{#if currentUser}}
+                    {{> routeButton
+                            outline=true
+                            href=(route "overview")
+                            type="secondary"
+                            class="home-button"
+                            tts=(i18n "common.toOverview")
+                            label=(i18n "common.toOverview")
+                            icon="home"}}
+                {{else}}
+                    {{> routeButton
+                            outline=true
+                            href=(route "welcome")
+                            type="secondary"
+                            class="home-button"
+                            tts=(i18n "common.toWelcome")
+                            label=(i18n "common.toWelcome")
+                            icon="home"}}
+                {{/if}}
+            {{/onComplete}}
+            </span>
+        </div>
 
         <hr>
 
         {{#onComplete complete=content}}
+            <div class="p-0 p-md-5">
             {{#each line in content}}
-                <p>
+                <p class="lea-text">
                     {{#each sub in line}}
                         <div>{{sub}}</div>
                         {{! > textGroup text=sub }}
                     {{/each}}
                 </p>
             {{/each}}
+            </div>
         {{/onComplete}}
     </div>
 </template>
