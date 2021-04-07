@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor'
 import { HTTP } from 'meteor/jkuester:http'
+import { sendError } from '../../contexts/errors/api/sendError'
 
 export const initializeTTS = async () => {
   const { TTSEngine } = await import('../../api/tts/TTSEngine')
@@ -12,12 +13,14 @@ export const initializeTTS = async () => {
 
     const detected = detector.detected
     const types = Detector.types
+    console.debug('[initializeTTS]: detected os', detected.os)
 
     switch (detected.os) {
       case types.macos.os:
       case types.windows.os:
       case types.ios.os:
       case types.android.os:
+      case types.linux.os:
         mode = TTSEngine.modes.browser
         break
       default:
@@ -25,9 +28,10 @@ export const initializeTTS = async () => {
     }
   }
   catch (error) {
-    console.error('Failed to detect os, use fallback')
+    sendError(error)
     console.error(error)
-    console.error('Debug: ', window.navigator.userAgent, window.navigator.platform)
+    console.debug('[initializeTTS]: Failed to detect os, use fallback')
+    console.debug('[initializeTTS]: Fallback =', window.navigator.userAgent, window.navigator.platform)
     mode = TTSEngine.modes.server
   }
 

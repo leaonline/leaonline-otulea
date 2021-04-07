@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor'
-import { ErrorLog } from '../../api/errors/ErrorLog'
+import { Errors } from '../../contexts/errors/Errors'
 import { createCollection } from '../../infrastructure/factories/collection/createCollection'
 import { createMethods } from '../../infrastructure/factories/method/createMethods'
 import { rateLimitMethods } from '../../infrastructure/factories/ratelimit/rateLimit'
+import { ServiceRegistry } from '../../api/config/BackendConfig'
 
 console.dev = (...args) => {
   if (Meteor.isDevelopment) {
@@ -10,9 +11,11 @@ console.dev = (...args) => {
   }
 }
 
-const collection = createCollection(ErrorLog)
-ErrorLog.collection = () => collection
+const collection = createCollection(Errors)
+Errors.collection = () => collection
 
-const methods = Object.values(ErrorLog.methods)
+const methods = Object.values(Errors.methods)
 createMethods(methods)
 rateLimitMethods(methods)
+
+ServiceRegistry.register(Errors)
