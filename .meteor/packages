@@ -85,5 +85,5 @@ meteortesting:mocha
 
 ## EXPERIMENTAL
 blaze-html-templates@1.2.0-beta.3
-hot-module-replacement
+hot-module-replacement@0.2.0
 blaze-hot
