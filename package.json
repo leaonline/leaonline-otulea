@@ -43,7 +43,7 @@
     "eslint-plugin-security": "^1.4.0",
     "markdownlint-cli": "^0.27.1",
     "puppeteer": "^8.0.0",
-    "sinon": "^10.0.1",
+    "sinon": "^10.0.0",
     "snazzy": "^9.0.0",
     "standardx": "^7.0.0",
     "stylelint": "^13.12.0",
