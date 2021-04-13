@@ -1,28 +1,28 @@
 import { Meteor } from 'meteor/meteor'
 import { Mongo } from 'meteor/mongo'
 import { HTTP } from 'meteor/jkuester:http'
-import { toContentServerURL } from '../../../api/url/toContentServerURL'
-import { createInfoLog } from '../../../api/errors/createInfoLog'
 
 const origin = Meteor.absoluteUrl()
 
 export class LocalCacheCollection extends Mongo.Collection {
-  constructor (context, options) {
+  constructor (url, log, options) {
     super(null, options)
-    this.url = toContentServerURL(context.routes.byId.path)
-    this.log = createInfoLog(context.name)
+    this.url = url
+    this.log = log || (() => {})
   }
 
-  findOne (selector, options, callback) {
+  findOne (selector, options) {
     const { url, log } = this
-    const doc = super.findOne(selector, options)
+    const doc = selector
+      ? super.findOne(selector, options)
+      : super.findOne()
 
     if (doc) {
       return doc
     }
 
     if (typeof selector !== 'string' && !(selector?._id)) {
-      log('insufficient selector to fetch vie HTTP')
+      log('insufficient selector to fetch via HTTP')
       return
     }
 
@@ -40,7 +40,7 @@ export class LocalCacheCollection extends Mongo.Collection {
     let document
 
     try {
-      document = fetchDoc.call(this, url, requestOptions)
+      document = fetchDoc(this, url, requestOptions)
     }
     catch (e) {
       console.warn(e)
@@ -50,14 +50,15 @@ export class LocalCacheCollection extends Mongo.Collection {
   }
 }
 
-function fetchDoc (url, requestOptions) {
+function fetchDoc (self, url, requestOptions) {
   const response = HTTP.get(url, requestOptions)
   const doc = response.data
 
   if (doc) {
     const docId = doc._id
     delete doc._id
-    this.upsert(docId, { $set: doc })
+
+    self.upsert(docId, { $set: doc })
   }
 
   return doc
