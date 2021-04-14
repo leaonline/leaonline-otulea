@@ -1,6 +1,9 @@
 import settings from '../../../resources/i18n/i18n_routes' // TODO load dynamically using i18n locale
-import { createLoggedinTrigger, createLoginTrigger, createNotFoundTrigger } from './triggers'
+import {
+  createTrigger
+} from './triggers'
 import { gotoRoute } from './gotoRoute'
+import { loggedIn, loggedOut } from '../../utils/accountUtils'
 
 export const Routes = {}
 
@@ -36,7 +39,7 @@ Routes.fallback = {
   path: () => '*',
   label: 'pages.redirecting.title',
   triggersEnter: () => [
-    createNotFoundTrigger(Routes.notFound)
+    createTrigger(() => true, Routes.notFound.path)
   ],
   async load () {
     return import('../../ui/pages/loading/loading')
@@ -103,15 +106,15 @@ Routes.welcome = {
   }
 }
 
+const toWelcome = createTrigger(loggedOut, () => Routes.welcome.path())
+
 /**
  * Overview page to select dimension and level
  */
 Routes.overview = {
   path: () => `${settings.overview}`,
   label: 'pages.overview.title',
-  triggersEnter: () => [
-    createLoginTrigger(Routes.welcome)
-  ],
+  triggersEnter: () => [toWelcome],
   async load () {
     return import('../../ui/pages/overview/overview')
   },
@@ -135,9 +138,7 @@ Routes.story = {
     return `${settings.story}/${sessionId}/${unitSetId}/${unitId}`
   },
   label: 'pages.unit.story',
-  triggersEnter: () => [
-    createLoginTrigger(Routes.welcome)
-  ],
+  triggersEnter: () => [toWelcome],
   async load () {
     return import('../../ui/pages/story/story')
   },
@@ -170,9 +171,7 @@ Routes.unit = {
     return `${settings.unit}/${sessionId}/${unitId}`
   },
   label: 'pages.unit.title',
-  triggersEnter: () => [
-    createLoginTrigger(Routes.welcome)
-  ],
+  triggersEnter: () => [toWelcome],
   async load () {
     return import('../../ui/pages/unit/unit')
   },
@@ -213,9 +212,7 @@ Routes.complete = {
     return `${settings.complete}/${sessionId}`
   },
   label: 'pages.complete.title',
-  triggersEnter: () => [
-    createLoginTrigger(Routes.welcome)
-  ],
+  triggersEnter: () => [toWelcome],
   async load () {
     return import('../../ui/pages/complete/complete')
   },
@@ -258,6 +255,8 @@ Routes.logout = {
   }
 }
 
+const toOverview = createTrigger(loggedIn, () => Routes.overview())
+
 /**
  * The default route to be used when landing on the page without params
  * @type {{path: (function(): string), label: string, triggersEnter: (function(): *[]), load(): Promise<undefined>,
@@ -267,8 +266,8 @@ Routes.root = {
   path: () => '/',
   label: 'pages.redirecting.title',
   triggersEnter: () => [
-    createLoginTrigger(Routes.welcome),
-    createLoggedinTrigger(Routes.overview)
+    toWelcome,
+    toOverview
   ],
   async load () {
     return import('../../ui/pages/loading/loading')

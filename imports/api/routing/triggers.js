@@ -1,30 +1,18 @@
 import { check } from 'meteor/check'
 import { Router } from './Router'
-import { loggedIn, loggedOut } from '../../utils/accountUtils'
 
-export const createLoginTrigger = (redirectRoute) => {
-  check(redirectRoute.path, Function)
-  return function loginTrigger () {
-    if (loggedOut()) {
+export const createTrigger = (condition, getRedirectRoute) => {
+  check(condition, Function)
+  check(getRedirectRoute, Function)
+  return function routeTrigger () {
+    if (condition()) {
       const location = Router.location()
-      const fullPath = redirectRoute.path(encodeURIComponent(location))
+      const encodedLocation = encodeURIComponent(location)
+      const fullPath = getRedirectRoute(encodedLocation)
       Router.go(fullPath)
+      return true // indicate triggered
     }
-  }
-}
 
-export const createLoggedinTrigger = (redirectRoute) => {
-  check(redirectRoute.path, Function)
-  return function loggedTrigger () {
-    if (loggedIn()) {
-      const location = Router.location()
-      const fullPath = redirectRoute.path(encodeURIComponent(location))
-      Router.go(fullPath)
-    }
+    return false // indicate no trigger
   }
-}
-
-export const createNotFoundTrigger = (route) => (notFoundContext) => {
-  // log not found route
-  Router.go(route)
 }

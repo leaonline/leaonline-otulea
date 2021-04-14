@@ -10,3 +10,4 @@ if (Meteor.isClient) {
     import './client'
   })()
 }
+

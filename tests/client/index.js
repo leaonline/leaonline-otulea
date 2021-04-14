@@ -1,1 +1,3 @@
-import './example.tests'
+describe('routing', function () {
+  import '../../imports/api/routing/tests/triggers'
+})
