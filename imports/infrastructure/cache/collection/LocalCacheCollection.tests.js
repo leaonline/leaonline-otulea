@@ -39,5 +39,17 @@ describe(LocalCacheCollection.name, function () {
       const collection = new LocalCacheCollection('/')
       expect(collection.findOne(doc._id)).to.deep.equal(doc)
     })
+    it('catches a failed request', function (done) {
+      const errorId = `expected error: ${Random.id()}`
+      stub(HTTP, 'get', () => {
+        throw new Error(errorId)
+      })
+      const collection = new LocalCacheCollection('/', error => {
+        if (typeof error === 'string') return
+        expect(error.message).to.equal(errorId)
+        done()
+      })
+      expect(collection.findOne(Random.id())).to.deep.equal(undefined)
+    })
   })
 })

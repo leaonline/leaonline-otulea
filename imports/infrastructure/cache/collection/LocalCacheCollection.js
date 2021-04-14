@@ -35,15 +35,16 @@ export class LocalCacheCollection extends Mongo.Collection {
     const params = { _id: selector._id || selector }
     const requestOptions = { params, headers }
 
-    log('request doc', selector, 'from url', url)
 
     let document
 
     try {
+      log('request doc', selector, 'from url', url)
       document = fetchDoc(this, url, requestOptions)
     }
     catch (e) {
-      console.warn(e)
+      console.error(e)
+      log(e)
     }
 
     return document

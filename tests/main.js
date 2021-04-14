@@ -1,11 +1,12 @@
-import { onClientExec, onServerExec } from '../imports/utils/archUtils'
+if (Meteor.isServer) {
+  (function () {
+    import './infrastructure'
+    import './api'
+  })()
+}
 
-  import './infrastructure'
-onServerExec(function () {
-  import './api'
-})
-
-onClientExec(function () {
-  import './client'
-})
-
+if (Meteor.isClient) {
+  (function () {
+    import './client'
+  })()
+}
