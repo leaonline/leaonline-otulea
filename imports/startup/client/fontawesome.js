@@ -1,7 +1,6 @@
-import { Meteor } from 'meteor/meteor'
-
 Meteor.startup(() => {
-  import('@fortawesome/fontawesome-free')
-  import('@fortawesome/fontawesome-free/js/all.js')
-  import('@fortawesome/fontawesome-free/scss/fontawesome.scss')
+  setTimeout(async () => {
+    await import('@fortawesome/fontawesome-free/js/fontawesome')
+    await import('@fortawesome/fontawesome-free/js/solid')
+  }, 500)
 })

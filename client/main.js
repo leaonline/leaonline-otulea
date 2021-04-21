@@ -1,5 +1,5 @@
-import '../imports/startup/client/testDebug'
 import '../imports/startup/client/serviceWorker'
+import '../imports/startup/client/testDebug'
 import '../imports/startup/client/templates'
 import '../imports/startup/client/bootstrap'
 import '../imports/startup/client/fontawesome'

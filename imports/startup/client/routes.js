@@ -1,14 +1,9 @@
 import { Routes } from '../../api/routing/Routes'
 import { Router } from '../../api/routing/Router'
 
-import '../../ui/pages/loading/loading'
-import '../../ui/components/complete/onComplete'
-
-import manifest from '../../../public/manifest'
-
 const defaultTarget = 'main-render-target'
 
-Router.titlePrefix(`${manifest.short_name} - `)
+Router.titlePrefix(`otu.lea - `)
 Router.loadingTemplate('loading')
 
 Object

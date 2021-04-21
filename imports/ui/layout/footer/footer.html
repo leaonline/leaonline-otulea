@@ -1,5 +1,4 @@
 <template name="footer">
-
     <footer class="container-fluid w-100 mt-5 pb-3">
         <nav class="navbar navbar-expand-lg bg-transparent bg-light">
             <div class="container">
@@ -7,6 +6,8 @@
                     <div class="col col-12 col-md-4 d-flex flex-wrap align-items-center">
                         {{> image src="/logo/logo-footer.png"
                                 alt="logo"
+                                width=200
+                                height=34.3
                                 class="lea-footer-image d-md-block mr-2"}}
                         {{#each logo in logos}}
                             <a class="navbar-brand" href="{{logo.url}}"

@@ -1,11 +1,18 @@
-import settings from '../../../resources/i18n/i18n_routes' // TODO load dynamically using i18n locale
-import {
-  createTrigger
-} from './triggers'
-import { gotoRoute } from './gotoRoute'
+import { createTrigger } from './triggers'
 import { loggedIn, loggedOut } from '../../utils/accountUtils'
 
 export const Routes = {}
+
+const go = (...args) => {
+  import { gotoRoute } from './gotoRoute'
+  gotoRoute(...args)
+}
+
+const settings = () => {
+  // TODO load dynamically using i18n locale
+  import settingsFile from '../../../resources/i18n/i18n_routes'
+  return settingsFile
+}
 
 /**
  * Renders a default template for all pages that have not been found.
@@ -14,7 +21,7 @@ export const Routes = {}
  */
 
 Routes.notFound = {
-  path: () => `${settings.notFound}`,
+  path: () => `${settings().notFound}`,
   label: 'pages.notFound.title',
   triggersEnter: () => [],
   async load () {
@@ -24,7 +31,7 @@ Routes.notFound = {
   template: 'notFound',
   data: {
     next () {
-      gotoRoute(Routes.overview)
+      go(Routes.overview)
     }
   }
 }
@@ -50,10 +57,10 @@ Routes.fallback = {
 }
 
 Routes.demo = {
-  path: () => `${settings.demo}`,
+  path: () => `${settings().demo}`,
   label: 'pages.welcome.title',
   triggersEnter: () => [function () {
-    gotoRoute(Routes.welcome, true)
+    go(Routes.welcome, true)
   }],
   load: () => {}
 }
@@ -67,7 +74,7 @@ Routes.demo = {
  */
 Routes.legal = {
   path: (type = ':type') => {
-    return `${settings.legal.title}/${settings.legal[type] || type}`
+    return `${settings().legal.title}/${settings().legal[type] || type}`
   },
   label: 'legal.title',
   triggersEnter: () => [],
@@ -78,7 +85,7 @@ Routes.legal = {
   template: 'legal',
   data: {
     next () {
-      gotoRoute(Routes.overview)
+      go(Routes.overview)
     }
   }
 }
@@ -89,8 +96,8 @@ Routes.legal = {
 Routes.welcome = {
   path: (isDemo = false) => {
     return isDemo
-      ? `${settings.welcome}?demo=1`
-      : `${settings.welcome}`
+      ? `${settings().welcome}?demo=1`
+      : `${settings().welcome}`
   },
   label: 'pages.welcome.title',
   triggersEnter: () => [],
@@ -101,7 +108,7 @@ Routes.welcome = {
   template: 'welcome',
   data: {
     next () {
-      gotoRoute(Routes.overview)
+      go(Routes.overview)
     }
   }
 }
@@ -112,7 +119,7 @@ const toWelcome = createTrigger(loggedOut, () => Routes.welcome.path())
  * Overview page to select dimension and level
  */
 Routes.overview = {
-  path: () => `${settings.overview}`,
+  path: () => `${settings().overview}`,
   label: 'pages.overview.title',
   triggersEnter: () => [toWelcome],
   async load () {
@@ -125,17 +132,17 @@ Routes.overview = {
   },
   data: {
     next ({ sessionId, unitId }) {
-      gotoRoute(Routes.unit, sessionId, unitId)
+      go(Routes.unit, sessionId, unitId)
     },
     story ({ sessionId, unitSetId, unitId }) {
-      gotoRoute(Routes.story, sessionId, unitSetId, unitId)
+      go(Routes.story, sessionId, unitSetId, unitId)
     }
   }
 }
 
 Routes.story = {
   path: (sessionId = ':sessionId', unitSetId = ':unitSetId', unitId = ':unitId') => {
-    return `${settings.story}/${sessionId}/${unitSetId}/${unitId}`
+    return `${settings().story}/${sessionId}/${unitSetId}/${unitId}`
   },
   label: 'pages.unit.story',
   triggersEnter: () => [toWelcome],
@@ -150,15 +157,15 @@ Routes.story = {
   data: {
     next ({ sessionId, unitId }) {
       if (!sessionId) {
-        return gotoRoute(Routes.overview)
+        return go(Routes.overview)
       }
 
       return (!unitId)
-        ? gotoRoute(Routes.complete, sessionId)
-        : gotoRoute(Routes.unit, sessionId, unitId)
+        ? go(Routes.complete, sessionId)
+        : go(Routes.unit, sessionId, unitId)
     },
     exit () {
-      gotoRoute(Routes.overview)
+      go(Routes.overview)
     }
   }
 }
@@ -168,7 +175,7 @@ Routes.story = {
 
 Routes.unit = {
   path: (sessionId = ':sessionId', unitId = ':unitId') => {
-    return `${settings.unit}/${sessionId}/${unitId}`
+    return `${settings().unit}/${sessionId}/${unitId}`
   },
   label: 'pages.unit.title',
   triggersEnter: () => [toWelcome],
@@ -183,33 +190,33 @@ Routes.unit = {
   data: {
     next ({ sessionId, unitId, unitSetId, hasStory, completed }) {
       if (!sessionId) {
-        return gotoRoute(Routes.overview)
+        return go(Routes.overview)
       }
 
       // if we have entered a new unitSet and the unitSet is flagged with
       // having a story, then we need to transit to the story page first
       if (unitSetId && hasStory) {
-        return gotoRoute(Routes.story, sessionId, unitSetId, unitId)
+        return go(Routes.story, sessionId, unitSetId, unitId)
       }
 
       return (!unitId || completed)
-        ? gotoRoute(Routes.complete, sessionId)
-        : gotoRoute(Routes.unit, sessionId, unitId)
+        ? go(Routes.complete, sessionId)
+        : go(Routes.unit, sessionId, unitId)
     },
     exit () {
-      gotoRoute(Routes.overview)
+      go(Routes.overview)
     },
     finish ({ sessionId }) {
       return sessionId
-        ? gotoRoute(Routes.complete, sessionId)
-        : gotoRoute(Routes.overview)
+        ? go(Routes.complete, sessionId)
+        : go(Routes.overview)
     }
   }
 }
 
 Routes.complete = {
   path: (sessionId = ':sessionId') => {
-    return `${settings.complete}/${sessionId}`
+    return `${settings().complete}/${sessionId}`
   },
   label: 'pages.complete.title',
   triggersEnter: () => [toWelcome],
@@ -223,20 +230,20 @@ Routes.complete = {
   },
   data: {
     end () {
-      gotoRoute(Routes.logout)
+      go(Routes.logout)
     },
     next () {
-      gotoRoute(Routes.overview)
+      go(Routes.overview)
     },
     exit () {
-      gotoRoute(Routes.logout)
+      go(Routes.logout)
     }
   }
 }
 
 Routes.logout = {
   path: () => {
-    return `${settings.logout}`
+    return `${settings().logout}`
   },
   label: 'pages.logout.title',
   triggersEnter: () => [],

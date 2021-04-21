@@ -1,18 +1,7 @@
 import { Blaze } from 'meteor/blaze'
 import { Components } from 'meteor/leaonline:ui/components/Components'
-import { Router } from '../../api/routing/Router'
-import { initLanguage } from './language'
-import { initializeTTS } from './leaconfig'
-import { initClientContext } from './context'
-import { loadOnce } from '../../ui/loading/loadOnce'
-import { createLog } from '../../utils/createInfoLog'
-import { loadAllContentDocs } from '../../ui/loading/loadAllContentDocs'
-import { loadContentDoc } from '../../ui/loading/loadContentDoc'
-import { fadeOut } from '../../utils/animationUtils'
-import { hasProperty } from '../../utils/object/hasProperty'
-import { isDebugUser } from '../../api/accounts/isDebugUser'
-import { callMethod } from '../../infrastructure/methods/callMethod'
-
+import '../../ui/pages/loading/loading'
+import '../../ui/components/complete/onComplete'
 // if we use the autoload functionality we don't need to explicitly load basic
 // and generic (stateless) templates, since they are loaded at runtime using
 // dynamic imports.
@@ -31,6 +20,19 @@ Components.autoLoad()
 
 Blaze.TemplateInstance.prototype.initDependencies =
   function ({ language = true, tts = true, contexts = [], loaders = [], onComplete }) {
+    import { Router } from '../../api/routing/Router'
+    import { initLanguage } from './language'
+    import { initializeTTS } from './leaconfig'
+    import { initClientContext } from './context'
+    import { loadOnce } from '../../ui/loading/loadOnce'
+    import { createLog } from '../../utils/createInfoLog'
+    import { loadAllContentDocs } from '../../ui/loading/loadAllContentDocs'
+    import { loadContentDoc } from '../../ui/loading/loadContentDoc'
+    import { fadeOut } from '../../utils/animationUtils'
+    import { hasProperty } from '../../utils/object/hasProperty'
+    import { isDebugUser } from '../../api/accounts/isDebugUser'
+    import { callMethod } from '../../infrastructure/methods/callMethod'
+
     const instance = this
     const allComplete = []
 
