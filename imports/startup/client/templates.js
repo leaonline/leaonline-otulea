@@ -31,6 +31,7 @@ Blaze.TemplateInstance.prototype.initDependencies =
     import { fadeOut } from '../../utils/animationUtils'
     import { hasProperty } from '../../utils/object/hasProperty'
     import { isDebugUser } from '../../api/accounts/isDebugUser'
+    import { sendError } from '../../contexts/errors/api/sendError'
     import { callMethod } from '../../infrastructure/methods/callMethod'
 
     const instance = this
@@ -66,6 +67,14 @@ Blaze.TemplateInstance.prototype.initDependencies =
       },
       fadeOut: function (target, callback) {
         return fadeOut(target, instance, callback)
+      },
+      sendError: ({ error, isResponse }) => {
+        sendError({
+          error,
+          isResponse,
+          template: instance.view.name,
+          failure: e => console.error(e)
+        })
       }
     })
 

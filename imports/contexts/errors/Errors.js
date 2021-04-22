@@ -30,7 +30,7 @@ Errors.schema = {
 
   count: {
     type: Number,
-    defaultValue: 1
+    optional: true
   },
 
   stack: {
@@ -52,10 +52,24 @@ Errors.schema = {
 
   isServer: Boolean,
   isClient: Boolean,
-  isMethod: Boolean,
-  isPublication: Boolean,
-  isEndpoint: Boolean,
-  isSystem: Boolean
+  method: {
+    type: String,
+    optional: true
+  },
+  publication: {
+    type: String,
+    optional: true
+  },
+  endpoint: {
+    type: String,
+    optional: true
+  },
+  isSystem: Boolean,
+
+  browser: {
+    type: String,
+    optional: true
+  }
 }
 
 Errors.publications = {}

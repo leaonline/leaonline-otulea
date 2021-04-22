@@ -1,18 +1,14 @@
 import { Meteor } from 'meteor/meteor'
 import { HTTP } from 'meteor/jkuester:http'
 import { sendError } from '../../contexts/errors/api/sendError'
+import { getOSInfo } from '../../ui/utils/getOSInfo'
 
 export const initializeTTS = async () => {
   const { TTSEngine } = await import('../../api/tts/TTSEngine')
-  const Detector = (await import('detect-os')).default
 
   let mode
   try {
-    const detector = new Detector()
-    detector.detect()
-
-    const detected = detector.detected
-    const types = Detector.types
+    const { detected, types } = await getOSInfo()
     console.debug('[initializeTTS]: detected os', detected.os)
 
     switch (detected.os) {
@@ -28,10 +24,9 @@ export const initializeTTS = async () => {
     }
   }
   catch (error) {
-    sendError(error)
-    console.error(error)
-    console.debug('[initializeTTS]: Failed to detect os, use fallback')
-    console.debug('[initializeTTS]: Fallback =', window.navigator.userAgent, window.navigator.platform)
+    console.error('[initializeTTS]: Failed to detect os, use fallback. (Error send)')
+    console.error('[initializeTTS]: Fallback =', window.navigator.userAgent, window.navigator.platform)
+    sendError({ error })
     mode = TTSEngine.modes.server
   }
 
@@ -50,6 +45,7 @@ function externalServerTTSLoader (requestText, callback) {
 
   HTTP.post(url, options, (err, res) => {
     if (err) {
+      sendError({ error: err })
       return callback(err)
     }
 

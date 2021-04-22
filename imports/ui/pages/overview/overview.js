@@ -12,6 +12,7 @@ import { showStoryBeforeUnit } from '../../../contexts/unitSet/api/showStoryBefo
 import '../../components/container/container'
 import './overview.scss'
 import './overview.html'
+import { loadContentDoc } from '../../loading/loadContentDoc'
 
 Template.overview.onDestroyed(function () {
   const instance = this
@@ -28,6 +29,9 @@ Template.overview.onCreated(function () {
   })
 
   const { loadAllContentDocs, callMethod } = instance.api
+  instance.api.sendError({
+    error: new Error('this is a test')
+  })
 
   const loadContentDocuments = async () => {
     const allTestCycles = await loadAllContentDocs(TestCycle, { isLegacy: true })
@@ -123,7 +127,6 @@ Template.overview.onCreated(function () {
     callMethod({
       name: Session.methods.byTestCycle.name,
       args: { testCycleId: testCycle._id },
-      failure: err => console.error(err),
       success: sessionDoc => {
         instance.api.debug('session doc loaded', { sessionDoc })
 
@@ -134,7 +137,9 @@ Template.overview.onCreated(function () {
   })
 
   loadContentDocuments()
-    .catch(e => console.error(e))
+    .catch(e => {
+      instance.api.sendError({ error: e })
+    })
 })
 
 Template.overview.helpers({
@@ -169,7 +174,6 @@ Template.overview.helpers({
     if (dimensionFilter && dimensionFilter.length > 0) {
       query._id = { $in: dimensionFilter }
     }
-    console.info(query)
     return Dimension.collection().find(query)
   },
   colorTypeName ({ colorType }) {
@@ -279,7 +283,6 @@ function restartSession (templateInstance) {
     name: Session.methods.cancel.name,
     args: { sessionId },
     prepare: () => templateInstance.state.set('starting', true),
-    failure: err => console.error(err),
     success: () => {
       // after we obsoleted the old session we start a new one as we do
       // when the user clicks the launch button
@@ -306,8 +309,6 @@ function launch ({ templateInstance, name, args, isFreshStart }) {
     prepare: () => templateInstance.state.set('starting', true),
     receive: () => templateInstance.state.set('starting', false),
     failure: er => {
-      console.error(er)
-
       // if there is the rare case that the session exists although the user
       // intended to launch a new session, we try to restart the session
       if (er?.details === 'session.sessionExists') {
@@ -316,14 +317,22 @@ function launch ({ templateInstance, name, args, isFreshStart }) {
     },
     success: sessionDoc => {
       TTSEngine.stop()
-      const { fadeOut } = templateInstance.api
+      const { fadeOut, debug } = templateInstance.api
       const { next, story } = templateInstance.data
-      setTimeout(() => {
+
+      setTimeout(async () => {
         // a new session can either begin with a story (no items included) or
         // go to the fist unit, which is decided here but routed externally
         const sessionId = sessionDoc._id
         const unitId = sessionDoc.currentUnit
-        const unitSetDoc = UnitSet.collection().findOne(sessionDoc.unitSet)
+        let unitSetDoc = UnitSet.collection().findOne(sessionDoc.unitSet)
+
+        // if the unit set doc does not exist at this point we need to fetch it
+        if (!unitSetDoc) {
+          debug('UnitSet not found, attempt to fetch it')
+          unitSetDoc = await loadContentDoc(UnitSet, sessionDoc.unitSet)
+        }
+
         const shouldShowStory = isFreshStart && showStoryBeforeUnit(unitId, unitSetDoc)
         const onCompleteHandler = shouldShowStory
           ? () => story({ sessionId, unitId, unitSetId: unitSetDoc._id })

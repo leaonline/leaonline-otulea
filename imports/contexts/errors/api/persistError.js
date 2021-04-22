@@ -16,9 +16,11 @@ export const persistError = normalizedErrorDoc => {
 
   if (existingError) {
     return Errors.collection().update(existingError._id, {
-      $inc: existingError.count
+      $inc: { count: 1 }
     })
   }
+
+  normalizedErrorDoc.count = 1
 
   return Errors.collection().insert(normalizedErrorDoc)
 }

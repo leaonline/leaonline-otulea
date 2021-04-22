@@ -93,6 +93,7 @@ Users.methods.isDebug = {
   numRequests: 1,
   timeInterval: 1000,
   run: onServer(function ({ value }) {
+    throw new Error('test')
     const { userId } = this
     return Meteor.users.update(userId, {
       $set: { debug: value }

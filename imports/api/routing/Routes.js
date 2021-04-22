@@ -262,7 +262,7 @@ Routes.logout = {
   }
 }
 
-const toOverview = createTrigger(loggedIn, () => Routes.overview())
+const toOverview = createTrigger(loggedIn, () => Routes.overview)
 
 /**
  * The default route to be used when landing on the page without params

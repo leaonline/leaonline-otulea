@@ -17,9 +17,9 @@ export const errorMixin = options => {
       const normalizedError = normalizeError({
         error: runtimeError,
         userId: userId,
-        isMethod: isMethod,
-        isPublication: isPublication,
-        isEndpoint: isEndpoint
+        method: isMethod ? name : undefined,
+        publication: isPublication ? name : undefined,
+        endpoint: isEndpoint ? name : undefined
       })
       persistError(normalizedError)
 

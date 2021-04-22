@@ -1,8 +1,3 @@
-import { Meteor } from 'meteor/meteor'
-import { normalizeError } from './normalizeError'
-import { callMethod } from '../../../infrastructure/methods/callMethod'
-import { Errors } from '../Errors'
-
 // /////////////////////////////////////////////////////////////////////////////
 // CLIENT-ONLY
 // /////////////////////////////////////////////////////////////////////////////
@@ -10,25 +5,50 @@ import { Errors } from '../Errors'
 /**
  * Normalizes an error and sends it to the server for saving.
  * @param error
+ * @param isResponse
  * @param userId
+ * @param template
  * @param prepare
  * @param receive
  * @param failure
  * @param success
  * @return {*}
  */
-export const sendError = ({ error, userId, prepare, receive, failure, success }) => {
+export const sendError = async ({ error, isResponse, userId, template, prepare, receive, failure, success }) => {
+  import { Meteor } from 'meteor/meteor'
+  import { Errors } from '../Errors'
+  import { normalizeError } from './normalizeError'
+  import { callMethod } from '../../../infrastructure/methods/callMethod'
+  import { getOSInfo } from '../../../ui/utils/getOSInfo'
+
+  if (isResponse) {
+    return console.error(error)
+  }
+
+  const { detected } = await getOSInfo()
+
   const normalizedError = normalizeError({
     error: error,
+    template,
+    browser: detected,
     userId: userId || Meteor.userId()
   })
 
+  console.error(normalizedError.message)
+
   return callMethod({
     name: Errors.methods.create,
-    args: { error: normalizedError },
+    args: normalizedError,
     prepare: prepare,
     receive: receive,
-    failure: failure,
-    success: success
+    failure: err => {
+      console.error('could not send error')
+      console.error(err)
+      if (failure) failure()
+    },
+    success: () => {
+      console.error('error reported to server')
+      if (success) success()
+    }
   })
 }

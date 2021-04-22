@@ -118,7 +118,6 @@ function createRoute (routeDef, onError) {
     },
     triggersEnter: routeDef.triggersEnter && routeDef.triggersEnter(),
     action (params, queryParams) {
-      console.log(routeDef)
       // if we have loaded the template but it is not available
       // on the rendering pipeline through Template.<name> we
       // just skip the action and wait for the next rendering cycle
@@ -153,7 +152,6 @@ function createRoute (routeDef, onError) {
         this.render(routeDef.target, routeDef.template, data)
       }
       catch (e) {
-        console.error(e)
         if (typeof onError === 'function') {
           onError(e)
         }
@@ -162,10 +160,10 @@ function createRoute (routeDef, onError) {
   }
 }
 
-Router.register = function (routeDefinition) {
+Router.register = function (routeDefinition, onError) {
   const path = routeDefinition.path()
   paths[path] = routeDefinition
-  const routeInstance = createRoute(routeDefinition)
+  const routeInstance = createRoute(routeDefinition, onError)
   return FlowRouter.route(path, routeInstance)
 }
 

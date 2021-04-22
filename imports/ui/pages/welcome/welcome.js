@@ -4,7 +4,6 @@ import { ReactiveVar } from 'meteor/reactive-var'
 import { ReactiveDict } from 'meteor/reactive-dict'
 import { Random } from 'meteor/random'
 import { Users } from '../../../contexts/user/User'
-import { Router } from '../../../api/routing/Router'
 import { loggedIn } from '../../../utils/accountUtils'
 import { fadeOut } from '../../../utils/animationUtils'
 import './welcome.scss'
@@ -246,9 +245,8 @@ Template.welcome.events({
     })
   },
   'click .to-overview-button' (event, templateInstance) {
-    const route = templateInstance.data.next()
     fadeOut('.lea-welcome-container', templateInstance, () => {
-      Router.go(route)
+      templateInstance.data.next()
     })
   }
 })
@@ -317,9 +315,8 @@ function loginUser (code, templateInstance) {
     }
     else {
       onLoggedIn()
-      const route = templateInstance.data.next()
       fadeOut('.lea-welcome-container', templateInstance, () => {
-        Router.go(route)
+        templateInstance.data.next()
       })
     }
   })
