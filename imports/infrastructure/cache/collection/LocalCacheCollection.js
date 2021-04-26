@@ -35,7 +35,6 @@ export class LocalCacheCollection extends Mongo.Collection {
     const params = { _id: selector._id || selector }
     const requestOptions = { params, headers }
 
-
     let document
 
     try {

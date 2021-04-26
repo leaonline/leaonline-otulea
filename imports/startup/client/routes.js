@@ -3,7 +3,7 @@ import { Router } from '../../api/routing/Router'
 
 const defaultTarget = 'main-render-target'
 
-Router.titlePrefix(`otu.lea - `)
+Router.titlePrefix('otu.lea - ')
 Router.loadingTemplate('loading')
 
 const onError = error => {

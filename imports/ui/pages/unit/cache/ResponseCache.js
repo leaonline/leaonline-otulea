@@ -1,3 +1,4 @@
+/* global btoa atob */
 import { EJSON } from 'meteor/ejson'
 import { simpleHash } from '../../../../utils/simpleHash'
 
@@ -37,7 +38,7 @@ export class ResponseCache {
     return !this.storage.getItem(key)
   }
 
-  flush() {
+  flush () {
     const self = this
     const items = { ...self.storage }
     Object.entries(items).forEach(([key, value]) => {

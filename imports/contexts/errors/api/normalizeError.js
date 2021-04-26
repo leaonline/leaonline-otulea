@@ -18,7 +18,7 @@ export const normalizeError = ({ error, browser, userId, template, method, publi
     ? JSON.stringify(browser)
     : undefined
 
-  const hashInput = `${userId||''}${errorDoc.browser || ''}${method || ''}${publication || ''}${endpoint || ''}${error.stack}`
+  const hashInput = `${userId || ''}${errorDoc.browser || ''}${method || ''}${publication || ''}${endpoint || ''}${error.stack}`
   errorDoc.hash = simpleHash(hashInput)
 
   // add timestamp/user after hash so we can track duplicates
@@ -59,4 +59,3 @@ const truncateStack = (stack = '') => {
   }
   return lines.join('\n')
 }
-

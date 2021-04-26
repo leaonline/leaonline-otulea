@@ -1,4 +1,3 @@
-/* global EventTarget Event */
 import { Template } from 'meteor/templating'
 import { ReactiveVar } from 'meteor/reactive-var'
 import { Session } from '../../../contexts/session/Session'
@@ -228,7 +227,6 @@ Template.unit.events({
       throw new Error(`Undefined page for current index ${newPage.currentPageCount}`)
     }
 
-
     submitItems({ sessionId, unitDoc, page: currentPageCount })
       .catch(e => console.error(e))
       .then(() => {
@@ -251,7 +249,8 @@ Template.unit.events({
 
     try {
       await submitItems({ sessionId, unitDoc, page })
-    } catch(e) {
+    }
+    catch (e) {
       console.error(e)
     }
 
@@ -265,7 +264,8 @@ Template.unit.events({
         name: Session.methods.update.name,
         args: { sessionId }
       })
-    } catch(e) {
+    }
+    catch (e) {
       return abortUnit(templateInstance, e)
     }
 

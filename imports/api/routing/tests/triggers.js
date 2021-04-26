@@ -2,7 +2,7 @@
 import { expect } from 'chai'
 import { createTrigger } from '../triggers'
 import { Router } from '../Router'
-import { stub,restoreAll } from '../../../../tests/helpers.tests'
+import { stub, restoreAll } from '../../../../tests/helpers.tests'
 
 const exec = (cond, fn) => createTrigger(cond, fn)()
 
@@ -29,7 +29,7 @@ describe(createTrigger.name, function () {
       expect(path).to.equal('%2F')
     })
     const fn = x => x
-    ;[true, {}, [], "1", 1, new Date()].forEach(value => {
+    ;[true, {}, [], '1', 1, new Date()].forEach(value => {
       const condition = () => value
       expect(exec(condition, fn)).to.equal(true)
     })

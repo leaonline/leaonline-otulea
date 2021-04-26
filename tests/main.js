@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor'
+
 if (Meteor.isServer) {
   (function () {
     import './infrastructure'
@@ -10,4 +12,3 @@ if (Meteor.isClient) {
     import './client'
   })()
 }
-
