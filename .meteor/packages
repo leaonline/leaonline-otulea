@@ -33,10 +33,6 @@ leaonline:ratelimit-factory
 aldeed:collection2
 dburles:mongo-collection-instances
 
-# files
-# ostrio:files
-# leaonline:grid-factory
-
 # Methods
 mdg:validated-method
 
