@@ -29,10 +29,6 @@ Template.overview.onCreated(function () {
   })
 
   const { loadAllContentDocs, callMethod } = instance.api
-  instance.api.sendError({
-    error: new Error('this is a test')
-  })
-
   const loadContentDocuments = async () => {
     const allTestCycles = await loadAllContentDocs(TestCycle, { isLegacy: true })
     const dimensions = new Set()

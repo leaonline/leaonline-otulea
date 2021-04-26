@@ -24,7 +24,8 @@ Response.schema = {
     optional: true
   },
   'scores.$': Object,
-  'scores.$.competency': String,
+  'scores.$.competency': Array,
+  'scores.$.competency.$': String,
   'scores.$.score': String
 }
 
@@ -68,7 +69,6 @@ Response.methods.submit = {
       }
 
       const scoreDoc = { userId, sessionId, unitId, responses, contentId, page, scores }
-
       return Response.collection().upsert({ userId, sessionId, unitId, contentId }, { $set: scoreDoc })
     }
   })

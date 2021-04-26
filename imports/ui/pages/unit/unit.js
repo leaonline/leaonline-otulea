@@ -7,12 +7,10 @@ import { UnitSet } from '../../../contexts/unitSet/UnitSet'
 import { Dimension } from '../../../contexts/Dimension'
 import { Level } from '../../../contexts/Level'
 import { Unit } from '../../../contexts/Unit'
-import { fadeOut } from '../../../utils/animationUtils'
 import { dataTarget } from '../../../utils/dataTarget'
 import { TaskRenderers } from '../../renderers/TaskRenderers'
 import { ResponseCache } from './cache/ResponseCache'
 import { UnitPageCache } from './cache/UnitPageCache'
-import { callMethod } from '../../../infrastructure/methods/callMethod'
 import { isCurrentUnit } from '../../../contexts/session/utils/isCurrentUnit'
 import { createItemLoad } from './item/createItemLoad'
 import { createItemInput } from './item/createItemInput'
@@ -26,11 +24,18 @@ import './unit.html'
 const renderersLoaded = new ReactiveVar()
 const responseCache = ResponseCache.create(window.localStorage)
 const pageCache = UnitPageCache.create(window.localStorage)
-const submitItems = createItemSubmit({ cache: responseCache })
+const submitItems = createItemSubmit({
+  loadValue: responseDoc => responseCache.load(responseDoc),
+  prepare: responseDoc => console.info('[Template.Unit]: submit to server', responseDoc),
+  onSuccess: (result, responseDoc) => {
+    const cleared = responseCache.clear(responseDoc)
+    console.info('[Template.Unit]: clear storage', cleared, responseDoc)
+  },
+  onError: (error, responseDoc) => console.error(error, responseDoc)
+})
 
 Template.unit.onCreated(function () {
   const instance = this
-  instance.collector = new EventTarget()
   instance.state.setDefault('currentPageCount', -1)
   instance.state.setDefault('maxPages', -1)
   instance.dependenciesLoaded = new ReactiveVar(false)
@@ -40,6 +45,14 @@ Template.unit.onCreated(function () {
     tts: true,
     contexts: [Session, Unit, UnitSet, Response, Dimension, Level],
     onComplete () {
+      instance.onItemInput = createItemInput({
+        cache: responseCache,
+        debug: instance.api.debug
+      })
+      instance.onItemLoad = createItemLoad({
+        cache: responseCache,
+        debug: instance.api.debug
+      })
       instance.dependenciesLoaded.set(true)
     }
   })
@@ -54,7 +67,7 @@ Template.unit.onCreated(function () {
 
     TaskRenderers.init()
       .then(() => renderersLoaded.set(true))
-      .catch(e => console.error(e))
+      .catch(e => console.error(e)) // TODO sendError
   })
 
   const sessionLoader = createSessionLoader({ info })
@@ -143,12 +156,13 @@ Template.unit.helpers({
     const color = instance.state.get('color')
     const currentPageCount = instance.state.get('currentPageCount')
     const depsComplete = instance.dependenciesLoaded.get()
+
     let onInput
     let onLoad
 
     if (depsComplete && instance.state.get('sessionDoc')) {
-      onInput = createItemInput({ cache: responseCache })
-      onLoad = createItemLoad({ cache: responseCache })
+      onInput = instance.onItemInput
+      onLoad = instance.onItemLoad
     }
     else {
       onInput = () => {}
@@ -162,7 +176,9 @@ Template.unit.helpers({
       doc: unitDoc,
       color: color,
       onInput: onInput,
-      onLoad: onLoad
+      onLoad: onLoad,
+      onLoadError: err => console.error(err),
+      onLoadComplete: () => console.warn('item renderer load complete')
     }
   },
   navbarData () {
@@ -188,6 +204,7 @@ Template.unit.events({
     event.preventDefault()
     const action = dataTarget(event, 'action')
     const unitDoc = templateInstance.state.get('unitDoc')
+    const unitId = unitDoc._id
     const sessionDoc = templateInstance.state.get('sessionDoc')
     const sessionId = sessionDoc._id
     const currentPageCount = templateInstance.state.get('currentPageCount')
@@ -197,24 +214,30 @@ Template.unit.events({
       newPage.currentPageCount = currentPageCount + 1
       newPage.currentPage = unitDoc.pages[newPage.currentPageCount]
       newPage.hasNext = (newPage.currentPageCount + 1) < unitDoc.pages.length
+      pageCache.save({ unitId, sessionId }, currentPageCount + 1)
     }
 
     if (action === 'back') {
       newPage.currentPageCount = currentPageCount - 1
       newPage.currentPage = unitDoc.pages[newPage.currentPageCount]
       newPage.hasNext = (newPage.currentPageCount + 1) < unitDoc.pages.length
+      pageCache.save({ unitId, sessionId }, currentPageCount - 1)
     }
 
     if (!newPage.currentPage) {
       throw new Error(`Undefined page for current index ${newPage.currentPageCount}`)
     }
 
-    templateInstance.collector.dispatchEvent(new Event('collect'))
+
     submitItems({ sessionId, unitDoc, page: currentPageCount })
+      .catch(e => console.error(e))
+      .then(() => {
+        templateInstance.state.set(newPage)
+      })
   },
   'click .lea-unit-finishstory-button' (event, templateInstance) {
     event.preventDefault()
-    fadeOut('.lea-unit-story-container', templateInstance, () => {
+    templateInstance.api.fadeOut('.lea-unit-story-container', () => {
       templateInstance.state.set('unitStory', null)
     })
   },
@@ -226,13 +249,27 @@ Template.unit.events({
     const unitId = unitDoc._id
     const page = templateInstance.state.get('currentPageCount')
 
-    await submitItems({ sessionId, unitDoc, page })
-    const sessionUpdate = await callMethod({
-      name: Session.methods.update.name,
-      args: { sessionId }
-    })
+    try {
+      await submitItems({ sessionId, unitDoc, page })
+    } catch(e) {
+      console.error(e)
+    }
 
-    console.info('session updated', sessionUpdate)
+    // make sure we have all storage items deleted
+    responseCache.flush()
+
+    let sessionUpdate
+
+    try {
+      sessionUpdate = await templateInstance.api.callMethod({
+        name: Session.methods.update.name,
+        args: { sessionId }
+      })
+    } catch(e) {
+      return abortUnit(templateInstance, e)
+    }
+
+    templateInstance.api.debug('session updated', sessionUpdate)
     const { nextUnit, nextUnitSet, hasStory, completed } = sessionUpdate
     pageCache.clear({ sessionId, unitId })
 
@@ -243,23 +280,29 @@ Template.unit.events({
       ? '.lea-unit-container'
       : '.lea-unit-content-container'
 
-    fadeOut(fadeTarget, templateInstance, () => {
+    templateInstance.api.fadeOut(fadeTarget, () => {
       templateInstance.state.set('unitDoc', null)
       templateInstance.state.set('fadedOut', true)
-      templateInstance.data.next({ sessionId, unitId: nextUnit, unitSetId: nextUnitSet, hasStory, completed })
+      templateInstance.data.next({
+        sessionId,
+        unitId: nextUnit,
+        unitSetId: nextUnitSet,
+        hasStory,
+        completed
+      })
     })
   }
 })
 
-function abortUnit (instance, err) {
+function abortUnit (templateInstance, err) {
   if (err) {
     console.error('Unit aborted')
-    console.error(err)
+    console.error(err) // todo sendError
   }
 
-  fadeOut('.lea-unit-container', instance, () => {
+  templateInstance.api.fadeOut('.lea-unit-container', () => {
     // there should be a strategy pattern here so we can easily switch depending
     // on the settings configuration and users needs (tests vs production etc.)
-    instance.data.exit()
+    templateInstance.data.exit()
   })
 }

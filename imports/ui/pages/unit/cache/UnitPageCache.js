@@ -1,6 +1,9 @@
+import { simpleHash } from '../../../../utils/simpleHash'
+
 /**
  * Keeps responses in a storage (Storage API).
  */
+
 export class UnitPageCache {
   static create (storage) {
     return new UnitPageCache(storage)
@@ -28,5 +31,6 @@ export class UnitPageCache {
 }
 
 function getKey ({ sessionId, unitId }) {
-  return `${sessionId}-${unitId}`
+  const hash = simpleHash(`${sessionId}-${unitId}`)
+  return `upc-${hash}`
 }

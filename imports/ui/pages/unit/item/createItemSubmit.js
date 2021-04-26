@@ -5,10 +5,14 @@ import { getProperty } from '../../../../utils/object/getProperty'
 /**
  * Returns a submit function that restores values from cache and sends them
  * to the server.
- * @param cache
+ * @param loadValue {Function}
+ * @param prepare {Function}
+ * @param receive {Function}
+ * @param onSuccess {Function}
+ * @param onError {Function}
  * @return {function({sessionId?: *, unitDoc: *, page?: *}): *}
  */
-export const createItemSubmit = ({ cache }) => {
+export const createItemSubmit = ({ loadValue, prepare, receive, onError, onSuccess }) => {
   /**
    *
    * @param sessionId {String} The current {Session} id
@@ -29,7 +33,7 @@ export const createItemSubmit = ({ cache }) => {
 
       const { contentId } = entry
       const responseDoc = { sessionId, unitId, page, contentId }
-      const responseValue = cache.load(responseDoc)
+      const responseValue = loadValue(responseDoc)
       responseDoc.responses = (responseValue?.responses) || []
       allResponseDocs.push(responseDoc)
     })
@@ -38,8 +42,19 @@ export const createItemSubmit = ({ cache }) => {
       callMethod({
         name: Response.methods.submit.name,
         args: responseDoc,
-        failure: console.error,
-        success: () => cache.clear(responseDoc)
+        prepare: () => {
+          console.debug('[submit item]:', responseDoc)
+          if (prepare) prepare(responseDoc)
+        },
+        receive: () => {
+          if (receive) prepare(receive)
+        },
+        failure: error => {
+          if (onError) onError(error, responseDoc)
+        },
+        success: result => {
+          if (onSuccess) onSuccess(result, responseDoc)
+        }
       })
     ))
   }

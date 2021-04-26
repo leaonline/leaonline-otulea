@@ -8,6 +8,5 @@ export const getOSInfo = async function () {
   detector.detect()
   detected = detector.detected
   types = Detector.types
-  console.info(detected)
   return { detected, types }
 }
