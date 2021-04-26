@@ -14,7 +14,7 @@ PORT=5566
 WATCH_MODE=1
 RUN_ONCE=''
 VERBOSE_MODE=0
-PACKAGE_DIRS="${PARENT_ROOT}/lib:${PARENT_ROOT}/libnpm:${PARENT_ROOT}/liboauth"
+PACKAGE_DIRS="${PARENT_ROOT}/lib:${PARENT_ROOT}/libnpm:${PARENT_ROOT}/liboauth:./github"
 
 # ------------------------------------------
 #
