@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor'
+import { EJSON } from 'meteor/ejson'
 
 export const normalizeError = ({ error, browser, userId, template, method, publication, endpoint, isSystem }) => {
   import { simpleHash } from '../../../utils/simpleHash'
@@ -15,7 +16,7 @@ export const normalizeError = ({ error, browser, userId, template, method, publi
   errorDoc.endpoint = endpoint
   errorDoc.isSystem = isSystem || false
   errorDoc.browser = (Meteor.isClient && browser)
-    ? JSON.stringify(browser)
+    ? EJSON.stringify(browser)
     : undefined
 
   const hashInput = `${userId || ''}${errorDoc.browser || ''}${method || ''}${publication || ''}${endpoint || ''}${error.stack}`
@@ -24,7 +25,7 @@ export const normalizeError = ({ error, browser, userId, template, method, publi
   // add timestamp/user after hash so we can track duplicates
   // across different users and temporal boundaries
   errorDoc.createdAt = new Date()
-  errorDoc.createdBy = userId
+  errorDoc.createdBy = userId ?? 'system'
 
   return errorDoc
 }
@@ -48,8 +49,8 @@ const normalizeNativeError = error => ({
 const stringifyDetails = details => {
   const type = typeof details
   if (type === 'undefined' || details === null) return
-  if (type === 'object') return JSON.stringify(details)
-  return JSON.stringify({ details })
+  if (type === 'object') return EJSON.stringify(details)
+  return EJSON.stringify({ details })
 }
 
 const truncateStack = (stack = '') => {

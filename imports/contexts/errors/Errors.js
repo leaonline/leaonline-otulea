@@ -82,8 +82,11 @@ Errors.methods.get = {
     _id: String
   },
   backend: true,
-  run: onServer(function ({ _id }) {
-    return Errors.collection().findOne({ _id })
+  run: onServerExec(function () {
+    import { getError } from './api/getError'
+    return function ({ _id }) {
+      return getError(_id)
+    }
   })
 }
 
@@ -102,13 +105,12 @@ Errors.methods.getAll = {
     'dependencies.$': String
   },
   backend: true,
-  run: onServer(function ({ ids }) {
-    const query = {}
-    if (ids) query._id = { $in: ids }
-    const transform = {
-      hint: { $natural: -1 }
+  run: onServerExec(function () {
+    import { getAllErrors } from './api/getAllErrors'
+
+    return function ({ ids }) {
+      return getAllErrors(ids)
     }
-    return Errors.collection().find(query, transform).fetch()
   })
 }
 
@@ -118,8 +120,12 @@ Errors.methods.remove = {
     _id: String
   },
   backend: true,
-  run: onServer(function ({ _id }) {
-    return Errors.collection().remove({ _id })
+  run: onServerExec(function () {
+    import { removeError } from './api/removeError'
+
+    return function ({ _id }) {
+      return removeError({ _id })
+    }
   })
 }
 

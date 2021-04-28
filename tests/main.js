@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor'
 
 // COMMON / SHARED
 import './utils'
+import './contexts'
 
 if (Meteor.isServer) {
   (function () {

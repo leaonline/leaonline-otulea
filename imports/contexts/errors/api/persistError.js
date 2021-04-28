@@ -1,8 +1,8 @@
 import { Errors } from '../Errors'
 
 /**
- * Saves an erorr to collection but increments the counter, in case the error
- * already exists and varies only by user and timestamp.
+ * Saves a normalized error to collection but increments the counter, in case
+ * the error already exists and varies only by user and timestamp.
  *
  * Requires the errorDoc to be normalized!
  *
@@ -12,15 +12,16 @@ import { Errors } from '../Errors'
 export const persistError = normalizedErrorDoc => {
   // let's see, if the same user created the same error already
   const { hash } = normalizedErrorDoc
-  const existingError = Errors.collection().findOne({ hash })
+  const collection = Errors.collection()
+  const existingError = collection.findOne({ hash })
 
   if (existingError) {
-    return Errors.collection().update(existingError._id, {
+    return collection.update(existingError._id, {
       $inc: { count: 1 }
     })
   }
 
   normalizedErrorDoc.count = 1
 
-  return Errors.collection().insert(normalizedErrorDoc)
+  return collection.insert(normalizedErrorDoc)
 }
