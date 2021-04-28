@@ -20,7 +20,7 @@ Components.autoLoad()
 
 Blaze.TemplateInstance.prototype.initDependencies =
   function ({ language = true, tts = true, contexts = [], loaders = [], onComplete }) {
-    import { Router } from '../../api/routing/Router'
+    import { Router } from '../../ui/routing/Router'
     import { initLanguage } from './language'
     import { initializeTTS } from './leaconfig'
     import { initClientContext } from './context'

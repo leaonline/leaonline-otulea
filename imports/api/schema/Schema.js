@@ -1,4 +1,4 @@
-import { ServiceRegistry } from '../config/BackendConfig'
+import { ServiceRegistry } from '../services/ServiceRegistry'
 import SimpleSchema from 'simpl-schema'
 import { isomorph } from '../../utils/archUtils'
 

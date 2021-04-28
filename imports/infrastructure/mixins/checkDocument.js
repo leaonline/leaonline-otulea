@@ -1,4 +1,4 @@
-import { DocumentNotFoundError } from '../../api/errors/DocumentNotFoundError'
+import { DocNotFoundError } from '../../contexts/errors/DocNotFoundError'
 
 /**
  * Throws an error, if a document does not exist.
@@ -6,8 +6,9 @@ import { DocumentNotFoundError } from '../../api/errors/DocumentNotFoundError'
  * @param context {Object} the context corresponding to the document
  * @param details {any|undefined} optional details
  */
+
 export const checkDocument = (document, context, details = undefined) => {
   if (!document) {
-    throw new DocumentNotFoundError(context.name, details)
+    throw new DocNotFoundError(context.name, details)
   }
 }

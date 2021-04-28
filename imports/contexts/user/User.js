@@ -209,7 +209,7 @@ Users.methods.remove = {
     import { removeUser } from '../../api/accounts/removeUser'
 
     return function ({ _id }) {
-      return removeUser(_id, this.userId)
+      return removeUser(_id, this.userId, this.debug)
     }
   })
 }

@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor'
 import { Template } from 'meteor/templating'
-import { Routes } from '../../api/routing/Routes'
-import { Router } from '../../api/routing/Router'
-import { resolveRoute, backRoute } from '../../api/routing/routeHelpers'
+import { Routes } from '../../ui/routing/Routes'
+import { Router } from '../../ui/routing/Router'
+import { resolveRoute, backRoute } from '../../ui/routing/routeHelpers'
 
 Template.registerHelper('route', function (key, ...optionalArgs) {
   return resolveRoute(key, ...optionalArgs)

@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 import { expect } from 'chai'
-import { encodeQueryParams } from './encodeQueryParams'
+import { encodeQueryParams } from '../encodeQueryParams'
 
 // !'()*
 

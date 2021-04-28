@@ -25,7 +25,7 @@ Routes.notFound = {
   label: 'pages.notFound.title',
   triggersEnter: () => [],
   async load () {
-    return import('../../ui/pages/notfound/notFound')
+    return import('../pages/notfound/notFound')
   },
   target: null,
   template: 'notFound',
@@ -49,7 +49,7 @@ Routes.fallback = {
     createTrigger(() => true, Routes.notFound.path)
   ],
   async load () {
-    return import('../../ui/pages/loading/loading')
+    return import('../pages/loading/loading')
   },
   target: null,
   template: 'loading',
@@ -79,7 +79,7 @@ Routes.legal = {
   label: 'legal.title',
   triggersEnter: () => [],
   async load () {
-    return import('../../ui/pages/legal/legal')
+    return import('../pages/legal/legal')
   },
   target: null,
   template: 'legal',
@@ -102,7 +102,7 @@ Routes.welcome = {
   label: 'pages.welcome.title',
   triggersEnter: () => [],
   async load () {
-    return import('../../ui/pages/welcome/welcome')
+    return import('../pages/welcome/welcome')
   },
   target: null,
   template: 'welcome',
@@ -123,7 +123,7 @@ Routes.overview = {
   label: 'pages.overview.title',
   triggersEnter: () => [toWelcome],
   async load () {
-    return import('../../ui/pages/overview/overview')
+    return import('../pages/overview/overview')
   },
   target: null,
   template: 'overview',
@@ -147,7 +147,7 @@ Routes.story = {
   label: 'pages.unit.story',
   triggersEnter: () => [toWelcome],
   async load () {
-    return import('../../ui/pages/story/story')
+    return import('../pages/story/story')
   },
   target: null,
   template: 'story',
@@ -180,7 +180,7 @@ Routes.unit = {
   label: 'pages.unit.title',
   triggersEnter: () => [toWelcome],
   async load () {
-    return import('../../ui/pages/unit/unit')
+    return import('../pages/unit/unit')
   },
   target: null,
   template: 'unit',
@@ -221,7 +221,7 @@ Routes.complete = {
   label: 'pages.complete.title',
   triggersEnter: () => [toWelcome],
   async load () {
-    return import('../../ui/pages/complete/complete')
+    return import('../pages/complete/complete')
   },
   target: null,
   template: 'complete',
@@ -248,7 +248,7 @@ Routes.logout = {
   label: 'pages.logout.title',
   triggersEnter: () => [],
   async load () {
-    return import('../../ui/pages/logout/logout')
+    return import('../pages/logout/logout')
   },
   target: null,
   template: 'logout',
@@ -277,7 +277,7 @@ Routes.root = {
     toOverview
   ],
   async load () {
-    return import('../../ui/pages/loading/loading')
+    return import('../pages/loading/loading')
   },
   target: null,
   template: 'loading',

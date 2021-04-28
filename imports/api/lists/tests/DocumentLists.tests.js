@@ -1,8 +1,8 @@
 /* eslint-env mocha */
 import { expect } from 'chai'
 import { Random } from 'meteor/random'
-import { DocumentList } from './DocumentList'
-import { createDocumentList } from './createDocumentList'
+import { DocumentList } from '../DocumentList'
+import { createDocumentList } from '../createDocumentList'
 
 describe(DocumentList.name, function () {
   let fieldName
@@ -32,7 +32,7 @@ describe(DocumentList.name, function () {
       expect(() => createDocumentList({
         fieldName,
         context
-      })).to.throw(`Found no ${context.name} document by id undefined`)
+      })).to.throw(`errors.docNotFound [${context.name}.error]`)
     })
     it('throws if the document\'s list to be set is not valid', function () {
       expect(() => createDocumentList({ fieldName, context, document: {} }))

@@ -2,7 +2,7 @@ import { FlowRouter, RouterHelpers } from 'meteor/ostrio:flow-router-extra'
 import { Meteor } from 'meteor/meteor'
 import { Tracker } from 'meteor/tracker'
 import { Template } from 'meteor/templating'
-import { translate } from '../i18n/reactiveTranslate'
+import { translate } from '../../api/i18n/translate'
 
 /**
  * Facade to a router to support a common definition for routing in case

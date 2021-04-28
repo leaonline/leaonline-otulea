@@ -1,5 +1,5 @@
-import { Routes } from '../../api/routing/Routes'
-import { Router } from '../../api/routing/Router'
+import { Routes } from '../../ui/routing/Routes'
+import { Router } from '../../ui/routing/Router'
 
 const defaultTarget = 'main-render-target'
 

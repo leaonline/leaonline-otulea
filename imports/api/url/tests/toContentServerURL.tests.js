@@ -1,5 +1,5 @@
 /* eslint-env mocha */
-import { toContentServerURL } from './toContentServerURL'
+import { toContentServerURL } from '../toContentServerURL'
 
 describe(toContentServerURL.name, function () {
   it('returns the base URL for the content server if no params are passed')
