@@ -22,7 +22,12 @@ Template.footer.onCreated(function () {
       instance.state.set('dependenciesComplete', true)
     }
   })
+})
 
+Template.footer.onRendered(function () {
+  const instance = this
+
+  // defer logo loading until first rendering occurred
   Logos.methods.get.call((err, logoDoc) => {
     if (err) console.error(err)
     instance.state.set('logoDoc', logoDoc)

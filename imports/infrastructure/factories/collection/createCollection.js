@@ -15,7 +15,7 @@ export const createCollection = (context) => {
     context.collection = Meteor.isClient && new Mongo.Collection(null)
 
     onServerExec(function () {
-      import { createLog } from '../../../../../lib/corelib/logging/createLog'
+      import { createLog } from '../../../utils/createInfoLog'
       import { toContentServerURL } from '../../../api/url/toContentServerURL'
       import { LocalCacheCollection } from '../../cache/collection/LocalCacheCollection'
 
