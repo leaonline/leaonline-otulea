@@ -5,7 +5,7 @@
  */
 export const createItemInput = ({ cache, debug = () => {} }) => {
   return function onItemInput ({ userId, sessionId, unitId, page, type, contentId, responses }) {
-    debug('save item data', { userId, sessionId, unitId, page, type, contentId, responses })
+    debug('cache item data', { userId, sessionId, unitId, page, type, contentId, responses })
     return cache.save({
       userId,
       sessionId,

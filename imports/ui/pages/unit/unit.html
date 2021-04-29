@@ -14,7 +14,11 @@
             </div>
         {{else}}
             {{#container class="lea-unit-content-container h-auto"}}
-                {{> taskPageRenderer pageContentData}}
+                {{#unless submitting}}
+                    {{> taskPageRenderer pageContentData}}
+                {{else}}
+                    {{> loading }}
+                {{/unless}}
             {{/container}}
         {{/unless}}
     </div>

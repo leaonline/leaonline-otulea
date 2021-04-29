@@ -52,6 +52,14 @@ Template.unit.onCreated(function () {
         cache: responseCache,
         debug: instance.api.debug
       })
+      instance.onNewPage = ({ action, newPage }, onComplete) => {
+        onPageNavUpdate({
+          action,
+          newPage,
+          templateInstance: instance,
+          onComplete
+        })
+      }
       instance.dependenciesLoaded.set(true)
     }
   })
@@ -156,16 +164,14 @@ Template.unit.helpers({
     const currentPageCount = instance.state.get('currentPageCount')
     const depsComplete = instance.dependenciesLoaded.get()
 
-    let onInput
-    let onLoad
+    let onInput = () => {}
+    let onLoad = () => {}
+    let onNewPage = () => {}
 
     if (depsComplete && instance.state.get('sessionDoc')) {
       onInput = instance.onItemInput
       onLoad = instance.onItemLoad
-    }
-    else {
-      onInput = () => {}
-      onLoad = () => {}
+      onNewPage = instance.onNewPage
     }
 
     return {
@@ -176,6 +182,7 @@ Template.unit.helpers({
       color: color,
       onInput: onInput,
       onLoad: onLoad,
+      onNewPage: onNewPage,
       onLoadError: err => console.error(err),
       onLoadComplete: () => console.warn('item renderer load complete')
     }
@@ -199,40 +206,6 @@ Template.unit.helpers({
 })
 
 Template.unit.events({
-  'click .lea-pagenav-button' (event, templateInstance) {
-    event.preventDefault()
-    const action = dataTarget(event, 'action')
-    const unitDoc = templateInstance.state.get('unitDoc')
-    const unitId = unitDoc._id
-    const sessionDoc = templateInstance.state.get('sessionDoc')
-    const sessionId = sessionDoc._id
-    const currentPageCount = templateInstance.state.get('currentPageCount')
-    const newPage = {}
-
-    if (action === 'next') {
-      newPage.currentPageCount = currentPageCount + 1
-      newPage.currentPage = unitDoc.pages[newPage.currentPageCount]
-      newPage.hasNext = (newPage.currentPageCount + 1) < unitDoc.pages.length
-      pageCache.save({ unitId, sessionId }, currentPageCount + 1)
-    }
-
-    if (action === 'back') {
-      newPage.currentPageCount = currentPageCount - 1
-      newPage.currentPage = unitDoc.pages[newPage.currentPageCount]
-      newPage.hasNext = (newPage.currentPageCount + 1) < unitDoc.pages.length
-      pageCache.save({ unitId, sessionId }, currentPageCount - 1)
-    }
-
-    if (!newPage.currentPage) {
-      throw new Error(`Undefined page for current index ${newPage.currentPageCount}`)
-    }
-
-    submitItems({ sessionId, unitDoc, page: currentPageCount })
-      .catch(e => console.error(e))
-      .then(() => {
-        templateInstance.state.set(newPage)
-      })
-  },
   'click .lea-unit-finishstory-button' (event, templateInstance) {
     event.preventDefault()
     templateInstance.api.fadeOut('.lea-unit-story-container', () => {
@@ -293,6 +266,32 @@ Template.unit.events({
     })
   }
 })
+
+function onPageNavUpdate ({ action, newPage, templateInstance, onComplete }) {
+  const unitDoc = templateInstance.state.get('unitDoc')
+  const unitId = unitDoc._id
+  const sessionDoc = templateInstance.state.get('sessionDoc')
+  const sessionId = sessionDoc._id
+  const currentPageCount = templateInstance.state.get('currentPageCount')
+
+  pageCache.save({ unitId, sessionId }, newPage.currentPageCount)
+
+  if (!newPage.currentPage) {
+    throw new Error(`Undefined page for current index ${newPage.currentPageCount}`)
+  }
+
+  setTimeout(() => {
+    submitItems({ sessionId, unitDoc, page: currentPageCount })
+      .catch(e => {
+        console.error(e)
+        onComplete()
+      })
+      .then(() => {
+        templateInstance.state.set(newPage)
+        onComplete()
+      })
+  }, 500)
+}
 
 function abortUnit (templateInstance, err) {
   if (err) {
