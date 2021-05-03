@@ -65,6 +65,9 @@ Template.navbar.helpers({
   },
   labels () {
     return Template.getState('labels')
+  },
+  hasExit () {
+    return Template.instance().data.onExit
   }
 })
 

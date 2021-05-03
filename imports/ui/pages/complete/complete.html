@@ -48,7 +48,7 @@
         {{/if}}
 
         {{#if showResults}}
-
+            {{#onComplete complete=loadComplete}}
             {{#if isDebugUser}}
                 {{#container}}
                     <div class="card my-4">
@@ -66,14 +66,14 @@
                                     <th scope="col" class="text-center">
                                         {{i18n "thresholds.id"}}
                                     </th>
-                                    <th scope="col"></th>
-                                    <th scope="col" class="text-center d-none d-md-table-cell">
+                                    <th scope="col" class=" d-print-none"></th>
+                                    <th scope="col" class="text-center d-none d-md-table-cell d-print-table-cell">
                                         {{i18n "thresholds.count"}}
                                     </th>
-                                    <th scope="col" class="text-center d-none d-md-table-cell">
+                                    <th scope="col" class="text-center d-none d-md-table-cell d-print-table-cell">
                                         {{i18n "thresholds.correct"}}
                                     </th>
-                                    <th scope="col" class="text-center d-none d-md-table-cell">
+                                    <th scope="col" class="text-center d-none d-md-table-cell d-print-table-cell">
                                         {{i18n "thresholds.perc"}}
                                     </th>
                                     <th scope="col" class="text-center">
@@ -86,9 +86,9 @@
                                     <tr class="{{#unless competency.isGraded}}text-muted{{/unless}}">
                                         <th scope="row" class="text-center">{{@index}}</th>
                                         <td class="text-center">{{competency.shortCode}}</td>
-                                        <td class="w-25">
+                                        <td class="w-25 align-middle d-print-none">
                                             {{#if competency.isGraded}}
-                                            <div class="progress" style="height: 0.5rem;">
+                                            <div class="progress border-{{currentType}} border" style="height: 0.75rem;">
                                                 <div class="progress-bar bg-{{currentType}}"
                                                      role="progressbar"
                                                      style="width: {{competency.perc}}%;"
@@ -99,9 +99,9 @@
                                             </div>
                                             {{/if}}
                                         </td>
-                                        <td class="text-center d-none d-md-table-cell">{{competency.limit}}</td>
-                                        <td class="text-center d-none d-md-table-cell">{{competency.count}}</td>
-                                        <td class="text-center d-none d-md-table-cell">{{competency.perc}}</td>
+                                        <td class="text-center d-none d-md-table-cell d-print-table-cell">{{competency.limit}}</td>
+                                        <td class="text-center d-none d-md-table-cell d-print-table-cell">{{competency.count}}</td>
+                                        <td class="text-center d-none d-md-table-cell d-print-table-cell    ">{{competency.perc}}</td>
                                         <td class="text-center">{{i18n competency.grade.label}}</td>
                                     </tr>
                                     {{else}}
@@ -119,7 +119,7 @@
                     </div>
                 {{/container}}
             {{/if}}
-
+            {{/onComplete}}
 
             {{!-- iterate all possible feedback levels
             {{#container}}
@@ -180,17 +180,6 @@
                             </button>
                         {{/textGroup}}
                     </div>
-                    <div class="card-body">
-                        {{#textGroup tts="pages.complete.printResultsTeacher"
-                                     groupClass="w-100"
-                                     label=(i18n "pages.complete.printResultsTeacher")
-                                     type=currentType}}
-                            <button class="ml-auto btn btn-outline-light"
-                                    disabled>
-                                <i class="fa fas fa-fw fa-print"></i>
-                            </button>
-                        {{/textGroup}}
-                    </div>
                 </div>
 
                 <div class="card-body">
@@ -200,7 +189,7 @@
         {{/if}}
 
         {{#if showDecision}}
-            {{#container}}
+            {{#container class="d-print-none"}}
                 <div class="card lea-complete-showprint-container">
                     <div class="card-body">
                         {{#with currentType}}

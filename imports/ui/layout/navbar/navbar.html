@@ -16,11 +16,13 @@
 				<span class="mx-3 no-wrap text-{{this.type}}">{{this.current}} / {{this.max}}</span>
 			{{/with}}
 		{{/if}}
+        {{#if hasExit}}
 		<span class="ml-auto no-wrap d-print-none">
 			{{#onComplete complete=loadComplete}}
 				{{! > actionButton class="mr-1" outline=true btnClass="navbar-help-button btn-sm" sound=false title=(i18n "common.help") icon="question"}}
 				{{> actionButton outline=true btnClass="navbar-overview-button btn-sm" sound=false title=(i18n "common.toOverview") icon="times"}}
 			{{/onComplete}}
 		</span>
+        {{/if}}
 	</div>
 </template>

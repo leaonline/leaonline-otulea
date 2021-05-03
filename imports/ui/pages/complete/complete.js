@@ -6,7 +6,6 @@ import { Session } from '../../../contexts/session/Session'
 import { Thresholds } from '../../../contexts/thresholds/Thresholds'
 import { Competency } from '../../../contexts/Competency'
 import { createSessionLoader } from '../../loading/createSessionLoader'
-import { printHTMLElement } from '../../utils/printHTMLElement'
 import { sessionIsComplete } from '../../../contexts/session/utils/sessionIsComplete'
 import { getGradeForCompetency } from '../../../contexts/thresholds/api/getGradeForCompetency'
 import '../../components/container/container'
@@ -255,8 +254,7 @@ Template.complete.helpers({
       unitSetDoc,
       dimensionDoc,
       showProgress: false,
-      showUsername: true,
-      onExit: instance.data.exit
+      showUsername: true
     }
   },
   currentType () {
@@ -277,7 +275,8 @@ Template.complete.events({
   },
   'click .print-simple' (event) {
     event.preventDefault()
-    printHTMLElement('lea-complete-print-root')
+    //printHTMLElement('lea-complete-print-root')
+    window.print()
   },
   'click .lea-end-button' (event, templateInstance) {
     event.preventDefault()
