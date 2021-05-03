@@ -9,7 +9,7 @@ describe(extractItemDefinition.name, function () {
   it('throws on incomplete params', function () {
     Object.entries({
       unitDoc: {},
-      page: { unitDoc: {}},
+      page: { unitDoc: {} },
       contentId: { unitDoc: {}, page: 0 }
     }).forEach(([key, params]) => {
       expect(() => extractItemDefinition(params))
@@ -47,9 +47,12 @@ describe(extractItemDefinition.name, function () {
   })
   it('throws if there is no entry by contentId', function () {
     const doc = {
-      unitDoc: { _id: Random.id(), pages: [{
-        content: [{}, {}, { contentId: Random.id() }]
-        }] },
+      unitDoc: {
+        _id: Random.id(),
+        pages: [{
+          content: [{}, {}, { contentId: Random.id() }]
+        }]
+      },
       page: 0,
       contentId: Random.id()
     }
@@ -61,9 +64,12 @@ describe(extractItemDefinition.name, function () {
     const contentId = Random.id()
     const entry = { contentId }
     const doc = {
-      unitDoc: { _id: Random.id(), pages: [{
+      unitDoc: {
+        _id: Random.id(),
+        pages: [{
           content: [{}, {}, { contentId: Random.id() }, entry]
-        }] },
+        }]
+      },
       page: 0,
       contentId
     }

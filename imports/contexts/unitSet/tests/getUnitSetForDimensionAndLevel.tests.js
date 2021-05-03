@@ -20,9 +20,9 @@ describe(getUnitSetForDimensionAndLevel.name, function () {
   it('returns the unit for given dimension and level', function () {
     const doc = {
       dimension: Random.id(),
-      level: Random.id(),
+      level: Random.id()
     }
-    stub(UnitSet, 'collection',  () => ({
+    stub(UnitSet, 'collection', () => ({
       findOne: query => {
         expect(query).to.deep.equal(doc)
       }

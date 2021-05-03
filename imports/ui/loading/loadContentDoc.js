@@ -3,7 +3,15 @@ import { createLog } from '../../utils/createInfoLog'
 import { HTTP } from 'meteor/jkuester:http'
 import { isPlainObject } from '../../utils/object/isPlainObject'
 
-export const loadContentDoc = (context, docId, debug) => {
+/**
+ * Loads a single document from the content-server
+ * @param context {Object} The context related to the document.
+ * @param docId {String} The _id value of the document
+ * @param debug {Function?} optional debug logger
+ * @return {Promise<Object>} A promise resoling to an object or void
+ */
+
+export const loadContentDoc = (context, docId, debug = () => {}) => {
   return new Promise((resolve, reject) => {
     const cursor = context.collection().find(docId)
     if (cursor.count() > 0) {
@@ -13,10 +21,6 @@ export const loadContentDoc = (context, docId, debug) => {
     const route = context.routes.byId
     const collection = context.collection()
     const url = toContentServerURL(route.path)
-    const info = createLog({
-      name: context.name,
-      devOnly: true
-    })
 
     const method = route.method.toUpperCase()
     const requestOptions = {}
@@ -26,7 +30,7 @@ export const loadContentDoc = (context, docId, debug) => {
       cache: 'no-store'
     }
 
-    info('load', method, url, docId)
+    debug('load', method, url, docId)
     HTTP.call(method, url, requestOptions, (error, response) => {
       if (error) {
         info(error)
@@ -39,7 +43,7 @@ export const loadContentDoc = (context, docId, debug) => {
         return reject(document)
       }
 
-      info('received', document._id)
+      debug('received', document._id)
 
       collection.upsert({ _id: docId }, { $set: document })
       resolve(collection.findOne(docId))

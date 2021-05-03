@@ -44,7 +44,7 @@ describe(removeUser.name, function () {
     const log = (...args) => {
       expect(args).to.deep.equal([
         removeUser.name,
-        { userId, calledBy}
+        { userId, calledBy }
       ])
       done()
     }

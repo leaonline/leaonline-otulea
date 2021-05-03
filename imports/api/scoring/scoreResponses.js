@@ -7,7 +7,7 @@ import { Scoring } from '../../contexts/Scoring'
  * @return {function({ itemDoc, responseDoc }): *}
  */
 export const scoreResponses = function ({ itemDoc, responseDoc } = {}) {
-    // XXX: compat with subType and subtype
+  // XXX: compat with subType and subtype
   if (!itemDoc || !itemDoc.value || !(itemDoc.subtype || itemDoc.subType)) {
     throw new Meteor.Error('scoreResponses.error', 'items.expectedItemDefinition', responseDoc)
   }

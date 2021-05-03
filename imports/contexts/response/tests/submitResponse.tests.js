@@ -35,7 +35,7 @@ describe(createSubmitResponse.name, function () {
           sessionId: Random.id(),
           unitId: Random.id()
         }
-      },
+      }
     ].forEach(input => {
       expect(() => submitResponse(input))
         .to.throw('response.isNotCurrentUnit')

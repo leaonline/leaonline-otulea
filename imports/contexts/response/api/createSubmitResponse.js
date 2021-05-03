@@ -17,7 +17,7 @@ export const createSubmitResponse = ({ extractor, scorer }) => function submitRe
   }
 
   let scores = []
-  let failed = undefined
+  let failed
   try {
     const unitDoc = Unit.collection().findOne(unitId)
     const itemDoc = extractor({ unitDoc, page, contentId })

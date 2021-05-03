@@ -11,7 +11,6 @@ if (Meteor.isServer) {
   })()
 }
 
-
 if (Meteor.isClient) {
   (function () {
     import './client'

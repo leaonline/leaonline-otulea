@@ -1,16 +1,17 @@
 import { toContentServerURL } from '../../api/url/toContentServerURL'
-import { createLog } from '../../utils/createInfoLog'
 import { HTTP } from 'meteor/jkuester:http'
 
-export const loadAllContentDocs = (context, params, debug) => {
+/**
+ * Loads all docs from the content-server by given params.
+ * @param context {Object} The context the objects belong to
+ * @param params {Object?} optional additional parameters
+ * @param debug {Function?} optional debug logger
+ * @return {Promise}
+ */
+export const loadAllContentDocs = (context, params, debug = () => {}) => {
   const route = context.routes.all
   const collection = context.collection()
   const url = toContentServerURL(route.path)
-  const info = createLog({
-    name: context.name,
-    devOnly: true
-  })
-
   const method = route.method.toUpperCase()
   const requestOptions = {}
   requestOptions.headers = {
@@ -22,33 +23,38 @@ export const loadAllContentDocs = (context, params, debug) => {
     requestOptions.params = params
   }
 
-  info('start request', method, url)
-
-  if (debug) {
-    info('request options', requestOptions)
-  }
+  debug(method, url, 'start request')
+  debug(method, url, 'request options', requestOptions)
 
   return new Promise((resolve, reject) => {
     HTTP.call(method, url, requestOptions, (error, response) => {
+      debug(method, url, 'response received', { error, response })
       if (error) {
-        info(error)
+        debug(method, url, 'failed')
         return reject(error)
       }
 
-      if (debug) info(response)
-      const documents = response.data
+      let documents
 
-      if (!Array.isArray(documents)) {
-        return reject(documents)
+      if (Array.isArray(response.data)) {
+        documents = response.data
+      }
+
+      else if (response.data) {
+        documents = [response.data]
+      }
+
+      else {
+        documents = []
       }
 
       // skip further processing if no documents have been received
       if (documents.length === 0) {
-        info('skip (no docs received)')
+        debug(method, url, 'failed (no docs received)')
         return resolve(documents)
       }
 
-      info(`received ${documents.length} doc(s)`)
+      debug(method, url, `received ${documents.length} doc(s)`)
       documents.forEach(doc => collection.upsert(doc._id, { $set: doc }))
       resolve(documents)
     })

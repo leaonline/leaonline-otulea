@@ -30,7 +30,7 @@ describe(isEmptySession.name, function () {
         count: () => 1
       })
     }))
-    ;[undefined, 0, '', null].forEach(progress  => {
+    ;[undefined, 0, '', null].forEach(progress => {
       expect(isEmptySession({ progress })).to.equal(false)
     })
   })
@@ -40,7 +40,7 @@ describe(isEmptySession.name, function () {
         count: () => 0
       })
     }))
-    ;[undefined, 0, '', null].forEach(progress  => {
+    ;[undefined, 0, '', null].forEach(progress => {
       expect(isEmptySession({ progress })).to.equal(true)
     })
   })

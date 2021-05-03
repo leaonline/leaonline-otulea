@@ -119,10 +119,24 @@
       "continueOrEnd": "Was möchten Sie als nächstes tun?",
       "failed": "Es kann derzeit keine Bewertung Ihrer Ergebnisse erzeugt werden. Das Lea Team ist informiert und wird die Auswertung in Kürze wieder zur Verfügung stellen.",
       "definitionMissing": "Kompetenz ermittelt aber Definition fehlt",
-      "noEntries": "Es sind hierzu keine Einträge in der Rückmeldung enthalten."
+      "noEntries": "Es sind hierzu keine Einträge in der Rückmeldung enthalten.",
+      "competencies": "Kann-Beschreibungen"
     }
   },
   "users": {
     "title": "User / TN"
+  },
+  "thresholds": {
+    "notEnough": "Nicht ausreichend getestet",
+    "notAccomplished": "Nicht erfüllt",
+    "partiallyAccomplished": "Teilweise erfüllt",
+    "nearlyAccomplished": "Fast erfüllt",
+    "accomplished": "Erfüllt",
+    "id": "ID",
+    "min": "min. Anzahl",
+    "count": "Anzahl",
+    "correct": "Bestanden",
+    "perc": "in Prozent",
+    "grade": "Bewertung"
   }
 }

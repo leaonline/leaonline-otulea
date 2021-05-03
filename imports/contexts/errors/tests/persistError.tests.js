@@ -9,8 +9,6 @@ import {
 import { Errors } from '../Errors'
 import { restoreAll, stub } from '../../../../tests/helpers.tests'
 
-
-
 describe(persistError.name, function () {
   beforeEach(function () {
     mockCollection(Errors)
@@ -42,7 +40,7 @@ describe(persistError.name, function () {
         })
         done()
       },
-      insert: () => done(new Error('unexpected')),
+      insert: () => done(new Error('unexpected'))
     }))
     persistError(updateDoc)
   })

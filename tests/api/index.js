@@ -6,4 +6,3 @@ describe('api', function () {
   import '../../imports/api/scoring/tests'
   import '../../imports/api/url/tests'
 })
-
