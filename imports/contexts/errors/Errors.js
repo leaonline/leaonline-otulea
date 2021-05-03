@@ -1,4 +1,4 @@
-import { onServer, onServerExec } from '../../utils/archUtils'
+import { onServerExec } from '../../utils/archUtils'
 
 export const Errors = {
   name: 'errors',

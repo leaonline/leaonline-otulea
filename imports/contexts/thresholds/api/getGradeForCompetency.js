@@ -1,4 +1,3 @@
-import { check, Match } from 'meteor/check'
 import { Schema } from '../../../api/schema/Schema'
 
 /**
@@ -60,5 +59,5 @@ const gradeSchema = Schema.create({
     type: Number,
     min: 0,
     max: 1
-  },
+  }
 })

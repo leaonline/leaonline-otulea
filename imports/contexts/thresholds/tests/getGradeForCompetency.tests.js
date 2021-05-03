@@ -9,7 +9,7 @@ describe(getGradeForCompetency.name, function () {
     [
       {},
       { count: 1 },
-      { count: 1, minCount: 1, },
+      { count: 1, minCount: 1 },
       { count: 1, minCount: 1, correct: 1 },
       { count: 1, minCount: 1, correct: 1 },
       { count: 1, minCount: 1, correct: 1, thresholds: [{}] },
@@ -24,11 +24,10 @@ describe(getGradeForCompetency.name, function () {
         minCount: 1,
         correct: 1,
         thresholds: [{ max: Math.random() }]
-      },
+      }
     ].forEach(input => {
       expect(() => getGradeForCompetency(input)).to.throw('is required')
     })
-
 
     // invalid values: too low
     ;[
@@ -55,11 +54,10 @@ describe(getGradeForCompetency.name, function () {
         minCount: 1,
         correct: 1,
         thresholds: [{ max: -1, name: Random.id() }]
-      },
+      }
     ].forEach(input => {
       expect(() => getGradeForCompetency(input)).to.throw(' must be at least')
     })
-
 
     // invalid values: too high
     ;[
@@ -68,7 +66,7 @@ describe(getGradeForCompetency.name, function () {
         minCount: 1,
         correct: 1,
         thresholds: [{ max: 2, name: Random.id() }]
-      },
+      }
     ].forEach(input => {
       expect(() => getGradeForCompetency(input)).to.throw('Max cannot exceed 1')
     })
@@ -93,14 +91,14 @@ describe(getGradeForCompetency.name, function () {
   })
   it('returns the respective threshold entry', function () {
     const thresholds = [
-        { max: 1.00, name: Random.id() },
-        { max: 0.75, name: Random.id() },
-        { max: 0.50, name: Random.id() },
-        { max: 0.25, name: Random.id() },
-        { max: 0.00, name: Random.id() }
-      ]
+      { max: 1.00, name: Random.id() },
+      { max: 0.75, name: Random.id() },
+      { max: 0.50, name: Random.id() },
+      { max: 0.25, name: Random.id() },
+      { max: 0.00, name: Random.id() }
+    ]
 
-      // percent exact equal to max
+    // percent exact equal to max
     ;[
       { count: 4, minCount: 4, correct: 4 },
       { count: 4, minCount: 4, correct: 3 },

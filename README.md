@@ -20,7 +20,7 @@ fundamental literacy of the German workforce.
 This application is part of a multi-app environment. Please follow the
 instructions in the [development-project](https://github.com/leaonline/dev) to run the app and the environment.
 
-## Running the app, tests etc.
+## Running the app, tests etc
 
 In order to reduce configuration-complexity we have created a few scirpts, that
 makes it much easier für you to run and test the app:
@@ -33,18 +33,18 @@ Starts the app with respective parameters
 
 Starts the app with production flag to test performance and bundling.
 
-**`visualize.sh`** 
+**`visualize.sh`**
 
 Starts the app with production flag and `bundle-visualizer` to see bundle size.
 
-**`update_packages.sh`** 
+**`update_packages.sh`**
 
 Updates Meteor packages (and core if needed) plus NPM packages to their latest
 stable versions.
 
 **`commit_update.sh`**
 
-Standard-commit the changes from **`update_packages.sh`** 
+Standard-commit the changes from **`update_packages.sh`**
 
 **`test.sh`**  
 

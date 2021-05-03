@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor'
 import { Errors } from '../Errors'
 
 const transform = { hint: { $natural: -1 } }

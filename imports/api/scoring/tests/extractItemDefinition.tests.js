@@ -13,7 +13,7 @@ describe(extractItemDefinition.name, function () {
       contentId: { unitDoc: {}, page: 0 }
     }).forEach(([key, params]) => {
       expect(() => extractItemDefinition(params))
-        .to.throw(`Missing key \'${key}\'`)
+        .to.throw(`Missing key '${key}'`)
     })
   })
   it('throws on n valid page index', function () {

@@ -1,6 +1,4 @@
 import { Template } from 'meteor/templating'
-import { Tracker } from 'meteor/tracker'
-import { ReactiveDict } from 'meteor/reactive-dict'
 import { Dimension } from '../../../contexts/Dimension'
 import { Session } from '../../../contexts/session/Session'
 import { Thresholds } from '../../../contexts/thresholds/Thresholds'
@@ -35,7 +33,7 @@ Template.complete.onCreated(function () {
     }
   })
 
-  const { queryParam, callMethod, loadContentDoc, loadAllContentDocs, info, debug, hasProperty } = api
+  const { queryParam, callMethod, loadAllContentDocs, info, debug, hasProperty } = api
   const onFailed = err => instance.state.set('failed', err || true)
 
   loadAllContentDocs(Thresholds, undefined, debug)
@@ -44,8 +42,7 @@ Template.complete.onCreated(function () {
       const thresholdDoc = Thresholds.collection().findOne()
       const {
         minCountCompetency,
-        thresholdsCompetency,
-        thresholdsAlphaLevel
+        thresholdsCompetency
       } = thresholdDoc
 
       const sortedThresholds = Object
@@ -275,7 +272,7 @@ Template.complete.events({
   },
   'click .print-simple' (event) {
     event.preventDefault()
-    //printHTMLElement('lea-complete-print-root')
+    // printHTMLElement('lea-complete-print-root')
     window.print()
   },
   'click .lea-end-button' (event, templateInstance) {

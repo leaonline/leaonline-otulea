@@ -1,5 +1,4 @@
 import { toContentServerURL } from '../../api/url/toContentServerURL'
-import { createLog } from '../../utils/createInfoLog'
 import { HTTP } from 'meteor/jkuester:http'
 import { isPlainObject } from '../../utils/object/isPlainObject'
 
@@ -33,7 +32,7 @@ export const loadContentDoc = (context, docId, debug = () => {}) => {
     debug('load', method, url, docId)
     HTTP.call(method, url, requestOptions, (error, response) => {
       if (error) {
-        info(error)
+        debug(error)
         return reject(error)
       }
 

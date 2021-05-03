@@ -4,7 +4,7 @@ import { Random } from 'meteor/random'
 import { isCurrentUnit } from '../utils/isCurrentUnit'
 
 describe(isCurrentUnit.name, function () {
-  it('returns, whether the unitId belongs to the session\ current unit or not', function () {
+  it('returns, whether the unitId belongs to the session current unit or not', function () {
     expect(isCurrentUnit({
       sessionDoc: {
         currentUnit: Random.id()
