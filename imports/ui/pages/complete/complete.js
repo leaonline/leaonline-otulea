@@ -3,15 +3,15 @@ import { Tracker } from 'meteor/tracker'
 import { ReactiveDict } from 'meteor/reactive-dict'
 import { Dimension } from '../../../contexts/Dimension'
 import { Session } from '../../../contexts/session/Session'
+import { Thresholds } from '../../../contexts/thresholds/Thresholds'
 import { Competency } from '../../../contexts/Competency'
-import { Feedback } from '../../../contexts/feedback/Feedback'
-import { feedbackLevelFactory } from '../../../contexts/feedback/feedbackLevelFactory'
 import { createSessionLoader } from '../../loading/createSessionLoader'
 import { printHTMLElement } from '../../utils/printHTMLElement'
+import { sessionIsComplete } from '../../../contexts/session/utils/sessionIsComplete'
+import { getGradeForCompetency } from '../../../contexts/thresholds/api/getGradeForCompetency'
 import '../../components/container/container'
 import '../../layout/navbar/navbar'
 import './complete.html'
-import { sessionIsComplete } from '../../../contexts/session/utils/sessionIsComplete'
 
 const states = {
   showResults: 'showResults',
@@ -23,13 +23,12 @@ const stateValues = Object.values(states)
 
 Template.complete.onCreated(function () {
   const instance = this
-  instance.resolvedFeedback = new ReactiveDict()
   const { sessionId } = instance.data.params
 
   const { api } = instance.initDependencies({
     language: true,
     tts: true,
-    contexts: [Dimension, Session, Competency, Feedback],
+    contexts: [Dimension, Session, Competency, Thresholds],
     onComplete () {
       instance.state.set({
         dependenciesComplete: true
@@ -37,8 +36,110 @@ Template.complete.onCreated(function () {
     }
   })
 
-  const { queryParam, callMethod, loadAllContentDocs, info, hasProperty } = api
+  const { queryParam, callMethod, loadContentDoc, loadAllContentDocs, info, debug, hasProperty } = api
   const onFailed = err => instance.state.set('failed', err || true)
+
+  loadAllContentDocs(Thresholds, undefined, debug)
+    .catch(e => console.error(e))
+    .then(() => {
+      const thresholdDoc = Thresholds.collection().findOne()
+      const {
+        minCountCompetency,
+        thresholdsCompetency,
+        thresholdsAlphaLevel
+      } = thresholdDoc
+
+      const sortedThresholds = Object
+        .entries(thresholdsCompetency)
+        .map(([key, value]) => {
+          return {
+            max: value,
+            name: key
+          }
+        })
+        .sort((a, b) => {
+          return b.max - a.max
+        })
+
+      instance.state.set(thresholdDoc)
+
+      // TODO refactor into own method
+      callMethod({
+        name: Session.methods.results,
+        args: { sessionId },
+        failure: err => onFailed(err),
+        success: res => {
+          if (!res) {
+            return onFailed() // TODO fallback with a message "we can't eval right now..."
+          }
+
+          const aggregatedCompetencies = new Map()
+          res.forEach(result => {
+            result.forEach(({ competency, score, isUndefined }) => {
+              // since competency can actually hold more than one competency we
+              // need another iteration to break it down to it's pieces
+              competency.forEach(competencyId => {
+                const current = aggregatedCompetencies.get(competencyId) || {
+                  limit: 0,
+                  count: 0,
+                  undef: 0,
+                  min: minCountCompetency,
+                  perc: 0
+                }
+
+                current.limit += 1
+                current.count += (score === 'true' ? 1 : 0)
+                current.undef += (isUndefined === 'true' ? 1 : 0)
+                current.perc = (current.count / current.limit) * 100
+                current.grade = getGradeForCompetency({
+                  count: current.limit,
+                  minCount: minCountCompetency,
+                  correct: current.count,
+                  thresholds: sortedThresholds
+                })
+                current.grade.label = `thresholds.${current.grade.name}`
+                current.isGraded = current.grade.index > -1
+                aggregatedCompetencies.set(competencyId, current)
+              })
+            })
+          })
+
+          // GET request to content server to fetch competency documents
+          // which are required to display the related texts
+          const ids = Array.from(aggregatedCompetencies.keys())
+          loadAllContentDocs(Competency, { ids })
+            .catch(error => onFailed(error))
+            .then(competencyDocs => {
+              if (competencyDocs.length === 0) {
+                instance.state.set('competenciesLoaded', true)
+                return onFailed()
+              }
+
+              const CompetencyCollection = Competency.collection()
+              aggregatedCompetencies.forEach((value, competencyId) => {
+                const competencyDoc = CompetencyCollection.findOne(competencyId)
+                if (!competencyDoc) {
+                  return console.warn('Found no competency doc for _id', competencyId)
+                }
+
+                value.shortCode = competencyDoc.shortCode
+                value._id = competencyId
+                aggregatedCompetencies.set(competencyId, value)
+              })
+
+              debug({ aggregatedCompetencies })
+
+              const aggregatedResults = Array
+                .from(aggregatedCompetencies.values())
+                .sort((a, b) => a.shortCode.localeCompare(b.shortCode))
+              instance.state.set({
+                aggregatedResults,
+                competenciesLoaded: true
+              })
+            })
+        }
+      })
+    })
 
   // we use the session loader to simply the loading of the session dependencies
   // such as Dimension, Level, UnitSet, Colors, Unit etc.
@@ -46,7 +147,9 @@ Template.complete.onCreated(function () {
   sessionLoader({ sessionId })
     .catch(err => onFailed(err))
     .then(sessionData => {
-      info(sessionData)
+      debug(sessionData)
+
+      if (!sessionData) return console.warn('no session data!')
 
       const { sessionDoc, unitSetDoc, dimensionDoc, levelDoc, color } = sessionData
       // first we check for all docs, even one left-out doc is not acceptable
@@ -84,81 +187,6 @@ Template.complete.onCreated(function () {
       instance.state.set('view', states.showResults)
     }
   })
-
-  // first we call for the feedback levels and their respective configurations
-  callMethod({
-    name: Feedback.methods.get,
-    args: {},
-    failure: err => onFailed(err),
-    success: feedbackDoc => {
-      instance.state.set({ feedbackDoc })
-    }
-  })
-
-  callMethod({
-    name: Session.methods.results,
-    args: { sessionId },
-    failure: err => onFailed(err),
-    success: res => {
-      const aggregatedCompetencies = new Map()
-      console.info(res)
-      res.forEach(result => {
-        result.forEach(({ competency, score, isUndefined }) => {
-          const current = aggregatedCompetencies.get(competency) || {
-            limit: 0,
-            count: 0,
-            undef: 0
-          }
-
-          current.limit += 1
-          current.count += (score === 'true' ? 1 : 0)
-          current.undef += (isUndefined === 'true' ? 1 : 0)
-
-          aggregatedCompetencies.set(competency, current)
-        })
-      })
-      console.info(aggregatedCompetencies)
-      // GET request to content server to fetch competency documents
-      // which are required to display the related texts
-      const ids = Array.from(aggregatedCompetencies.keys())
-      loadAllContentDocs(Competency, { ids })
-        .catch(error => onFailed(error))
-        .then(competencyDocs => {
-          if (competencyDocs.length === 0) {
-            instance.state.set('competenciesLoaded', true)
-            return onFailed()
-          }
-
-          instance.state.set('aggregatedResults', Object.fromEntries(aggregatedCompetencies.entries()))
-          instance.state.set('competenciesLoaded', true)
-        })
-    }
-  })
-
-  instance.autorun(() => {
-    const feedbackDoc = instance.state.get('feedbackDoc')
-    const aggregatedResults = instance.state.get('aggregatedResults')
-
-    if (!aggregatedResults || !feedbackDoc) return
-
-    // if both are loaded we can resolve competencies by thresholds and
-    // build a fixed structure to be returned to the template view to render
-
-    const getFeedbackIndex = feedbackLevelFactory(feedbackDoc)
-    const { resolvedFeedback } = instance
-    resolvedFeedback.clear()
-
-    Object.entries(aggregatedResults).forEach(([competencyId, result]) => {
-      const index = getFeedbackIndex(result)
-      let indices = Tracker.nonreactive(() => resolvedFeedback.get(index))
-      if (!indices) {
-        indices = []
-      }
-
-      indices.push(competencyId)
-      resolvedFeedback.set(index, indices)
-    })
-  })
 })
 
 Template.complete.helpers({
@@ -171,15 +199,11 @@ Template.complete.helpers({
   failed () {
     return Template.getState('failed')
   },
-  feedbackLevels () {
-    const feedbackDoc = Template.getState('feedbackDoc')
-    return feedbackDoc?.levels
-  },
-  getCompetencies (index) {
-    return Template.instance().resolvedFeedback.get(index)
-  },
   competenciesLoaded () {
     return Template.getState('competenciesLoaded')
+  },
+  competencies () {
+    return Template.getState('aggregatedResults')
   },
   getCompetency (_id) {
     const competencyDoc = Competency.collection().findOne(_id)
@@ -192,9 +216,8 @@ Template.complete.helpers({
 
     return { description: _id }
   },
-  getFeedback (index) {
-    const feedback = Template.getState('currentFeedback')
-    return feedback && feedback.filter(entry => entry.status === index)
+  minCountCompetency () {
+    return Template.getState('minCountCompetency')
   },
   printOptions () {
     return Template.getState('printOptions')

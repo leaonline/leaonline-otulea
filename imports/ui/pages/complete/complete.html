@@ -48,9 +48,83 @@
         {{/if}}
 
         {{#if showResults}}
+
+            {{#if isDebugUser}}
+                {{#container}}
+                    <div class="card my-4">
+                        <div class="card-header">
+                            <h5 class="card-title">{{i18n "pages.complete.competencies"}}</h5>
+                            <span>
+                                {{i18n "thresholds.min"}}: {{minCountCompetency}}
+                            </span>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                <tr>
+                                    <th scope="col" class="text-center">#</th>
+                                    <th scope="col" class="text-center">
+                                        {{i18n "thresholds.id"}}
+                                    </th>
+                                    <th scope="col"></th>
+                                    <th scope="col" class="text-center d-none d-md-table-cell">
+                                        {{i18n "thresholds.count"}}
+                                    </th>
+                                    <th scope="col" class="text-center d-none d-md-table-cell">
+                                        {{i18n "thresholds.correct"}}
+                                    </th>
+                                    <th scope="col" class="text-center d-none d-md-table-cell">
+                                        {{i18n "thresholds.perc"}}
+                                    </th>
+                                    <th scope="col" class="text-center">
+                                        {{i18n "thresholds.grade"}}
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {{#each competency in competencies}}
+                                    <tr class="{{#unless competency.isGraded}}text-muted{{/unless}}">
+                                        <th scope="row" class="text-center">{{@index}}</th>
+                                        <td class="text-center">{{competency.shortCode}}</td>
+                                        <td class="w-25">
+                                            {{#if competency.isGraded}}
+                                            <div class="progress" style="height: 0.5rem;">
+                                                <div class="progress-bar bg-{{currentType}}"
+                                                     role="progressbar"
+                                                     style="width: {{competency.perc}}%;"
+                                                     aria-valuenow="{{competency.perc}}"
+                                                     aria-valuemin="0"
+                                                     aria-valuemax="100">
+                                                </div>
+                                            </div>
+                                            {{/if}}
+                                        </td>
+                                        <td class="text-center d-none d-md-table-cell">{{competency.limit}}</td>
+                                        <td class="text-center d-none d-md-table-cell">{{competency.count}}</td>
+                                        <td class="text-center d-none d-md-table-cell">{{competency.perc}}</td>
+                                        <td class="text-center">{{i18n competency.grade.label}}</td>
+                                    </tr>
+                                    {{else}}
+                                    <tr>
+                                        <th scope="row">{{>loading}}</th>
+                                        <td>{{>loading}}</td>
+                                        <td>{{>loading}}</td>
+                                        <td>{{>loading}}</td>
+                                        <td>{{>loading}}</td>
+                                    </tr>
+                                {{/each}}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                {{/container}}
+            {{/if}}
+
+
+            {{!-- iterate all possible feedback levels
             {{#container}}
 
-            {{!-- iterate all possible feedback levels --}}
+
                 {{#with feedbackLevels}}
                     {{#each feedbackLevel in this}}
 
@@ -66,7 +140,7 @@
                                 </li>
 
 
-                                {{!-- display all related competencies for this feedback --}}
+
 
                                 {{#each competencyId in this}}
                                     <li class="list-group-item">
@@ -87,16 +161,9 @@
                             </ul>
                         {{/with}}
                     {{/each}}
-                {{else}}
-                    <div class="card my-4">
-                        <div class="card-body">
-                            <h1 class="text-center">
-                                <i class="fa fas fa-fw fa-spinner fa-pulse"></i>
-                            </h1>
-                        </div>
-                    </div>
                 {{/with}}
             {{/container}}
+                --}}
 
             {{#container class="d-print-none"}}
                 <div class="card lea-complete-showprint-container ">
@@ -118,7 +185,8 @@
                                      groupClass="w-100"
                                      label=(i18n "pages.complete.printResultsTeacher")
                                      type=currentType}}
-                            <button class="ml-auto btn btn-outline-light" disabled>
+                            <button class="ml-auto btn btn-outline-light"
+                                    disabled>
                                 <i class="fa fas fa-fw fa-print"></i>
                             </button>
                         {{/textGroup}}
