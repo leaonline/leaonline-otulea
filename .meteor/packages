@@ -44,7 +44,7 @@ mdg:validated-method
 
 accounts-base@1.9.0
 accounts-password@1.7.0
-leaonline:accounts-lea
+ongoworks:ddp-login
 leaonline:ddp-login-handler
 service-configuration@1.0.11
 

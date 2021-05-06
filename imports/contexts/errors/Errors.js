@@ -16,7 +16,8 @@ Errors.schema = {
   },
 
   message: {
-    type: String
+    type: String,
+    optional: true
   },
 
   details: {
@@ -34,7 +35,8 @@ Errors.schema = {
   },
 
   stack: {
-    type: String
+    type: String,
+    optional: true
   },
 
   createdBy: {

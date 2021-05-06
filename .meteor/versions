@@ -1,5 +1,4 @@
 accounts-base@1.9.0
-accounts-oauth@1.2.0
 accounts-password@1.7.0
 aldeed:autoform@7.0.0
 aldeed:collection2@3.2.1
@@ -54,13 +53,11 @@ jkuester:template-states@0.3.1
 jquery@3.0.0
 lai:collection-extensions@0.2.1_1
 launch-screen@1.2.1
-leaonline:accounts-lea@1.0.1
 leaonline:collection-factory@1.0.3
 leaonline:corelib@1.0.0
 leaonline:ddp-login-handler@1.0.4
 leaonline:ejson-regexp@1.1.0
 leaonline:method-factory@1.0.0
-leaonline:oauth-lea@1.0.2
 leaonline:publication-factory@1.0.0
 leaonline:ratelimit-factory@1.0.0
 leaonline:service-registry@1.0.0
@@ -92,9 +89,8 @@ mongo-dev-server@1.1.0
 mongo-id@1.0.7
 npm-bcrypt@0.9.3
 npm-mongo@3.9.0
-oauth@1.3.2
-oauth2@1.3.0
 observe-sequence@1.0.16
+ongoworks:ddp-login@0.2.2
 ordered-dict@1.1.0
 ostrio:cstorage@2.2.2
 ostrio:flow-router-extra@3.7.5

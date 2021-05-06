@@ -23,12 +23,12 @@ Template.story.onCreated(function () {
     }
   })
 
-  const { info } = api
-  const loadSessionDocs = createSessionLoader({ info })
+  const { debug } = api
+  const loadSessionDocs = createSessionLoader({ debug })
 
   instance.autorun(computation => {
     if (renderersLoaded.get()) {
-      info('renderers loaded')
+      debug('renderers loaded')
       return computation.stop()
     }
 

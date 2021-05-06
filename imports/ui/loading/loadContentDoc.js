@@ -1,6 +1,7 @@
 import { toContentServerURL } from '../../api/url/toContentServerURL'
-import { HTTP } from 'meteor/jkuester:http'
+
 import { isPlainObject } from '../../utils/object/isPlainObject'
+import { asyncHTTP } from './asyncHTTP'
 
 /**
  * Loads a single document from the content-server
@@ -10,42 +11,34 @@ import { isPlainObject } from '../../utils/object/isPlainObject'
  * @return {Promise<Object>} A promise resoling to an object or void
  */
 
-export const loadContentDoc = (context, docId, debug = () => {}) => {
-  return new Promise((resolve, reject) => {
-    const cursor = context.collection().find(docId)
-    if (cursor.count() > 0) {
-      return resolve(cursor.fetch()[0])
-    }
+export const loadContentDoc = async (context, docId, debug = () => {}) => {
+  const cursor = context.collection().find(docId)
+  if (cursor.count() > 0) {
+      return cursor.fetch()[0]
+  }
 
-    const route = context.routes.byId
-    const collection = context.collection()
-    const url = toContentServerURL(route.path)
+  const route = context.routes.byId
+  const collection = context.collection()
+  const url = toContentServerURL(route.path)
 
-    const method = route.method.toUpperCase()
-    const requestOptions = {}
-    requestOptions.params = { _id: docId }
-    requestOptions.headers = {
-      mode: 'cors',
-      cache: 'no-store'
-    }
+  const method = route.method.toUpperCase()
+  const requestOptions = {}
+  requestOptions.params = { _id: docId }
+  requestOptions.headers = {
+    mode: 'cors',
+    cache: 'no-store'
+  }
 
-    debug('load', method, url, docId)
-    HTTP.call(method, url, requestOptions, (error, response) => {
-      if (error) {
-        debug(error)
-        return reject(error)
-      }
+  debug('load', method, url, docId)
 
-      const document = response.data
+  const response = await asyncHTTP(method, url, requestOptions)
+  const document = response.data
 
-      if (!isPlainObject(document)) {
-        return reject(document)
-      }
+  if (!isPlainObject(document)) {
+    throw new Error(`Expected document for ${method} ${url}`)
+  }
 
-      debug('received', document._id)
-
-      collection.upsert({ _id: docId }, { $set: document })
-      resolve(collection.findOne(docId))
-    })
-  })
+  debug('received', document._id)
+  collection.upsert({ _id: docId }, { $set: document })
+  return collection.findOne(docId)
 }

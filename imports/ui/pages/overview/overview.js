@@ -28,9 +28,9 @@ Template.overview.onCreated(function () {
     onComplete: () => instance.state.set('dependenciesComplete', true)
   })
 
-  const { loadAllContentDocs, callMethod } = instance.api
+  const { loadAllContentDocs, callMethod, debug } = instance.api
   const loadContentDocuments = async () => {
-    const allTestCycles = await loadAllContentDocs(TestCycle, { isLegacy: true })
+    const allTestCycles = await loadAllContentDocs(TestCycle, { isLegacy: true }, debug)
     const dimensions = new Set()
     const levels = new Set()
 
@@ -39,13 +39,8 @@ Template.overview.onCreated(function () {
       levels.add(tstCycleDoc.level)
     })
 
-    await loadAllContentDocs(Dimension, {
-      ids: Array.from(dimensions)
-    })
-
-    await loadAllContentDocs(Level, {
-      ids: Array.from(levels)
-    })
+    await loadAllContentDocs(Dimension, { ids: Array.from(dimensions) }, debug)
+    await loadAllContentDocs(Level, { ids: Array.from(levels) }, debug)
 
     instance.state.set({
       contentDocsLoadComplete: true,

@@ -8,6 +8,14 @@ const settingsSchema = schema({
         length: SimpleSchema.Integer
       })
     }),
+    packages: schema({
+      'dynamic-import': schema({
+        useLocationOrigin: {
+          type: Boolean,
+          optional: true
+        }
+      })
+    }),
     app: schema({
       name: String,
       label: String,
@@ -49,7 +57,8 @@ const settingsSchema = schema({
       secret: String
     }),
     content: schema({
-      secret: String
+      username: String,
+      password: String
     })
   }),
   accounts: schema({

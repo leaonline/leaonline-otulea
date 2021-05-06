@@ -5,6 +5,11 @@
         "length": 5
       }
     },
+    "packages": {
+      "dynamic-import": {
+        "useLocationOrigin": true
+      }
+    },
     "app": {
       "name": "otu.lea",
       "label": "apps.otulea.title",
@@ -46,7 +51,8 @@
       "secret": "01234567890123456789"
     },
     "content": {
-      "secret": "01234567890123456789"
+      "username": "otuleasystem",
+      "password": "000111222333444555666777888999"
     }
   },
   "accounts": {

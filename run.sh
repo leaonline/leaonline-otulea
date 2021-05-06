@@ -21,7 +21,7 @@ done
 
 PACKAGE_DIRS="../lib:../liboauth"
 DEBUG="app" METEOR_PACKAGE_DIRS=${PACKAGE_DIRS}  meteor \
-    --exclude-archs=web.browser.legacy,web.cordova \
+    --exclude-archs=web.cordova \
     --settings=settings.json \
     ${PRODUCTION_MODE} \
     ${PROFILE_REQUIRE} \

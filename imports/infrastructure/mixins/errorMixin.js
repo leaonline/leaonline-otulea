@@ -14,6 +14,7 @@ export const errorMixin = options => {
       return runFct.call(this, ...args)
     }
     catch (runtimeError) {
+      console.error(runtimeError)
       const normalizedError = normalizeError({
         error: runtimeError,
         userId: userId,

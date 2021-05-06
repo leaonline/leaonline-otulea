@@ -13,11 +13,11 @@ import { initClientContext } from '../../startup/client/context'
  * @param instance
  * @return fn {async Function} the load function, loading a session for unit
  */
-export const createSessionLoader = ({ info = () => {} }) => {
+export const createSessionLoader = ({ debug = () => {} }) => {
   [UnitSet, Level, Dimension, Session, Unit].forEach(ctx => initClientContext(ctx))
 
   return async ({ sessionId, unitId, unitSetId }) => {
-    info('load session docs')
+    debug('load session docs')
 
     const sessionDoc = sessionId && await callMethod({
       name: Session.methods.currentById.name,
