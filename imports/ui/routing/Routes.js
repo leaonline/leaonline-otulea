@@ -287,3 +287,21 @@ Routes.root = {
 Object.keys(Routes).forEach(key => {
   Routes[key].key = key
 })
+
+Routes.diagnostics = {
+  path: () => {
+    return `${settings().diagnostics}`
+  },
+  label: 'pages.diagnostics.title',
+  triggersEnter: () => [],
+  async load () {
+    return import('../pages/diagnostics/diagnostics')
+  },
+  target: null,
+  template: 'diagnostics',
+  data: {
+    next () {
+      go(Routes.demo)
+    }
+  }
+}

@@ -22,7 +22,7 @@ class DocumentList {
     this.list = getProperty(document, fieldName)
 
     if (!this.list?.length) {
-      throw new Meteor.Error('DocumentList.error', 'DocumentList.noList', {
+      throw new Meteor.Error('DocumentList.error', DocumentList.noList, {
         context: context.name,
         document: document._id,
         field: fieldName
@@ -38,7 +38,7 @@ class DocumentList {
 
     // make sure the current doc is even located in this set
     if (this.index === -1 || this.index > this.list.length - 1) {
-      throw new Meteor.Error('DocumentList.error', 'DocumentList.idNotInSet', {
+      throw new Meteor.Error('DocumentList.error', DocumentList.idNotInSet, {
         current: this.currentId,
         context: this.context.name,
         document: this.documentId
@@ -69,5 +69,8 @@ class DocumentList {
     return list[index + 1]
   }
 }
+
+DocumentList.noList = 'DocumentList.noList'
+DocumentList.idNotInSet = 'DocumentList.idNotInSet'
 
 export { DocumentList }

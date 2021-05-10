@@ -40,5 +40,28 @@
     "createdAt": "Registriert",
     "updatedAt": "Zuletzt on",
     "email": "E-Mail"
+  },
+  "errors": {
+    "title": "Fehler / Bugs",
+    "name": "Name",
+    "type": "Typ",
+    "message": "Hinweis",
+    "details": "Details",
+    "hash": "Hash",
+    "count": "Anzahl",
+    "stack": "Stack",
+    "createdBy": "Erzeugt von",
+    "createdAt": "Erstes mal",
+    "template": "Template",
+    "isServer": "Server",
+    "isClient": "Client",
+    "method": "Methode",
+    "publication": "Pub/Sub",
+    "endpoint": "HTTP",
+    "isSystem": "von System",
+    "browser": "Browser"
+  },
+  "diagnostics": {
+    "title": "Diagnosedaten"
   }
 }

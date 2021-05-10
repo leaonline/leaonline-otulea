@@ -16,4 +16,4 @@ const publications = Object.values(Feedback.publications)
 createPublications(publications)
 rateLimitPublications(publications)
 
-ServiceRegistry.register(Feedback)
+// ServiceRegistry.register(Feedback)

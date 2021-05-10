@@ -13,5 +13,6 @@
     "terms": "agb",
     "privacy": "datenschutz",
     "contact": "kontakt"
-  }
+  },
+  "diagnostics": "/browser-diagnose"
 }

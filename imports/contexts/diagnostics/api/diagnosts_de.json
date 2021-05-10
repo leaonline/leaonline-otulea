@@ -1,0 +1,12 @@
+{
+  "diagnostics": {
+    "title": "Browser-Diagnose",
+    "osinfo": "Browser/Betriebssystem",
+    "font": "Schriftart",
+    "localStorage": "Speicher",
+    "serviceworker": "Service-Worker",
+    "tts": "Text-To-Speech",
+    "language": "Übersetzungen",
+    "performance": "Performance"
+  }
+}

@@ -24,5 +24,6 @@ export const initLanguage = async () => {
   })
 
   document.documentElement.setAttribute('lang', 'de')
-  console.info('[Language]: loaded')
+  console.info('[initLanguage]: loaded')
+  return i18n
 }

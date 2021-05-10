@@ -16,4 +16,4 @@ const publications = Object.values(Logos.publications)
 createPublications(publications)
 rateLimitPublications(publications)
 
-ServiceRegistry.register(Logos)
+//ServiceRegistry.register(Logos)

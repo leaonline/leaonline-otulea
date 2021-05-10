@@ -3,7 +3,7 @@ import { onServerExec } from '../../utils/archUtils'
 export const Errors = {
   name: 'errors',
   label: 'errors.title',
-  icon: 'exclamation-mark'
+  icon: 'exclamation-triangle'
 }
 
 Errors.schema = {
@@ -111,7 +111,8 @@ Errors.methods.getAll = {
     import { getAllErrors } from './api/getAllErrors'
 
     return function ({ ids }) {
-      return getAllErrors(ids)
+      const all = getAllErrors(ids)
+      return { [Errors.name]: all }
     }
   })
 }
@@ -134,6 +135,7 @@ Errors.methods.remove = {
 Errors.methods.create = {
   name: 'errors.methods.create',
   schema: Errors.schema,
+  isPublic: true,
   run: onServerExec(function () {
     import { persistError } from './api/persistError'
 

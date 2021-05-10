@@ -6,7 +6,7 @@ import { Level } from '../../contexts/Level'
 import { Dimension } from '../../contexts/Dimension'
 import { ColorType } from '../../contexts/types/ColorType'
 import { Unit } from '../../contexts/Unit'
-import { initClientContext } from '../../startup/client/context'
+import { initClientContext } from '../../api/context/initClientContext'
 
 /**
  * Creates a loader for the "current session" and all it's dependants.

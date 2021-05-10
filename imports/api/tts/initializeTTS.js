@@ -6,6 +6,7 @@ import { getOSInfo } from '../../ui/utils/getOSInfo'
 export const initializeTTS = async () => {
   const { TTSEngine } = await import('../../api/tts/TTSEngine')
 
+  let failed
   let mode
   try {
     const { detected, types } = await getOSInfo()
@@ -24,14 +25,29 @@ export const initializeTTS = async () => {
     }
   }
   catch (error) {
+    failed = true
+    mode = TTSEngine.modes.server
     console.error('[initializeTTS]: Failed to detect os, use fallback. (Error send)')
     console.error('[initializeTTS]: Fallback User Agent:', window.navigator.userAgent)
     console.error('[initializeTTS]: Fallback Platform:', window.navigator.platform)
     sendError({ error })
-    mode = TTSEngine.modes.server
+    throw error
   }
 
-  TTSEngine.configure({ loader: externalServerTTSLoader, mode })
+  console.debug('[initializeTTS]: configure TTS')
+  return new Promise((resolve, reject) => {
+    TTSEngine.configure({
+      loader: externalServerTTSLoader,
+      mode: mode,
+      onError: error => {
+        failed = true
+        reject(error)
+      },
+      onComplete () {
+        resolve(TTSEngine)
+      }
+    })
+  })
 }
 
 function externalServerTTSLoader (requestText, callback) {

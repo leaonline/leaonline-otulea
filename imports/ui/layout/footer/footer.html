@@ -36,7 +36,7 @@
                                     data-key=legalRoute.name}}
                                 {{/routeButton}}
                             {{else}}
-                                <a href="{{route legalRoute.name}}">...</a>
+                                <a href="{{route legalRoute.name}}">{{legalRoute.name}}</a>
                             {{/if}}
                             {{/each}}
                         {{#with currentUser}}

@@ -9,11 +9,11 @@ export const loadOnce = function (asyncInitFunc) {
 
   const initialized = new ReactiveVar(false)
   asyncInitFunc()
-    .then(() => {
+    .catch(e => console.error(e))
+    .finally(() => {
       initialized.set(true)
       cache.set(asyncInitFunc, initialized)
     })
-    .catch(e => console.error(e))
 
   return initialized
 }

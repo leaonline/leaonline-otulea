@@ -1,11 +1,11 @@
 import { Blaze } from 'meteor/blaze'
-import { Components } from 'meteor/leaonline:ui/components/Components'
 import '../../ui/pages/loading/loading'
 import '../../ui/components/complete/onComplete'
+
 // if we use the autoload functionality we don't need to explicitly load basic
 // and generic (stateless) templates, since they are loaded at runtime using
 // dynamic imports.
-Components.autoLoad()
+let autoLoadEnabled = false
 
 /**
  * This is a way to provide a Template-independent way of initializing
@@ -20,10 +20,16 @@ Components.autoLoad()
 
 Blaze.TemplateInstance.prototype.initDependencies =
   function ({ language = true, tts = true, contexts = [], loaders = [], onComplete }) {
+    import { Components } from 'meteor/leaonline:ui/components/Components'
+    if (!autoLoadEnabled) {
+      Components.autoLoad()
+      autoLoadEnabled = true
+    }
+
     import { Router } from '../../ui/routing/Router'
-    import { initLanguage } from './language'
-    import { initializeTTS } from './leaconfig'
-    import { initClientContext } from './context'
+    import { initLanguage } from '../../api/i18n/initLanguage'
+    import { initializeTTS } from '../../api/tts/initializeTTS'
+    import { initClientContext } from '../../api/context/initClientContext'
     import { loadOnce } from '../../ui/loading/loadOnce'
     import { createLog } from '../../utils/createInfoLog'
     import { loadAllContentDocs } from '../../ui/loading/loadAllContentDocs'
