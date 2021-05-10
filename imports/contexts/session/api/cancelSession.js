@@ -1,5 +1,7 @@
+import { check, Match } from 'meteor/check'
 import { Session } from '../Session'
 import { isEmptySession } from '../utils/isEmptySession'
+import { checkDocument } from '../../../infrastructure/mixins/checkDocument'
 
 /**
  * Cancels a running session.
@@ -8,11 +10,17 @@ import { isEmptySession } from '../utils/isEmptySession'
  *
  * Otherwise it will be updated with a {cancelledAt} flag.
  *
- * @param sessionId {String} id of the session
+ * @param options.sessionId {String} id of the session
+ * @param options.userId {String} id of the user
  * @return {*}
  */
-export const cancelSession = function cancelSession ({ sessionId }) {
-  const { userId, checkDocument } = this
+export const cancelSession = function cancelSession (options = {}) {
+  check(options, Match.ObjectIncluding({
+    sessionId: String,
+    userId: String
+  }))
+
+  const { sessionId, userId } = options
   const SessionCollection = Session.collection()
   const sessionDoc = SessionCollection.findOne({ _id: sessionId, userId })
 

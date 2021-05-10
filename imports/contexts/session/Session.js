@@ -116,7 +116,13 @@ Session.methods.start = {
   run: onServerExec(function () {
     import { startSession } from './api/startSession'
 
-    return startSession
+    return function ({ testCycleId }) {
+      const api = this
+      return startSession({
+        testCycleId: testCycleId,
+        userId: api.userId
+      })
+    }
   })
 }
 
@@ -130,7 +136,13 @@ Session.methods.cancel = {
   run: onServerExec(function () {
     import { cancelSession } from './api/cancelSession'
 
-    return cancelSession
+    return function ({ sessionId }) {
+      const api = this
+      return cancelSession({
+        sessionId: sessionId,
+        userId: api.userId
+      })
+    }
   })
 }
 
@@ -142,7 +154,13 @@ Session.methods.continue = {
   run: onServerExec(function () {
     import { continueSession } from './api/continueSession'
 
-    return continueSession
+    return function ({ sessionId }) {
+      const api = this
+      return continueSession({
+        sessionId: sessionId,
+        userId: api.userId
+      })
+    }
   })
 }
 
@@ -155,7 +173,14 @@ Session.methods.update = {
   timeInterval: 1000,
   run: onServerExec(function () {
     import { updateSession } from './api/updateSession'
-    return updateSession
+    return function ({ sessionId }) {
+      const api = this
+      return updateSession({
+        sessionId: sessionId,
+        userId: api.userId,
+        debug: api.debug
+      })
+    }
   })
 }
 

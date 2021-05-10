@@ -1,15 +1,23 @@
 import { Meteor } from 'meteor/meteor'
+import { check, Match } from 'meteor/check'
 import { Session } from '../Session'
 import { sessionIsComplete } from '../utils/sessionIsComplete'
 import { sessionIsCancelled } from '../utils/sessionIsCancelled'
+import { checkDocument } from '../../../infrastructure/mixins/checkDocument'
 
 /**
  * Continues an aborted (but not cancelled session= session
- * @param sessionId
+ * @param options.sessionId
+ * @param options.userId
  * @return {*}
  */
-export const continueSession = function continueSession ({ sessionId }) {
-  const { userId, checkDocument } = this
+export const continueSession = function continueSession (options = {}) {
+  check(options, Match.ObjectIncluding({
+    sessionId: String,
+    userId: String
+  }))
+
+  const { sessionId, userId } = options
   const SessionCollection = Session.collection()
   const sessionDoc = SessionCollection.findOne({ _id: sessionId, userId })
   checkDocument(sessionDoc, Session)

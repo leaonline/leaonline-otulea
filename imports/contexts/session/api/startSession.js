@@ -1,8 +1,11 @@
-import { TestCycle } from '../../testcycle/TestCycle'
 import { Meteor } from 'meteor/meteor'
+import { check, Match } from 'meteor/check'
+import { TestCycle } from '../../testcycle/TestCycle'
 import { UnitSet } from '../../unitSet/UnitSet'
 import { Session } from '../Session'
 import { Unit } from '../../Unit'
+import { checkDocument } from '../../../infrastructure/mixins/checkDocument'
+import { getDocument } from '../../../infrastructure/mixins/getDocument'
 
 /**
  * Starts a new session for a given test cycle.
@@ -10,12 +13,18 @@ import { Unit } from '../../Unit'
  * The test cycle inherits a set of unit sets and thus units.
  * There is at least one unit set with at least one unit each.
  *
- * @param testCycleId
+ * @param options.testCycleId
+ * @param options.userId {string}
  * @return {any}
  */
-export const startSession = function startSession ({ testCycleId }) {
-  const API = this
-  const { userId } = API
+export const startSession = function startSession (options = {}) {
+  check(options, Match.ObjectIncluding({
+    testCycleId: String,
+    userId: String
+  }))
+
+  const { testCycleId, userId } = options
+
   const SessionCollection = Session.collection()
   const abortedSessionDoc = SessionCollection.findOne({
     userId,
@@ -26,7 +35,7 @@ export const startSession = function startSession ({ testCycleId }) {
 
   // There may be the the case where we find an aborted session.
   if (abortedSessionDoc) {
-    throw new Meteor.Error('session.start.error', 'session.sessionExists', {
+    throw new Meteor.Error('session.start.error', 'session.existsAlready', {
       sessionId: abortedSessionDoc._id,
       unitSetId: testCycleId
     })
@@ -35,26 +44,26 @@ export const startSession = function startSession ({ testCycleId }) {
   // for a new session we stamp the start time and get the referenced
   // unitSet document in order to store the associated dimension, level and
   // ordered set of units to be solved.
-  const startedAt = new Date()
-  const testCycleDoc = API.getDocument(testCycleId, TestCycle)
-  API.checkDocument(testCycleDoc, TestCycle, { testCycleId })
+  const testCycleDoc = getDocument(testCycleId, TestCycle)
+  checkDocument(testCycleDoc, TestCycle, { testCycleId })
 
   // get the initial unit-set
   const unitSetId = testCycleDoc.unitSets?.[0]
-  const unitSetDoc = API.getDocument(unitSetId, UnitSet)
-  const progress = 100 * (1 / (testCycleDoc.unitSets.length || 1))
+  const unitSetDoc = getDocument(unitSetId, UnitSet)
+  const progress = 0
 
   // we also strictly require the unitSetDoc to start a session
-  API.checkDocument(unitSetDoc, UnitSet, { unitSetId })
+  checkDocument(unitSetDoc, UnitSet, { unitSetId })
 
   // get the initial unit
   const currentUnit = unitSetDoc.units?.[0]
-  const unitDoc = API.getDocument(currentUnit, Unit)
+  const unitDoc = getDocument(currentUnit, Unit)
 
   // unit is also strictly required to start a session
-  API.checkDocument(unitDoc, Unit, { currentUnit })
+  checkDocument(unitDoc, Unit, { currentUnit })
 
   // if all docs exist, we can create a new session document
+  const startedAt = new Date()
   const insertDoc = { userId, startedAt, currentUnit, progress }
   insertDoc.testCycle = testCycleId
   insertDoc.unitSet = unitSetId
