@@ -7,6 +7,7 @@ import { stub, restoreAll } from '../../../../tests/helpers.tests'
 import { Session } from '../Session'
 import { TestCycle } from '../../testcycle/TestCycle'
 import { UnitSet } from '../../unitSet/UnitSet'
+import { Unit } from '../../Unit'
 import { DocNotFoundError } from '../../errors/DocNotFoundError'
 import { DocumentList } from '../../../api/lists/DocumentList'
 
@@ -18,6 +19,7 @@ describe(updateSession.name, function () {
     mockCollection(Session)
     mockCollection(TestCycle)
     mockCollection(UnitSet)
+    mockCollection(Unit)
     sessionId = Random.id()
     userId = Random.id()
     currentUnit = Random.id()
@@ -25,6 +27,9 @@ describe(updateSession.name, function () {
 
   afterEach(function () {
     restoreCollection(Session)
+    restoreCollection(TestCycle)
+    restoreCollection(UnitSet)
+    restoreCollection(Unit)
     restoreAll()
   })
 
@@ -52,13 +57,27 @@ describe(updateSession.name, function () {
     const options = { sessionId, userId }
     expect(() => updateSession(options)).to.throw(DocNotFoundError.reason)
   })
-  it('throws if there can be no lists created from the given documents', function () {
+  it('throws if there is no unit doc for the given unit id', function () {
     const sessionDoc = {}
     const tcDoc = {}
     const usDoc = {}
     stub(Session, 'collection', () => ({ findOne: () => sessionDoc }))
     stub(TestCycle, 'collection', () => ({ findOne: () => tcDoc }))
     stub(UnitSet, 'collection', () => ({ findOne: () => usDoc }))
+    stub(Unit, 'collection', () => ({ findOne: () => {} }))
+
+    const options = { sessionId, userId }
+    expect(() => updateSession(options)).to.throw(DocNotFoundError.reason)
+  })
+  it('throws if there can be no lists created from the given documents', function () {
+    const sessionDoc = {}
+    const tcDoc = {}
+    const usDoc = {}
+    const unitDoc = { pages: [] }
+    stub(Session, 'collection', () => ({ findOne: () => sessionDoc }))
+    stub(TestCycle, 'collection', () => ({ findOne: () => tcDoc }))
+    stub(UnitSet, 'collection', () => ({ findOne: () => usDoc }))
+    stub(Unit, 'collection', () => ({ findOne: () => unitDoc }))
 
     const options = { sessionId, userId }
     expect(() => updateSession(options)).to.throw(DocumentList.noList)
@@ -78,6 +97,8 @@ describe(updateSession.name, function () {
       testCycleId: tcDoc._id,
       unitSet: usDoc._id
     }
+    const unitDoc = { pages: [{}, {}] }
+    stub(Unit, 'collection', () => ({ findOne: () => unitDoc }))
     stub(TestCycle, 'collection', () => ({ findOne: () => tcDoc }))
     stub(UnitSet, 'collection', () => ({ findOne: () => usDoc }))
     stub(Session, 'collection', () => ({
@@ -87,6 +108,7 @@ describe(updateSession.name, function () {
         expect(modifier.$set.currentUnit).to.equal(null)
         expect(modifier.$set.updatedAt instanceof Date).to.equal(true)
         expect(modifier.$set.completedAt instanceof Date).to.equal(true)
+        expect(modifier.$inc.progress).to.equal(2)
       }
     }))
 
@@ -121,6 +143,8 @@ describe(updateSession.name, function () {
       testCycleId: tcDoc._id,
       unitSet: usDoc._id
     }
+    const unitDoc = { pages: [{}, {}] }
+    stub(Unit, 'collection', () => ({ findOne: () => unitDoc }))
     stub(TestCycle, 'collection', () => ({ findOne: () => tcDoc }))
     stub(UnitSet, 'collection', () => ({
       findOne: (id) => {
@@ -135,6 +159,7 @@ describe(updateSession.name, function () {
         expect(modifier.$set.unitSet).to.equal(nextUnitSetId)
         expect(modifier.$set.currentUnit).to.equal(nextUnitId)
         expect(modifier.$set.completedAt instanceof Date).to.equal(false)
+        expect(modifier.$inc.progress).to.equal(2)
       }
     }))
 
@@ -163,6 +188,8 @@ describe(updateSession.name, function () {
       testCycleId: tcDoc._id,
       unitSet: usDoc._id
     }
+    const unitDoc = { pages: [{}, {}] }
+    stub(Unit, 'collection', () => ({ findOne: () => unitDoc }))
     stub(TestCycle, 'collection', () => ({ findOne: () => tcDoc }))
     stub(UnitSet, 'collection', () => ({ findOne: () => usDoc }))
     stub(Session, 'collection', () => ({
@@ -172,6 +199,7 @@ describe(updateSession.name, function () {
         expect(modifier.$set.unitSet).to.equal(undefined)
         expect(modifier.$set.currentUnit).to.equal(nextUnitId)
         expect(modifier.$set.completedAt instanceof Date).to.equal(false)
+        expect(modifier.$inc.progress).to.equal(2)
       }
     }))
 

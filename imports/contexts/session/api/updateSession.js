@@ -6,6 +6,7 @@ import { getSessionDoc } from '../utils/getSessionDoc'
 import { createDocumentList } from '../../../api/lists/createDocumentList'
 import { checkDocument } from '../../../infrastructure/mixins/checkDocument'
 import { getDocument } from '../../../infrastructure/mixins/getDocument'
+import { Unit } from '../../Unit'
 
 /**
  * Updates a session document by id.
@@ -45,11 +46,16 @@ export const updateSession = function (options = {}) {
     userId
   })
 
-  // get unit set doc
+  // get unitSet doc
   const unitSetDoc = getDocument(unitSet, UnitSet)
   checkDocument(unitSetDoc, UnitSet, { sessionId, unitSet })
 
-  debug('update', currentUnit, unitSetDoc.units)
+  // get unit doc
+  const unitDoc = getDocument(currentUnit, Unit)
+  checkDocument(unitDoc, Unit, { sessionId, currentUnit })
+  const progressIncrement = unitDoc.pages?.length
+
+  debug('update session')
 
   const unitSetList = createDocumentList({
     context: TestCycle,
@@ -79,6 +85,9 @@ export const updateSession = function (options = {}) {
         currentUnit: null,
         updatedAt: timestamp,
         completedAt: timestamp
+      },
+      $inc: {
+        progress: progressIncrement
       }
     })
 
@@ -111,6 +120,9 @@ export const updateSession = function (options = {}) {
         unitSet: nextUnitSetId,
         currentUnit: firstUnit,
         updatedAt: timestamp
+      },
+      $inc: {
+        progress: progressIncrement
       }
     })
 
@@ -132,6 +144,9 @@ export const updateSession = function (options = {}) {
     $set: {
       currentUnit: nextUnit,
       updatedAt: timestamp
+    },
+    $inc: {
+      progress: progressIncrement
     }
   })
 
