@@ -11,13 +11,12 @@ import { DocNotFoundError } from '../../errors/DocNotFoundError'
 describe(cancelSession.name, function () {
   let sessionId
   let userId
-  let currentUnit
+
   beforeEach(function () {
     mockCollection(Session)
     mockCollection(Response)
     sessionId = Random.id()
     userId = Random.id()
-    currentUnit = Random.id()
   })
 
   afterEach(function () {
@@ -26,8 +25,8 @@ describe(cancelSession.name, function () {
     restoreAll()
   })
   it('throws if there is no sessionDoc by id', function () {
-    stub(Session, 'collection', () => ({ findOne: () => {}}))
-    const options= { sessionId, userId }
+    stub(Session, 'collection', () => ({ findOne: () => {} }))
+    const options = { sessionId, userId }
     expect(() => cancelSession(options)).to.throw(DocNotFoundError.reason)
   })
   it('deletes the sessionDoc if its empty', function () {
@@ -39,8 +38,8 @@ describe(cancelSession.name, function () {
         return 1
       }
     }))
-    stub(Response, 'collection', () => ({ find: () => ({ count: () => 0 })}))
-    const options= { sessionId, userId }
+    stub(Response, 'collection', () => ({ find: () => ({ count: () => 0 }) }))
+    const options = { sessionId, userId }
     const removed = cancelSession(options)
     expect(removed).to.equal(1)
   })
@@ -54,8 +53,8 @@ describe(cancelSession.name, function () {
         return 1
       }
     }))
-    stub(Response, 'collection', () => ({ find: () => ({ count: () => 1 })}))
-    const options= { sessionId, userId }
+    stub(Response, 'collection', () => ({ find: () => ({ count: () => 1 }) }))
+    const options = { sessionId, userId }
     const updated = cancelSession(options)
     expect(updated).to.equal(1)
   })

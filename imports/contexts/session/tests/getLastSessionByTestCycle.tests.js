@@ -9,12 +9,10 @@ import { Session } from '../Session'
 describe(getLastSessionByTestCylce.name, function () {
   let testCycleId
   let userId
-  let currentUnit
   beforeEach(function () {
     mockCollection(Session)
     testCycleId = Random.id()
     userId = Random.id()
-    currentUnit = Random.id()
   })
 
   afterEach(function () {
@@ -22,10 +20,9 @@ describe(getLastSessionByTestCylce.name, function () {
     restoreAll()
   })
 
-
   it('returns a doc if the query matches', function (done) {
-    stub(Session, 'collection', () =>({
-      findOne(query) {
+    stub(Session, 'collection', () => ({
+      findOne (query) {
         expect(query).to.deep.equal({
           userId: userId,
           testCycle: testCycleId,

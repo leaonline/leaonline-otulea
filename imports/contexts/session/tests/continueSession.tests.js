@@ -15,14 +15,12 @@ import { DocNotFoundError } from '../../errors/DocNotFoundError'
 describe(continueSession.name, function () {
   let sessionId
   let userId
-  let currentUnit
   beforeEach(function () {
     mockCollection(Session)
     mockCollection(TestCycle)
     mockCollection(UnitSet)
     sessionId = Random.id()
     userId = Random.id()
-    currentUnit = Random.id()
   })
 
   afterEach(function () {

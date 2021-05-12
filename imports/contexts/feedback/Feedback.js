@@ -3,13 +3,13 @@ import { onServer } from '../../utils/archUtils'
 export const Feedback = {
   name: 'feedback',
   label: 'feedback.title',
-  icon: 'star-half-alt',
+  icon: 'star-half-alt'
 }
 
 Feedback.schema = {
-  sessionId: String,
-  //competencies: Array,
-  //alphaLevels: Array
+  sessionId: String
+  // competencies: Array,
+  // alphaLevels: Array
 }
 
 Feedback.publications = {}

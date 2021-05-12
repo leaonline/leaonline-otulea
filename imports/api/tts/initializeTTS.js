@@ -6,7 +6,6 @@ import { getOSInfo } from '../../ui/utils/getOSInfo'
 export const initializeTTS = async () => {
   const { TTSEngine } = await import('../../api/tts/TTSEngine')
 
-  let failed
   let mode
   try {
     const { detected, types } = await getOSInfo()
@@ -25,7 +24,6 @@ export const initializeTTS = async () => {
     }
   }
   catch (error) {
-    failed = true
     mode = TTSEngine.modes.server
     console.error('[initializeTTS]: Failed to detect os, use fallback. (Error send)')
     console.error('[initializeTTS]: Fallback User Agent:', window.navigator.userAgent)
@@ -40,7 +38,6 @@ export const initializeTTS = async () => {
       loader: externalServerTTSLoader,
       mode: mode,
       onError: error => {
-        failed = true
         reject(error)
       },
       onComplete () {

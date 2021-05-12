@@ -16,7 +16,8 @@ Template.diagnostics.onCreated(function () {
         instance.state.set('loadComplete', true)
       }
     })
-  } catch (e) {
+  }
+  catch (e) {
     console.error(e)
   }
 
@@ -27,7 +28,7 @@ Template.diagnostics.onCreated(function () {
     Diagnostics.api.run().then(results => {
       instance.state.set('diagnosticsComplete', true)
       instance.allData = results
-      console.log(`%c [diagnostics]: complete`, 'background: #222; color: #bada55')
+      console.log('%c [diagnostics]: complete', 'background: #222; color: #bada55')
 
       const map = new Map()
       results.forEach(entry => {
@@ -98,7 +99,7 @@ Template.diagnostics.onCreated(function () {
           error: er || new Error('failed'),
           template: 'diagnostics'
         })),
-        success: () => instance.state.set('sendComplete', true),
+        success: () => instance.state.set('sendComplete', true)
       })
     })
   })

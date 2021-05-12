@@ -14,7 +14,6 @@ import { Unit } from '../../Unit'
 import { DocNotFoundError } from '../../errors/DocNotFoundError'
 
 describe(startSession.name, function () {
-
   beforeEach(function () {
     mockCollection(Session)
     mockCollection(TestCycle)

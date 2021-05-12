@@ -35,7 +35,7 @@ describe(getSessionResponses.name, function () {
     const expected = Object.values(docs).map(doc => doc.scores)
 
     stub(Response, 'collection', () => ({
-      find(query) {
+      find (query) {
         expect(query).to.deep.equal({ sessionId, userId })
         return docs
       }

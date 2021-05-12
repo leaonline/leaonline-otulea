@@ -14,7 +14,7 @@ import { asyncHTTP } from './asyncHTTP'
 export const loadContentDoc = async (context, docId, debug = () => {}) => {
   const cursor = context.collection().find(docId)
   if (cursor.count() > 0) {
-      return cursor.fetch()[0]
+    return cursor.fetch()[0]
   }
 
   const route = context.routes.byId

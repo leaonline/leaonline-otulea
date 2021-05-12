@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor'
 import { normalizeError } from '../../errors/api/normalizeError'
 
 const getInspect = (results) => async (name, fn) => {
@@ -37,9 +38,7 @@ export const runDiagnostics = async function runDiagnostics () {
   return results
 }
 
-const initPerformance = () => performance.mark('diagnosticsStart')
-
-const asyncError = collector => error => collector({ error })
+const initPerformance = () => window.performance.mark('diagnosticsStart')
 
 async function checkServiceWorker (collector) {
   if (!navigator.serviceWorker) {
@@ -76,7 +75,8 @@ async function checkOSInfo (collector) {
   let result
   try {
     result = await getOSInfo()
-  } catch (e) {
+  }
+  catch (e) {
     parsed.error = e
   }
 
@@ -95,10 +95,6 @@ async function checkTTS (collector) {
   const { initializeTTS } = await import('../../../api/tts/initializeTTS')
 
   const result = {}
-  const onError = error => {
-    result.error = error
-  }
-
   const engine = await initializeTTS()
 
   if (!engine?.isConfigured()) {
@@ -131,7 +127,7 @@ async function checkLanguage (collector) {
   const translation = await import('./diagnosts_de')
   const i18n = await initLanguage()
   i18n.set('de', translation)
-  collector({ success: !i18n.get('diagnostics.title').includes('.')})
+  collector({ success: !i18n.get('diagnostics.title').includes('.') })
 }
 
 async function checkFont (collector) {
@@ -183,17 +179,17 @@ async function checkFont (collector) {
 async function checkLocalStoage (collector) {
   const key = Math.random().toString(10)
   const value = Math.random().toString(10)
-  localStorage.setItem(key, value)
-  const value2 = localStorage.getItem(key)
+  window.localStorage.setItem(key, value)
+  const value2 = window.localStorage.getItem(key)
   if (value !== value2) throw new Error('values do not match for key')
-  localStorage.removeItem(key)
+  window.localStorage.removeItem(key)
   return collector({ success: true })
 }
 
 const measurePerformance = collector => {
-  performance.mark('diagnosticsEnd')
-  performance.measure('diagnosticsComplete', 'diagnosticsStart', 'diagnosticsEnd')
-  const result = performance.getEntriesByName('diagnosticsComplete')[0]
+  window.performance.mark('diagnosticsEnd')
+  window.performance.measure('diagnosticsComplete', 'diagnosticsStart', 'diagnosticsEnd')
+  const result = window.performance.getEntriesByName('diagnosticsComplete')[0]
 
   collector({
     success: true,
