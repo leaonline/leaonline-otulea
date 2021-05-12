@@ -13,7 +13,7 @@
 					<div class="progress-bar bg-{{this.type}}" role="progressbar" style="width: {{this.value}}%"
 						 aria-valuenow="{{this.value}}" aria-valuemin="0" aria-valuemax="100"></div>
 				</div>
-				<span class="mx-3 no-wrap text-{{this.type}}">{{this.current}} / {{this.max}}</span>
+				<span class="mx-3 no-wrap text-{{this.type}}">{{this.rounded}}%</span>
 			{{/with}}
 		{{/if}}
         {{#if hasExit}}

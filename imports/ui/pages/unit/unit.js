@@ -116,6 +116,10 @@ Template.unit.onCreated(function () {
           return instance.data.next({ unitId: currentUnit, sessionId })
         }
 
+        if (currentPageCount > 0) {
+          sessionDoc.progress += currentPageCount
+        }
+
         // otherwise we're good and can continue with the current session
         instance.state.set({
           sessionDoc,
@@ -274,6 +278,8 @@ function onPageNavUpdate ({ action, newPage, templateInstance, onComplete }) {
   const currentPageCount = templateInstance.state.get('currentPageCount')
 
   pageCache.save({ unitId, sessionId }, newPage.currentPageCount)
+  sessionDoc.progress++
+  newPage.sessionDoc = sessionDoc
 
   if (!newPage.currentPage) {
     throw new Error(`Undefined page for current index ${newPage.currentPageCount}`)

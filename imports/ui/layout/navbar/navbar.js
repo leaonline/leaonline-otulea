@@ -27,16 +27,15 @@ Template.navbar.onCreated(function () {
     }
 
     const colorType = ColorType.byIndex(dimensionDoc.colorType)?.type || 'primary'
-
-    const { currentUnit } = sessionDoc
-    const { units } = unitSetDoc
-    const current = (sessionDoc.progress || 0)
+    const current = (sessionDoc.progress || 0) + 1
     const max = (sessionDoc.maxProgress || 0)
-    const value = (current + 1 / (max + 1)) * 100
+    const value = (current / (max)) * 100
+    const rounded = Math.round(value)
     const progress = {
       current,
       max,
       value,
+      rounded,
       type: colorType
     }
 
