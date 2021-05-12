@@ -82,7 +82,8 @@ describe(startSession.name, function () {
     const usDoc = { _id: Random.id(), units: [unitDoc._id] }
     const tcDoc = {
       _id: Random.id(),
-      unitSets: [usDoc._id]
+      unitSets: [usDoc._id],
+      progress: Math.random()
     }
     stub(TestCycle, 'collection', () => ({ findOne: () => tcDoc }))
     stub(UnitSet, 'collection', () => ({ findOne: () => usDoc }))
@@ -98,5 +99,6 @@ describe(startSession.name, function () {
     expect(sessionDoc.unitSet).to.equal(usDoc._id)
     expect(sessionDoc.currentUnit).to.equal(unitDoc._id)
     expect(sessionDoc.progress).to.equal(0)
+    expect(sessionDoc.maxProgress).to.equal(tcDoc.progress)
   })
 })

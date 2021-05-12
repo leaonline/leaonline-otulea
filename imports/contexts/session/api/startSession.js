@@ -51,6 +51,7 @@ export const startSession = function startSession (options = {}) {
   const unitSetId = testCycleDoc.unitSets?.[0]
   const unitSetDoc = getDocument(unitSetId, UnitSet)
   const progress = 0
+  const maxProgress = testCycleDoc.progress
 
   // we also strictly require the unitSetDoc to start a session
   checkDocument(unitSetDoc, UnitSet, { unitSetId })
@@ -64,7 +65,7 @@ export const startSession = function startSession (options = {}) {
 
   // if all docs exist, we can create a new session document
   const startedAt = new Date()
-  const insertDoc = { userId, startedAt, currentUnit, progress }
+  const insertDoc = { userId, startedAt, currentUnit, progress, maxProgress }
   insertDoc.testCycle = testCycleId
   insertDoc.unitSet = unitSetId
 

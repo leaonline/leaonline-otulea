@@ -30,9 +30,9 @@ Template.navbar.onCreated(function () {
 
     const { currentUnit } = sessionDoc
     const { units } = unitSetDoc
-    const current = units.indexOf(currentUnit) + 1
-    const max = units.length
-    const value = (current / (max + 1)) * 100
+    const current = (sessionDoc.progress || 0)
+    const max = (sessionDoc.maxProgress || 0)
+    const value = (current + 1 / (max + 1)) * 100
     const progress = {
       current,
       max,

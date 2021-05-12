@@ -70,14 +70,19 @@ Session.schema = {
   },
 
   /**
-   * Progress indicates the amount of units being solved
+   * Progress indicates the amount of units (pages = tasks) being solved
    */
 
   progress: {
     type: Number,
     defaultValue: 0,
-    min: 0,
-    max: 100
+    min: 0
+  },
+
+  maxProgress: {
+    type: Number,
+    defaultValue: 0,
+    min: 0
   },
 
   /**
