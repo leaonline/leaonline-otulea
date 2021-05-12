@@ -20,7 +20,7 @@
     "lozad": "^1.14.0",
     "meteor-node-stubs": "^1.0.0",
     "popper.js": "^1.16.1",
-    "simpl-schema": "^1.5.7"
+    "simpl-schema": "^1.10.2"
   },
   "meteor": {
     "mainModule": {
