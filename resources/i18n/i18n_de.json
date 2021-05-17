@@ -2,7 +2,9 @@
   "actions": {
     "close": "Schließen",
     "continue": "Fortsetzen",
-    "restart": "Neu starten"
+    "restart": "Neu starten",
+    "cancel": "Abbrechen",
+    "confirmCancel": "Möchten Sie die Aufgaben wirklich abbrechen?"
   },
   "aria": {
     "readText": "Text als Audio abspielen"

@@ -92,7 +92,7 @@ Template.story.helpers({
       levelDoc,
       unitSetDoc,
       dimensionDoc,
-      showProgress: false,
+      showProgress: true,
       onExit: instance.data.exit
     }
   },

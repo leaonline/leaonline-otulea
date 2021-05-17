@@ -73,7 +73,17 @@ Template.navbar.helpers({
 Template.navbar.events({
   'click .navbar-overview-button' (event, templateInstance) {
     event.preventDefault()
-    if (templateInstance.data.onExit) {
+    templateInstance.$('#navbar-modal').modal('show')
+  },
+  'click .navbar-confirm-cancel' (event, templateInstance) {
+    event.preventDefault()
+    templateInstance.state.set('confirmed', true)
+    templateInstance.$('#navbar-modal').modal('hide')
+  },
+  'hidden.bs.modal' (event, templateInstance) {
+    const confirmed = templateInstance.state.get('confirmed')
+    if (confirmed) {
+      templateInstance.state.set('confirmed', null)
       templateInstance.data.onExit()
     }
   }

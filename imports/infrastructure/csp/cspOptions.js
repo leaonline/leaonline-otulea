@@ -127,8 +127,8 @@ export function createCSPOptions (externalHostUrls = []) {
   // connection available.
   // Run your project with --production flag to simulate script-src hashing
   if (!usesHttps && Meteor.isDevelopment) {
-    // delete opt.contentSecurityPolicy.directives.blockAllMixedContent
-    // opt.contentSecurityPolicy.directives.scriptSrc = [self, unsafeEval, unsafeInline]
+    delete opt.contentSecurityPolicy.directives.blockAllMixedContent
+    opt.contentSecurityPolicy.directives.scriptSrc = [self, unsafeEval, unsafeInline]
   }
 
   return opt

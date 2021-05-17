@@ -25,4 +25,21 @@
 		</span>
         {{/if}}
 	</div>
+
+    {{!-- confirm modal --}}
+    <div class="modal" id="navbar-modal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    {{> textGroup type=this.type text=(i18n "actions.confirmCancel")}}
+                </div>
+                    {{#onComplete complete=loadComplete}}
+                <div class="modal-footer d-flex justify-content-between">
+                        {{> actionButton outline=true btnClass="navbar-confirm-cancel btn-sm" label=(i18n "actions.cancel")}}
+                        {{> actionButton outline=true btnClass="btn-sm" label=(i18n "actions.continue") data-dismiss="modal"}}
+                </div>
+                    {{/onComplete}}
+            </div>
+        </div>
+    </div>
 </template>
