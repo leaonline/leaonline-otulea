@@ -15,11 +15,12 @@ let autoLoadEnabled = false
  * @param contexts
  * @param loaders
  * @param onComplete
+ * @param onError
  * @return {Blaze.TemplateInstance}
  */
 
 Blaze.TemplateInstance.prototype.initDependencies =
-  function ({ language = true, tts = true, contexts = [], loaders = [], onComplete }) {
+  function ({ language = true, tts = true, contexts = [], loaders = [], onComplete, onError }) {
     import { Components } from 'meteor/leaonline:ui/components/Components'
     if (!autoLoadEnabled) {
       Components.autoLoad()
@@ -88,15 +89,15 @@ Blaze.TemplateInstance.prototype.initDependencies =
     contexts.forEach(ctx => initClientContext(ctx))
 
     if (language) {
-      allComplete.push(loadOnce(initLanguage))
+      allComplete.push(loadOnce(initLanguage, { onError }))
     }
 
     if (tts) {
-      allComplete.push(loadOnce(initializeTTS))
+      allComplete.push(loadOnce(initializeTTS, { onError }))
     }
 
     if (loaders.length > 0) {
-      allComplete.push(...(loaders.map(loader => loadOnce(loader))))
+      allComplete.push(...(loaders.map(loader => loadOnce(loader, { onError }))))
     }
 
     if (allComplete.length === 0) {

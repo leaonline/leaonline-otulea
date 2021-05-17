@@ -109,6 +109,9 @@ Routes.welcome = {
   data: {
     next () {
       go(Routes.overview)
+    },
+    onFail () {
+
     }
   }
 }

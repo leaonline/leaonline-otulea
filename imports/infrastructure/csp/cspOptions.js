@@ -7,6 +7,7 @@ import { Autoupdate } from 'meteor/autoupdate'
 
 const self = '\'self\''
 const data = 'data:'
+const blob = 'blob:'
 const unsafeEval = '\'unsafe-eval\''
 const unsafeInline = '\'unsafe-inline\''
 
@@ -25,24 +26,26 @@ export function createCSPOptions (externalHostUrls = []) {
   // Otherwise the app would not be able to start, since the runtimeConfigScript
   // is rejected __meteor_runtime_config__ is not available, causing
   // a cascade of follow-up errors.
-  const runtimeConfig = Object.assign(__meteor_runtime_config__, Autoupdate, {
-    accountsConfigCalled: true, // this may depend on, whether you called Accounts.config
-    isModern: true
-  })
+  const hashes = [true, false].map(isModern => {
+    const runtimeConfig = Object.assign(__meteor_runtime_config__, Autoupdate, {
+      accountsConfigCalled: true, // this may depend on, whether you called Accounts.config
+      isModern: isModern
+    })
 
-  // add client versions to __meteor_runtime_config__
-  Object.keys(WebApp.clientPrograms).forEach(arch => {
-    __meteor_runtime_config__.versions[arch] = {
-      version: Autoupdate.autoupdateVersion || WebApp.clientPrograms[arch].version(),
-      versionRefreshable: Autoupdate.autoupdateVersion || WebApp.clientPrograms[arch].versionRefreshable(),
-      versionNonRefreshable: Autoupdate.autoupdateVersion || WebApp.clientPrograms[arch].versionNonRefreshable(),
-      // comment the following line if you use Meteor < 2.0
-      versionReplaceable: Autoupdate.autoupdateVersion || WebApp.clientPrograms[arch].versionReplaceable()
-    }
-  })
+    // add client versions to __meteor_runtime_config__
+    Object.keys(WebApp.clientPrograms).forEach(arch => {
+      __meteor_runtime_config__.versions[arch] = {
+        version: Autoupdate.autoupdateVersion || WebApp.clientPrograms[arch].version(),
+        versionRefreshable: Autoupdate.autoupdateVersion || WebApp.clientPrograms[arch].versionRefreshable(),
+        versionNonRefreshable: Autoupdate.autoupdateVersion || WebApp.clientPrograms[arch].versionNonRefreshable(),
+        // comment the following line if you use Meteor < 2.0
+        versionReplaceable: Autoupdate.autoupdateVersion || WebApp.clientPrograms[arch].versionReplaceable()
+      }
+    })
 
-  const runtimeConfigScript = `__meteor_runtime_config__ = JSON.parse(decodeURIComponent("${encodeURIComponent(JSON.stringify(runtimeConfig))}"))`
-  const runtimeConfigHash = crypto.createHash('sha256').update(runtimeConfigScript).digest('base64')
+    const runtimeConfigScript = `__meteor_runtime_config__ = JSON.parse(decodeURIComponent("${encodeURIComponent(JSON.stringify(runtimeConfig))}"))`
+    return crypto.createHash('sha256').update(runtimeConfigScript).digest('base64')
+  })
 
   const opt = {
     contentSecurityPolicy: {
@@ -55,7 +58,8 @@ export function createCSPOptions (externalHostUrls = []) {
           // to tighten security. However, if you use dynamic imports this line
           // must be kept in order to make them work.
           unsafeEval,
-          `'sha256-${runtimeConfigHash}'`
+          `'sha256-${hashes[0]}'`,
+          `'sha256-${hashes[1]}'`
         ],
         childSrc: [self],
         // If you have external apps, that should be allowed as sources for
@@ -92,7 +96,7 @@ export function createCSPOptions (externalHostUrls = []) {
           // 'allow-top-navigation-by-user-activation'
         ],
         styleSrc: [self, unsafeInline],
-        workerSrc: [self, 'blob:']
+        workerSrc: [self, blob]
       }
     },
     strictTransportSecurity: {
@@ -115,23 +119,22 @@ export function createCSPOptions (externalHostUrls = []) {
     },
     permittedCrossDomainPolicies: {
       permittedPolicies: 'none'
-    }
+    },
+    hidePoweredBy: true
   }
 
   // We assume, that we are working on a localhost when there is no https
   // connection available.
   // Run your project with --production flag to simulate script-src hashing
   if (!usesHttps && Meteor.isDevelopment) {
-    delete opt.contentSecurityPolicy.directives.blockAllMixedContent
-    opt.contentSecurityPolicy.directives.scriptSrc = [self, unsafeEval, unsafeInline]
+    // delete opt.contentSecurityPolicy.directives.blockAllMixedContent
+    // opt.contentSecurityPolicy.directives.scriptSrc = [self, unsafeEval, unsafeInline]
   }
 
   return opt
 }
 
-/**
- * @private Transforms a given url to a valid connect-src
- */
+/** @private Transforms a given url to a valid connect-src */
 const getConnectSrc = url => {
   check(url, String)
   const domain = url.replace(/http(s)*:\/\//, '').replace(/\/$/, '')
