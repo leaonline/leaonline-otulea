@@ -217,6 +217,11 @@ Template.unit.events({
   },
   'click .lea-pagenav-finish-button': async function (event, templateInstance) {
     event.preventDefault()
+
+    // prevent multiple calls by fast-multiple-clicking
+    if (templateInstance.state.get('finishing')) return
+    templateInstance.state.set('finishing', true)
+
     const sessionDoc = templateInstance.state.get('sessionDoc')
     const sessionId = sessionDoc._id
     const unitDoc = templateInstance.state.get('unitDoc')
@@ -237,7 +242,7 @@ Template.unit.events({
 
     try {
       sessionUpdate = await templateInstance.api.callMethod({
-        name: Session.methods.update.name,
+        name: Session.methods.next.name,
         args: { sessionId }
       })
     }

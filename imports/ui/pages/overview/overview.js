@@ -211,6 +211,9 @@ Template.overview.helpers({
   // ---------------------- // ----------------------
   sessionDoc () {
     return Template.getState('sessionDoc')
+  },
+  starting () {
+    return Template.getState('starting')
   }
 })
 
@@ -250,6 +253,7 @@ Template.overview.events({
   },
   'click .lea-continue-button' (event, templateInstance) {
     event.preventDefault()
+
     const sessionDoc = templateInstance.state.get('sessionDoc')
     const sessionId = sessionDoc._id
 
@@ -298,7 +302,6 @@ function launch ({ templateInstance, name, args, isFreshStart }) {
     name: name,
     args: args,
     prepare: () => templateInstance.state.set('starting', true),
-    receive: () => templateInstance.state.set('starting', false),
     failure: er => {
       // if there is the rare case that the session exists although the user
       // intended to launch a new session, we try to restart the session
@@ -329,7 +332,9 @@ function launch ({ templateInstance, name, args, isFreshStart }) {
           ? () => story({ sessionId, unitId, unitSetId: unitSetDoc._id })
           : () => next({ sessionId, unitId })
 
-        fadeOut('.lea-overview-container', onCompleteHandler)
+        fadeOut('.lea-overview-container', () => {
+          onCompleteHandler()
+        })
       }, 100)
     }
   })
