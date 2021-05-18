@@ -3,7 +3,7 @@ import { onServerExec } from '../../utils/archUtils'
 export const Session = {
   name: 'session',
   label: 'session.title',
-  icon: 'code-fork',
+  icon: 'project-diagram',
   methods: {},
   publications: {}
 }
@@ -23,6 +23,14 @@ Session.schema = {
   startedAt: Date,
 
   /**
+   * Indicate the end of a session
+   */
+  completedAt: {
+    type: Date,
+    optional: true
+  },
+
+  /**
    * See the last time the session has been updated
    */
   updatedAt: {
@@ -31,17 +39,17 @@ Session.schema = {
   },
 
   /**
-   * Optional flag to indicate, that this is a continued session
+   * Optional entry to flag a session, that has been superseded by a "restart"
    */
-  continuedAt: {
+  cancelledAt: {
     type: Date,
     optional: true
   },
 
   /**
-   * Indicate the end of a session
+   * Optional flag to indicate, that this is a continued session
    */
-  completedAt: {
+  continuedAt: {
     type: Date,
     optional: true
   },
@@ -83,14 +91,6 @@ Session.schema = {
     type: Number,
     defaultValue: 0,
     min: 0
-  },
-
-  /**
-   * Optional entry to flag a session, that has been superseded by a "restart"
-   */
-  cancelledAt: {
-    type: Date,
-    optional: true
   }
 }
 
@@ -99,7 +99,7 @@ Session.methods.currentById = {
   schema: {
     sessionId: String
   },
-  numRequests: 1,
+  numRequests: 10,
   timeInterval: 1000,
   run: onServerExec(function () {
     import { getSessionDoc } from './utils/getSessionDoc'
@@ -156,6 +156,8 @@ Session.methods.continue = {
   schema: {
     sessionId: String
   },
+  numRequests: 1,
+  timeInterval: 1000,
   run: onServerExec(function () {
     import { continueSession } from './api/continueSession'
 
@@ -169,8 +171,8 @@ Session.methods.continue = {
   })
 }
 
-Session.methods.update = {
-  name: 'session.methods.update',
+Session.methods.next = {
+  name: 'session.methods.next',
   schema: {
     sessionId: String
   },

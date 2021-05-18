@@ -78,60 +78,6 @@ Errors.publications = {}
 Errors.routes = {}
 Errors.methods = {}
 
-Errors.methods.get = {
-  name: 'errors.methods.get',
-  schema: {
-    _id: String
-  },
-  backend: true,
-  run: onServerExec(function () {
-    import { getError } from './api/getError'
-    return function ({ _id }) {
-      return getError(_id)
-    }
-  })
-}
-
-Errors.methods.getAll = {
-  name: 'errors.methods.getAll',
-  schema: {
-    ids: {
-      type: Array,
-      optional: true
-    },
-    'ids.$': String,
-    dependencies: {
-      type: Array,
-      optional: true
-    },
-    'dependencies.$': String
-  },
-  backend: true,
-  run: onServerExec(function () {
-    import { getAllErrors } from './api/getAllErrors'
-
-    return function ({ ids }) {
-      const all = getAllErrors(ids)
-      return { [Errors.name]: all }
-    }
-  })
-}
-
-Errors.methods.remove = {
-  name: 'errors.methods.remove',
-  schema: {
-    _id: String
-  },
-  backend: true,
-  run: onServerExec(function () {
-    import { removeError } from './api/removeError'
-
-    return function ({ _id }) {
-      return removeError({ _id })
-    }
-  })
-}
-
 Errors.methods.create = {
   name: 'errors.methods.create',
   schema: Errors.schema,

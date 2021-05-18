@@ -11,6 +11,7 @@ import {
 } from '../../infrastructure/factories/ratelimit/rateLimit'
 import { registerOAuthDDPLoginHandler } from 'meteor/leaonline:ddp-login-handler'
 import { createPublications } from '../../infrastructure/factories/publication/createPublication'
+import { removeUser } from '../../api/accounts/removeUser'
 
 //  //////////////////////////////////////////////////////////
 //  DEFAULT ACCOUNTS CONFIG
@@ -23,6 +24,46 @@ Accounts._defaultPublishFields.projection.debug = 1
 //  //////////////////////////////////////////////////////////
 //  CUSTOM USERS METHODS
 //  //////////////////////////////////////////////////////////
+Users.methods.getAll = {
+  name: 'users.methods.getAll',
+  schema: {
+    dependencies: {
+      type: Array,
+      optional: true
+    },
+    'dependencies.$': {
+      type: Object,
+      blackbox: true,
+      optional: true
+    }
+  },
+  backend: true,
+  run: function () {
+    const users = Meteor.users.find({}, {
+      fields: {
+        services: 0,
+        agents: 0
+      },
+      hint: {
+        $natural: -1
+      }
+    }).fetch()
+
+    return { users }
+  }
+}
+
+Users.methods.remove = {
+  name: 'users.methods.remove',
+  schema: {
+    _id: 1
+  },
+  backend: true,
+  run: function ({ _id }) {
+    return removeUser(_id, this.userId, this.debug)
+  }
+}
+
 const userMethods = Object.values(Users.methods)
 createMethods(userMethods)
 rateLimitMethods(userMethods)

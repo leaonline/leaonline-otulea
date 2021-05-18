@@ -25,7 +25,7 @@ export const normalizeError = ({ error, browser, userId, template, method, publi
   // add timestamp/user after hash so we can track duplicates
   // across different users and temporal boundaries
   errorDoc.createdAt = new Date()
-  errorDoc.createdBy = userId ?? 'system'
+  errorDoc.createdBy = userId || 'system'
 
   return errorDoc
 }

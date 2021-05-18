@@ -3,8 +3,9 @@ import { iife } from '../../utils/iife'
 
 export const Response = {
   name: 'response',
-  label: 'repsonse.title',
-  icon: 'pencil'
+  label: 'response.title',
+  icon: 'user-edit',
+  representative: 'userId'
 }
 
 Response.schema = {
@@ -40,7 +41,7 @@ Response.methods.submit = {
     const { userId, ...rest } = Response.schema
     return rest
   }),
-  numRequests: 10,
+  numRequests: 50,
   timeInterval: 1000,
   run: onServerExec(function () {
     import { createSubmitResponse } from './api/createSubmitResponse'
