@@ -18,7 +18,7 @@ Feedback.schema = {
   'competencies.$.perc': Number,
   'competencies.$.gradeName': String,
   'competencies.$.gradeIndex': Number,
-  'competencies.$.isGraded': Boolean,
+  'competencies.$.isGraded': Boolean
 
   // alphaLevels: Array
 }

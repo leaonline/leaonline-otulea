@@ -45,5 +45,3 @@ export class LocalCacheCollection extends Mongo.Collection {
     return document
   }
 }
-
-

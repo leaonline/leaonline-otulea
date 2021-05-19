@@ -1,5 +1,4 @@
 import { onServerExec } from '../../utils/archUtils'
-import { getGradeForCompetency } from '../thresholds/api/getGradeForCompetency'
 
 export const Session = {
   name: 'session',

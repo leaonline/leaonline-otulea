@@ -1,5 +1,4 @@
 import { Thresholds } from '../Thresholds'
-import { HTTP } from 'meteor/jkuester:http'
 import { fetchDoc } from '../../../api/http/fetchDoc'
 import { toContentServerURL } from '../../../api/url/toContentServerURL'
 
