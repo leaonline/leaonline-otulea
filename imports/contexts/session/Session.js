@@ -1,4 +1,5 @@
 import { onServerExec } from '../../utils/archUtils'
+import { getGradeForCompetency } from '../thresholds/api/getGradeForCompetency'
 
 export const Session = {
   name: 'session',
@@ -199,11 +200,11 @@ Session.methods.results = {
   numRequests: 1,
   timeInterval: 1000,
   run: onServerExec(function () {
-    import { getSessionResponses } from './api/getSessionResponses'
+    import { generateFeedback } from '../feedback/api/generateFeedback'
 
     return function ({ sessionId }) {
       const { userId } = this
-      return getSessionResponses({ sessionId, userId })
+      return generateFeedback({ sessionId, userId })
     }
   })
 }

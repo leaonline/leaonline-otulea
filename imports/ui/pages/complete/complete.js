@@ -40,23 +40,6 @@ Template.complete.onCreated(function () {
     .catch(e => console.error(e))
     .then(() => {
       const thresholdDoc = Thresholds.collection().findOne()
-      const {
-        minCountCompetency,
-        thresholdsCompetency
-      } = thresholdDoc
-
-      const sortedThresholds = Object
-        .entries(thresholdsCompetency)
-        .map(([key, value]) => {
-          return {
-            max: value,
-            name: key
-          }
-        })
-        .sort((a, b) => {
-          return b.max - a.max
-        })
-
       instance.state.set(thresholdDoc)
 
       // TODO refactor into own method
@@ -64,45 +47,16 @@ Template.complete.onCreated(function () {
         name: Session.methods.results,
         args: { sessionId },
         failure: err => onFailed(err),
-        success: res => {
-          if (!res) {
+        success: results => {
+          if (!results) {
             return onFailed() // TODO fallback with a message "we can't eval right now..."
           }
 
-          const aggregatedCompetencies = new Map()
-          res.forEach(result => {
-            result.forEach(({ competency, score, isUndefined }) => {
-              // since competency can actually hold more than one competency we
-              // need another iteration to break it down to it's pieces
-              competency.forEach(competencyId => {
-                const current = aggregatedCompetencies.get(competencyId) || {
-                  limit: 0,
-                  count: 0,
-                  undef: 0,
-                  min: minCountCompetency,
-                  perc: 0
-                }
-
-                current.limit += 1
-                current.count += (score === 'true' ? 1 : 0)
-                current.undef += (isUndefined === 'true' ? 1 : 0)
-                current.perc = (current.count / current.limit) * 100
-                current.grade = getGradeForCompetency({
-                  count: current.limit,
-                  minCount: minCountCompetency,
-                  correct: current.count,
-                  thresholds: sortedThresholds
-                })
-                current.grade.label = `thresholds.${current.grade.name}`
-                current.isGraded = current.grade.index > -1
-                aggregatedCompetencies.set(competencyId, current)
-              })
-            })
-          })
+          const { competencies } = results
 
           // GET request to content server to fetch competency documents
           // which are required to display the related texts
-          const ids = Array.from(aggregatedCompetencies.keys())
+          const ids = competencies.map(c => c.competencyId)
           loadAllContentDocs(Competency, { ids })
             .catch(error => onFailed(error))
             .then(competencyDocs => {
@@ -112,22 +66,22 @@ Template.complete.onCreated(function () {
               }
 
               const CompetencyCollection = Competency.collection()
-              aggregatedCompetencies.forEach((value, competencyId) => {
+              const aggregatedResults = competencies.map(resultDoc => {
+                const { competencyId } = resultDoc
                 const competencyDoc = CompetencyCollection.findOne(competencyId)
+
                 if (!competencyDoc) {
                   return console.warn('Found no competency doc for _id', competencyId)
                 }
 
-                value.shortCode = competencyDoc.shortCode
-                value._id = competencyId
-                aggregatedCompetencies.set(competencyId, value)
+                resultDoc.shortCode = competencyDoc.shortCode
+                resultDoc.description = competencyDoc.descriptionSimple
+
+                return resultDoc
               })
-
-              debug({ aggregatedCompetencies })
-
-              const aggregatedResults = Array
-                .from(aggregatedCompetencies.values())
                 .sort((a, b) => a.shortCode.localeCompare(b.shortCode))
+
+              debug({ aggregatedResults })
               instance.state.set({
                 aggregatedResults,
                 competenciesLoaded: true

@@ -1,4 +1,4 @@
-import { onServer } from '../../utils/archUtils'
+import { onServerExec } from '../../utils/archUtils'
 
 export const Feedback = {
   name: 'feedback',
@@ -7,8 +7,19 @@ export const Feedback = {
 }
 
 Feedback.schema = {
-  sessionId: String
-  // competencies: Array,
+  sessionId: String,
+  userId: String,
+  competencies: Array,
+  'competencies.$': Object,
+  'competencies.$.competencyId': String,
+  'competencies.$.limit': Number,
+  'competencies.$.count': Number,
+  'competencies.$.undef': Number,
+  'competencies.$.perc': Number,
+  'competencies.$.gradeName': String,
+  'competencies.$.gradeIndex': Number,
+  'competencies.$.isGraded': Boolean,
+
   // alphaLevels: Array
 }
 
@@ -21,13 +32,12 @@ Feedback.methods.generate = {
   schema: {
     sessionId: String
   },
-  run: onServer(function ({ sessionId }) {
-    const { userId } = this
-    const collection = Feedback.collection()
-    const doc = collection.findOne({ createdBy: userId, sessionId })
+  run: onServerExec(function () {
+    import { generateFeedback } from './api/generateFeedback'
 
-    if (doc) return doc
-
-    // TODO create feedback and return here
+    return function ({ sessionId }) {
+      const { userId } = this
+      return generateFeedback({ sessionId, userId })
+    }
   })
 }

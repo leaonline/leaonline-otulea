@@ -1,8 +1,5 @@
-import { Meteor } from 'meteor/meteor'
 import { Mongo } from 'meteor/mongo'
-import { HTTP } from 'meteor/jkuester:http'
-
-const origin = Meteor.absoluteUrl()
+import { fetchDoc } from '../../../api/http/fetchDoc'
 
 export class LocalCacheCollection extends Mongo.Collection {
   constructor (url, log, options) {
@@ -26,20 +23,19 @@ export class LocalCacheCollection extends Mongo.Collection {
       return
     }
 
-    const headers = {
-      origin: origin,
-      mode: 'cors',
-      cache: 'no-store'
-    }
-
     const params = { _id: selector._id || selector }
-    const requestOptions = { params, headers }
 
     let document
 
     try {
       log('request doc', selector, 'from url', url)
-      document = fetchDoc(this, url, requestOptions)
+      document = fetchDoc(this, url, params)
+
+      if (document) {
+        const docId = document._id
+        delete document._id
+        this.upsert(docId, { $set: document })
+      }
     }
     catch (e) {
       console.error(e)
@@ -50,16 +46,4 @@ export class LocalCacheCollection extends Mongo.Collection {
   }
 }
 
-function fetchDoc (self, url, requestOptions) {
-  const response = HTTP.get(url, requestOptions)
-  const doc = response.data
 
-  if (doc) {
-    const docId = doc._id
-    delete doc._id
-
-    self.upsert(docId, { $set: doc })
-  }
-
-  return doc
-}

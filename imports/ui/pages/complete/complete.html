@@ -49,33 +49,41 @@
 
         {{#if showResults}}
             {{#onComplete complete=loadComplete}}
-            {{#if isDebugUser}}
                 {{#container}}
                     <div class="card my-4">
                         <div class="card-header">
-                            <h5 class="card-title">{{i18n "pages.complete.competencies"}}</h5>
-                            <span>
-                                {{i18n "thresholds.min"}}: {{minCountCompetency}}
+                            <h5 class="card-title">{{i18n
+                                    "pages.complete.competencies"}}</h5>
+                            {{#if isDebugUser}}
+                                <span>
+                                {{i18n "thresholds.min"}}
+                                    : {{minCountCompetency}}
                             </span>
+                            {{/if}}
                         </div>
                         <div class="table-responsive">
                             <table class="table table-hover">
                                 <thead>
                                 <tr>
-                                    <th scope="col" class="text-center">#</th>
-                                    <th scope="col" class="text-center">
-                                        {{i18n "thresholds.id"}}
+                                    <th scope="col"></th>
+                                    <th scope="col">
+                                        {{i18n "common.description"}}
                                     </th>
-                                    <th scope="col" class=" d-print-none"></th>
-                                    <th scope="col" class="text-center d-none d-md-table-cell d-print-table-cell">
-                                        {{i18n "thresholds.count"}}
-                                    </th>
-                                    <th scope="col" class="text-center d-none d-md-table-cell d-print-table-cell">
-                                        {{i18n "thresholds.correct"}}
-                                    </th>
-                                    <th scope="col" class="text-center d-none d-md-table-cell d-print-table-cell">
-                                        {{i18n "thresholds.perc"}}
-                                    </th>
+                                    <th scope="col" class="d-print-none w-25"></th>
+                                    {{#if isDebugUser}}
+                                        <th scope="col"
+                                            class="text-center d-none d-md-table-cell d-print-table-cell">
+                                            {{i18n "thresholds.count"}}
+                                        </th>
+                                        <th scope="col"
+                                            class="text-center d-none d-md-table-cell d-print-table-cell">
+                                            {{i18n "thresholds.correct"}}
+                                        </th>
+                                        <th scope="col"
+                                            class="text-center d-none d-md-table-cell d-print-table-cell">
+                                            {{i18n "thresholds.perc"}}
+                                        </th>
+                                    {{/if}}
                                     <th scope="col" class="text-center">
                                         {{i18n "thresholds.grade"}}
                                     </th>
@@ -84,27 +92,32 @@
                                 <tbody>
                                 {{#each competency in competencies}}
                                     <tr class="{{#unless competency.isGraded}}text-muted{{/unless}}">
-                                        <th scope="row" class="text-center">{{@index}}</th>
                                         <td class="text-center">{{competency.shortCode}}</td>
-                                        <td class="w-25 align-middle d-print-none">
+                                        <td>{{competency.description}}</td>
+                                        <td class="d-print-none align-middle">
                                             {{#if competency.isGraded}}
-                                            <div class="progress border-{{currentType}} border" style="height: 0.75rem;">
-                                                <div class="progress-bar bg-{{currentType}}"
-                                                     role="progressbar"
-                                                     style="width: {{competency.perc}}%;"
-                                                     aria-valuenow="{{competency.perc}}"
-                                                     aria-valuemin="0"
-                                                     aria-valuemax="100">
+                                                <div class="progress border-{{currentType}} border"
+                                                     style="height: 0.75rem;">
+                                                    <div class="progress-bar bg-{{currentType}}"
+                                                         role="progressbar"
+                                                         style="width: {{competency.perc}}%;"
+                                                         aria-valuenow="{{competency.perc}}"
+                                                         aria-valuemin="0"
+                                                         aria-valuemax="100">
+                                                    </div>
                                                 </div>
-                                            </div>
                                             {{/if}}
                                         </td>
-                                        <td class="text-center d-none d-md-table-cell d-print-table-cell">{{competency.limit}}</td>
-                                        <td class="text-center d-none d-md-table-cell d-print-table-cell">{{competency.count}}</td>
-                                        <td class="text-center d-none d-md-table-cell d-print-table-cell    ">{{competency.perc}}</td>
-                                        <td class="text-center">{{i18n competency.grade.label}}</td>
+                                        {{#if isDebugUser}}
+                                            <td class="text-center d-none d-md-table-cell d-print-table-cell">{{competency.limit}}</td>
+                                            <td class="text-center d-none d-md-table-cell d-print-table-cell">{{competency.count}}</td>
+                                            <td class="text-center d-none d-md-table-cell d-print-table-cell">{{competency.perc}}</td>
+                                        {{/if}}
+                                        <td class="text-center no-wrap">
+                                            {{> textGroup text=(i18n competency.grade.label)}}
+                                        </td>
                                     </tr>
-                                    {{else}}
+                                {{else}}
                                     <tr>
                                         <th scope="row">{{>loading}}</th>
                                         <td>{{>loading}}</td>
@@ -118,7 +131,6 @@
                         </div>
                     </div>
                 {{/container}}
-            {{/if}}
             {{/onComplete}}
 
             {{!-- iterate all possible feedback levels
