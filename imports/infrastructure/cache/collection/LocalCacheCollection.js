@@ -29,7 +29,7 @@ export class LocalCacheCollection extends Mongo.Collection {
 
     try {
       log('request doc', selector, 'from url', url)
-      document = fetchDoc(this, url, params)
+      document = fetchDoc(url, params)
 
       if (document) {
         const docId = document._id

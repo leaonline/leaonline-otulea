@@ -8,6 +8,7 @@ import { sessionIsComplete } from '../../../contexts/session/utils/sessionIsComp
 import '../../components/container/container'
 import '../../layout/navbar/navbar'
 import './complete.html'
+import { AlphaLevel } from '../../../contexts/AlphaLevel'
 
 const states = {
   showResults: 'showResults',
@@ -24,7 +25,7 @@ Template.complete.onCreated(function () {
   const { api } = instance.initDependencies({
     language: true,
     tts: true,
-    contexts: [Dimension, Session, Competency, Thresholds],
+    contexts: [Dimension, Session, Competency, Thresholds, AlphaLevel],
     onComplete () {
       instance.state.set({
         dependenciesComplete: true
@@ -51,12 +52,13 @@ Template.complete.onCreated(function () {
             return onFailed() // TODO fallback with a message "we can't eval right now..."
           }
 
-          const { competencies } = results
+          const { competencies, alphaLevels } = results
 
           // GET request to content server to fetch competency documents
           // which are required to display the related texts
-          const ids = competencies.map(c => c.competencyId)
-          loadAllContentDocs(Competency, { ids })
+          const competencyIds = competencies.map(c => c.competencyId)
+
+          loadAllContentDocs(Competency, { ids: competencyIds })
             .catch(error => onFailed(error))
             .then(competencyDocs => {
               if (competencyDocs.length === 0) {
@@ -75,7 +77,8 @@ Template.complete.onCreated(function () {
 
                 resultDoc.shortCode = competencyDoc.shortCode
                 resultDoc.description = competencyDoc.descriptionSimple
-
+                resultDoc.gradeLabel = `thresholds.${resultDoc.gradeName}`
+                resultDoc.perc = resultDoc.perc * 100
                 return resultDoc
               })
                 .sort((a, b) => a.shortCode.localeCompare(b.shortCode))
@@ -83,6 +86,42 @@ Template.complete.onCreated(function () {
               debug({ aggregatedResults })
               instance.state.set({
                 aggregatedResults,
+                competenciesLoaded: true
+              })
+            })
+
+
+          const alphaLevelIds = alphaLevels.map(c => c.alphaLevelId)
+
+          loadAllContentDocs(AlphaLevel, { ids: alphaLevelIds })
+            .catch(error => onFailed(error))
+            .then(alphaLevelDocs => {
+              if (alphaLevelDocs.length === 0) {
+                instance.state.set('competenciesLoaded', true)
+                return onFailed()
+              }
+
+              const AlphaLevelCollection = AlphaLevel.collection()
+              const aggregatedAlphaLevels = alphaLevels.map(alpha => {
+                const { alphaLevelId } = alpha
+                const alphaLevelDoc = AlphaLevelCollection.findOne(alphaLevelId)
+
+                if (!alphaLevelDoc) {
+                  return console.warn('Found no alphaLevel doc for _id', alphaLevelId)
+                }
+
+                alpha.shortCode = alphaLevelDoc.shortCode
+                alpha.description = alphaLevelDoc.description
+                alpha.gradeLabel = `thresholds.${alpha.gradeName}`
+                alpha.perc = alpha.perc * 100
+                console.debug(alpha)
+                return alpha
+              })
+                .sort((a, b) => a.shortCode.localeCompare(b.shortCode))
+
+              debug({ aggregatedAlphaLevels })
+              instance.state.set({
+                alphaLevels: aggregatedAlphaLevels,
                 competenciesLoaded: true
               })
             })
@@ -153,6 +192,9 @@ Template.complete.helpers({
   },
   competencies () {
     return Template.getState('aggregatedResults')
+  },
+  alphaLevels () {
+    return Template.getState('alphaLevels')
   },
   getCompetency (_id) {
     const competencyDoc = Competency.collection().findOne(_id)

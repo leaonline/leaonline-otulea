@@ -70,7 +70,8 @@
     "finish": "Weiter zur nächsten Aufgabe",
     "toOverview": "Zur Übersicht",
     "toWelcome": "Zur Startseite",
-    "help": "Hilfe"
+    "help": "Hilfe",
+    "description": "Beschreibung"
   },
   "routes": {
     "redirecting": "Weiterleitung",
@@ -122,7 +123,8 @@
       "failed": "Es kann derzeit keine Bewertung Ihrer Ergebnisse erzeugt werden. Das Lea Team ist informiert und wird die Auswertung in Kürze wieder zur Verfügung stellen.",
       "definitionMissing": "Kompetenz ermittelt aber Definition fehlt",
       "noEntries": "Es sind hierzu keine Einträge in der Rückmeldung enthalten.",
-      "competencies": "Kann-Beschreibungen"
+      "competencies": "Kann-Beschreibungen",
+      "alphaLevels": "Alpha-Level"
     },
     "diagnostics": {
       "title": "Browser-Diagnose",

@@ -17,16 +17,14 @@ import { Schema } from '../../../api/schema/Schema'
  *
  * @param count {Number} the amount of solved competencies
  * @param minCount {Number} the amount of min. required competencies
- * @param correct {Number} the amount of correct-scored competencies
+ * @param percent {Number} the amount of correct-scored competencies
  * @param thresholds {Array} the list of thresholds, ordered from highest to lowest.
  * @return {{ name: String, index: Number }} an Object with name and index
  */
-export const getGradeForCompetency = ({ count, minCount, correct, thresholds }) => {
-  gradeSchema.validate({ count, minCount, correct, thresholds })
+export const getGrade = ({ count, minCount, percent, thresholds }) => {
+  gradeSchema.validate({ count, minCount, percent, thresholds })
 
   if (count <= 0 || count < minCount) return { name: 'notEnough', index: -1 }
-
-  const percent = correct / count
 
   for (let index = 0; index < thresholds.length; index++) {
     const { max, name } = thresholds[index]
@@ -48,9 +46,10 @@ const gradeSchema = Schema.create({
     type: Number,
     min: 1
   },
-  correct: {
+  percent: {
     type: Number,
-    min: 0
+    min: 0,
+    max: 1,
   },
   thresholds: Array,
   'thresholds.$': Object,

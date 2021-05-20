@@ -2,5 +2,6 @@
 import { Thresholds } from '../Thresholds'
 
 describe(Thresholds.name, function () {
-  import './getGradeForCompetency.tests'
+  import './getGrade.tests'
+  import './getThresholds.tests'
 })

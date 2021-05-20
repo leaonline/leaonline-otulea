@@ -202,8 +202,8 @@ Session.methods.results = {
     import { generateFeedback } from '../feedback/api/generateFeedback'
 
     return function ({ sessionId }) {
-      const { userId } = this
-      return generateFeedback({ sessionId, userId })
+      const { userId, debug } = this
+      return generateFeedback({ sessionId, userId, debug })
     }
   })
 }

@@ -26,6 +26,7 @@ export const createCollection = (context) => {
         devOnly: false
       })
 
+      log('create local collection', url)
       context.collection = new LocalCacheCollection(url, log)
     })
   }

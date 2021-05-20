@@ -49,6 +49,95 @@
 
         {{#if showResults}}
             {{#onComplete complete=loadComplete}}
+            {{! ============================================================ }}
+            {{! ALPHA LEVELS }}
+            {{! ============================================================ }}
+                {{#container}}
+                    <div class="card my-4">
+                        <div class="card-header">
+                            <h5 class="card-title">{{i18n
+                                    "pages.complete.alphaLevels"}}</h5>
+                            {{#if isDebugUser}}
+                                <span>
+                                {{i18n "thresholds.min"}}
+                                    : {{minCountAlphaLevel}}
+                            </span>
+                            {{/if}}
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                <tr>
+                                    <th scope="col"></th>
+                                    <th scope="col">
+                                        {{i18n "common.description"}}
+                                    </th>
+                                    <th scope="col" class="d-print-none w-25"></th>
+                                    {{#if isDebugUser}}
+                                        <th scope="col"
+                                            class="text-center d-none d-md-table-cell d-print-table-cell">
+                                            {{i18n "thresholds.count"}}
+                                        </th>
+                                        <th scope="col"
+                                            class="text-center d-none d-md-table-cell d-print-table-cell">
+                                            {{i18n "thresholds.correct"}}
+                                        </th>
+                                        <th scope="col"
+                                            class="text-center d-none d-md-table-cell d-print-table-cell">
+                                            {{i18n "thresholds.perc"}}
+                                        </th>
+                                    {{/if}}
+                                    <th scope="col" class="text-center">
+                                        {{i18n "thresholds.grade"}}
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {{#each alphaLevel in alphaLevels}}
+                                    <tr class="{{#unless alphaLevel.isGraded}}text-muted{{/unless}}">
+                                        <td class="text-center">{{alphaLevel.shortCode}}</td>
+                                        <td>{{alphaLevel.description}}</td>
+                                        <td class="d-print-none align-middle">
+                                            {{#if alphaLevel.isGraded}}
+                                                <div class="progress border-{{currentType}} border"
+                                                     style="height: 0.75rem;">
+                                                    <div class="progress-bar bg-{{currentType}}"
+                                                         role="progressbar"
+                                                         style="width: {{alphaLevel.perc}}%;"
+                                                         aria-valuenow="{{alphaLevel.perc}}"
+                                                         aria-valuemin="0"
+                                                         aria-valuemax="100">
+                                                    </div>
+                                                </div>
+                                            {{/if}}
+                                        </td>
+                                        {{#if isDebugUser}}
+                                            <td class="text-center d-none d-md-table-cell d-print-table-cell">{{alphaLevel.count}}</td>
+                                            <td class="text-center d-none d-md-table-cell d-print-table-cell">{{alphaLevel.scored}}</td>
+                                            <td class="text-center d-none d-md-table-cell d-print-table-cell">{{alphaLevel.perc}}</td>
+                                        {{/if}}
+                                        <td class="text-center no-wrap">
+                                            {{> textGroup text=(i18n alphaLevel.gradeLabel)}}
+                                        </td>
+                                    </tr>
+                                {{else}}
+                                    <tr>
+                                        <th scope="row">{{>loading}}</th>
+                                        <td>{{>loading}}</td>
+                                        <td>{{>loading}}</td>
+                                        <td>{{>loading}}</td>
+                                        <td>{{>loading}}</td>
+                                    </tr>
+                                {{/each}}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                {{/container}}
+
+            {{! ============================================================ }}
+            {{! COMPETENCIES }}
+            {{! ============================================================ }}
                 {{#container}}
                     <div class="card my-4">
                         <div class="card-header">
@@ -109,12 +198,12 @@
                                             {{/if}}
                                         </td>
                                         {{#if isDebugUser}}
-                                            <td class="text-center d-none d-md-table-cell d-print-table-cell">{{competency.limit}}</td>
                                             <td class="text-center d-none d-md-table-cell d-print-table-cell">{{competency.count}}</td>
+                                            <td class="text-center d-none d-md-table-cell d-print-table-cell">{{competency.scored}}</td>
                                             <td class="text-center d-none d-md-table-cell d-print-table-cell">{{competency.perc}}</td>
                                         {{/if}}
                                         <td class="text-center no-wrap">
-                                            {{> textGroup text=(i18n competency.grade.label)}}
+                                            {{> textGroup text=(i18n competency.gradeLabel)}}
                                         </td>
                                     </tr>
                                 {{else}}

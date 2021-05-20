@@ -8,19 +8,28 @@ export const Feedback = {
 
 Feedback.schema = {
   sessionId: String,
+  testCycle: String,
   userId: String,
   competencies: Array,
   'competencies.$': Object,
   'competencies.$.competencyId': String,
-  'competencies.$.limit': Number,
   'competencies.$.count': Number,
+  'competencies.$.scored': Number,
   'competencies.$.undef': Number,
   'competencies.$.perc': Number,
   'competencies.$.gradeName': String,
   'competencies.$.gradeIndex': Number,
-  'competencies.$.isGraded': Boolean
+  'competencies.$.isGraded': Boolean,
 
-  // alphaLevels: Array
+  alphaLevels: Array,
+  'alphaLevels.$': Object,
+  'alphaLevels.$.alphaLevelId': String,
+  'alphaLevels.$.count': Number,
+  'alphaLevels.$.scored': Number,
+  'alphaLevels.$.perc': Number,
+  'alphaLevels.$.gradeName': String,
+  'alphaLevels.$.gradeIndex': Number,
+  'alphaLevels.$.isGraded': Boolean
 }
 
 Feedback.publications = {}
@@ -36,8 +45,8 @@ Feedback.methods.generate = {
     import { generateFeedback } from './api/generateFeedback'
 
     return function ({ sessionId }) {
-      const { userId } = this
-      return generateFeedback({ sessionId, userId })
+      const { userId, debug } = this
+      return generateFeedback({ sessionId, userId, debug })
     }
   })
 }
