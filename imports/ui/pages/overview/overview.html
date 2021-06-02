@@ -50,11 +50,11 @@
                     <div class="card">
                         <div class="card-body">
                             {{#textGroup tts="pages.overview.chooseLevel"
-                                         type=this.type }}
+                                         type=colorType}}
                                 {{> actionButton
                                         outline=true
                                         tts="common.back"
-                                        type=this.type
+                                        type=colorType
                                         icon="arrow-up"
                                         data-target=".overview-level-container"
                                         btnClass="lea-back-button  no-wrap"
@@ -68,7 +68,8 @@
                                         {{> actionButton
                                                 class="w-100 overview-button"
                                                 block=true
-                                                type=this.type outline=true
+                                                type=colorType
+                                                outline=true
                                                 data-level=level._id
                                                 active=(isSelectedLevel level._id)
                                                 tts=level.title
@@ -87,8 +88,8 @@
             {{/container}}
 
             {{!--
-                if the dimension has been selected we display all levels we can find
-                by the given dimension in all unit sets that are found by this app
+                if the level has been selected we display information about
+                the selected upcoming test cylce
             --}}
 
             {{#if levelSelected}}
@@ -98,7 +99,7 @@
                             <div class="card-body mt-3 overview-level-description">
 
                                 {{#textGroup text=levelDescription class="w-100"
-                                             type=this.type}}
+                                             type=colorType}}
                                     {{> actionButton
                                             outline=true
                                             tts="common.back"
@@ -106,7 +107,7 @@
                                             icon="arrow-up"
                                             btnClass="lea-back-button no-wrap"
                                             data-type="launch"
-                                            type=this.type}}
+                                            type=colorType}}
                                 {{/textGroup}}
                             </div>
 
@@ -121,25 +122,25 @@
                                     {{>textGroup
                                             text=(i18n "pages.overview.sessionFound")
                                             class="w-100"
-                                            type=this.type}}
+                                            type=colorType}}
 
                                     <div class="row mt-3">
-                                        <div class="col col-xs-12 col-md-6 col-lg-3">
+                                        <div class="col col-xs-12 col-md-6">
                                             {{> actionButton
                                                     class="w-100 overview-button"
                                                     block=true
-                                                    type="primary"
+                                                    type=colorType
                                                     outline=true
                                                     disabled=starting
                                                     tts=(i18n "actions.continue")
                                                     label=(i18n "actions.continue")
                                                     btnClass="lea-continue-button p-5 font-weight-bold  no-wrap" }}
                                         </div>
-                                        <div class="col col-xs-12 col-md-6 col-lg-3">
+                                        <div class="col col-xs-12 col-md-6">
                                             {{> actionButton
                                                     class="w-100 overview-button"
                                                     block=true
-                                                    type="primary"
+                                                    type=colorType
                                                     outline=true
                                                     disabled=starting
                                                     tts=(i18n "actions.restart")
@@ -155,7 +156,7 @@
                                             lg=true
                                             block=true
                                             disabled=starting
-                                            type="primary"
+                                            type=colorType
                                             tts="pages.overview.confirm"
                                             label=(i18n "pages.overview.confirm")
                                             btnClass="lea-overview-confirm-button  no-wrap" }}

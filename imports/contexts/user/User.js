@@ -47,13 +47,33 @@ Users.schema = {
   'agents.$.screenHeight': Number,
   'agents.$.viewPortWidth': Number,
   'agents.$.viewPortHeight': Number
-
 }
 
 Users.methods = {}
 
+Users.methods.generate = {
+  name: 'users.methods.generate',
+  schema: {},
+  backend: true,
+  numRequests: 1,
+  timeInterval: 1000,
+  run: onServerExec(function () {
+    import { generateUserCode } from '../../api/accounts/generateUserCode'
+
+    return function () {
+      const code = generateUserCode(5, 10)
+      if (!code) {
+        throw new Meteor.Error('generateUserCode.error', 'generateUserCode.maxTriesExceeded')
+      }
+
+      const userId = Accounts.createUser({ username: code, password: code })
+      return Meteor.users.findOne(userId, { fields: { services: 0 }})
+    }
+  }),
+}
+
 Users.methods.register = {
-  name: 'user.methods.register',
+  name: 'users.methods.register',
   schema: {
     code: {
       type: String,
@@ -97,6 +117,19 @@ Users.methods.isDebug = {
     return Meteor.users.update(userId, {
       $set: { debug: value }
     })
+  })
+}
+
+Users.methods.exist = {
+  name: 'user.methods.exist',
+  backend: true,
+  numRequests: 1,
+  timeInterval: 1000,
+  schema: {
+    code: Boolean
+  },
+  run: onServer(function ({ code }) {
+    return Meteor.users.find({ code }).count() > 0
   })
 }
 

@@ -14,16 +14,19 @@ const legalRoutes = Object.keys(Legal.schema).map(key => {
 
 Template.footer.onCreated(function () {
   const instance = this
-  instance.initDependencies({
-    tts: true,
-    language: true,
-    onComplete () {
-      instance.state.set('dependenciesComplete', true)
-    },
-    onError (e) {
-      instance.data.onFail(e)
-    }
-  })
+
+  setTimeout(() => {
+    instance.initDependencies({
+      tts: true,
+      language: true,
+      onComplete () {
+        instance.state.set('dependenciesComplete', true)
+      },
+      onError (e) {
+        instance.data.onFail(e)
+      }
+    })
+  }, 2000)
 })
 
 Template.footer.onRendered(function () {

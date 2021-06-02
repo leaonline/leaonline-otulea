@@ -21,6 +21,7 @@ Template.overview.onDestroyed(function () {
 
 Template.overview.onCreated(function () {
   const instance = this
+  instance.state.set('color', 'secondary')
   instance.initDependencies({
     language: true,
     tts: true,
@@ -57,11 +58,11 @@ Template.overview.onCreated(function () {
     const { d } = data.queryParams
     const { l } = data.queryParams
 
-    let dimension
+
     let level
 
-    if (typeof d !== 'undefined') {
-      dimension = Dimension.collection().findOne(d)
+    const dimension = Dimension.collection().findOne(d)
+    if (dimension) {
 
       // if a dimension has been selected we create a filter list of
       // the levels that are supported by this dimension (linked in UnitSets)
@@ -70,16 +71,20 @@ Template.overview.onCreated(function () {
         .find({ dimension: d })
         .forEach(({ level }) => levelFilter.add(level))
 
+      const color = ColorType.byIndex(dimension.colorType)?.type
+
       instance.state.set({
         levelFilter: Array.from(levelFilter),
-        dimension: dimension
+        dimension: dimension,
+        color: color
       })
     }
     else {
       // otherwise we reset the dimension and the filters for new selection
       instance.state.set({
         dimension: null,
-        levelFilter: null
+        levelFilter: null,
+        color: 'secondary'
       })
     }
 
@@ -169,6 +174,9 @@ Template.overview.helpers({
   },
   colorTypeName ({ colorType }) {
     return ColorType.byIndex(colorType)?.type
+  },
+  colorType () {
+    return Template.getState('color')
   },
   // ---------------------- // ----------------------
   // LEVELS

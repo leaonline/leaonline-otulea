@@ -1,3 +1,4 @@
+import '../imports/startup/server/collection2'
 import '../imports/startup/server/settings'
 import '../imports/startup/server/csp'
 import '../imports/startup/server/validation'
