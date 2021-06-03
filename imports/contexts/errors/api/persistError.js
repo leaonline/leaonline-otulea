@@ -1,4 +1,5 @@
 import { Errors } from '../Errors'
+import { notifyUsersAboutError } from '../../../api/notify/notifyUsersAboutError'
 
 /**
  * Saves a normalized error to collection but increments the counter, in case
@@ -10,6 +11,8 @@ import { Errors } from '../Errors'
  * @return {*}
  */
 export const persistError = normalizedErrorDoc => {
+  notifyUsersAboutError(normalizedErrorDoc)
+
   // let's see, if the same user created the same error already
   const { hash } = normalizedErrorDoc
   const collection = Errors.collection()

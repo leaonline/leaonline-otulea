@@ -55,6 +55,11 @@
       "password": "000111222333444555666777888999"
     }
   },
+  "email": {
+    "notify": ["admin@example.com"],
+    "replyTo": "noreply@example.com",
+    "from": "system@example.com"
+  },
   "accounts": {
     "config": {
       "forbidClientAccountCreation": true,

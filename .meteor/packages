@@ -75,6 +75,9 @@ ccorcos:subs-cache
 # connection
 jkuester:http
 
+# reporting
+email
+
 #========================================
 # SECURITY
 #========================================

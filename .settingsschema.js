@@ -61,6 +61,21 @@ const settingsSchema = schema({
       password: String
     })
   }),
+  email: schema({
+    notify: {
+      type: Array,
+      optional: true
+    },
+    'notify.$': SimpleSchema.RegEx.Email,
+    replyTo: {
+      type: SimpleSchema.RegEx.Email,
+      optional: true
+    },
+    from: {
+      type: SimpleSchema.RegEx.Email,
+      optional: true
+    }
+  }),
   accounts: schema({
     config: schema({
       "forbidClientAccountCreation": Boolean,
