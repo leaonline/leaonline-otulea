@@ -1,3 +1,4 @@
+import { Template } from 'meteor/templating'
 import './loading.html'
 
 Template.loading.onCreated(function () {
@@ -8,7 +9,7 @@ Template.loading.onCreated(function () {
 })
 
 Template.loading.helpers({
-  loadComplete() {
+  loadComplete () {
     return Template.getState('loadComplete')
   }
 })

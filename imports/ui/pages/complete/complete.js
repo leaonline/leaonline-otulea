@@ -90,7 +90,6 @@ Template.complete.onCreated(function () {
               })
             })
 
-
           const alphaLevelIds = alphaLevels.map(c => c.alphaLevelId)
 
           loadAllContentDocs(AlphaLevel, { ids: alphaLevelIds })

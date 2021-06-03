@@ -1,9 +1,10 @@
+import { Meteor } from 'meteor/meteor'
 import { Feedback } from '../Feedback'
+import { Session } from '../../session/Session'
 import { getThresholds } from '../../thresholds/api/getThresholds'
 import { getSessionResponses } from '../../session/api/getSessionResponses'
 import { getGrade } from '../../thresholds/api/getGrade'
 import { getAlphaLevels } from './getAlphaLevels'
-import { Session } from '../../session/Session'
 import { getCompetencies } from './getCompetencies'
 
 export const generateFeedback = ({ sessionId, userId, debug = () => {} }) => {
@@ -106,7 +107,6 @@ export const generateFeedback = ({ sessionId, userId, debug = () => {} }) => {
         current.scored += (score === 'true' ? 1 : 0)
         current.undef += (isUndefined === 'true' ? 1 : 0)
 
-
         aggregatedCompetencies.set(competencyId, current)
       })
     })
@@ -165,7 +165,6 @@ export const generateFeedback = ({ sessionId, userId, debug = () => {} }) => {
     aggregatedAlphaLevels.set(alphaLevelId, alpha)
   })
 
-
   const feedbackDoc = {
     sessionId,
     userId,
@@ -177,5 +176,3 @@ export const generateFeedback = ({ sessionId, userId, debug = () => {} }) => {
   const docId = Feedback.collection().insert(feedbackDoc)
   return Feedback.collection().findOne(docId)
 }
-
-const toAlphaLevelId = competencyDoc => competencyDoc.level

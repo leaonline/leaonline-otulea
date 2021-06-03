@@ -1,8 +1,5 @@
+/* eslint-env mocha */
 import { Meteor } from 'meteor/meteor'
-
-// COMMON / SHARED
-import './utils'
-import './contexts'
 
 if (Meteor.isServer) {
   (function () {
@@ -16,3 +13,8 @@ if (Meteor.isClient) {
     import './client'
   })()
 }
+
+describe('common', function () {
+  import './utils'
+  import './contexts'
+})

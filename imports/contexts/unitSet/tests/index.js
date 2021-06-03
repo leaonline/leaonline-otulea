@@ -1,7 +1,10 @@
 /* eslint-env mocha */
+import { Meteor } from 'meteor/meteor'
 import { UnitSet } from '../UnitSet'
 
-describe(UnitSet.name, function () {
-  import './showStoryBeforeUnit.tests'
-  import './getUnitSetForDimensionAndLevel.tests'
-})
+if (Meteor.isClient) {
+  describe(UnitSet.name, function () {
+    import './showStoryBeforeUnit.tests'
+    import './getUnitSetForDimensionAndLevel.tests'
+  })
+}

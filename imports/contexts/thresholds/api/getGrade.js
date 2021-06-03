@@ -49,7 +49,7 @@ const gradeSchema = Schema.create({
   percent: {
     type: Number,
     min: 0,
-    max: 1,
+    max: 1
   },
   thresholds: Array,
   'thresholds.$': Object,

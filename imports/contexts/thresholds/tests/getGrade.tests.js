@@ -102,7 +102,7 @@ describe(getGrade.name, function () {
     ;[
       { count: 4, minCount: 4, percent: 4 / 4 },
       { count: 4, minCount: 4, percent: 3 / 4 },
-      { count: 4, minCount: 4, percent: 2 / 4},
+      { count: 4, minCount: 4, percent: 2 / 4 },
       { count: 4, minCount: 4, percent: 1 / 4 },
       { count: 4, minCount: 4, percent: 0 }
     ].forEach((params, index) => {

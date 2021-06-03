@@ -67,9 +67,9 @@ Users.methods.generate = {
       }
 
       const userId = Accounts.createUser({ username: code, password: code })
-      return Meteor.users.findOne(userId, { fields: { services: 0 }})
+      return Meteor.users.findOne(userId, { fields: { services: 0 } })
     }
-  }),
+  })
 }
 
 Users.methods.register = {

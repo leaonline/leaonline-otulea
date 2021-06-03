@@ -1,4 +1,5 @@
 /* eslint-env mocha */
+import { Email } from 'meteor/email'
 import { expect } from 'chai'
 import { Random } from 'meteor/random'
 import { persistError } from '../api/persistError'
@@ -11,6 +12,7 @@ import { restoreAll, stub } from '../../../../tests/helpers.tests'
 
 describe(persistError.name, function () {
   beforeEach(function () {
+    stub(Email, 'send', () => {})
     mockCollection(Errors)
   })
   afterEach(function () {

@@ -58,12 +58,10 @@ Template.overview.onCreated(function () {
     const { d } = data.queryParams
     const { l } = data.queryParams
 
-
     let level
 
     const dimension = Dimension.collection().findOne(d)
     if (dimension) {
-
       // if a dimension has been selected we create a filter list of
       // the levels that are supported by this dimension (linked in UnitSets)
       const levelFilter = new Set()

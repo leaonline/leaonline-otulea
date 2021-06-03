@@ -11,8 +11,8 @@ describe(getThresholds.name, function () {
     restoreAll()
   })
   it('calls the external server for all thresholds', function () {
-    const expected = [{ foo: Math.random().toString(10)}]
-    stub(HTTP, 'get', function (url,options) {
+    const expected = [{ foo: Math.random().toString(10) }]
+    stub(HTTP, 'get', function (url, options) {
       expect(url).to.equal(toContentServerURL(Thresholds.routes.all.path))
       expect(options.params).to.deep.equal({})
       return { data: expected }

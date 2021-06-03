@@ -2,7 +2,7 @@ import { createCollection } from '../../infrastructure/factories/collection/crea
 import Collection2 from 'meteor/aldeed:collection2'
 
 const created = new Set()
-let collection2Init = false
+const collection2Init = false
 
 export const initClientContext = context => {
   if (created.has(context.name)) {

@@ -1,7 +1,10 @@
 /* eslint-env mocha */
+import { Meteor } from 'meteor/meteor'
 import { Thresholds } from '../Thresholds'
 
-describe(Thresholds.name, function () {
-  import './getGrade.tests'
-  import './getThresholds.tests'
-})
+if (Meteor.isServer) {
+  describe(Thresholds.name, function () {
+    import './getGrade.tests'
+    import './getThresholds.tests'
+  })
+}

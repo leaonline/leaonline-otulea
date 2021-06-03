@@ -1,4 +1,5 @@
 /* eslint-env mocha */
+import { Meteor } from 'meteor/meteor'
 import { Session } from '../Session'
 
 describe(Session.name, function () {
@@ -10,12 +11,14 @@ describe(Session.name, function () {
     import './sessionIsComplete.tests'
   })
 
-  describe('api', function () {
-    import './startSession.tests'
-    import './updateSession.tests'
-    import './cancelSession.tests'
-    import './continueSession.tests'
-    import './getLastSessionByTestCycle.tests'
-    import './getSessionResponses.tests'
-  })
+  if (Meteor.isServer) {
+    describe('api', function () {
+      import './startSession.tests'
+      import './updateSession.tests'
+      import './cancelSession.tests'
+      import './continueSession.tests'
+      import './getLastSessionByTestCycle.tests'
+      import './getSessionResponses.tests'
+    })
+  }
 })

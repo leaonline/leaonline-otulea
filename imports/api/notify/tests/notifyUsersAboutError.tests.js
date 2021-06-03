@@ -16,7 +16,7 @@ describe(notifyUsersAboutError.name, function () {
     const err = new Error('foobar')
     err.type = 'testError'
 
-    stub(Email, 'send', ({ to, from, replyTo, subject, text}) => {
+    stub(Email, 'send', ({ to, from, replyTo, subject, text }) => {
       expect(to).to.equal('admin@example.com')
       expect(from).to.equal('system@example.com')
       expect(replyTo).to.equal('noreply@example.com')

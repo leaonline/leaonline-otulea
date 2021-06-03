@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor'
 import { Email } from 'meteor/email'
 
 const appName = Meteor.settings.public.app.label
-const { notify, replyTo, from, headers } = Meteor.settings.email
+const { notify, replyTo, from } = Meteor.settings.email
 
 export const notifyUsersAboutError = error => {
   if (!notify?.length || !error) return

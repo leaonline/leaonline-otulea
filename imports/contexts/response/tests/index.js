@@ -1,6 +1,9 @@
 /* eslint-env mocha */
+import { Meteor } from 'meteor/meteor'
 import { Response } from '../Response'
 
-describe(Response.name, function () {
-  import './submitResponse.tests'
-})
+if (Meteor.isClient) {
+  describe(Response.name, function () {
+    import './submitResponse.tests'
+  })
+}
