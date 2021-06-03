@@ -1,5 +1,6 @@
 {
   "actions": {
+    "print": "Ausdrucken",
     "close": "Schließen",
     "continue": "Fortsetzen",
     "restart": "Neu starten",

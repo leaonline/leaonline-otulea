@@ -276,9 +276,12 @@
                                      groupClass="w-100"
                                      label=(i18n "pages.complete.printResults")
                                      type=currentType}}
-                            <button class="ml-auto btn btn-lg btn-outline-{{currentType}} print-simple">
-                                <i class="fa fas fa-fw fa-print"></i>
-                            </button>
+                            {{> actionButton
+                                    tts="actions.print"
+                                    type=currentType
+                                    outline=true
+                                    class="ml-auto print-simple"
+                                    icon="print"}}
                         {{/textGroup}}
                     </div>
                 </div>
