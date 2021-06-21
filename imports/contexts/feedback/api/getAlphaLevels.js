@@ -5,7 +5,6 @@ import { toContentServerURL } from '../../../api/url/toContentServerURL'
 const url = toContentServerURL(AlphaLevel.routes.all.path)
 
 export const getAlphaLevels = ids => {
-  console.debug(url, ids)
   const docs = fetchDoc(url, { ids }) || []
   const map = new Map()
   docs.forEach(doc => map.set(doc._id, doc))

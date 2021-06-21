@@ -61,6 +61,7 @@ Response.methods.submit = {
 
       return submitResponse({
         responseDoc,
+        debug: self.debug,
         userId,
         onError: error => {
           self.info('failed to score', JSON.stringify(responseDoc))

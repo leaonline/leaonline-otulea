@@ -24,7 +24,7 @@ export const environmentExtensionMixin = function (options) {
     // safe-assign our extensions to the environment document
     Object.assign(this, { info, debug, getDocument, checkDocument })
 
-    info('call', { userId: this.userId })
+    debug('called by ', this.userId)
     return runFct.call(this, ...args)
   }
 

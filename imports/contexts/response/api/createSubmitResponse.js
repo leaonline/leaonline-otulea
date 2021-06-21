@@ -4,7 +4,7 @@ import { Response } from '../Response'
 import { getSessionDoc } from '../../session/utils/getSessionDoc'
 import { isCurrentUnit } from '../../session/utils/isCurrentUnit'
 
-export const createSubmitResponse = ({ extractor, scorer }) => function submitResponse ({ responseDoc = {}, userId, onError = () => {} } = {}) {
+export const createSubmitResponse = ({ extractor, scorer }) => function submitResponse ({ responseDoc = {}, userId, onError = () => {}, debug = () => {} } = {}) {
   const { sessionId, unitId, responses, contentId, page } = responseDoc
 
   // we need to make sure, that this data belongs to the current user's
@@ -21,7 +21,7 @@ export const createSubmitResponse = ({ extractor, scorer }) => function submitRe
   let failed
   try {
     const unitDoc = Unit.collection().findOne(unitId)
-    const itemDoc = extractor({ unitDoc, page, contentId })
+    const itemDoc = extractor({ unitDoc, page, contentId }, debug)
     scores = scorer({ itemDoc, responseDoc })
   }
   catch (e) {
