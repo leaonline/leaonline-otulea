@@ -1,13 +1,5 @@
 <template name="welcome">
     <div class="w-100 lea-welcome-container">
-
-        <div class="container text-center">
-            {{> image
-                    src="/logo/logo-footer.png"
-                    alt="logo"
-                    class="lea-main-logo w-100"}}
-        </div>
-
         {{#unless loadComplete}}
             {{> loading}}
         {{/unless}}
@@ -15,15 +7,21 @@
         {{#if intro}}
             <div class="w-100">
                 <div class="container">
-                    <div class="intro-video-container embed-responsive embed-responsive-16by9 mh-50 shadow shadow-sm">
+                        {{> image
+                                src="/logo/video-placeholder-1080x1920.png"
+                                width=1920
+                                height=1080
+                                alt="video"
+                                class="lea-main-logo autoscale shadow"}}
 {{!--
+                    <div class="intro-video-container embed-responsive embed-responsive-16by9 mh-50 shadow shadow-sm">
                         <video controls preload="none"
                                class="embed-responsive-item" allowfullscreen>
                             <source src="{{video "welcome"}}" type="video/mp4">
                             Your browser does not support the video tag.
                         </video>
---}}
                     </div>
+--}}
                 </div>
             </div>
 
