@@ -6,6 +6,7 @@ import { Random } from 'meteor/random'
 import { Users } from '../../../contexts/user/User'
 import { loggedIn } from '../../../utils/accountUtils'
 import { fadeOut } from '../../../utils/animationUtils'
+import '../../components/container/container'
 import './welcome.scss'
 import './welcome.html'
 
@@ -119,21 +120,20 @@ Template.welcome.events({
   },
   'click .lea-welcome-yes' (event, templateInstance) {
     event.preventDefault()
-    const $videoContainer = templateInstance.$('.intro-video-container')
-    originalVideoHeight = $videoContainer.height()
-    $videoContainer.animate({ height: '100px' }, 500, 'swing', () => {
-      templateInstance.wizard.login(true)
-      setTimeout(() => focusInput(templateInstance), 50)
-    })
+
+    // if we have a video container we can shrink it's size using a nice effect
+    // $videoContainer.animate({ height: '200px' }, 500, 'swing', () => {})
+    // const $videoContainer = templateInstance.$('.intro-video-container')
+    templateInstance.wizard.login(true)
+    setTimeout(() => focusInput(templateInstance), 50)
   },
   'click .lea-welcome-no' (event, templateInstance) {
     event.preventDefault()
-    const $videoContainer = templateInstance.$('.intro-video-container')
-    originalVideoHeight = $videoContainer.height()
-    $videoContainer.animate({ height: '100px' }, 500, 'swing', () => {
-      templateInstance.wizard.newCode(true)
-      setTimeout(() => focusInput(templateInstance), 50)
-    })
+    // if we have a video container we can shrink it's size using a nice effect
+    //const $videoContainer = templateInstance.$('.intro-video-container')
+    //$videoContainer.animate({ height: '200px' }, 500, 'swing', () => {})
+    templateInstance.wizard.newCode(true)
+    setTimeout(() => focusInput(templateInstance), 50)
   },
   'paste .login-field' (event, templateInstance) {
     // Stop data actually being pasted
@@ -283,11 +283,18 @@ function showLoginButton (templateInstance) {
   templateInstance.$('.lea-welcome-login').focus()
 }
 
-function loginFail (templateInstance) {
+function loginFail (templateInstance, error) {
   resetInputs(templateInstance)
   focusInput(templateInstance)
   templateInstance.state.set('logginIn', false)
   templateInstance.state.set('loginFail', true)
+
+  // tracking: record failed login attempt to better know how
+  // good users handle password based login
+  if (error) {
+    console.error(error)
+    //templateInstance.api.sendError({ error })
+  }
 }
 
 function registerNewUser (code, templateInstance) {
@@ -300,8 +307,7 @@ function registerNewUser (code, templateInstance) {
   else {
     Users.methods.register.call({ code, isDemoUser }, (err) => {
       if (err) {
-        console.error(err)
-        loginFail(templateInstance)
+        loginFail(templateInstance, err)
       }
       else {
         loginUser(code, templateInstance)
@@ -313,8 +319,7 @@ function registerNewUser (code, templateInstance) {
 function loginUser (code, templateInstance) {
   Meteor.loginWithPassword(code, code, (err) => {
     if (err) {
-      console.error(err)
-      loginFail(templateInstance)
+      loginFail(templateInstance, err)
     }
     else {
       onLoggedIn()
@@ -330,7 +335,12 @@ function onLoggedIn () {
   const screenHeight = window.screen.height * window.devicePixelRatio
   const viewPortWidth = window.screen.availWidth
   const viewPortHeight = window.screen.availHeight
-  Users.methods.loggedIn.call({ screenWidth, screenHeight, viewPortWidth, viewPortHeight }, (err) => {
+  Users.methods.loggedIn.call({
+    screenWidth,
+    screenHeight,
+    viewPortWidth,
+    viewPortHeight
+  }, (err) => {
     if (err) console.log(err)
   })
 }

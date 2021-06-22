@@ -6,13 +6,13 @@
 
         {{#if intro}}
             <div class="w-100">
-                <div class="container">
+                <div class="container intro-video-container">
                         {{> image
                                 src="/logo/video-placeholder-1080x1920.png"
                                 width=1920
                                 height=1080
                                 alt="video"
-                                class="lea-main-logo autoscale shadow"}}
+                                class="rounded lea-main-logo autoscale shadow"}}
 {{!--
                     <div class="intro-video-container embed-responsive embed-responsive-16by9 mh-50 shadow shadow-sm">
                         <video controls preload="none"
@@ -26,7 +26,7 @@
             </div>
 
             {{#unless currentUser}}
-                <div class="container welcome-intro-container my-5">
+                {{#container class="welcome-intro-container my-5"}}
                     <div class="card">
                         <div class="card-body">
                             {{#onComplete complete=dependenciesComplete}}
@@ -54,12 +54,12 @@
                             </div>
                         {{/onComplete}}
                     </div>
-                </div>
+                {{/container}}
             {{/unless}}
         {{/if}}
 
         {{#if loggedIn}}
-            <div class="container my-3">
+            {{#container class="my-3"}}
                 <div class="card">
                     <div class="card-body">
                         {{#onComplete complete=dependenciesComplete}}
@@ -80,11 +80,11 @@
                         </div>
                     {{/onComplete}}
                 </div>
-            </div>
+            {{/container}}
         {{/if}}
 
         {{#if loginRequired}}
-            <div class="container">
+            {{#container}}
                 <div class="card">
                     {{#if login}}
                         <div class="card-body">
@@ -129,7 +129,9 @@
 
                     {{#if loginFail}}
                         <div class="card-body">
-                            {{> textGroup tts="pages.welcome.loginFail" type="warning" class="w-100 p-3 alert-warning"}}
+                            <div class="bg-primary rounded py-3">
+                                {{> textGroup tts="pages.welcome.loginFail" type="warning" groupClass="w-100 text-light"}}
+                            </div>
                         </div>
                     {{/if}}
                 </div>
@@ -147,7 +149,7 @@
                         {{/if}}
                     {{/onComplete}}
                 </div>
-            </div>
+            {{/container}}
         {{/if}}
     </div>
 </template>
