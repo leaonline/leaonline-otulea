@@ -1,4 +1,5 @@
 import { Template } from 'meteor/templating'
+import { Tracker } from 'meteor/tracker'
 import { TTSEngine } from '../../../api/tts/TTSEngine'
 import { Dimension } from '../../../contexts/Dimension'
 import { Level } from '../../../contexts/Level'
@@ -9,10 +10,10 @@ import { ColorType } from '../../../contexts/types/ColorType'
 import { dataTarget } from '../../../utils/dataTarget'
 import { getUnitSetForDimensionAndLevel } from '../../../contexts/unitSet/api/getUnitSetForDimensionAndLevel'
 import { showStoryBeforeUnit } from '../../../contexts/unitSet/api/showStoryBeforeUnit'
+import { loadContentDoc } from '../../loading/loadContentDoc'
 import '../../components/container/container'
 import './overview.scss'
 import './overview.html'
-import { loadContentDoc } from '../../loading/loadContentDoc'
 
 Template.overview.onDestroyed(function () {
   const instance = this
@@ -58,10 +59,10 @@ Template.overview.onCreated(function () {
     const { d } = data.queryParams
     const { l } = data.queryParams
 
-    let level
+    const dimension = Dimension.collection().findOne({ _id: d })
+    const currentDimension = Tracker.nonreactive(() => instance.state.get('dimension'))
 
-    const dimension = Dimension.collection().findOne(d)
-    if (dimension) {
+    if (dimension && dimension !== currentDimension) {
       // if a dimension has been selected we create a filter list of
       // the levels that are supported by this dimension (linked in UnitSets)
       const levelFilter = new Set()
@@ -77,8 +78,10 @@ Template.overview.onCreated(function () {
         color: color
       })
     }
-    else {
-      // otherwise we reset the dimension and the filters for new selection
+
+    if (!dimension && currentDimension) {
+      // if there ware a dimensions but now there is not,
+      // reset the dimension and the filters for new selection
       instance.state.set({
         dimension: null,
         levelFilter: null,
@@ -87,28 +90,39 @@ Template.overview.onCreated(function () {
     }
 
     // TODO if level not exist, reset queryParam
+    const level = Level.collection().findOne({ _id: l })
+    const currentLevel = Tracker.nonreactive(() => instance.state.get('level'))
 
-    if (typeof l !== 'undefined') {
-      level = Level.collection().findOne(l)
+    if (level && level !== currentLevel) {
       instance.state.set('level', level)
-
-      setTimeout(() => {
-        const $target = instance.$('.overview-level-decision')
-        const scrollTarget = $target && $target.get(0)
-        scrollTarget && scrollTarget.scrollIntoView({
-          block: 'start',
-          behavior: 'smooth'
-        })
-      }, 50)
     }
-    else {
+
+    if (!level && currentLevel) {
       instance.state.set('level', null)
     }
 
     // if both selected, select respective test-cyclce
     if (dimension && level) {
-      const testCycle = TestCycle.collection().findOne({ dimension: d, level: l })
+      const testCycle = TestCycle.collection().findOne({
+        dimension: d,
+        level: l
+      })
       instance.state.set('selectedTestCycle', testCycle)
+    }
+
+    // always scroll to respective target
+    const target = getScrollTarget(dimension, level)
+
+    if (target) {
+      setTimeout(() => {
+        const $target = instance.$(target)
+        const scrollTarget = $target && $target.get(0)
+        scrollTarget && scrollTarget.scrollIntoView({
+          block: 'start',
+          inline: 'nearest',
+          behavior: 'smooth'
+        })
+      }, 250)
     }
   })
 
@@ -344,4 +358,20 @@ function launch ({ templateInstance, name, args, isFreshStart }) {
       }, 100)
     }
   })
+}
+
+function getScrollTarget (dimension, level) {
+  if (!dimension && !level) {
+    return 'overview-dimensions-container'
+  }
+
+  if (dimension && !level) {
+    return 'overview-level-container'
+  }
+
+  if (dimension && level) {
+    return '.overview-session-container'
+  }
+
+  console.warn('Unexpected: no scroll target found!')
 }
