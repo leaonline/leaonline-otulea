@@ -130,8 +130,8 @@ Template.welcome.events({
   'click .lea-welcome-no' (event, templateInstance) {
     event.preventDefault()
     // if we have a video container we can shrink it's size using a nice effect
-    //const $videoContainer = templateInstance.$('.intro-video-container')
-    //$videoContainer.animate({ height: '200px' }, 500, 'swing', () => {})
+    // const $videoContainer = templateInstance.$('.intro-video-container')
+    // $videoContainer.animate({ height: '200px' }, 500, 'swing', () => {})
     templateInstance.wizard.newCode(true)
     setTimeout(() => focusInput(templateInstance), 50)
   },
@@ -293,7 +293,7 @@ function loginFail (templateInstance, error) {
   // good users handle password based login
   if (error) {
     console.error(error)
-    //templateInstance.api.sendError({ error })
+    // templateInstance.api.sendError({ error })
   }
 }
 
