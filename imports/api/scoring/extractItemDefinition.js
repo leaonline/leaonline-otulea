@@ -19,7 +19,7 @@ export const extractItemDefinition = (input, debug = () => {}) => {
   const unitId = unitDoc._id
 
   // if we have a out of bound situation we dfinitely throw an error
-  if (!unitDoc.pages?.length ||  page < 0 || page > unitDoc.pages.length) {
+  if (!unitDoc.pages?.length || page < 0 || page > unitDoc.pages.length) {
     debug('[extractItemDefinition]: no pages on unitDoc')
     debug(unitDoc)
     throw new Meteor.Error(toErr('error'), toErr('arrayIndexOutOfBounds'), {
@@ -35,7 +35,11 @@ export const extractItemDefinition = (input, debug = () => {}) => {
     debug(unitDoc)
 
     const { shortCode } = unitDoc
-    throw new Meteor.Error(toErr('error'), toErr('noContent'), { unitId, shortCode, page })
+    throw new Meteor.Error(toErr('error'), toErr('noContent'), {
+      unitId,
+      shortCode,
+      page
+    })
   }
 
   const entry = content.find(obj => obj.contentId === contentId)
