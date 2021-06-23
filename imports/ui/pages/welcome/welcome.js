@@ -46,7 +46,9 @@ Template.welcome.onCreated(function () {
       instance.state.set('dependenciesComplete', true)
     },
     onError: e => {
-      instance.data.onFail()
+      // instance.data.onFail()
+      console.error(e)
+      instance.state.set('dependenciesComplete', true)
     }
   })
 })
