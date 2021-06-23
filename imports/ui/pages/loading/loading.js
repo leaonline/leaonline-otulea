@@ -4,7 +4,12 @@ import './loading.html'
 Template.loading.onCreated(function () {
   const instance = this
   instance.initDependencies({
-    onComplete: () => instance.state.set('loadComplete', true)
+    onComplete: () => {
+      instance.state.set('loadComplete', true)
+    },
+    onError: err => {
+      instance.state.set('loadComplete', true)
+    }
   })
 })
 

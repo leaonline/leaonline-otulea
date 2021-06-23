@@ -20,8 +20,9 @@ let autoLoadEnabled = false
  */
 
 Blaze.TemplateInstance.prototype.initDependencies =
-  function ({ language = true, tts = true, contexts = [], loaders = [], onComplete, onError }) {
+  function ({ language = false, tts = false, contexts = [], loaders = [], onComplete, onError }) {
     import { Components } from 'meteor/leaonline:ui/components/Components'
+
     if (!autoLoadEnabled) {
       Components.autoLoad()
       autoLoadEnabled = true
@@ -59,6 +60,8 @@ Blaze.TemplateInstance.prototype.initDependencies =
       type: 'debug',
       devOnly: false
     })
+
+    logDebug('initialize', { language, tts, contexts })
 
     Object.assign(instance.api, {
       queryParam: value => Router.queryParam(value),

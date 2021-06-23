@@ -15,6 +15,7 @@ export const loadOnce = function (asyncInitFunc, { completeOnError = false, onEr
       }
 
       else {
+        console.error('[loadOnce]: failed with error:')
         console.error(e)
       }
 

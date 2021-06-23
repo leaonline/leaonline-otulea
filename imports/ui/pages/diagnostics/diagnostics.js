@@ -2,6 +2,7 @@ import { Template } from 'meteor/templating'
 import { Diagnostics } from '../../../contexts/diagnostics/Diagnostics'
 import { callMethod } from '../../../infrastructure/methods/callMethod'
 import { normalizeError } from '../../../contexts/errors/api/normalizeError'
+import { sendError } from '../../../contexts/errors/api/sendError'
 import '../../components/complete/onComplete'
 import './diagnostics.html'
 
@@ -18,7 +19,9 @@ Template.diagnostics.onCreated(function () {
     })
   }
   catch (e) {
+    debugger
     console.error(e)
+    instance.state.set('loadComplete', true)
   }
 
   instance.autorun(() => {
@@ -101,6 +104,9 @@ Template.diagnostics.onCreated(function () {
         })),
         success: () => instance.state.set('sendComplete', true)
       })
+        .catch(e => {
+          sendError({ error: e })
+        })
     })
   })
 })

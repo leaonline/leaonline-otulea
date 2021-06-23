@@ -23,10 +23,11 @@ Template.footer.onCreated(function () {
         instance.state.set('dependenciesComplete', true)
       },
       onError (e) {
-        instance.data.onFail(e)
+        console.error(e)
+        instance.state.set('dependenciesComplete', true)
       }
     })
-  }, 2000)
+  }, 500)
 })
 
 Template.footer.onRendered(function () {
