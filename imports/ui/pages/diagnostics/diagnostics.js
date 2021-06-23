@@ -19,7 +19,6 @@ Template.diagnostics.onCreated(function () {
     })
   }
   catch (e) {
-    debugger
     console.error(e)
     instance.state.set('loadComplete', true)
   }

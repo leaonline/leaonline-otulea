@@ -7,7 +7,7 @@ Template.loading.onCreated(function () {
     onComplete: () => {
       instance.state.set('loadComplete', true)
     },
-    onError: err => {
+    onError: () => {
       instance.state.set('loadComplete', true)
     }
   })
