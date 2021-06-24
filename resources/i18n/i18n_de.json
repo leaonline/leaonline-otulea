@@ -85,42 +85,42 @@
       "continueToTask": "Weiter zur Aufgabe"
     },
     "logout": {
-      "description": "Sie sind nun abgemeldet und können das Fenster schließen."
+      "description": "Du bist nun abgemeldet und kannst das Fenster schließen."
     },
     "welcome": {
       "title": "Willkommen bei lea.",
       "introVideo": "Video mit Begrüßung",
       "playIntro": "Einführungsvideo abspielen",
-      "loggedIn": "Sie sind bereits angemeldet. Sie können auf dieser Seite noch einmal die Einführung ansehen oder zur Übersicht zurückkehren.",
-      "wrongUser": "Klicken Sie hier, wenn der dargestellte Benutzer nicht von Ihnen angelegt wurde.",
-      "introduction": "Herzlich willkommen bei otu.lea! Sie können hier angeben, ob Sie bereits einen Test absolviert haben. Wenn Sie bereits teilgenommen haben, klicken sie auf „Ja“. Falls Sie zum ersten Mal hier sind, klicken Sie bitte auf „Nein“.",
-      "newCode": "Hier können Sie sich anmelden. Wenn Sie zum ersten Mal hier sind, bekommen Sie auf dieser Seite Ihren persönlichen Code. Sie können sich mit diesem Code immer wieder anmelden. Um den Code nicht zu vergessen haben Sie folgende Möglichkeiten: Sie können den Code notieren, Sie können sich den Code nach der Befragung ausdrucken oder Sie können sich den Code mit dem Handy abfotografieren.",
-      "enterCode": "Bitte geben Sie hier Ihren Code ein.",
-      "loginFail": "Der Code war nicht korrekt. Bitte versuchen Sie es erneut.",
+      "loggedIn": "Du bist bereits angemeldet. Du kannst auf dieser Seite noch einmal die Einführung ansehen oder zur Übersicht zurückkehren.",
+      "wrongUser": "Klicke, wenn der dargestellte Benutzer nicht von Dir erstellt wurde.",
+      "introduction": "Herzlich willkommen bei otu.lea! Du kannst hier angeben, ob Du bereits einen Test absolviert haben. Wenn Du bereits teilgenommen haben, klicke auf „Ja“. Falls Du zum ersten Mal hier bist, klicke bitte auf „Nein“.",
+      "newCode": "Hier kannst du dich anmelden. Wenn Du zum ersten Mal hier bist, bekommst du auf dieser Seite Deinen persönlichen Code. Du kannst dich mit diesem Code immer wieder anmelden. Um den Code nicht zu vergessen haben hast Du folgende Möglichkeiten: Du kannst den Code notieren, Du kannst dir den Code nach der Befragung ausdrucken oder Du kannst dir den Code mit dem Handy abfotografieren.",
+      "enterCode": "Bitte gib hier Deinen Code ein.",
+      "loginFail": "Der Code war nicht korrekt. Bitte versuche es erneut.",
       "login": "Anmelden",
-      "loggingIn": "Sie werden angemeldet"
+      "loggingIn": "Du wirst nun angemeldet"
     },
     "overview": {
       "title": "Übersicht",
-      "chooseDimension": "Bitte wählen Sie eine Kategorie aus.",
-      "chooseLevel": "Wir möchten die Aufgaben möglichst passend für Sie zusammenstellen. Bitte schätzen Sie hier Ihre Fähigkeiten ein. Wenn Sie mit dem Mauszeiger auf die Lautsprechersymbole klicken, werden Ihnen die jeweiligen Schwierigkeitsgrade vorgelesen. Nachdem Sie auf eine Auswahlfläche geklickt haben, wird Ihnen noch ein kurzes Beispiel angezeigt, welches Sie sich ebenfalls durch Klicken auf das Lautsprechersymbol vorlesen lassen können.",
+      "chooseDimension": "Bitte wähle eine Kategorie aus.",
+      "chooseLevel": "Wir möchten die Aufgaben möglichst passend für Dich zusammenstellen. Bitte schätze hier Deine Fähigkeiten ein. Wenn Du mit dem Mauszeiger auf die Lautsprechersymbole klickst, werden die jeweiligen Schwierigkeitsgrade vorgelesen. Nachdem Du auf eine Auswahlfläche geklickt hast, wird Dir noch ein kurzes Beispiel angezeigt, welches Du ebenfalls durch Klicken auf das Lautsprechersymbol vorlesen lassen kannst.",
       "confirm": "Aufgaben starten",
-      "sessionFound": "Es läuft bereits eine Bearbeitung für diese Auswahl. Möchten Sie die Bearbeitung fortsetzen oder neu starten?"
+      "sessionFound": "Es läuft bereits eine Bearbeitung für diese Auswahl. Möchtest Du die Bearbeitung fortsetzen oder neu starten?"
     },
     "notFound": {
       "title": "Die angefragte Seite wurde nicht gefunden. Das tut uns leid.",
-      "description": "Es wurde die angeforderte Seite nicht im System gefunden. Möchten Sie uns den Fehler mitteilen?"
+      "description": "Es wurde die angeforderte Seite nicht im System gefunden. Möchten Du uns diesen Fehler mitteilen?"
     },
     "unit": {
       "story": "Einleitung"
     },
     "complete": {
       "title": "Fertig",
-      "thankYou": "Schön, dass Sie teilgenommen haben!",
-      "printResults": "Für mich ausdrucken",
+      "thankYou": "Schön, dass Du teilgenommen hast!",
+      "printResults": "Für Dich ausdrucken",
       "printResultsTeacher": "Für Kursleitende ausdrucken",
-      "youCanPrint": "Sie können Ihr Ergebnis hier ausdrucken.",
-      "continueOrEnd": "Was möchten Sie als nächstes tun?",
+      "youCanPrint": "Du kannst das Ergebnis hier ausdrucken.",
+      "continueOrEnd": "Was möchtest Du als nächstes tun?",
       "failed": "Es kann derzeit keine Bewertung Ihrer Ergebnisse erzeugt werden. Das Lea Team ist informiert und wird die Auswertung in Kürze wieder zur Verfügung stellen.",
       "definitionMissing": "Kompetenz ermittelt aber Definition fehlt",
       "noEntries": "Es sind hierzu keine Einträge in der Rückmeldung enthalten.",
@@ -129,9 +129,9 @@
     },
     "diagnostics": {
       "title": "Browser-Diagnose",
-      "info": "Die Diagnose prüft, ob Ihr Browser die wesentlichsten Funktionen erfüllt und übermittelt das Ergebnis an das otu.lea Team. Sind Sie damit einverstanden?",
+      "info": "Die Diagnose prüft, ob Ihr Browser die wesentlichsten Funktionen erfüllt und übermittelt das Ergebnis an das otu.lea Team. Bist du damit einverstanden?",
       "sending":"Übermittle Ergebnisse",
-      "sent": "Ergenisse erfolgreich gesendet"
+      "sent": "Ergebnisse erfolgreich gesendet"
     }
   },
   "users": {
