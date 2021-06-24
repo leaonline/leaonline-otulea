@@ -75,3 +75,19 @@ Response.methods.submit = {
     }
   })
 }
+
+Response.methods.getMy = {
+  name: 'response.methods.getMy',
+  schema: {
+    sessionId: String
+  },
+  numRequests: 50,
+  timeInterval: 1000,
+  run: onServerExec(function () {
+    return function ({ sessionId }) {
+      const { userId } = this
+
+      return Response.collection().find({ userId, sessionId }).fetch()
+    }
+  })
+}

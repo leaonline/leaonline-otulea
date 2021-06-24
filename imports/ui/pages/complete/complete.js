@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor'
 import { Template } from 'meteor/templating'
 import { Dimension } from '../../../contexts/Dimension'
 import { Session } from '../../../contexts/session/Session'
@@ -5,10 +6,12 @@ import { Thresholds } from '../../../contexts/thresholds/Thresholds'
 import { Competency } from '../../../contexts/Competency'
 import { createSessionLoader } from '../../loading/createSessionLoader'
 import { sessionIsComplete } from '../../../contexts/session/utils/sessionIsComplete'
+import { AlphaLevel } from '../../../contexts/AlphaLevel'
+import { Response } from '../../../contexts/response/Response'
+import { Unit } from '../../../contexts/Unit'
 import '../../components/container/container'
 import '../../layout/navbar/navbar'
 import './complete.html'
-import { AlphaLevel } from '../../../contexts/AlphaLevel'
 
 const states = {
   showResults: 'showResults',
@@ -25,7 +28,7 @@ Template.complete.onCreated(function () {
   const { api } = instance.initDependencies({
     language: true,
     tts: true,
-    contexts: [Dimension, Session, Competency, Thresholds, AlphaLevel],
+    contexts: [Dimension, Session, Competency, Thresholds, AlphaLevel, Response, Unit],
     onComplete () {
       instance.state.set({
         dependenciesComplete: true
@@ -174,6 +177,43 @@ Template.complete.onCreated(function () {
       instance.state.set('view', states.showResults)
     }
   })
+
+  // if we have a debug user we can ask for her responses in detail so our
+  // team members can see their response-scoring in detail
+  instance.autorun(() => {
+    const user = Meteor.user()
+    if (!user?.debug || instance.state.get('callingResponses')) {
+      return
+    }
+
+    callMethod({
+      name: Response.methods.getMy,
+      args: { sessionId },
+      prepare: () => instance.state.set('callingResponses', true),
+      failure (err) {
+        console.error(err)
+      },
+      success (responses) {
+        debug({ responses })
+
+        const unitIds = new Set()
+        responses.forEach(doc => unitIds.add(doc.unitId))
+
+        const ids = Array.from(unitIds)
+        loadAllContentDocs(Unit, { ids }, debug)
+          .catch(e => console.error(e))
+          .then(() => {
+            const mapped = responses.map(doc => {
+              doc.unit = Unit.collection().findOne(doc.unitId) || { shortCode: '?' }
+              return doc
+            })
+
+            responses.sort((a, b) => a.unit.shortCode.localeCompare(b.unit.shortCode))
+            instance.state.set({ responses: mapped })
+          })
+      }
+    })
+  })
 })
 
 Template.complete.helpers({
@@ -199,6 +239,7 @@ Template.complete.helpers({
     const competencyDoc = Competency.collection().findOne(_id)
     if (competencyDoc) {
       return {
+        shortCode: competencyDoc.shortCode,
         description: competencyDoc.descriptionSimple || competencyDoc.description,
         example: competencyDoc.example
       }
@@ -250,6 +291,18 @@ Template.complete.helpers({
   },
   currentType () {
     return Template.instance().state.get('color')
+  },
+  // ///////////////////////////////////////////////////////////////////////////
+  // DEBUG-USER-ONLY!
+  // ///////////////////////////////////////////////////////////////////////////
+  responses () {
+    return Template.getState('responses')
+  },
+  stringify (obj) {
+    return JSON.stringify(obj, null, 0)
+  },
+  isScored (entry) {
+    return entry === 'true' || entry === true
   }
 })
 

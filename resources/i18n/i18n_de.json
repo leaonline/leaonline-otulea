@@ -125,7 +125,8 @@
       "definitionMissing": "Kompetenz ermittelt aber Definition fehlt",
       "noEntries": "Es sind hierzu keine Einträge in der Rückmeldung enthalten.",
       "competencies": "Kann-Beschreibungen",
-      "alphaLevels": "Alpha-Level"
+      "alphaLevels": "Alpha-Level",
+      "responses": "Alle Antworten"
     },
     "diagnostics": {
       "title": "Browser-Diagnose",

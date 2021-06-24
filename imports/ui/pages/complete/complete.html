@@ -222,6 +222,54 @@
                 {{/container}}
             {{/onComplete}}
 
+            {{! ============================================================ }}
+            {{! RESPONSES (DEBUG-ONLY) }}
+            {{! ============================================================ }}
+
+            {{#if isDebugUser}}
+                {{#container}}
+                    <div class="card my-4">
+                        <div class="card-header">
+                            <h5 class="card-title">
+                                {{i18n "pages.complete.responses"}}
+                            </h5>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                <tr>
+                                    <th scope="col">Unit</th>
+                                    <th scope="col">page</th>
+                                    <th scope="col">responses</th>
+                                    <th scope="col">scores</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {{#each response in responses}}
+                                    <tr scope="row">
+                                        <td>{{response.unit.shortCode}}</td>
+                                        <td>{{response.page}}</td>
+                                        <td>
+                                            <pre><code>{{stringify response.responses}}</code></pre>
+                                        </td>
+                                        <td>
+                                            {{#each entry in response.scores}}
+                                                    {{#each competencyId in entry.competency}}
+                                                    <span class="rounded border border-1 p-3 bg-{{#if isScored entry.score}}success{{else}}danger{{/if}} text-white">
+                                                        {{#with getCompetency competencyId}}{{this.shortCode}}{{/with}}
+                                                    </span>
+                                                    {{/each}}
+                                            {{/each}}
+                                        </td>
+                                    </tr>
+                                {{/each}}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                {{/container}}
+            {{/if}}
+
             {{!-- iterate all possible feedback levels
             {{#container}}
 
