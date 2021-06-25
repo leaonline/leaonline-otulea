@@ -17,7 +17,7 @@ describe(encodeQueryParams.name, function () {
 
     // with special chars
     const special1 = encodeQueryParams({ bar: 'let\'s rock (*wow)' })
-    expect(special1).to.equal('bar=let%27s%20rock%20%28%2awow%29')
+    expect(special1).to.equal('bar=let%27s%20rock%20%28%2Awow%29')
     expect(decodeURIComponent(special1)).to.equal('bar=let\'s rock (*wow)')
 
     const special2 = encodeQueryParams({ baz: 'hello+world!=cool' })
@@ -37,7 +37,7 @@ describe(encodeQueryParams.name, function () {
 
     // with special chars
     const special1 = encodeQueryParams({ bar: ['hello+world!=cool', 'let\'s rock (*wow)'] })
-    expect(special1).to.equal('bar=hello%2Bworld%21%3Dcool&bar=let%27s%20rock%20%28%2awow%29')
+    expect(special1).to.equal('bar=hello%2Bworld%21%3Dcool&bar=let%27s%20rock%20%28%2Awow%29')
     expect(decodeURIComponent(special1)).to.equal('bar=hello+world!=cool&bar=let\'s rock (*wow)')
   })
 })

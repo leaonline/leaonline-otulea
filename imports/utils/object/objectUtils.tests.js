@@ -25,7 +25,11 @@ describe('object utils', function () {
     })
   })
   describe(hasProperty.name, function () {
-    it('is a safer shorthand for hasOwnProperty')
+    it('is a safer shorthand for hasOwnProperty', function () {
+      const obj = { foo: 'bar' }
+      expect(hasProperty(obj, 'foo')).to.equal(true)
+      expect(hasProperty(obj, 'toString')).to.equal(false) // not own prop
+    })
   })
   describe(isPlainObject.name, function () {
     it('determines if an object is plain', function () {

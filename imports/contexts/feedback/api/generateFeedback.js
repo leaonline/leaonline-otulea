@@ -16,7 +16,7 @@ export const generateFeedback = ({ sessionId, userId, debug = () => {} }) => {
   }
 
   // ///////////////////////////////////////////////////////////////////////////
-  // STEP 0 - PREPARE
+  // STEP 0 - CHECK
   // ///////////////////////////////////////////////////////////////////////////
   debug('(generateFeedback)', 'generate new')
   const sessionDoc = Session.collection().findOne(sessionId)
@@ -25,14 +25,18 @@ export const generateFeedback = ({ sessionId, userId, debug = () => {} }) => {
   // so we need to make sure it is only called, when we are "done" with testing
   if (
     !sessionDoc ||
-    !sessionDoc.completedAt ||
-    sessionDoc.progress < sessionDoc.maxProgress
+    !sessionDoc?.completedAt ||
+    (sessionDoc.progress || 0) < (sessionDoc.maxProgress || 100)
   ) {
     throw new Meteor.Error(
       'generateFeedback.error',
-      'generateFeedback.notComplete',
+      'generateFeedback.sessionNotComplete',
       { userId, sessionId })
   }
+
+  // ///////////////////////////////////////////////////////////////////////////
+  // STEP 1A - FETCH INPUT
+  // ///////////////////////////////////////////////////////////////////////////
 
   debug('(generateFeedback)', 'get thresholds')
   const {
@@ -69,7 +73,6 @@ export const generateFeedback = ({ sessionId, userId, debug = () => {} }) => {
 
   debug('(generateFeedback)', 'get responses')
   const responses = getSessionResponses({ sessionId, userId })
-  const aggregatedCompetencies = new Map()
   const competencyIds = new Set()
   const alphaLevelIds = new Set()
 
@@ -86,15 +89,69 @@ export const generateFeedback = ({ sessionId, userId, debug = () => {} }) => {
   debug('(generateFeedback)', 'get AlphaLevels')
   const alphaLevelMap = getAlphaLevels(Array.from(alphaLevelIds))
 
+  // ///////////////////////////////////////////////////////////////////////////
+  // STEP 1B - TRANSFORM INPUT
+  // ///////////////////////////////////////////////////////////////////////////
+
   debug('(generateFeedback)', 'start counting competencies')
-  const aggregatedAlphaLevels = new Map()
+  const aggregatedCompetencies = countCompetencies({
+    responses,
+    minCountCompetency,
+    debug
+  })
+
+  // ///////////////////////////////////////////////////////////////////////////
+  // STEP 2 - GRADE COMPETENCIES
+  // ///////////////////////////////////////////////////////////////////////////
+  debug('(generateFeedback)', 'start grading competencies')
+  const aggregatedAlphaLevels = gradeCompetenciesAndCountAlphaLevels({
+    competencies: aggregatedCompetencies,
+    getCompetency: id => competencyMap.get(id),
+    getAlphaLevel: id => alphaLevelMap.get(id),
+    minCountAlphaLevel: minCountAlphaLevel,
+    thresholds: sortedThresholdsCompetency
+  })
+
+  // ///////////////////////////////////////////////////////////////////////////
+  // STEP 3 - GRADE ALPHA LEVELS
+  // ///////////////////////////////////////////////////////////////////////////
+
+  debug('(generateFeedback)', 'start grading alpha levels')
+  gradeAlphaLevels({
+    alphaLevels: aggregatedAlphaLevels,
+    thresholds: sortedThresholdsAlphaLevel
+  })
+
+  // ///////////////////////////////////////////////////////////////////////////
+  // STEP 4 - POST-TRANSFORM AND RETURN
+  // ///////////////////////////////////////////////////////////////////////////
+
+  const feedbackDoc = {
+    sessionId,
+    userId,
+    testCycle: sessionDoc.testCycle,
+    competencies: Array.from(aggregatedCompetencies.values()),
+    alphaLevels: Array.from(aggregatedAlphaLevels.values())
+  }
+
+  const docId = Feedback.collection().insert(feedbackDoc)
+  return Feedback.collection().findOne(docId)
+}
+
+// ///////////////////////////////////////////////////////////////////////////
+//
+//  INTERNAL - ONLY EXPORTED FOR BETTER TESTING
+//
+// ///////////////////////////////////////////////////////////////////////////
+export const countCompetencies = ({ responses, minCountCompetency }) => {
+  const competencies = new Map()
 
   responses.forEach(result => {
     result.forEach(({ competency, score, isUndefined }) => {
       // since competency can actually hold more than one competency we
       // need another iteration to break it down to it's pieces
       competency.forEach(competencyId => {
-        const current = aggregatedCompetencies.get(competencyId) || {
+        const current = competencies.get(competencyId) || {
           count: 0, // max occurrences
           scored: 0, // positive scores
           undef: 0, // skipped items
@@ -104,34 +161,64 @@ export const generateFeedback = ({ sessionId, userId, debug = () => {} }) => {
 
         current.competencyId = competencyId
         current.count += 1
-        current.scored += (score === 'true' ? 1 : 0)
+
+        if (score === 'true') {
+          current.scored++
+        }
+
         current.undef += (isUndefined === 'true' ? 1 : 0)
 
-        aggregatedCompetencies.set(competencyId, current)
+        competencies.set(competencyId, current)
       })
     })
   })
 
-  debug('(generateFeedback)', 'start grading competencies')
-  aggregatedCompetencies.forEach((current, competencyId) => {
-    current.perc = current.count && (current.scored / current.count)
+  // finally generate percent values in one iteration
+  competencies.forEach((val, key) => {
+    if (val.count > 0) {
+      val.perc = (val.scored / val.count)
+      competencies.set(key, val)
+    }
+  })
 
+  return competencies
+}
+
+export const gradeCompetenciesAndCountAlphaLevels = ({ competencies, minCountAlphaLevel, thresholds, getCompetency, getAlphaLevel }) => {
+  const alphaLevels = new Map()
+
+  competencies.forEach((current, competencyId) => {
     const grade = getGrade({
       minCount: current.min,
       count: current.count,
       percent: current.perc,
-      thresholds: sortedThresholdsCompetency
+      thresholds: thresholds
     })
 
     current.gradeName = grade.name
     current.gradeIndex = grade.index
     current.isGraded = grade.index > -1
 
-    aggregatedCompetencies.set(competencyId, current)
+    competencies.set(competencyId, current)
 
-    const competencyDoc = competencyMap.get(competencyId)
-    const alphaLevelDoc = alphaLevelMap.get(competencyDoc.level)
-    const alpha = aggregatedAlphaLevels.get(competencyDoc.level) || {
+    const competencyDoc = getCompetency(competencyId)
+    if (!competencyDoc) {
+      throw new Meteor.Error(
+        'generateFeedback.error',
+        'generateFeedback.noCompetencyDoc',
+        { competencyId }
+      )
+    }
+
+    const alphaLevelDoc = getAlphaLevel(competencyDoc.level)
+    if (!alphaLevelDoc) {
+      throw new Meteor.Error(
+        'generateFeedback.error',
+        'generateFeedback.noAlphaLevelDoc',
+        { competencyId, alphaLevel: competencyDoc.level }
+      )
+    }
+    const alpha = alphaLevels.get(competencyDoc.level) || {
       alphaLevelId: alphaLevelDoc._id,
       min: minCountAlphaLevel,
       count: 0,
@@ -144,35 +231,34 @@ export const generateFeedback = ({ sessionId, userId, debug = () => {} }) => {
       alpha.scored += current.perc
     }
 
-    aggregatedAlphaLevels.set(alphaLevelDoc._id, alpha)
+    alphaLevels.set(alphaLevelDoc._id, alpha)
   })
 
-  debug('(generateFeedback)', 'start grading alpha levels')
-  aggregatedAlphaLevels.forEach((alpha, alphaLevelId) => {
-    alpha.perc = alpha.count && (alpha.scored / alpha.count)
+  // finally add percent values
+  alphaLevels.forEach((value, key) => {
+    if (value.count > 0) {
+      value.perc = value.count && (value.scored / value.count)
+    }
 
+    alphaLevels.set(key, value)
+  })
+
+  return alphaLevels
+}
+
+export const gradeAlphaLevels = ({ alphaLevels, thresholds }) => {
+  alphaLevels.forEach((alpha, alphaLevelId) => {
     const grade = getGrade({
       minCount: alpha.min,
       count: alpha.count,
       percent: alpha.perc,
-      thresholds: sortedThresholdsAlphaLevel
+      thresholds: thresholds
     })
 
     alpha.gradeName = grade.name
     alpha.gradeIndex = grade.index
     alpha.isGraded = grade.index > -1
 
-    aggregatedAlphaLevels.set(alphaLevelId, alpha)
+    alphaLevels.set(alphaLevelId, alpha)
   })
-
-  const feedbackDoc = {
-    sessionId,
-    userId,
-    testCycle: sessionDoc.testCycle,
-    competencies: Array.from(aggregatedCompetencies.values()),
-    alphaLevels: Array.from(aggregatedAlphaLevels.values())
-  }
-
-  const docId = Feedback.collection().insert(feedbackDoc)
-  return Feedback.collection().findOne(docId)
 }

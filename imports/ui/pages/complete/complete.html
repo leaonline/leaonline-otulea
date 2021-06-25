@@ -255,9 +255,9 @@
                                         <td>
                                             {{#each entry in response.scores}}
                                                     {{#each competencyId in entry.competency}}
-                                                    <span class="rounded border border-1 p-3 bg-{{#if isScored entry.score}}success{{else}}danger{{/if}} text-white">
+                                                    <div class="rounded border border-1 p-3 bg-{{#if isScored entry.score}}success{{else}}danger{{/if}} text-white">
                                                         {{#with getCompetency competencyId}}{{this.shortCode}}{{/with}}
-                                                    </span>
+                                                    </div>
                                                     {{/each}}
                                             {{/each}}
                                         </td>

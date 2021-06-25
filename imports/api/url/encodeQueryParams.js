@@ -1,9 +1,8 @@
-// Use this function in favour of encodeURIComponent or URL
-// see https://stackoverflow.com/a/62969380 on because why
 
 const unsupportedChars = /[!'()*]/g
+
 const fixedEncodeURIComponent = str => encodeURIComponent(str)
-  .replace(unsupportedChars, c => '%' + c.charCodeAt(0).toString(16))
+  .replace(unsupportedChars, c => '%' + c.charCodeAt(0).toString(16).toUpperCase())
 
 const toEncodedParams = ([key, value]) => {
   if (Array.isArray(value)) {
@@ -13,6 +12,13 @@ const toEncodedParams = ([key, value]) => {
   return `${fixedEncodeURIComponent(key)}=${fixedEncodeURIComponent(value)}`
 }
 
+/**
+ * Safely encodes query params, including characters, that may be forgotten
+ * by the builtin functions.
+ * @see https://stackoverflow.com/a/62969380
+ * @param params
+ * @return {string}
+ */
 export const encodeQueryParams = params => Object.entries(params)
   .map(toEncodedParams)
   .join('&')
