@@ -1,15 +1,8 @@
-import { Meteor } from 'meteor/meteor'
 import { Template } from 'meteor/templating'
-import { Legal } from '../../../api/config/Legal'
-import { dataTarget } from '../../../utils/eventUtils'
-import { Logos } from '../../../api/config/Logos'
-import { LeaCoreLib } from '../../../api/core/LeaCoreLib'
+import { Legal } from '../../../contexts/legal/Legal'
+import { Logos } from '../../../contexts/logos/Logos'
+import './footer.scss'
 import './footer.html'
-
-const components = LeaCoreLib.components
-const loaded = components.load([
-  components.template.soundbutton, components.template.actionButton, components.template.image
-])
 
 const legalRoutes = Object.keys(Legal.schema).map(key => {
   const value = Legal.schema[key]
@@ -19,11 +12,28 @@ const legalRoutes = Object.keys(Legal.schema).map(key => {
   }
 })
 
-const legalData = {}
-
 Template.footer.onCreated(function () {
   const instance = this
 
+  setTimeout(() => {
+    instance.initDependencies({
+      tts: true,
+      language: true,
+      onComplete () {
+        instance.state.set('dependenciesComplete', true)
+      },
+      onError (e) {
+        console.error(e)
+        instance.state.set('dependenciesComplete', true)
+      }
+    })
+  }, 500)
+})
+
+Template.footer.onRendered(function () {
+  const instance = this
+
+  // defer logo loading until first rendering occurred
   Logos.methods.get.call((err, logoDoc) => {
     if (err) console.error(err)
     instance.state.set('logoDoc', logoDoc)
@@ -32,50 +42,13 @@ Template.footer.onCreated(function () {
 
 Template.footer.helpers({
   loadComplete () {
-    return loaded.get()
+    return Template.getState('dependenciesComplete')
   },
   logos () {
     const logoDoc = Template.getState('logoDoc')
-    return logoDoc && logoDoc.footerLogos
+    return logoDoc && logoDoc.footer
   },
   legalRoutes () {
     return legalRoutes
-  },
-  currentLegalData () {
-    const key = Template.getState('currentLegalData')
-    return legalData[key]
-  },
-  currentLegalLabel () {
-    const key = Template.getState('currentLegalData')
-    return key && Legal.schema[key].label
-  }
-})
-
-Template.footer.events({
-  'click .logout-button' (event) {
-    event.preventDefault()
-    Meteor.logout(err => {
-      if (err) {
-        console.error(err)
-      }
-      window.location.reload()
-    })
-  },
-  'click .legal-link' (event, templateInstance) {
-    event.preventDefault()
-
-    const key = dataTarget(event, templateInstance, 'key')
-
-    if (legalData[key]) {
-      templateInstance.state.set('currentLegalData', key)
-    } else {
-      Legal.methods.get.call(key, (err, content) => {
-        if (err) return console.error(err)
-        legalData[key] = content
-        templateInstance.state.set('currentLegalData', key)
-      })
-    }
-
-    templateInstance.$('#legalContentModal').modal('show')
   }
 })

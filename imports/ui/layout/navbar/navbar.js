@@ -1,19 +1,6 @@
-/* global $ */
 import { Template } from 'meteor/templating'
-import { ReactiveVar } from 'meteor/reactive-var'
-import { Dimensions } from '../../../api/session/Dimensions'
-import { Levels } from '../../../api/session/Levels'
-import { Routes } from '../../../api/routing/Routes'
-import { Router } from '../../../api/routing/Router'
-import { Session } from '../../../api/session/Session'
-import { fadeOut } from '../../../utils/animationUtils'
-import { LeaCoreLib } from '../../../api/core/LeaCoreLib'
+import { ColorType } from '../../../contexts/types/ColorType'
 import './navbar.html'
-
-const components = LeaCoreLib.components
-const loaded = components.load([components.template.actionButton])
-
-const _dimensions = Object.values(Dimensions)
 
 Template.navbar.onDestroyed(function () {
   const instance = this
@@ -22,69 +9,82 @@ Template.navbar.onDestroyed(function () {
 
 Template.navbar.onCreated(function () {
   const instance = this
-  instance.progress = new ReactiveVar()
-  instance.labels = new ReactiveVar()
+
+  instance.initDependencies({
+    language: true,
+    tts: true,
+    onComplete: () => instance.state.set('dependenciesLoaded', true)
+  })
 
   instance.autorun(() => {
     const data = Template.currentData()
-    const { sessionDoc } = data
-    const { showProgress } = data
+    const { sessionDoc, showProgress, dimensionDoc, levelDoc, unitSetDoc } = data
 
-    if (!sessionDoc) {
+    if (!sessionDoc || !unitSetDoc || !dimensionDoc || !levelDoc) {
       return instance.state.set({
         showProgress: false
       })
     }
 
-    const { currentTask } = sessionDoc
-    const { tasks } = sessionDoc
-    const dimension = Dimensions.types[sessionDoc.dimension]
-    const level = Levels.types[sessionDoc.level]
+    const colorType = ColorType.byIndex(dimensionDoc.colorType)?.type || 'primary'
+    const current = (sessionDoc.progress || 0) + 1
+    const max = (sessionDoc.maxProgress || 0)
+    const value = (current / (max)) * 100
+    const rounded = Math.round(value)
+    const progress = {
+      current,
+      max,
+      value,
+      rounded,
+      type: colorType
+    }
 
-    instance.progress.set({
-      value: Session.helpers.getProgress(sessionDoc),
-      current: tasks.indexOf(currentTask) + 1,
-      max: tasks.length,
-      type: dimension.type
-    })
-    instance.labels.set({
-      dimension: dimension.label,
-      level: level.label,
-      type: dimension.type
-    })
-    instance.state.set({ showProgress })
+    const labels = {
+      dimension: dimensionDoc?.title,
+      level: levelDoc?.title,
+      type: colorType
+    }
+
+    const loadComplete = true
+    instance.state.set({ showProgress, progress, labels, loadComplete })
   })
 })
 
 Template.navbar.helpers({
   loadComplete () {
-    return loaded.get()
+    const instance = Template.instance()
+    return instance.state.get('dependenciesLoaded') &&
+      instance.state.get('loadComplete')
   },
   showProgress () {
-    return Template.instance().data.showProgress !== false
+    return Template.getState('showProgress')
   },
   progress () {
-    return Template.instance().progress.get()
+    return Template.getState('progress')
   },
   labels () {
-    return Template.instance().labels.get()
+    return Template.getState('labels')
   },
-  dimensions () {
-    return _dimensions
+  hasExit () {
+    return Template.instance().data.onExit
   }
 })
 
 Template.navbar.events({
   'click .navbar-overview-button' (event, templateInstance) {
     event.preventDefault()
-    const root = templateInstance.data.root
-    const route = Routes.overview
-    if (root) {
-      fadeOut(root, { $ }, () => {
-        Router.go(route)
-      })
-    } else {
-      Router.go(route)
+    templateInstance.$('#navbar-modal').modal('show')
+  },
+  'click .navbar-confirm-cancel' (event, templateInstance) {
+    event.preventDefault()
+    templateInstance.state.set('confirmed', true)
+    templateInstance.$('#navbar-modal').modal('hide')
+  },
+  'hidden.bs.modal' (event, templateInstance) {
+    const confirmed = templateInstance.state.get('confirmed')
+    if (confirmed) {
+      templateInstance.state.set('confirmed', null)
+      templateInstance.data.onExit()
     }
   }
 })

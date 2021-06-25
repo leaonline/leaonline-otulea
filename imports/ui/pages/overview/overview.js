@@ -1,24 +1,19 @@
 import { Template } from 'meteor/templating'
-import { Dimensions } from '../../../api/session/Dimensions'
-import { Levels } from '../../../api/session/Levels'
-import { Session } from '../../../api/session/Session'
-import { Router } from '../../../api/routing/Router'
+import { Tracker } from 'meteor/tracker'
 import { TTSEngine } from '../../../api/tts/TTSEngine'
-import { dataTarget } from '../../../utils/eventUtils'
-import { fadeOut } from '../../../utils/animationUtils'
-import { TaskSet } from '../../../api/session/TaskSet'
-import { LeaCoreLib } from '../../../api/core/LeaCoreLib'
+import { Dimension } from '../../../contexts/Dimension'
+import { Level } from '../../../contexts/Level'
+import { Session } from '../../../contexts/session/Session'
+import { UnitSet } from '../../../contexts/unitSet/UnitSet'
+import { TestCycle } from '../../../contexts/testcycle/TestCycle'
+import { ColorType } from '../../../contexts/types/ColorType'
+import { dataTarget } from '../../../utils/dataTarget'
+import { getUnitSetForDimensionAndLevel } from '../../../contexts/unitSet/api/getUnitSetForDimensionAndLevel'
+import { showStoryBeforeUnit } from '../../../contexts/unitSet/api/showStoryBeforeUnit'
+import { loadContentDoc } from '../../loading/loadContentDoc'
 import '../../components/container/container'
 import './overview.scss'
 import './overview.html'
-
-const components = LeaCoreLib.components
-const componentsLoaded = components.load([
-  components.template.actionButton,
-  components.template.textGroup])
-
-const _dimensions = Object.values(Dimensions.types)
-const _levels = Object.values(Levels.types)
 
 Template.overview.onDestroyed(function () {
   const instance = this
@@ -27,114 +22,215 @@ Template.overview.onDestroyed(function () {
 
 Template.overview.onCreated(function () {
   const instance = this
+  instance.state.set('color', 'secondary')
+  instance.initDependencies({
+    language: true,
+    tts: true,
+    contexts: [Session, TestCycle, UnitSet, Dimension, Level],
+    onComplete: () => instance.state.set('dependenciesComplete', true)
+  })
 
-  if (!TaskSet.helpers.loaded()) {
-    TaskSet.helpers.load((err, res) => {
-      if (err) {
-        // TODO handle
-        return console.warn(err)
-      }
-      instance.state.set('allTasksLoaded', !!res)
+  const { loadAllContentDocs, callMethod, debug } = instance.api
+  const loadContentDocuments = async () => {
+    const allTestCycles = await loadAllContentDocs(TestCycle, { isLegacy: true }, debug)
+    const dimensions = new Set()
+    const levels = new Set()
+
+    allTestCycles.forEach(tstCycleDoc => {
+      dimensions.add(tstCycleDoc.dimension)
+      levels.add(tstCycleDoc.level)
     })
-  } else {
-    instance.state.set('allTasksLoaded', true)
+
+    await loadAllContentDocs(Dimension, { ids: Array.from(dimensions) }, debug)
+    await loadAllContentDocs(Level, { ids: Array.from(levels) }, debug)
+
+    instance.state.set({
+      contentDocsLoadComplete: true,
+      dimensionFilter: Array.from(dimensions)
+    })
   }
 
   instance.autorun(() => {
-    const sessionSub = Session.publications.current.subscribe()
-    if (sessionSub.ready()) {
-      instance.state.set('sessionLoadComplete', true)
+    if (!instance.state.get('contentDocsLoadComplete')) {
+      return
     }
-  })
-
-  instance.autorun(() => {
-    const sessionLoadComplete = instance.state.get('sessionLoadComplete')
-    if (!sessionLoadComplete) return
 
     const data = Template.currentData()
     const { d } = data.queryParams
     const { l } = data.queryParams
 
-    let dimension
+    const dimension = Dimension.collection().findOne({ _id: d })
+    const currentDimension = Tracker.nonreactive(() => instance.state.get('dimension'))
 
-    if (typeof d !== 'undefined') {
-      const dimensionIndex = parseInt(d, 10)
-      dimension = _dimensions.find(el => el.index === dimensionIndex)
-      instance.state.set('dimension', dimension)
-    } else {
-      instance.state.set('dimension', null)
+    if (dimension && dimension !== currentDimension) {
+      // if a dimension has been selected we create a filter list of
+      // the levels that are supported by this dimension (linked in UnitSets)
+      const levelFilter = new Set()
+      TestCycle.collection()
+        .find({ dimension: d })
+        .forEach(({ level }) => levelFilter.add(level))
+
+      const color = ColorType.byIndex(dimension.colorType)?.type
+
+      instance.state.set({
+        levelFilter: Array.from(levelFilter),
+        dimension: dimension,
+        color: color
+      })
     }
 
-    if (typeof l !== 'undefined') {
-      const levelIndex = parseInt(l, 10)
-      const level = _levels.find(el => el.index === levelIndex)
-      const currentSession = Session.helpers.current({ dimension: dimension.name, level: level.name })
+    if (!dimension && currentDimension) {
+      // if there ware a dimensions but now there is not,
+      // reset the dimension and the filters for new selection
+      instance.state.set({
+        dimension: null,
+        levelFilter: null,
+        color: 'secondary'
+      })
+    }
 
-      instance.state.set('currentSession', currentSession)
+    // TODO if level not exist, reset queryParam
+    const level = Level.collection().findOne({ _id: l })
+    const currentLevel = Tracker.nonreactive(() => instance.state.get('level'))
+
+    if (level && level !== currentLevel) {
       instance.state.set('level', level)
+    }
 
-      setTimeout(() => {
-        const $target = instance.$('.overview-level-decision')
-        const scrollTarget = $target && $target.get(0)
-        scrollTarget && scrollTarget.scrollIntoView({ block: 'start', behavior: 'smooth' })
-      }, 50)
-    } else {
+    if (!level && currentLevel) {
       instance.state.set('level', null)
     }
+
+    // if both selected, select respective test-cyclce
+    if (dimension && level) {
+      const testCycle = TestCycle.collection().findOne({
+        dimension: d,
+        level: l
+      })
+      instance.state.set('selectedTestCycle', testCycle)
+    }
+
+    // always scroll to respective target
+    const target = getScrollTarget(dimension, level)
+
+    if (target) {
+      setTimeout(() => {
+        const $target = instance.$(target)
+        const scrollTarget = $target && $target.get(0)
+        scrollTarget && scrollTarget.scrollIntoView({
+          block: 'start',
+          inline: 'nearest',
+          behavior: 'smooth'
+        })
+      }, 250)
+    }
   })
+
+  // if we have a testCycle selected we need to check if there is a recent session
+  // that has been aborted
+  instance.autorun(() => {
+    const testCycle = instance.state.get('selectedTestCycle')
+    if (!testCycle) return
+
+    callMethod({
+      name: Session.methods.byTestCycle.name,
+      args: { testCycleId: testCycle._id },
+      success: sessionDoc => {
+        instance.api.debug('session doc loaded', { sessionDoc })
+
+        const abortedSessionDetected = testCycle && sessionDoc && sessionDoc.testCycle === testCycle._id
+        instance.state.set({ abortedSessionDetected, sessionDoc })
+      }
+    })
+  })
+
+  loadContentDocuments()
+    .catch(e => {
+      instance.api.sendError({ error: e })
+    })
 })
 
 Template.overview.helpers({
   loadComplete () {
-    return componentsLoaded.get()
+    return Template.getState('dependenciesComplete')
   },
   // ---------------------- // ----------------------
-  // DIMENSIONS
+  // Dimension
   // ---------------------- // ----------------------
-  dimensions () {
-    const allSetsLoaded = Template.getState('allTasksLoaded')
-    return allSetsLoaded && _dimensions
-  },
   dimensionSelected () {
     return Template.getState('dimension')
   },
-  isSelectedDimension (name) {
+  isSelectedDimension (_id) {
     const dimension = Template.getState('dimension')
-    return dimension && dimension.name === name
+    return dimension?._id === _id
   },
   dimensionDisabled (dimension) {
-    return !TaskSet.helpers.hasSet({ dimension })
+    return !getUnitSetForDimensionAndLevel({ dimension })
+  },
+
+  // return all dimensions, filtered by those, which are defined by
+  // our received test-cycles
+
+  allDimensions () {
+    const instance = Template.instance()
+    if (!instance.state.get('contentDocsLoadComplete')) {
+      return
+    }
+
+    const query = {}
+    const dimensionFilter = instance.state.get('dimensionFilter')
+    if (dimensionFilter && dimensionFilter.length > 0) {
+      query._id = { $in: dimensionFilter }
+    }
+    return Dimension.collection().find(query)
+  },
+  colorTypeName ({ colorType }) {
+    return ColorType.byIndex(colorType)?.type
+  },
+  colorType () {
+    return Template.getState('color')
   },
   // ---------------------- // ----------------------
   // LEVELS
   // ---------------------- // ----------------------
-  levels () {
-    return _levels
+  allLevels () {
+    const instance = Template.instance()
+    if (!instance.state.get('contentDocsLoadComplete')) {
+      return
+    }
+
+    const query = {}
+    const levelFilter = instance.state.get('levelFilter')
+    if (levelFilter && levelFilter.length > 0) {
+      query._id = { $in: levelFilter }
+    }
+
+    return Level.collection().find(query)
   },
   levelSelected () {
     return Template.getState('level')
   },
-  isSelectedLevel (name) {
+  isSelectedLevel (_id) {
     const level = Template.getState('level')
-    return level && level.name === name
-  },
-  dimensionLevel () {
-    const instance = Template.instance()
-    const dimension = instance.state.get('dimension')
-    const level = instance.state.get('level')
-    return level && dimension && dimension.descriptions[level.name]
-  },
-  levelDisabled (dimension, level) {
-    return !TaskSet.helpers.hasSet({ dimension, level })
+    return level?._id === _id
   },
   // ---------------------- // ----------------------
   // SESSION
   // ---------------------- // ----------------------
-  sessionLoadComplete () {
-    return Template.getState('sessionLoadComplete')
+  levelLoadComplete () {
+    const instance = Template.instance()
+    return instance.state.get('dependenciesComplete') &&
+      instance.state.get('selectedTestCycle')
   },
-  sessionAlreadyRunning () {
-    return Template.getState('currentSession') && !Template.getState('starting')
+  levelDescription () {
+    const testCycleDoc = Template.getState('selectedTestCycle')
+    return testCycleDoc?.selfAssessment
+  },
+  // ---------------------- // ----------------------
+  // SESSION
+  // ---------------------- // ----------------------
+  sessionDoc () {
+    return Template.getState('sessionDoc')
   },
   starting () {
     return Template.getState('starting')
@@ -144,62 +240,138 @@ Template.overview.helpers({
 Template.overview.events({
   'click .lea-dimension-button' (event, templateInstance) {
     event.preventDefault()
-    const dimensionName = dataTarget(event, templateInstance, 'dimension')
-    const dimension = Dimensions.types[dimensionName]
-    const d = dimension.index
-    Router.queryParam({ d })
+    const d = dataTarget(event, 'dimension')
+    templateInstance.api.queryParam({ d, l: null })
   },
   'click .lea-back-button' (event, templateInstance) {
     event.preventDefault()
-    const dimension = templateInstance.state.get('dimension')
-    const level = templateInstance.state.get('level')
-    const target = dataTarget(event, templateInstance)
+    const type = dataTarget(event, 'type')
+    const target = dataTarget(event)
+    const queryParams = {}
 
-    const queryParams = { l: null }
-    if (dimension && !level) {
+    if (type === 'level') {
       queryParams.d = null
+      queryParams.l = null
     }
 
-    fadeOut(target, templateInstance, () => {
-      Router.queryParam(queryParams)
+    if (type === 'launch') {
+      queryParams.l = null
+    }
+
+    templateInstance.api.fadeOut(target, () => {
+      templateInstance.api.queryParam(queryParams)
     })
   },
   'click .lea-level-button' (event, templateInstance) {
     event.preventDefault()
-    const levelName = dataTarget(event, templateInstance, 'level')
-    const level = Levels.types[levelName]
+    const l = dataTarget(event, 'level')
+    templateInstance.api.queryParam({ l })
+  },
+  'click .lea-restart-button' (event, templateInstance) {
+    event.preventDefault()
+    restartSession(templateInstance)
+  },
+  'click .lea-continue-button' (event, templateInstance) {
+    event.preventDefault()
 
-    const l = level.index
-    Router.queryParam({ l })
+    const sessionDoc = templateInstance.state.get('sessionDoc')
+    const sessionId = sessionDoc._id
+
+    launch({
+      name: Session.methods.continue.name,
+      args: { sessionId },
+      templateInstance,
+      isFreshStart: false
+    })
   },
   'click .lea-overview-confirm-button' (event, templateInstance) {
     event.preventDefault()
-    const dimension = templateInstance.state.get('dimension')
-    const level = templateInstance.state.get('level')
-    const restartStr = dataTarget(event, templateInstance, 'restart')
-    const restart = Boolean(restartStr)
-
-    templateInstance.state.set('starting', true)
-    const options = { dimension: dimension.name, level: level.name, continueAborted: !restart }
-    Session.methods.start.call(options, (err, { taskId, sessionId }) => {
-      if (err) {
-        console.error(err)
-        templateInstance.state.set('starting', false)
-        return
-      }
-
-      const route = templateInstance.data.next({ taskId, sessionId })
-      if (err || !taskId) {
-        console.log(err)
-        return
-      }
-      TTSEngine.stop()
-
-      setTimeout(() => {
-        fadeOut('.lea-overview-container', templateInstance, () => {
-          Router.go(route)
-        })
-      }, 100)
-    })
+    startNewSession(templateInstance)
   }
 })
+
+function restartSession (templateInstance) {
+  const sessionDoc = templateInstance.state.get('sessionDoc')
+  const sessionId = sessionDoc._id
+
+  templateInstance.api.callMethod({
+    name: Session.methods.cancel.name,
+    args: { sessionId },
+    prepare: () => templateInstance.state.set('starting', true),
+    success: () => {
+      // after we obsoleted the old session we start a new one as we do
+      // when the user clicks the launch button
+      startNewSession(templateInstance)
+    }
+  })
+}
+
+function startNewSession (templateInstance) {
+  const selectedTestCycle = templateInstance.state.get('selectedTestCycle')
+  const testCycleId = selectedTestCycle._id
+  launch({
+    name: Session.methods.start.name,
+    args: { testCycleId },
+    templateInstance,
+    isFreshStart: true
+  })
+}
+
+function launch ({ templateInstance, name, args, isFreshStart }) {
+  templateInstance.api.callMethod({
+    name: name,
+    args: args,
+    prepare: () => templateInstance.state.set('starting', true),
+    failure: er => {
+      // if there is the rare case that the session exists although the user
+      // intended to launch a new session, we try to restart the session
+      if (er?.details === 'session.sessionExists') {
+        restartSession(templateInstance)
+      }
+    },
+    success: sessionDoc => {
+      TTSEngine.stop()
+      const { fadeOut, debug } = templateInstance.api
+      const { next, story } = templateInstance.data
+
+      setTimeout(async () => {
+        // a new session can either begin with a story (no items included) or
+        // go to the fist unit, which is decided here but routed externally
+        const sessionId = sessionDoc._id
+        const unitId = sessionDoc.currentUnit
+        let unitSetDoc = UnitSet.collection().findOne(sessionDoc.unitSet)
+
+        // if the unit set doc does not exist at this point we need to fetch it
+        if (!unitSetDoc) {
+          debug('UnitSet not found, attempt to fetch it')
+          unitSetDoc = await loadContentDoc(UnitSet, sessionDoc.unitSet)
+        }
+
+        const shouldShowStory = isFreshStart && showStoryBeforeUnit(unitId, unitSetDoc)
+        const onCompleteHandler = shouldShowStory
+          ? () => story({ sessionId, unitId, unitSetId: unitSetDoc._id })
+          : () => next({ sessionId, unitId })
+
+        fadeOut('.lea-overview-container', () => {
+          onCompleteHandler()
+        })
+      }, 100)
+    }
+  })
+}
+
+function getScrollTarget (dimension, level) {
+  if (!dimension && !level) {
+    return 'overview-dimensions-container'
+  }
+
+  if (dimension && !level) {
+    return 'overview-level-container'
+  }
+
+  if (dimension && level) {
+    return '.overview-session-container'
+  }
+
+  console.warn('Unexpected: no scroll target found!')
+}

@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor'
+
 /*
    ID     KB Status korrekt bewertet uebersprungen unbewertet gesehen
 10 CD S.2.07      3       6        6             0          0       6
@@ -12,7 +14,8 @@ const settings = Meteor.settings.public.evaluation.parse
 const toInt = value => {
   if (typeof value === 'undefined' || value === null) {
     return -1
-  } else {
+  }
+  else {
     return parseInt(value, 10)
   }
 }

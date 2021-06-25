@@ -1,3 +1,1 @@
-import { LeaCoreLib } from 'meteor/leaonline:corelib'
-
-export const TTSEngine = LeaCoreLib.ttsEngine
+export { TTSEngine } from 'meteor/leaonline:corelib/tts/TTSEngine'

@@ -1,15 +1,15 @@
-import { Routes } from '../../api/routing/Routes'
-import { Router } from '../../api/routing/Router'
-
-import '../../ui/pages/loading/loading'
-import '../../ui/components/complete/onComplete'
-
-import manifest from '../../../public/manifest'
+import { Routes } from '../../ui/routing/Routes'
+import { Router } from '../../ui/routing/Router'
 
 const defaultTarget = 'main-render-target'
 
-Router.titlePrefix(`${manifest.short_name} - `)
+Router.titlePrefix('otu.lea - ')
 Router.loadingTemplate('loading')
+
+const onError = error => {
+  import { sendError } from '../../contexts/errors/api/sendError'
+  sendError({ error })
+}
 
 Object
   .values(Routes)
@@ -17,4 +17,4 @@ Object
     route.target = (route.target || defaultTarget)
     return route
   })
-  .forEach(route => Router.register(route))
+  .forEach(route => Router.register(route, onError))
