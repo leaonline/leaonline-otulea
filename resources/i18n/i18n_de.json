@@ -5,7 +5,7 @@
     "continue": "Fortsetzen",
     "restart": "Neu starten",
     "cancel": "Abbrechen",
-    "confirmCancel": "Möchten Sie die Aufgaben wirklich abbrechen?"
+    "confirmCancel": "Möchtest du die Aufgaben wirklich abbrechen?"
   },
   "aria": {
     "readText": "Text als Audio abspielen"
@@ -92,10 +92,10 @@
       "introVideo": "Video mit Begrüßung",
       "playIntro": "Einführungsvideo abspielen",
       "loggedIn": "Du bist bereits angemeldet. Du kannst auf dieser Seite noch einmal die Einführung ansehen oder zur Übersicht zurückkehren.",
-      "wrongUser": "Klicke, wenn der dargestellte Benutzer nicht von Dir erstellt wurde.",
-      "introduction": "Herzlich willkommen bei otu.lea! Du kannst hier angeben, ob Du bereits einen Test absolviert hast. Wenn Du bereits teilgenommen hast, klicke auf „Ja“. Falls Du zum ersten Mal hier bist, klicke bitte auf „Nein“.",
-      "newCode": "Hier kannst du dich anmelden. Wenn Du zum ersten Mal hier bist, bekommst du auf dieser Seite Deinen persönlichen Code. Du kannst dich mit diesem Code immer wieder anmelden. Um den Code nicht zu vergessen hast hast Du folgende Möglichkeiten: Du kannst den Code notieren, Du kannst dir den Code nach der Befragung ausdrucken oder Du kannst dir den Code mit dem Handy abfotografieren.",
-      "enterCode": "Bitte gib hier Deinen Code ein.",
+      "wrongUser": "Klicke, wenn der dargestellte Benutzer nicht von dir erstellt wurde.",
+      "introduction": "Herzlich willkommen bei otu.lea! Du kannst hier angeben, ob du bereits einen Test absolviert hast. Wenn du bereits teilgenommen hast, klicke auf „Ja“. Falls du zum ersten Mal hier bist, klicke bitte auf „Nein“.",
+      "newCode": "Hier kannst du dich anmelden. Wenn du zum ersten Mal hier bist, bekommst du auf dieser Seite deinen persönlichen Code. Du kannst dich mit diesem Code immer wieder anmelden. Um den Code nicht zu vergessen hast du folgende Möglichkeiten: Du kannst den Code notieren, du kannst dir den Code nach der Befragung ausdrucken oder du kannst dir den Code mit dem Handy abfotografieren.",
+      "enterCode": "Bitte gib hier deinen Code ein.",
       "loginFail": "Der Code war nicht korrekt. Bitte versuche es erneut.",
       "login": "Anmelden",
       "loggingIn": "Du wirst nun angemeldet"
@@ -103,34 +103,36 @@
     "overview": {
       "title": "Übersicht",
       "chooseDimension": "Bitte wähle eine Kategorie aus.",
-      "chooseLevel": "Wir möchten die Aufgaben möglichst passend für Dich zusammenstellen. Bitte schätze hier Deine Fähigkeiten ein. Wenn Du mit dem Mauszeiger auf die Lautsprechersymbole klickst, werden die jeweiligen Schwierigkeitsgrade vorgelesen. Nachdem Du auf eine Auswahlfläche geklickt hast, wird Dir noch ein kurzes Beispiel angezeigt, welches Du ebenfalls durch Klicken auf das Lautsprechersymbol vorlesen lassen kannst.",
+      "chooseLevel": "Wir möchten die Aufgaben möglichst passend für Dich zusammenstellen. Bitte schätze hier deine Fähigkeiten ein. Wenn du mit dem Mauszeiger auf die Lautsprechersymbole klickst, werden die jeweiligen Schwierigkeitsgrade vorgelesen. Nachdem du auf eine Auswahlfläche geklickt hast, wird dir noch ein kurzes Beispiel angezeigt, welches du ebenfalls durch Klicken auf das Lautsprechersymbol vorlesen lassen kannst.",
       "confirm": "Aufgaben starten",
-      "sessionFound": "Es läuft bereits eine Bearbeitung für diese Auswahl. Möchtest Du die Bearbeitung fortsetzen oder neu starten?"
+      "sessionFound": "Es läuft bereits eine Bearbeitung für diese Auswahl. Möchtest du die Bearbeitung fortsetzen oder neu starten?"
     },
     "notFound": {
       "title": "Die angefragte Seite wurde nicht gefunden. Das tut uns leid.",
-      "description": "Es wurde die angeforderte Seite nicht im System gefunden. Möchten Du uns diesen Fehler mitteilen?"
+      "description": "Es wurde die angeforderte Seite nicht im System gefunden. Möchten du uns diesen Fehler mitteilen?"
     },
     "unit": {
       "story": "Einleitung"
     },
     "complete": {
       "title": "Fertig",
-      "thankYou": "Schön, dass Du teilgenommen hast!",
+      "thankYou": "Schön, dass du teilgenommen hast!",
       "printResults": "Für Dich ausdrucken",
       "printResultsTeacher": "Für Kursleitende ausdrucken",
       "youCanPrint": "Du kannst das Ergebnis hier ausdrucken.",
-      "continueOrEnd": "Was möchtest Du als nächstes tun?",
-      "failed": "Es kann derzeit keine Bewertung Ihrer Ergebnisse erzeugt werden. Das Lea Team ist informiert und wird die Auswertung in Kürze wieder zur Verfügung stellen.",
+      "continueOrEnd": "Was möchtest du als nächstes tun?",
+      "failed": "Es kann derzeit keine Bewertung deiner Ergebnisse erzeugt werden. Das Lea Team ist informiert und wird die Auswertung in Kürze wieder zur Verfügung stellen.",
       "definitionMissing": "Kompetenz ermittelt aber Definition fehlt",
       "noEntries": "Es sind hierzu keine Einträge in der Rückmeldung enthalten.",
       "competencies": "Kann-Beschreibungen",
       "alphaLevels": "Alpha-Level",
+      "noScoredAlpha": "Es sind noch nicht genug Aufgaben bearbeitet, um dein Alpha-Level einschätzen zu können.",
+      "noScoredComp": "Es sind noch nicht genug Aufgaben bearbeitet, um Kompetenzen einschätzen zu können.",
       "responses": "Alle Antworten"
     },
     "diagnostics": {
       "title": "Browser-Diagnose",
-      "info": "Die Diagnose prüft, ob Ihr Browser die wesentlichsten Funktionen erfüllt und übermittelt das Ergebnis an das otu.lea Team. Bist du damit einverstanden?",
+      "info": "Die Diagnose prüft, ob dein Browser die wesentlichsten Funktionen erfüllt und übermittelt das Ergebnis an das otu.lea Team. Bist du damit einverstanden?",
       "sending":"Übermittle Ergebnisse",
       "sent": "Ergebnisse erfolgreich gesendet"
     }
