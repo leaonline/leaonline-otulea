@@ -5,5 +5,14 @@
   "story": "/einleitung",
   "unit": "/aufgabe",
   "complete": "/ergebnisse",
-  "logout": "/abgemeldet"
+  "logout": "/abgemeldet",
+  "demo": "/demo",
+  "legal": {
+    "title": "/rechtliches",
+    "imprint": "impressum",
+    "terms": "agb",
+    "privacy": "datenschutz",
+    "contact": "kontakt"
+  },
+  "diagnostics": "/browser-diagnose"
 }

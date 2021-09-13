@@ -13,7 +13,8 @@ self.addEventListener('activate', (event) => {
     caches.keys().then(cacheNames => Promise.all(cacheNames.map((cacheName) => {
       if (version !== cacheName) {
         return caches.delete(cacheName)
-      } else {
+      }
+      else {
         return undefined
       }
     }))).then(self.clients.claim())
@@ -48,7 +49,8 @@ self.addEventListener('fetch', (event) => {
 
         if (/html/.test(contentType)) {
           caches.open(version).then(cache => cache.put(HTMLToCache, clonedResponse))
-        } else {
+        }
+        else {
           // Delete old version of a file
           if (hasHash(event.request.url)) {
             caches.open(version).then(cache => cache.keys().then(keys => keys.forEach((asset) => {
@@ -58,7 +60,7 @@ self.addEventListener('fetch', (event) => {
             })))
           }
 
-          if (event.request.method !== 'POST') {
+          if (event.request.method !== 'POST' && event.request.url.startsWith('http')) {
             caches.open(version).then(cache => cache.put(event.request, clonedResponse))
           }
         }

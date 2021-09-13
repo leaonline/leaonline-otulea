@@ -1,59 +1,47 @@
-import { Meteor } from 'meteor/meteor'
 import { Mongo } from 'meteor/mongo'
-import { HTTP } from 'meteor/jkuester:http'
-import { toContentServerURI } from '../../../api/loading/toContentServerURI'
-import { createInfoLog } from '../../../api/errors/createInfoLog'
-
-const origin = Meteor.absoluteUrl()
+import { fetchDoc } from '../../../api/http/fetchDoc'
 
 export class LocalCacheCollection extends Mongo.Collection {
-  constructor (context, options) {
+  constructor (url, log, options) {
     super(null, options)
-    this.url = toContentServerURI(context.routes.byId.path)
-    this.log = createInfoLog(context.name)
+    this.url = url
+    this.log = log || (() => {})
   }
 
-  findOne (selector, options, callback) {
+  findOne (selector, options) {
     const { url, log } = this
-    const doc = super.findOne(selector, options)
+    const doc = selector
+      ? super.findOne(selector, options)
+      : super.findOne()
 
     if (doc) {
       return doc
     }
 
     if (typeof selector !== 'string' && !(selector?._id)) {
-      log('insufficient selector to fetch vie HTTP')
+      log('insufficient selector to fetch via HTTP')
       return
     }
 
-    const headers = {
-      origin: origin,
-      mode: 'cors',
-      cache: 'no-store'
-    }
-
     const params = { _id: selector._id || selector }
-    const requestOptions = { params, headers }
-
-    log('request doc', selector, 'from url', url)
 
     let document
 
     try {
-      document = fetchDoc.call(this, url, requestOptions)
-    } catch (e) {
-      console.warn(e)
+      log('request doc', selector, 'from url', url)
+      document = fetchDoc(url, params)
+
+      if (document) {
+        const docId = document._id
+        delete document._id
+        this.upsert(docId, { $set: document })
+      }
+    }
+    catch (e) {
+      console.error(e)
+      log(e)
     }
 
     return document
   }
-}
-
-function fetchDoc (url, requestOptions) {
-  const response = HTTP.get(url, requestOptions)
-  const doc = response.data
-  if (doc) {
-    this.upsert(doc._id, { $set: doc })
-  }
-  return doc
 }

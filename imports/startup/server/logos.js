@@ -1,5 +1,4 @@
-import { Logos } from '../../api/config/Logos'
-import { ServiceRegistry } from '../../api/config/BackendConfig'
+import { Logos } from '../../contexts/logos/Logos'
 import { createCollection } from '../../infrastructure/factories/collection/createCollection'
 import { createMethods } from '../../infrastructure/factories/method/createMethods'
 import { rateLimitMethods, rateLimitPublications } from '../../infrastructure/factories/ratelimit/rateLimit'
@@ -15,5 +14,3 @@ rateLimitMethods(methods)
 const publications = Object.values(Logos.publications)
 createPublications(publications)
 rateLimitPublications(publications)
-
-ServiceRegistry.register(Logos)

@@ -1,5 +1,5 @@
-import { Videos } from '../../api/config/Videos'
-import { ServiceRegistry } from '../../api/config/BackendConfig'
+import { Videos } from '../../contexts/Videos/Videos'
+import { ServiceRegistry } from '../../api/services/ServiceRegistry'
 import { createCollection } from '../../infrastructure/factories/collection/createCollection'
 import { createMethods } from '../../infrastructure/factories/method/createMethods'
 import { rateLimitMethods, rateLimitPublications } from '../../infrastructure/factories/ratelimit/rateLimit'

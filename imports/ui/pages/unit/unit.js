@@ -1,23 +1,20 @@
-/* global EventTarget Event */
 import { Template } from 'meteor/templating'
 import { ReactiveVar } from 'meteor/reactive-var'
 import { Session } from '../../../contexts/session/Session'
-import { Response } from '../../../contexts/Response'
+import { Response } from '../../../contexts/response/Response'
 import { UnitSet } from '../../../contexts/unitSet/UnitSet'
 import { Dimension } from '../../../contexts/Dimension'
 import { Level } from '../../../contexts/Level'
-import { fadeOut, fadeIn } from '../../../utils/animationUtils'
-import { dataTarget } from '../../../utils/eventUtils'
-import { TaskRenderers } from '../../renderers/TaskRenderers'
 import { Unit } from '../../../contexts/Unit'
+import { TaskRenderers } from '../../renderers/TaskRenderers'
 import { ResponseCache } from './cache/ResponseCache'
 import { UnitPageCache } from './cache/UnitPageCache'
-import { callMethod } from '../../../infrastructure/methods/callMethod'
-import { isCurrentUnit } from '../../../contexts/session/isCurrentUnit'
+import { isCurrentUnit } from '../../../contexts/session/utils/isCurrentUnit'
 import { createItemLoad } from './item/createItemLoad'
 import { createItemInput } from './item/createItemInput'
 import { createItemSubmit } from './item/createItemSubmit'
-import { createSessionLoader } from '../../../api/loading/createSessionLoader'
+import { createSessionLoader } from '../../loading/createSessionLoader'
+import { sessionIsComplete } from '../../../contexts/session/utils/sessionIsComplete'
 import '../../components/container/container'
 import '../../layout/navbar/navbar'
 import './unit.html'
@@ -25,11 +22,18 @@ import './unit.html'
 const renderersLoaded = new ReactiveVar()
 const responseCache = ResponseCache.create(window.localStorage)
 const pageCache = UnitPageCache.create(window.localStorage)
-const submitItems = createItemSubmit({ cache: responseCache })
+const submitItems = createItemSubmit({
+  loadValue: responseDoc => responseCache.load(responseDoc),
+  prepare: responseDoc => console.info('[Template.Unit]: submit to server', responseDoc),
+  onSuccess: (result, responseDoc) => {
+    const cleared = responseCache.clear(responseDoc)
+    console.info('[Template.Unit]: clear storage', cleared, responseDoc)
+  },
+  onError: (error, responseDoc) => console.error(error, responseDoc)
+})
 
 Template.unit.onCreated(function () {
   const instance = this
-  instance.collector = new EventTarget()
   instance.state.setDefault('currentPageCount', -1)
   instance.state.setDefault('maxPages', -1)
   instance.dependenciesLoaded = new ReactiveVar(false)
@@ -39,6 +43,22 @@ Template.unit.onCreated(function () {
     tts: true,
     contexts: [Session, Unit, UnitSet, Response, Dimension, Level],
     onComplete () {
+      instance.onItemInput = createItemInput({
+        cache: responseCache,
+        debug: instance.api.debug
+      })
+      instance.onItemLoad = createItemLoad({
+        cache: responseCache,
+        debug: instance.api.debug
+      })
+      instance.onNewPage = ({ action, newPage }, onComplete) => {
+        onPageNavUpdate({
+          action,
+          newPage,
+          templateInstance: instance,
+          onComplete
+        })
+      }
       instance.dependenciesLoaded.set(true)
     }
   })
@@ -53,7 +73,7 @@ Template.unit.onCreated(function () {
 
     TaskRenderers.init()
       .then(() => renderersLoaded.set(true))
-      .catch(e => console.error(e))
+      .catch(e => console.error(e)) // TODO sendError
   })
 
   const sessionLoader = createSessionLoader({ info })
@@ -86,15 +106,22 @@ Template.unit.onCreated(function () {
 
         // if we encounter a sessionDoc that is already completed, we just
         // skip any further attempts to load units and immediately finish
-        if (Session.helpers.isComplete(sessionDoc)) {
+        if (sessionIsComplete(sessionDoc)) {
           return instance.data.finish({ sessionId })
         }
 
         // if we encounter a unit, that is different from the sessionDoc's
         // current unit we skip directly to the "next" unit via currentUnit
-        if (!isCurrentUnit({ sessionDoc, unitId: currentUnit })) {
+        if (!isCurrentUnit({ sessionDoc, unitId })) {
           return instance.data.next({ unitId: currentUnit, sessionId })
         }
+
+        if (currentPageCount > 0) {
+          sessionDoc.progress += currentPageCount
+        }
+
+        // xxx: fix empty docs to be allowed to be skipped
+        unitDoc.pages = unitDoc.pages || []
 
         // otherwise we're good and can continue with the current session
         instance.state.set({
@@ -142,15 +169,15 @@ Template.unit.helpers({
     const color = instance.state.get('color')
     const currentPageCount = instance.state.get('currentPageCount')
     const depsComplete = instance.dependenciesLoaded.get()
-    let onInput
-    let onLoad
+
+    let onInput = () => {}
+    let onLoad = () => {}
+    let onNewPage = () => {}
 
     if (depsComplete && instance.state.get('sessionDoc')) {
-      onInput = createItemInput({ cache: responseCache })
-      onLoad = createItemLoad({ cache: responseCache })
-    } else {
-      onInput = () => {}
-      onLoad = () => {}
+      onInput = instance.onItemInput
+      onLoad = instance.onItemLoad
+      onNewPage = instance.onNewPage
     }
 
     return {
@@ -160,7 +187,10 @@ Template.unit.helpers({
       doc: unitDoc,
       color: color,
       onInput: onInput,
-      onLoad: onLoad
+      onLoad: onLoad,
+      onNewPage: onNewPage,
+      onLoadError: err => console.error(err),
+      onLoadComplete: () => console.warn('item renderer load complete')
     }
   },
   navbarData () {
@@ -182,74 +212,49 @@ Template.unit.helpers({
 })
 
 Template.unit.events({
-  'click .lea-pagenav-button' (event, templateInstance) {
-    event.preventDefault()
-    const action = dataTarget(event, templateInstance, 'action')
-    const unitDoc = templateInstance.state.get('unitDoc')
-    const sessionDoc = templateInstance.state.get('sessionDoc')
-    const sessionId = sessionDoc._id
-    const currentPageCount = templateInstance.state.get('currentPageCount')
-    const newPage = {}
-
-    if (action === 'next') {
-      newPage.currentPageCount = currentPageCount + 1
-      newPage.currentPage = unitDoc.pages[newPage.currentPageCount]
-      newPage.hasNext = (newPage.currentPageCount + 1) < unitDoc.pages.length
-    }
-
-    if (action === 'back') {
-      newPage.currentPageCount = currentPageCount - 1
-      newPage.currentPage = unitDoc.pages[newPage.currentPageCount]
-      newPage.hasNext = (newPage.currentPageCount + 1) < unitDoc.pages.length
-    }
-
-    if (!newPage.currentPage) {
-      throw new Error(`Undefined page for current index ${newPage.currentPageCount}`)
-    }
-
-    templateInstance.collector.dispatchEvent(new Event('collect'))
-
-    const $current = templateInstance.$('.lea-unit-current-content-container')
-    const currentHeight = $current.height()
-    const oldContainerCss = $current.css('height') || ''
-    $current.css('height', `${currentHeight}px`)
-
-    submitItems({ sessionId, unitDoc, page: currentPageCount })
-
-    fadeOut('.lea-unit-current-content', templateInstance, () => {
-      templateInstance.state.set(newPage)
-      pageCache.save({
-        sessionId,
-        unitId: unitDoc._id
-      }, newPage.currentPageCount)
-      setTimeout(() => {
-        fadeIn('.lea-unit-current-content', templateInstance, () => {
-          $current.css('height', oldContainerCss)
-        })
-      }, 100)
-    })
-  },
   'click .lea-unit-finishstory-button' (event, templateInstance) {
     event.preventDefault()
-    fadeOut('.lea-unit-story-container', templateInstance, () => {
+    templateInstance.api.fadeOut('.lea-unit-story-container', () => {
       templateInstance.state.set('unitStory', null)
     })
   },
   'click .lea-pagenav-finish-button': async function (event, templateInstance) {
     event.preventDefault()
+
+    // prevent multiple calls by fast-multiple-clicking
+    if (templateInstance.state.get('finishing')) return
+    templateInstance.state.set('finishing', true)
+
     const sessionDoc = templateInstance.state.get('sessionDoc')
     const sessionId = sessionDoc._id
     const unitDoc = templateInstance.state.get('unitDoc')
     const unitId = unitDoc._id
     const page = templateInstance.state.get('currentPageCount')
 
-    await submitItems({ sessionId, unitDoc, page })
-    const sessionUpdate = await callMethod({
-      name: Session.methods.update.name,
-      args: { sessionId }
-    })
+    try {
+      await submitItems({ sessionId, unitDoc, page })
+    }
+    catch (e) {
+      console.error(e)
+    }
 
-    const { nextUnit, completed } = sessionUpdate
+    // make sure we have all storage items deleted
+    responseCache.flush()
+
+    let sessionUpdate
+
+    try {
+      sessionUpdate = await templateInstance.api.callMethod({
+        name: Session.methods.next.name,
+        args: { sessionId }
+      })
+    }
+    catch (e) {
+      return abortUnit(templateInstance, e)
+    }
+
+    templateInstance.api.debug('session updated', sessionUpdate)
+    const { nextUnit, nextUnitSet, hasStory, completed } = sessionUpdate
     pageCache.clear({ sessionId, unitId })
 
     // we check if the route will be to another unit
@@ -259,23 +264,57 @@ Template.unit.events({
       ? '.lea-unit-container'
       : '.lea-unit-content-container'
 
-    fadeOut(fadeTarget, templateInstance, () => {
+    templateInstance.api.fadeOut(fadeTarget, () => {
       templateInstance.state.set('unitDoc', null)
       templateInstance.state.set('fadedOut', true)
-      templateInstance.data.next({ sessionId, unitId: nextUnit, completed })
+      templateInstance.data.next({
+        sessionId,
+        unitId: nextUnit,
+        unitSetId: nextUnitSet,
+        hasStory,
+        completed
+      })
     })
   }
 })
 
-function abortUnit (instance, err) {
-  if (err) {
-    console.error('Unit aborted')
-    console.error(err)
+function onPageNavUpdate ({ action, newPage, templateInstance, onComplete }) {
+  const unitDoc = templateInstance.state.get('unitDoc')
+  const unitId = unitDoc._id
+  const sessionDoc = templateInstance.state.get('sessionDoc')
+  const sessionId = sessionDoc._id
+  const currentPageCount = templateInstance.state.get('currentPageCount')
+
+  pageCache.save({ unitId, sessionId }, newPage.currentPageCount)
+  sessionDoc.progress++
+  newPage.sessionDoc = sessionDoc
+
+  if (!newPage.currentPage) {
+    throw new Error(`Undefined page for current index ${newPage.currentPageCount}`)
   }
 
-  fadeOut('.lea-unit-container', instance, () => {
+  setTimeout(() => {
+    submitItems({ sessionId, unitDoc, page: currentPageCount })
+      .catch(e => {
+        console.error(e)
+        onComplete()
+      })
+      .then(() => {
+        templateInstance.state.set(newPage)
+        onComplete()
+      })
+  }, 500)
+}
+
+function abortUnit (templateInstance, err) {
+  if (err) {
+    console.error('Unit aborted')
+    console.error(err) // todo sendError
+  }
+
+  templateInstance.api.fadeOut('.lea-unit-container', () => {
     // there should be a strategy pattern here so we can easily switch depending
     // on the settings configuration and users needs (tests vs production etc.)
-    throw new Error('not yet implemented')
+    templateInstance.data.exit()
   })
 }

@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor'
 import { Template } from 'meteor/templating'
-import { Routes } from '../../api/routing/Routes'
-import { Router } from '../../api/routing/Router'
-import { resolveRoute } from '../../api/routing/routeHelpers'
+import { Routes } from '../../ui/routing/Routes'
+import { Router } from '../../ui/routing/Router'
+import { resolveRoute, backRoute } from '../../ui/routing/routeHelpers'
 
 Template.registerHelper('route', function (key, ...optionalArgs) {
   return resolveRoute(key, ...optionalArgs)
@@ -10,6 +10,10 @@ Template.registerHelper('route', function (key, ...optionalArgs) {
 
 Template.registerHelper('routeDef', function (key) {
   return Routes[key]
+})
+
+Template.registerHelper('backRoute', function () {
+  return backRoute()
 })
 
 Template.registerHelper('referrer', function () {
@@ -35,4 +39,13 @@ Template.registerHelper('url', function (path) {
   return Meteor.absoluteUrl(path, {
     secure: Meteor.isProduction
   })
+})
+
+Template.registerHelper('isDebugUser', function () {
+  return global.isDebugUser()
+})
+
+Template.registerHelper('isDemoUser', function (userObj) {
+  const user = userObj || Meteor.user() || {}
+  return user.demo
 })

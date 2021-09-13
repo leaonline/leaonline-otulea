@@ -1,5 +1,5 @@
 import { Template } from 'meteor/templating'
-import { ColorType } from '../../../types/ColorType'
+import { ColorType } from '../../../contexts/types/ColorType'
 import './navbar.html'
 
 Template.navbar.onDestroyed(function () {
@@ -27,16 +27,15 @@ Template.navbar.onCreated(function () {
     }
 
     const colorType = ColorType.byIndex(dimensionDoc.colorType)?.type || 'primary'
-
-    const { currentUnit } = sessionDoc
-    const { units } = unitSetDoc
-    const current = units.indexOf(currentUnit) + 1
-    const max = units.length
-    const value = (current / (max + 1)) * 100
+    const current = (sessionDoc.progress || 0) + 1
+    const max = (sessionDoc.maxProgress || 0)
+    const value = (current / (max)) * 100
+    const rounded = Math.round(value)
     const progress = {
       current,
       max,
       value,
+      rounded,
       type: colorType
     }
 
@@ -65,13 +64,26 @@ Template.navbar.helpers({
   },
   labels () {
     return Template.getState('labels')
+  },
+  hasExit () {
+    return Template.instance().data.onExit
   }
 })
 
 Template.navbar.events({
   'click .navbar-overview-button' (event, templateInstance) {
     event.preventDefault()
-    if (templateInstance.data.onExit) {
+    templateInstance.$('#navbar-modal').modal('show')
+  },
+  'click .navbar-confirm-cancel' (event, templateInstance) {
+    event.preventDefault()
+    templateInstance.state.set('confirmed', true)
+    templateInstance.$('#navbar-modal').modal('hide')
+  },
+  'hidden.bs.modal' (event, templateInstance) {
+    const confirmed = templateInstance.state.get('confirmed')
+    if (confirmed) {
+      templateInstance.state.set('confirmed', null)
       templateInstance.data.onExit()
     }
   }

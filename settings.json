@@ -1,5 +1,15 @@
 {
   "public": {
+    "accounts": {
+      "code": {
+        "length": 5
+      }
+    },
+    "packages": {
+      "dynamic-import": {
+        "useLocationOrigin": true
+      }
+    },
     "app": {
       "name": "otu.lea",
       "label": "apps.otulea.title",
@@ -17,31 +27,12 @@
         "competency": "/competencies",
         "url": "http://localhost:3030"
       },
-      "items": {
-        "renderUrl": "http://localhost:8080/play?contentId="
-      },
       "sessions": {
+        "url": "http://localhost:6060",
         "evalUrl": "http://localhost:6060/eval",
         "responseUrl": "http://localhost:6060/response"
       }
-    },
-    "evaluation": {
-      "parse": {
-        "index": 0,
-        "competencyId": 2,
-        "status": 3,
-        "occurrences": 5,
-        "correct": 4
-      }
-    },
-    "log": {
-      "level": "debug",
-      "name": "app"
     }
-  },
-  "log": {
-    "level": "debug",
-    "name": "app"
   },
   "oauth": {
     "clientId": "abcdefghijklmnop",
@@ -60,7 +51,29 @@
       "secret": "01234567890123456789"
     },
     "content": {
-      "secret": "01234567890123456789"
+      "username": "otuleasystem",
+      "password": "000111222333444555666777888999"
     }
+  },
+  "email": {
+    "notify": ["admin@example.com"],
+    "replyTo": "noreply@example.com",
+    "from": "system@example.com"
+  },
+  "accounts": {
+    "config": {
+      "forbidClientAccountCreation": true,
+      "ambiguousErrorMessages": false,
+      "sendVerificationEmail": false,
+      "loginExpirationInDays": 90,
+      "passwordResetTokenExpirationInDays": 1,
+      "passwordEnrollTokenExpirationInDays": 3
+    }
+  },
+  "status": {
+    "active": false,
+    "interval": 5000,
+    "secret": "lea.online.secret",
+    "url": "http://localhost:7070/collect"
   }
 }

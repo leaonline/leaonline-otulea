@@ -1,33 +1,47 @@
 import { Blaze } from 'meteor/blaze'
-import { Components } from 'meteor/leaonline:ui/components/Components'
-import { initLanguage } from './language'
-import { initializeTTS } from './leaconfig'
-import { initClientContext } from './context'
-import { loadOnce } from '../../api/loading/loadOnce'
-import { createLog } from '../../utils/createInfoLog'
-import { loadAllContentDocs } from '../../api/loading/loadAllContentDocs'
-import { Router } from '../../api/routing/Router'
-import { fadeOut } from '../../utils/animationUtils'
-import { callMethod } from '../../infrastructure/methods/callMethod'
-import { loadContentDoc } from '../../api/loading/loadContentDoc'
+import '../../ui/pages/loading/loading'
+import '../../ui/components/complete/onComplete'
 
 // if we use the autoload functionality we don't need to explicitly load basic
 // and generic (stateless) templates, since they are loaded at runtime using
 // dynamic imports.
-Components.autoLoad()
+let autoLoadEnabled = false
 
 /**
  * This is a way to provide a Template-independent way of initializing
  * dependencies like i18n etc. that require a certain loading time.
  * @param language
  * @param tts
- * @param session
+ * @param contexts
+ * @param loaders
  * @param onComplete
+ * @param onError
  * @return {Blaze.TemplateInstance}
  */
 
 Blaze.TemplateInstance.prototype.initDependencies =
-  function ({ language = true, tts = true, contexts = [], loaders = [], onComplete }) {
+  function ({ language = false, tts = false, contexts = [], loaders = [], onComplete, onError }) {
+    import { Components } from 'meteor/leaonline:ui/components/Components'
+
+    if (!autoLoadEnabled) {
+      Components.autoLoad()
+      autoLoadEnabled = true
+    }
+
+    import { Router } from '../../ui/routing/Router'
+    import { initLanguage } from '../../api/i18n/initLanguage'
+    import { initializeTTS } from '../../api/tts/initializeTTS'
+    import { initClientContext } from '../../api/context/initClientContext'
+    import { loadOnce } from '../../ui/loading/loadOnce'
+    import { createLog } from '../../utils/createInfoLog'
+    import { loadAllContentDocs } from '../../ui/loading/loadAllContentDocs'
+    import { loadContentDoc } from '../../ui/loading/loadContentDoc'
+    import { fadeOut } from '../../utils/animationUtils'
+    import { hasProperty } from '../../utils/object/hasProperty'
+    import { isDebugUser } from '../../api/accounts/isDebugUser'
+    import { sendError } from '../../contexts/errors/api/sendError'
+    import { callMethod } from '../../infrastructure/methods/callMethod'
+
     const instance = this
     const allComplete = []
 
@@ -41,27 +55,52 @@ Blaze.TemplateInstance.prototype.initDependencies =
       type: 'info'
     })
 
-    instance.api.queryParam = value => Router.queryParam(value)
-    instance.api.callMethod = callMethod
-    instance.api.loadAllContentDocs = loadAllContentDocs
-    instance.api.loadContentDoc = loadContentDoc
-    instance.api.fadeOut = function (target, callback) {
-      return fadeOut(target, instance, callback)
-    }
+    const logDebug = createLog({
+      name: instance.view.name,
+      type: 'debug',
+      devOnly: false
+    })
+
+    logDebug('initialize', { language, tts, contexts })
+
+    Object.assign(instance.api, {
+      queryParam: value => Router.queryParam(value),
+      callMethod,
+      loadAllContentDocs,
+      loadContentDoc,
+      hasProperty,
+      isDebugUser,
+      debug: (...args) => {
+        if (isDebugUser()) {
+          logDebug(...args)
+        }
+      },
+      fadeOut: function (target, callback) {
+        return fadeOut(target, instance, callback)
+      },
+      sendError: ({ error, isResponse }) => {
+        sendError({
+          error,
+          isResponse,
+          template: instance.view.name,
+          failure: e => console.error(e)
+        })
+      }
+    })
 
     // if any context is added we initialize it immediately sync-style
     contexts.forEach(ctx => initClientContext(ctx))
 
     if (language) {
-      allComplete.push(loadOnce(initLanguage))
+      allComplete.push(loadOnce(initLanguage, { onError }))
     }
 
     if (tts) {
-      allComplete.push(loadOnce(initializeTTS))
+      allComplete.push(loadOnce(initializeTTS, { onError }))
     }
 
     if (loaders.length > 0) {
-      allComplete.push(...(loaders.map(loader => loadOnce(loader))))
+      allComplete.push(...(loaders.map(loader => loadOnce(loader, { onError }))))
     }
 
     if (allComplete.length === 0) {

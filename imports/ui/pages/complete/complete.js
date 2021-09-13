@@ -1,164 +1,269 @@
+import { Meteor } from 'meteor/meteor'
 import { Template } from 'meteor/templating'
 import { Dimension } from '../../../contexts/Dimension'
-
+import { Session } from '../../../contexts/session/Session'
+import { Thresholds } from '../../../contexts/thresholds/Thresholds'
+import { Competency } from '../../../contexts/Competency'
+import { createSessionLoader } from '../../loading/createSessionLoader'
+import { sessionIsComplete } from '../../../contexts/session/utils/sessionIsComplete'
+import { AlphaLevel } from '../../../contexts/AlphaLevel'
+import { Response } from '../../../contexts/response/Response'
+import { Unit } from '../../../contexts/Unit'
 import '../../components/container/container'
 import '../../layout/navbar/navbar'
 import './complete.html'
 
 const states = {
   showResults: 'showResults',
-  showPrint: 'showPrint',
   showDecision: 'showDecision',
   showFailed: 'showFailed'
 }
+
 const stateValues = Object.values(states)
 
 Template.complete.onCreated(function () {
   const instance = this
+  const { sessionId } = instance.data.params
 
   const { api } = instance.initDependencies({
     language: true,
     tts: true,
-    contexts: [Dimension],
+    contexts: [Dimension, Session, Competency, Thresholds, AlphaLevel, Response, Unit],
     onComplete () {
-      instance.state.set('dependenciesComplete', true)
+      instance.state.set({
+        dependenciesComplete: true
+      })
     }
   })
 
-  const { queryParam } = api
+  const { queryParam, callMethod, loadAllContentDocs, info, debug, hasProperty } = api
+  const onFailed = err => instance.state.set('failed', err || true)
+
+  loadAllContentDocs(Thresholds, undefined, debug)
+    .catch(e => console.error(e))
+    .then(() => {
+      const thresholdDoc = Thresholds.collection().findOne()
+      instance.state.set(thresholdDoc)
+
+      // TODO refactor into own method
+      callMethod({
+        name: Session.methods.results,
+        args: { sessionId },
+        failure: err => onFailed(err),
+        success: results => {
+          if (!results) {
+            return onFailed() // TODO fallback with a message "we can't eval right now..."
+          }
+
+          const { competencies, alphaLevels } = results
+
+          // GET request to content server to fetch competency documents
+          // which are required to display the related texts
+          const competencyIds = competencies.map(c => c.competencyId)
+
+          // by default this is true, but it will be set to false, once
+          // we have at least one graded competency
+          let noScoredCompetencies = true
+
+          loadAllContentDocs(Competency, { ids: competencyIds })
+            .catch(error => onFailed(error))
+            .then(competencyDocs => {
+              if (competencyDocs.length === 0) {
+                instance.state.set('competenciesLoaded', true)
+                return onFailed()
+              }
+
+              const CompetencyCollection = Competency.collection()
+              const aggregatedResults = competencies.map(resultDoc => {
+                const { competencyId } = resultDoc
+                const competencyDoc = CompetencyCollection.findOne(competencyId)
+
+                if (noScoredCompetencies && resultDoc.gradeIndex > -1) {
+                  noScoredCompetencies = false
+                }
+
+                if (!competencyDoc) {
+                  return console.warn('Found no competency doc for _id', competencyId)
+                }
+
+                resultDoc.shortCode = competencyDoc.shortCode
+                resultDoc.description = competencyDoc.descriptionSimple
+                resultDoc.gradeLabel = `thresholds.${resultDoc.gradeName}`
+                resultDoc.perc = resultDoc.perc * 100
+                return resultDoc
+              })
+                .sort((a, b) => a.shortCode.localeCompare(b.shortCode))
+
+              debug({ aggregatedResults })
+              instance.state.set({
+                aggregatedResults,
+                noScoredCompetencies,
+                competenciesLoaded: true
+              })
+            })
+
+          const alphaLevelIds = alphaLevels.map(c => c.alphaLevelId)
+
+          let noScoredAlphas = true
+
+          loadAllContentDocs(AlphaLevel, { ids: alphaLevelIds })
+            .catch(error => onFailed(error))
+            .then(alphaLevelDocs => {
+              if (alphaLevelDocs.length === 0) {
+                instance.state.set('competenciesLoaded', true)
+                return onFailed()
+              }
+
+              const AlphaLevelCollection = AlphaLevel.collection()
+              const aggregatedAlphaLevels = alphaLevels.map(alpha => {
+                const { alphaLevelId } = alpha
+                const alphaLevelDoc = AlphaLevelCollection.findOne(alphaLevelId)
+
+                if (noScoredAlphas && alpha.gradeIndex > -1) {
+                  noScoredAlphas = false
+                }
+
+                if (!alphaLevelDoc) {
+                  return console.warn('Found no alphaLevel doc for _id', alphaLevelId)
+                }
+
+                alpha.shortCode = alphaLevelDoc.shortCode
+                alpha.description = alphaLevelDoc.description
+                alpha.gradeLabel = `thresholds.${alpha.gradeName}`
+                alpha.perc = alpha.perc * 100
+                return alpha
+              })
+                .sort((a, b) => a.shortCode.localeCompare(b.shortCode))
+
+              debug({ aggregatedAlphaLevels })
+              instance.state.set({
+                noScoredAlphas,
+                alphaLevels: aggregatedAlphaLevels,
+                competenciesLoaded: true
+              })
+            })
+        }
+      })
+    })
+
+  // we use the session loader to simply the loading of the session dependencies
+  // such as Dimension, Level, UnitSet, Colors, Unit etc.
+  const sessionLoader = createSessionLoader({ info })
+  sessionLoader({ sessionId })
+    .catch(err => onFailed(err))
+    .then(sessionData => {
+      debug(sessionData)
+
+      if (!sessionData) return console.warn('no session data!')
+
+      const { sessionDoc, unitSetDoc, dimensionDoc, levelDoc, color } = sessionData
+      // first we check for all docs, even one left-out doc is not acceptable
+      if (!sessionDoc || !unitSetDoc || !dimensionDoc || !levelDoc) {
+        return // we can safely skip since this information is not viable
+      }
+
+      // if we encounter a sessionDoc that is not completed, we just
+      // skip any further attempts to load and immediately exit
+      if (!sessionIsComplete(sessionDoc)) {
+        return instance.data.exit({ sessionId })
+      }
+
+      // otherwise we're good and can continue with the current session
+      instance.state.set({
+        sessionDoc,
+        dimensionDoc,
+        levelDoc,
+        unitSetDoc,
+        color,
+        sessionLoaded: true
+      })
+    })
 
   // basic routes / state handling
   instance.autorun(() => {
     const v = queryParam('v') || 0
     const currentView = stateValues[parseInt(v, 10)]
 
-    if (currentView && states[currentView]) {
+    if (currentView && hasProperty(states, currentView)) {
       instance.state.set('view', currentView)
-    } else {
+    }
+
+    else {
       instance.state.set('view', states.showResults)
     }
   })
 
-  const onFailed = err => instance.state.set('failed', err || true)
-  onFailed()
-
-  /*
-  const { sessionId } = instance.data.params
-
+  // if we have a debug user we can ask for her responses in detail so our
+  // team members can see their response-scoring in detail
   instance.autorun(() => {
-    const sessionDoc = instance.state.get('sessionDoc')
-    if (!sessionDoc) return
+    const user = Meteor.user()
+    if (!user?.debug || instance.state.get('callingResponses')) {
+      return
+    }
 
-    Session.methods.results.call({ sessionId }, (err, res) => {
-      if (err) {
-        instance.state.set('failed', err)
-        return console.error(err)
-      }
-      // if we can't get anything out of the response
-      // we set the internal state to failed
-      if (!res || !res.results || !res.results.userResponse) {
-        const noResErr = new Error(`Expected result from ${Session.methods.results.name}`)
-        instance.state.set('failed', noResErr)
-        console.error(noResErr)
-        console.info(res)
-        return
-      }
+    callMethod({
+      name: Response.methods.getMy,
+      args: { sessionId },
+      prepare: () => instance.state.set('callingResponses', true),
+      failure (err) {
+        console.error(err)
+      },
+      success (responses) {
+        debug({ responses })
 
-      const { results } = res
-      const { userResponse } = results
-      try {
-        const lines = userResponse.split('\n')
-        lines.shift()
+        const unitIds = new Set()
+        responses.forEach(doc => unitIds.add(doc.unitId))
 
-        const hasFeedback = {}
-        const feedback = ResponseParser.parse(lines)
-        feedback.forEach(entry => {
-          hasFeedback[entry.status] = true
-        })
+        const ids = Array.from(unitIds)
+        loadAllContentDocs(Unit, { ids }, debug)
+          .catch(e => console.error(e))
+          .then(() => {
+            const mapped = responses.map(doc => {
+              doc.unit = Unit.collection().findOne(doc.unitId) || { shortCode: '?' }
+              return doc
+            })
 
-        instance.state.set('results', results)
-        instance.state.set('currentFeedback', feedback)
-        instance.state.set('hasFeedback', hasFeedback)
-      } catch (e) {
-        instance.state.set('failed', e)
+            responses.sort((a, b) => a.unit.shortCode.localeCompare(b.unit.shortCode))
+            instance.state.set({ responses: mapped })
+          })
       }
     })
   })
-
-  // if we have a current feedback id-list
-  // we can load the feedback-translations
-  // from the remote content server
-  const toIds = entry => entry.competencyId
-  instance.autorun(() => {
-    const feedback = instance.state.get('currentFeedback')
-    if (!feedback) return
-
-    ContentHost.methods.getCompetencies(feedback.map(toIds), (err, competencies) => {
-      if (err) {
-        instance.state.set('failed', err)
-        return console.error(err)
-      }
-      const mappedCompetencies = {}
-      competencies.forEach(entry => {
-        mappedCompetencies[entry.competencyId] = entry
-      })
-      instance.state.set('competencies', mappedCompetencies)
-      instance.state.set('competenciesLoaded', true)
-    })
-  })
-
-  // finally we call all feedback categories once
-  Feedback.methods.get.call((err, res) => {
-    if (err) {
-      instance.state.set('failed', err)
-      console.error(err)
-      return
-    }
-    if (!res) {
-      const noResErr = new Error(`Expected result from ${Feedback.methods.get.name}`)
-      instance.state.set('failed', noResErr)
-      console.error(noResErr)
-      return
-    }
-    const { notEvaluable, levels } = res
-    if (!levels) {
-      const noLevelsErr = new Error('no levels')
-      instance.state.set('failed', noLevelsErr)
-      console.error(noLevelsErr)
-      return
-    }
-    levels.unshift(notEvaluable)
-    const feedbackLevels = levels && levels.map((text, index) => ({ text, index: index - 1 })).reverse()
-    instance.state.set('feedbackLevels', feedbackLevels)
-  })
-
-  */
 })
 
 Template.complete.helpers({
   loadComplete () {
-    return Template.getState('dependenciesComplete')
+    const instance = Template.instance()
+    return instance.state.get('dependenciesComplete') &&
+      instance.state.get('competenciesLoaded') &&
+      instance.state.get('sessionLoaded')
   },
   failed () {
     return Template.getState('failed')
   },
-  competency (id) {
-    const competencies = Template.getState('competencies')
-    return competencies && competencies[id]
-  },
-  feedbackLevels () {
-    return Template.getState('feedbackLevels')
-  },
-  hasFeedback (index) {
-    const map = Template.getState('hasFeedback')
-    return map && map[index]
-  },
   competenciesLoaded () {
     return Template.getState('competenciesLoaded')
   },
-  getFeedback (index) {
-    const feedback = Template.getState('currentFeedback')
-    return feedback && feedback.filter(entry => entry.status === index)
+  competencies () {
+    return Template.getState('aggregatedResults')
+  },
+  alphaLevels () {
+    return Template.getState('alphaLevels')
+  },
+  getCompetency (_id) {
+    const competencyDoc = Competency.collection().findOne(_id)
+    if (competencyDoc) {
+      return {
+        shortCode: competencyDoc.shortCode,
+        description: competencyDoc.descriptionSimple || competencyDoc.description,
+        example: competencyDoc.example
+      }
+    }
+
+    return { description: _id }
+  },
+  minCountCompetency () {
+    return Template.getState('minCountCompetency')
   },
   printOptions () {
     return Template.getState('printOptions')
@@ -183,18 +288,45 @@ Template.complete.helpers({
       instance.state.get('sessionDoc') &&
       instance.state.get('view') === states.showDecision
   },
-  showPrint () {
+  navbarData () {
     const instance = Template.instance()
-    const failed = instance.state.get('failed')
-    return !failed &&
-      instance.state.get('sessionDoc') &&
-      instance.state.get('view') === states.showPrint
-  },
-  sessionDoc () {
-    return Template.getState('sessionDoc')
+    const sessionDoc = instance.state.get('sessionDoc')
+    const levelDoc = instance.state.get('levelDoc')
+    const unitSetDoc = instance.state.get('unitSetDoc')
+    const dimensionDoc = instance.state.get('dimensionDoc')
+
+    return {
+      sessionDoc,
+      levelDoc,
+      unitSetDoc,
+      dimensionDoc,
+      showProgress: false,
+      showUsername: true
+    }
   },
   currentType () {
-    return Template.getState('currentType')
+    return Template.instance().state.get('color')
+  },
+  // ///////////////////////////////////////////////////////////////////////////
+  // DEBUG-USER-ONLY!
+  // ///////////////////////////////////////////////////////////////////////////
+  responses () {
+    return Template.getState('responses')
+  },
+  stringify (obj) {
+    return JSON.stringify(obj, null, 0)
+  },
+  isScored (entry) {
+    return entry === 'true' || entry === true
+  },
+  showExtended (isGraded, isDemoUser) {
+    return isGraded || isDemoUser
+  },
+  noScoredCompetencies () {
+    return Template.getState('noScoredCompetencies')
+  },
+  noScoredAlpha () {
+    return Template.getState('noScoredAlphas')
   }
 })
 
@@ -202,30 +334,17 @@ Template.complete.events({
   'click .lea-showresults-forward-button' (event, templateInstance) {
     event.preventDefault()
     const { queryParam } = templateInstance.api
-    if (templateInstance.state.get('failed')) {
-      queryParam({ v: stateValues.indexOf(states.showDecision) })
-    } else {
-      queryParam({ v: stateValues.indexOf(states.showPrint) })
-    }
-  },
-  'click .lea-showprint-back-button' (event, templateInstance) {
-    event.preventDefault()
-    const { queryParam } = templateInstance.api
-    queryParam({ v: stateValues.indexOf(states.showResults) })
-  },
-  'click .lea-showprint-forward-button' (event, templateInstance) {
-    event.preventDefault()
-    const { queryParam } = templateInstance.api
     queryParam({ v: stateValues.indexOf(states.showDecision) })
   },
   'click .lea-showdecision-back-button' (event, templateInstance) {
     event.preventDefault()
     const { queryParam } = templateInstance.api
-    if (templateInstance.state.get('failed')) {
-      queryParam({ v: stateValues.indexOf(states.showResults) })
-    } else {
-      queryParam({ v: stateValues.indexOf(states.showPrint) })
-    }
+    queryParam({ v: stateValues.indexOf(states.showResults) })
+  },
+  'click .print-simple' (event) {
+    event.preventDefault()
+    // printHTMLElement('lea-complete-print-root')
+    window.print()
   },
   'click .lea-end-button' (event, templateInstance) {
     event.preventDefault()

@@ -3,18 +3,10 @@
  * @param cache
  * @return {onItemInput}
  */
-export const createItemInput = ({ cache }) => {
-  /**
-   * Handler for scoring item inputs
-   * @param userId
-   * @param sessionId
-   * @param unitId
-   * @param page
-   * @param type
-   * @param responses
-   */
+export const createItemInput = ({ cache, debug = () => {} }) => {
   return function onItemInput ({ userId, sessionId, unitId, page, type, contentId, responses }) {
-    cache.save({
+    debug('cache item data', { userId, sessionId, unitId, page, type, contentId, responses })
+    return cache.save({
       userId,
       sessionId,
       unitId,

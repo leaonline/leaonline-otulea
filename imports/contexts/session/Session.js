@@ -1,14 +1,9 @@
-import { Meteor } from 'meteor/meteor'
-import { check, Match } from 'meteor/check'
-import { Role } from '../../api/accounts/Role'
-import { Group } from '../../api/accounts/Group'
-import { onClient, onServer, onServerExec } from '../../utils/archUtils'
-import { DocumentNotFoundError } from '../../api/errors/DocumentNotFoundError'
+import { onServerExec } from '../../utils/archUtils'
 
 export const Session = {
   name: 'session',
   label: 'session.title',
-  icon: 'code-fork',
+  icon: 'project-diagram',
   methods: {},
   publications: {}
 }
@@ -28,9 +23,25 @@ Session.schema = {
   startedAt: Date,
 
   /**
+   * Indicate the end of a session
+   */
+  completedAt: {
+    type: Date,
+    optional: true
+  },
+
+  /**
    * See the last time the session has been updated
    */
   updatedAt: {
+    type: Date,
+    optional: true
+  },
+
+  /**
+   * Optional entry to flag a session, that has been superseded by a "restart"
+   */
+  cancelledAt: {
     type: Date,
     optional: true
   },
@@ -44,15 +55,15 @@ Session.schema = {
   },
 
   /**
-   * Indicate the end of a session
+   * The current test-cycle this session reflects on
    */
-  completedAt: {
-    type: Date,
-    optional: true
-  },
+
+  testCycle: String,
 
   /**
-   * The current unit set to complete
+   * The current unit set to complete. There may be more than one unit-sets
+   * for a given test-cycle, because a unit-set is used to summarize a certain
+   * content, while test-cycle summarize a set of tests.
    */
 
   unitSet: String,
@@ -67,81 +78,20 @@ Session.schema = {
   },
 
   /**
-   * Progress indicates the amount of units being solved
+   * Progress indicates the amount of units (pages = tasks) being solved
    */
 
   progress: {
     type: Number,
     defaultValue: 0,
-    min: 0,
-    max: 100
+    min: 0
   },
 
-  /**
-   * Optional entry to flag a session, that has been superseeded by a "restart"
-   */
-  cancelledAt: {
-    type: Date,
-    optional: true
+  maxProgress: {
+    type: Number,
+    defaultValue: 0,
+    min: 0
   }
-}
-
-Session.helpers = {
-  current ({ dimension, level, completedAt = { $exists: false } } = {}) {
-    check(dimension, Match.Maybe(String))
-    check(level, Match.Maybe(String))
-    return Session.collection().findOne({
-      dimension,
-      level,
-      completedAt
-    }, { sort: { statedAt: -1 } })
-  },
-  byId (sessionId) {
-    check(sessionId, String)
-    return Session.collection().findOne(sessionId)
-  },
-  getNextTask ({ currentTask, tasks }) {
-    if (!tasks || tasks.length === 0) {
-      return
-    }
-    if (!currentTask) {
-      return tasks[0]
-    }
-    const index = tasks.indexOf(currentTask)
-    if (index === -1 || index >= tasks.length - 1) {
-      return
-    }
-    return tasks[index + 1]
-  },
-  isComplete ({ completedAt }) {
-    return Object.prototype.toString.call(completedAt) === '[object Date]'
-  }
-}
-
-Session.methods.exists = {
-  name: 'session.methods.exists',
-  schema: {
-    unitSetId: String
-  },
-  numRequests: 1,
-  timeInterval: 1000,
-  run: onServerExec(function () {
-    /**
-     *
-     * @param unitSetId
-     * @return {any}
-     */
-    return function run ({ unitSetId }) {
-      const { userId } = this
-      const SessionCollection = Session.collection()
-      return SessionCollection.findOne({
-        userId,
-        unitSet: unitSetId,
-        completedAt: { $exists: false },
-        cancelledAt: { $exists: false }
-      })
-    }
-  })
 }
 
 Session.methods.currentById = {
@@ -149,74 +99,34 @@ Session.methods.currentById = {
   schema: {
     sessionId: String
   },
-  numRequests: 1,
+  numRequests: 10,
   timeInterval: 1000,
-  run: onServer(function ({ sessionId }) {
-    const { userId } = this
-    return Session.collection().findOne({
-      _id: sessionId,
-      userId: userId
-    })
+  run: onServerExec(function () {
+    import { getSessionDoc } from './utils/getSessionDoc'
+
+    return function ({ sessionId }) {
+      const { userId } = this
+      return getSessionDoc({ sessionId, userId })
+    }
   })
 }
 
 Session.methods.start = {
   name: 'session.start',
   schema: {
-    unitSetId: String
+    testCycleId: String
   },
   numRequests: 1,
   timeInterval: 1000,
   run: onServerExec(function () {
-    const { UnitSet } = require('../unitSet/UnitSet')
+    import { startSession } from './api/startSession'
 
-    const getUnitSetDoc = docId => UnitSet.collection().findOne(docId)
-
-    /**
-     *
-     * @param unitSet
-     * @param continueAborted
-     * @return {any}
-     */
-    return function ({ unitSetId }) {
-      const { userId } = this
-      const SessionCollection = Session.collection()
-      const abortedSessionDoc = SessionCollection.findOne({
-        userId,
-        unitSet: unitSetId,
-        completedAt: { $exists: false },
-        cancelledAt: { $exists: false }
+    return function ({ testCycleId }) {
+      const api = this
+      return startSession({
+        testCycleId: testCycleId,
+        userId: api.userId
       })
-
-      // There may be the the case where we find an aborted session.
-      if (abortedSessionDoc) {
-        throw new Meteor.Error('session.start.error', 'session.sessionExists', {
-          sessionId: abortedSessionDoc._id,
-          unitSetId: unitSetId
-        })
-      }
-
-      // for a new session we stamp the start time and get the referenced
-      // unitSet document in order to store the associated dimension, level and
-      // ordered set of units to be solved.
-      const startedAt = new Date()
-      const unitSetDoc = getUnitSetDoc(unitSetId)
-
-      // if there has no unit been found we need to raise an error
-      if (!unitSetDoc) {
-        throw new DocumentNotFoundError(UnitSet.name, unitSetId)
-      }
-
-      const currentUnit = unitSetDoc.units?.[0]
-      if (!currentUnit) {
-        throw new Meteor.Error('session.startError', 'session.noUnits')
-      }
-
-      const insertDoc = { userId, startedAt, currentUnit }
-      insertDoc.unitSet = unitSetId
-
-      const newSessionId = SessionCollection.insert(insertDoc)
-      return SessionCollection.findOne(newSessionId)
     }
   })
 }
@@ -229,28 +139,13 @@ Session.methods.cancel = {
   numRequests: 1,
   timeInterval: 1000,
   run: onServerExec(function () {
-    const { Response } = require('../Response')
-
-    const hasResponses = sessionId => Response.collection().find({ sessionId }).count() > 0
+    import { cancelSession } from './api/cancelSession'
 
     return function ({ sessionId }) {
-      const { userId } = this
-      const SessionCollection = Session.collection()
-      const sessionDoc = SessionCollection.findOne({ _id: sessionId, userId })
-
-      if (!sessionDoc) {
-        throw new DocumentNotFoundError(Session.name, sessionId)
-      }
-
-      // if we face an empty session that is about to be restarted, we simply
-      // delete this session as it holds no value to us
-      if (!sessionDoc.progress && !hasResponses(sessionId)) {
-        return SessionCollection.remove(sessionId)
-      }
-
-      // otherwise we update the session to indicate it's cancelled by the user
-      return SessionCollection.update(sessionId, {
-        $set: { cancelledAt: new Date() }
+      const api = this
+      return cancelSession({
+        sessionId: sessionId,
+        userId: api.userId
       })
     }
   })
@@ -261,73 +156,37 @@ Session.methods.continue = {
   schema: {
     sessionId: String
   },
-  run: onServer(function ({ sessionId }) {
-    const { userId } = this
-    const SessionCollection = Session.collection()
-    const sessionDoc = SessionCollection.findOne({ _id: sessionId, userId })
+  numRequests: 1,
+  timeInterval: 1000,
+  run: onServerExec(function () {
+    import { continueSession } from './api/continueSession'
 
-    if (!sessionDoc) {
-      throw new DocumentNotFoundError(Session.name, sessionId)
+    return function ({ sessionId }) {
+      const api = this
+      return continueSession({
+        sessionId: sessionId,
+        userId: api.userId
+      })
     }
-
-    return SessionCollection.update(sessionId, {
-      $set: { continuedAt: new Date() }
-    }) && SessionCollection.findOne(sessionId)
   })
 }
 
-Session.methods.update = {
-  name: 'session.methods.update',
+Session.methods.next = {
+  name: 'session.methods.next',
   schema: {
     sessionId: String
   },
   numRequests: 1,
   timeInterval: 1000,
   run: onServerExec(function () {
-    const { UnitSet } = require('../unitSet/UnitSet')
-    const getUnitSetDoc = docId => UnitSet.collection().findOne(docId)
-
+    import { updateSession } from './api/updateSession'
     return function ({ sessionId }) {
-      const { getSessionDoc } = require('./getSessionDoc')
-      const { isLastUnitInSet } = require('../unitSet/isLastUnitInSet')
-      const { getNextUnitInSet } = require('../unitSet/getNextUnitInSet')
-
-      const { userId, info } = this
-      const sessionDoc = getSessionDoc({ sessionId, userId })
-      const { unitSet, currentUnit } = sessionDoc
-      const unitSetDoc = getUnitSetDoc(unitSet)
-
-      if (!unitSetDoc || !unitSetDoc.units) {
-        throw new DocumentNotFoundError(UnitSet.name, { sessionId, unitSet })
-      }
-
-      info('update', currentUnit, unitSetDoc.units)
-      const timestamp = new Date()
-      const isLastUnit = isLastUnitInSet(currentUnit, unitSetDoc)
-
-      if (isLastUnit) {
-        Session.collection().update(sessionDoc._id, {
-          $set: {
-            currentUnit: null,
-            updatedAt: timestamp,
-            completedAt: timestamp
-          }
-        })
-
-        info('session -> complete', sessionId)
-        return { nextUnitId: null, completed: true }
-      }
-
-      const nextUnit = getNextUnitInSet(currentUnit, unitSetDoc)
-      Session.collection().update(sessionDoc._id, {
-        $set: {
-          currentUnit: nextUnit,
-          updatedAt: timestamp
-        }
+      const api = this
+      return updateSession({
+        sessionId: sessionId,
+        userId: api.userId,
+        debug: api.debug
       })
-
-      info('session -> next', sessionId, nextUnit)
-      return { nextUnitId: nextUnit, completed: false }
     }
   })
 }
@@ -340,67 +199,26 @@ Session.methods.results = {
   numRequests: 1,
   timeInterval: 1000,
   run: onServerExec(function () {
-    const { SessionsHost } = require('../../api/hosts/SessionsHost')
+    import { generateFeedback } from '../feedback/api/generateFeedback'
 
     return function ({ sessionId }) {
-      const { userId } = this
-      const sessionDoc = Session.collection().findOne(sessionId)
-      if (!sessionDoc) throw new Error('docNotFound')
-      if (!sessionDoc.completedAt) throw new Error('session.errors.notCompleted')
-      const results = SessionsHost.methods.evaluate({ userId, sessionId })
-      return { sessionDoc, results }
+      const { userId, debug } = this
+      return generateFeedback({ sessionId, userId, debug })
     }
-  }),
-  call: onClient(function ({ sessionId }, cb) {
-    Meteor.call(Session.methods.results.name, { sessionId }, cb)
   })
 }
 
-Session.methods.recent = {
-  name: 'session.methods.recent',
+Session.methods.byTestCycle = {
+  name: 'session.methods.byTestCycle',
   schema: {
-    userId: {
-      type: String,
-      optional: true
+    testCycleId: String
+  },
+  run: onServerExec(function () {
+    import { getLastSessionByTestCylce } from './api/getLastSessionByTestCyclce'
+
+    return function ({ testCycleId }) {
+      const { userId } = this
+      return getLastSessionByTestCylce({ testCycleId, userId })
     }
-  },
-  numRequests: 1,
-  timeInterval: 1000,
-  roles: [Role.readSessions.value],
-  group: Group.team.value,
-  isPublic: true,
-  run: onServer(function ({ userId }) {
-    return Session.collection().find({
-      userId: userId,
-      startedAt: { $exists: true }
-    }, {
-      limit: 100,
-      hint: { $natural: -1 }
-    }).fetch()
-  }),
-  call: undefined
-}
-
-Session.methods.byUnitSet = {
-  name: 'session.methods.byUnitSet',
-  schema: {
-    unitSet: String
-  },
-  run: onServer(function ({ unitSet }) {
-    const { userId } = this
-
-    // TODO maybe add a flag to settings.json with number of days/hours that
-    // TODO define a threshold until a session can be continued.
-    return Session
-      .collection()
-      .findOne({
-        userId: userId,
-        unitSet: unitSet,
-        startedAt: { $exists: true },
-        completedAt: { $exists: false },
-        cancelled: { $exists: false }
-      }, {
-        hint: { $natural: -1 }
-      })
   })
 }

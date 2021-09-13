@@ -1,17 +1,19 @@
 <template name="welcome">
     <div class="w-100 lea-welcome-container">
-
-        <div class="container">
-            {{> image src="/logo/logo-footer.png" alt="logo" class="lea-main-logo w-100"}}
-        </div>
-
         {{#unless loadComplete}}
             {{> loading}}
         {{/unless}}
 
         {{#if intro}}
             <div class="w-100">
-                <div class="container">
+                <div class="container intro-video-container">
+                        {{> image
+                                src="/logo/video-placeholder-1080x1920.png"
+                                width=1920
+                                height=1080
+                                alt="video"
+                                class="rounded lea-main-logo autoscale shadow"}}
+{{!--
                     <div class="intro-video-container embed-responsive embed-responsive-16by9 mh-50 shadow shadow-sm">
                         <video controls preload="none"
                                class="embed-responsive-item" allowfullscreen>
@@ -19,11 +21,12 @@
                             Your browser does not support the video tag.
                         </video>
                     </div>
+--}}
                 </div>
             </div>
 
             {{#unless currentUser}}
-                <div class="container welcome-intro-container my-5">
+                {{#container class="welcome-intro-container my-5"}}
                     <div class="card">
                         <div class="card-body">
                             {{#onComplete complete=dependenciesComplete}}
@@ -51,12 +54,12 @@
                             </div>
                         {{/onComplete}}
                     </div>
-                </div>
+                {{/container}}
             {{/unless}}
         {{/if}}
 
         {{#if loggedIn}}
-            <div class="container my-3">
+            {{#container class="my-3"}}
                 <div class="card">
                     <div class="card-body">
                         {{#onComplete complete=dependenciesComplete}}
@@ -77,11 +80,11 @@
                         </div>
                     {{/onComplete}}
                 </div>
-            </div>
+            {{/container}}
         {{/if}}
 
         {{#if loginRequired}}
-            <div class="container">
+            {{#container}}
                 <div class="card">
                     {{#if login}}
                         <div class="card-body">
@@ -109,31 +112,26 @@
                     {{/if}}
 
                     <div class="card-body welcome-login-container my-3 row">
-                        <div class="col col-md-8 col-lg-6 mx-auto d-flex">
+                        <div class="col col-12 col-md-8 col-lg-6 mx-auto d-flex">
                             {{#with loginTTS}}
                                 {{> soundbutton text=loginTTS lg=true outline=true }}
                             {{else}}
                                 {{> soundbutton text=loginTTS lg=true outline=true disabled=true class="active"}}
                             {{/with}}
-                            <div class="input-group input-group-lg ml-3">
-                                <input type="text" data-index="0" maxlength="1"
-                                       autofocus
-                                       class="login-field text-uppercase form-control text-center mr-2"/>
-                                <input type="text" data-index="1" maxlength="1"
-                                       class="login-field text-uppercase form-control text-center mx-2"/>
-                                <input type="text" data-index="2" maxlength="1"
-                                       class="login-field text-uppercase form-control text-center mx-2"/>
-                                <input type="text" data-index="3" maxlength="1"
-                                       class="login-field text-uppercase form-control text-center mx-2"/>
-                                <input type="text" data-index="4" maxlength="1"
-                                       class="login-field text-uppercase form-control text-center ml-2"/>
+                            <div class="input-group input-group-lg mx-auto">
+                                <input type="text" data-index="0" maxlength="1" class="login-field text-uppercase form-control text-center mr-md-2" autofocus/>
+                                {{#each index in inputFieldIndices}}
+                                    <input type="text" data-index="{{index}}" maxlength="1" class="login-field text-uppercase form-control text-center mx-md-2"/>
+                                {{/each}}
                             </div>
                         </div>
                     </div>
 
                     {{#if loginFail}}
                         <div class="card-body">
-                            {{> textGroup tts="pages.welcome.loginFail" type="warning" class="w-100 p-3 alert-warning"}}
+                            <div class="bg-primary rounded py-3">
+                                {{> textGroup tts="pages.welcome.loginFail" type="warning" groupClass="w-100 text-light"}}
+                            </div>
                         </div>
                     {{/if}}
                 </div>
@@ -151,7 +149,7 @@
                         {{/if}}
                     {{/onComplete}}
                 </div>
-            </div>
+            {{/container}}
         {{/if}}
     </div>
 </template>

@@ -3,14 +3,17 @@ import { Template } from 'meteor/templating'
 import { ReactiveVar } from 'meteor/reactive-var'
 import { ReactiveDict } from 'meteor/reactive-dict'
 import { Random } from 'meteor/random'
-import { Users } from '../../../api/accounts/User'
-import { Router } from '../../../api/routing/Router'
+import { Users } from '../../../contexts/user/User'
 import { loggedIn } from '../../../utils/accountUtils'
 import { fadeOut } from '../../../utils/animationUtils'
+import '../../components/container/container'
 import './welcome.scss'
 import './welcome.html'
 
-const MAX_INPUTS = 5
+const settings = Meteor.settings.public.accounts
+const MAX_INPUTS = settings.code.length
+const inputFieldIndices = [...new Array(MAX_INPUTS)].map((v, i) => i)
+const whiteSpace = /\s+/g
 let originalVideoHeight
 
 Template.welcome.onCreated(function () {
@@ -18,6 +21,7 @@ Template.welcome.onCreated(function () {
   instance.state = new ReactiveDict()
   instance.state.set('loginCode', null)
   instance.state.set('loadComplete', false)
+  instance.state.set('isDemoUser', !!instance.data?.queryParams?.demo)
   instance.newUser = new ReactiveVar(Random.id(MAX_INPUTS).toUpperCase())
 
   instance.wizard = {
@@ -39,6 +43,11 @@ Template.welcome.onCreated(function () {
     language: true,
     tts: true,
     onComplete: () => {
+      instance.state.set('dependenciesComplete', true)
+    },
+    onError: e => {
+      // instance.data.onFail()
+      console.error(e)
       instance.state.set('dependenciesComplete', true)
     }
   })
@@ -96,6 +105,9 @@ Template.welcome.helpers({
     const loginCode = Template.getState('loginCode')
     if (!loginCode || !loginCode.length) return ''
     return loginCode.split('').join(', ')
+  },
+  inputFieldIndices () {
+    return inputFieldIndices.slice(1, inputFieldIndices.length)
   }
 })
 
@@ -110,23 +122,57 @@ Template.welcome.events({
   },
   'click .lea-welcome-yes' (event, templateInstance) {
     event.preventDefault()
-    const $videoContainer = templateInstance.$('.intro-video-container')
-    originalVideoHeight = $videoContainer.height()
-    $videoContainer.animate({ height: '100px' }, 500, 'swing', () => {
-      templateInstance.wizard.login(true)
-      setTimeout(() => focusInput(templateInstance), 50)
-    })
+
+    // if we have a video container we can shrink it's size using a nice effect
+    // $videoContainer.animate({ height: '200px' }, 500, 'swing', () => {})
+    // const $videoContainer = templateInstance.$('.intro-video-container')
+    templateInstance.wizard.login(true)
+    setTimeout(() => focusInput(templateInstance), 50)
   },
   'click .lea-welcome-no' (event, templateInstance) {
     event.preventDefault()
-    const $videoContainer = templateInstance.$('.intro-video-container')
-    originalVideoHeight = $videoContainer.height()
-    $videoContainer.animate({ height: '100px' }, 500, 'swing', () => {
-      templateInstance.wizard.newCode(true)
-      setTimeout(() => focusInput(templateInstance), 50)
+    // if we have a video container we can shrink it's size using a nice effect
+    // const $videoContainer = templateInstance.$('.intro-video-container')
+    // $videoContainer.animate({ height: '200px' }, 500, 'swing', () => {})
+    templateInstance.wizard.newCode(true)
+    setTimeout(() => focusInput(templateInstance), 50)
+  },
+  'paste .login-field' (event, templateInstance) {
+    // Stop data actually being pasted
+    event.stopPropagation()
+    event.preventDefault()
+
+    // Get pasted data via clipboard API
+    const target = event.originalEvent || event
+    const clipboardData = target.clipboardData || window.clipboardData
+
+    if (!clipboardData) {
+      console.error('No ClipboardData available!')
+      // TODO send to server to log this error along with the detected browser
+    }
+
+    const pastedData = clipboardData.getData('Text').replace(whiteSpace, '')
+
+    // we accept only the correct length of usernames
+    if (pastedData.length !== MAX_INPUTS) {
+      console.debug('[Template.welcome]: rejected', pastedData)
+      return false
+    }
+
+    inputFieldIndices.forEach(index => {
+      const value = pastedData.charAt(index)
+      templateInstance.$(`input[data-index="${index}"]`).val(value)
     })
+
+    templateInstance.state.set('loginCode', pastedData)
+    showLoginButton(templateInstance)
   },
   'keydown .login-field' (event, templateInstance) {
+    // if there is a paste operation we skip the key-down and bubble to paste
+    if (event.key === 'v' && (event.ctrlKey || event.metaKey)) {
+      return true
+    }
+
     // skip everything on Tab to keep
     // accessibility in standard mode
     if (event.code === 'Tab') {
@@ -141,7 +187,8 @@ Template.welcome.events({
     if (event.code === 'Backspace') {
       if (index === 0) {
         return true
-      } else {
+      }
+      else {
         // update field and position
         const $prev = templateInstance.$(`input[data-index="${index - 1}"]`)
         $target.val('')
@@ -151,7 +198,8 @@ Template.welcome.events({
         const loginCode = getLoginCode(templateInstance)
         templateInstance.state.set('loginCode', loginCode)
       }
-    } else if (event.code.indexOf('Key') > -1 || event.code.indexOf('Digit') > -1) {
+    }
+    else if (event.code.indexOf('Key') > -1 || event.code.indexOf('Digit') > -1) {
       // update values
       $target.val(event.key)
       const loginCode = getLoginCode(templateInstance)
@@ -161,7 +209,8 @@ Template.welcome.events({
       if (index < MAX_INPUTS - 1) {
         const $next = templateInstance.$(`input[data-index="${index + 1}"]`)
         $next.focus()
-      } else {
+      }
+      else {
         showLoginButton(templateInstance)
       }
     }
@@ -187,7 +236,8 @@ Template.welcome.events({
     const newCode = templateInstance.state.get('newCode')
     if (newCode) {
       registerNewUser(loginCode.toUpperCase(), templateInstance)
-    } else {
+    }
+    else {
       loginUser(loginCode.toUpperCase(), templateInstance)
     }
   },
@@ -200,9 +250,8 @@ Template.welcome.events({
     })
   },
   'click .to-overview-button' (event, templateInstance) {
-    const route = templateInstance.data.next()
     fadeOut('.lea-welcome-container', templateInstance, () => {
-      Router.go(route)
+      templateInstance.data.next()
     })
   }
 })
@@ -236,23 +285,33 @@ function showLoginButton (templateInstance) {
   templateInstance.$('.lea-welcome-login').focus()
 }
 
-function loginFail (templateInstance) {
+function loginFail (templateInstance, error) {
   resetInputs(templateInstance)
   focusInput(templateInstance)
   templateInstance.state.set('logginIn', false)
   templateInstance.state.set('loginFail', true)
+
+  // tracking: record failed login attempt to better know how
+  // good users handle password based login
+  if (error) {
+    console.error(error)
+    // templateInstance.api.sendError({ error })
+  }
 }
 
 function registerNewUser (code, templateInstance) {
   const registerCode = templateInstance.newUser.get()
+  const isDemoUser = templateInstance.state.get('isDemoUser')
+
   if (registerCode !== code) {
     return loginFail(templateInstance)
-  } else {
-    Users.methods.register.call({ code }, (err) => {
+  }
+  else {
+    Users.methods.register.call({ code, isDemoUser }, (err) => {
       if (err) {
-        console.error(err)
-        loginFail(templateInstance)
-      } else {
+        loginFail(templateInstance, err)
+      }
+      else {
         loginUser(code, templateInstance)
       }
     })
@@ -262,13 +321,12 @@ function registerNewUser (code, templateInstance) {
 function loginUser (code, templateInstance) {
   Meteor.loginWithPassword(code, code, (err) => {
     if (err) {
-      console.error(err)
-      loginFail(templateInstance)
-    } else {
+      loginFail(templateInstance, err)
+    }
+    else {
       onLoggedIn()
-      const route = templateInstance.data.next()
       fadeOut('.lea-welcome-container', templateInstance, () => {
-        Router.go(route)
+        templateInstance.data.next()
       })
     }
   })
@@ -279,7 +337,12 @@ function onLoggedIn () {
   const screenHeight = window.screen.height * window.devicePixelRatio
   const viewPortWidth = window.screen.availWidth
   const viewPortHeight = window.screen.availHeight
-  Users.methods.loggedIn.call({ screenWidth, screenHeight, viewPortWidth, viewPortHeight }, (err) => {
+  Users.methods.loggedIn.call({
+    screenWidth,
+    screenHeight,
+    viewPortWidth,
+    viewPortHeight
+  }, (err) => {
     if (err) console.log(err)
   })
 }

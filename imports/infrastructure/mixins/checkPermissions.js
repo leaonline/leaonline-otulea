@@ -1,20 +1,30 @@
 import { Meteor } from 'meteor/meteor'
 
 export const checkPermissions = function (options) {
-  const exception = options.isPublic
-  if (exception) return options
+  const { isPublic, backend } = options
+
+  if (isPublic) {
+    return options
+  }
 
   const runFct = options.run
   options.run = function run (...args) {
-    // user level permission
     let userId = this.userId
+
     if (!userId) {
       const user = Meteor.user()
-      userId = user && userId._id
+      userId = user?._id
     }
 
-    if (!userId || !Meteor.users.findOne(userId)) {
+    if (!userId) {
       throw new Meteor.Error('errors.permissionDenied', 'errors.userNotExists', userId)
+    }
+
+    if (backend) {
+      const user = Meteor.users.findOne(userId)
+      if (!user?.services?.lea) {
+        throw new Meteor.Error('errors.permissionDenied', 'errors.backendOnly', userId)
+      }
     }
 
     return runFct.call(this, ...args)

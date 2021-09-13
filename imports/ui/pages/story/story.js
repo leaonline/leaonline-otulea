@@ -5,7 +5,7 @@ import { UnitSet } from '../../../contexts/unitSet/UnitSet'
 import { Dimension } from '../../../contexts/Dimension'
 import { Session } from '../../../contexts/session/Session'
 import { Level } from '../../../contexts/Level'
-import { createSessionLoader } from '../../../api/loading/createSessionLoader'
+import { createSessionLoader } from '../../loading/createSessionLoader'
 import '../../components/container/container'
 import '../../layout/navbar/navbar'
 import './story.html'
@@ -23,12 +23,12 @@ Template.story.onCreated(function () {
     }
   })
 
-  const { info } = api
-  const loadSessionDocs = createSessionLoader({ info })
+  const { debug } = api
+  const loadSessionDocs = createSessionLoader({ debug })
 
   instance.autorun(computation => {
     if (renderersLoaded.get()) {
-      info('renderers loaded')
+      debug('renderers loaded')
       return computation.stop()
     }
 
@@ -92,7 +92,7 @@ Template.story.helpers({
       levelDoc,
       unitSetDoc,
       dimensionDoc,
-      showProgress: false,
+      showProgress: true,
       onExit: instance.data.exit
     }
   },

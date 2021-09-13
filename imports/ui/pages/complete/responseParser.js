@@ -14,7 +14,8 @@ const settings = Meteor.settings.public.evaluation.parse
 const toInt = value => {
   if (typeof value === 'undefined' || value === null) {
     return -1
-  } else {
+  }
+  else {
     return parseInt(value, 10)
   }
 }

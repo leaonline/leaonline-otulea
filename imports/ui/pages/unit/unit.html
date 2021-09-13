@@ -13,8 +13,12 @@
                 <i class="fa fas fa-3x fa-fw fa-spinner fa-pulse"></i>
             </div>
         {{else}}
-            {{#container class="lea-unit-content-container"}}
-                {{> taskPageRenderer pageContentData}}
+            {{#container class="lea-unit-content-container h-auto"}}
+                {{#unless submitting}}
+                    {{> taskPageRenderer pageContentData}}
+                {{else}}
+                    {{> loading }}
+                {{/unless}}
             {{/container}}
         {{/unless}}
     </div>

@@ -1,19 +1,20 @@
 <template name="complete">
-    <div class="lea-complete-container">
+    <div class="lea-complete-container" id="lea-complete-print-root">
 
-        {{#with sessionDoc}}
-            {{#container}}
-                {{>navbar sessionDoc=.. showProgress=false root=".lea-complete-container" }}
+        {{#onComplete complete=loadComplete}}
+            {{#container class="lea-unit-nav-container"}}
+                {{> navbar navbarData}}
             {{/container}}
-        {{/with}}
+        {{/onComplete}}
 
         {{#if showThanks}}
-            {{#container}}
+            {{#container class="d-print-none"}}
                 <div class="card my-4">
                     <div class="card-body">
                         {{#onComplete complete=loadComplete}}
-                            {{> textGroup tts="pages.complete.thankYou" label=(i18n "pages.complete.thankYou")
-                                    type=this}}
+                            {{> textGroup tts="pages.complete.thankYou"
+                                    label=(i18n "pages.complete.thankYou")
+                                    type=currentType}}
                         {{/onComplete}}
                     </div>
                 </div>
@@ -47,112 +48,319 @@
         {{/if}}
 
         {{#if showResults}}
-            {{#container}}
-
-            {{!-- iterate all possible feedback levels --}}
-                {{#with feedbackLevels}}
-                    {{#each feedbackLevel in this}}
-                        <div class="card my-4">
-                            <div class="card-header bg-white font-weight-bold d-flex">
-                                {{> textGroup text=feedbackLevel.text label=feedbackLevel.text groupClass="w-100" type=currentType}}
-                                <span class="ml-auto">({{feedbackLevel.index}}
-                                    )</span>
-                            </div>
-                            <div class="card-body">
-                                {{#each feedback in getFeedback
-                                        feedbackLevel.index}}
-                                    {{#with competency feedback.competencyId}}
-                                        {{> textGroup text=this.descriptionLearner
-                                                label=(i18n this.descriptionLearner) type=currentType}}
-                                    {{else}}
-                                        {{#if competenciesLoaded}}
-                                            <div class="d-block ml-5 my-3">
-                                                <span>{{i18n
-                                                        "pages.complete.definitionMissing"}}
-                                                    : </span>
-                                                <span>{{feedback.competencyId}}</span>
-                                            </div>
-                                        {{else}}
-                                            <span>
-												<i class="fa fas fa-fw fa-spinner fa-pulse"></i>
-											</span>
-                                        {{/if}}
-                                    {{/with}}
-                                {{else}}
-                                    {{#if competenciesLoaded}}
-                                        <span class="ml-5">{{i18n
-                                                "pages.complete.noEntries"}}</span>
-                                    {{else}}
-                                        <span>
-											<i class="fa fas fa-fw fa-spinner fa-pulse"></i>
-										</span>
-                                    {{/if}}
-                                {{/each}}
-                            </div>
-                        </div>
-                    {{/each}}
-                {{else}}
+            {{#onComplete complete=loadComplete}}
+            {{! ============================================================ }}
+            {{! ALPHA LEVELS }}
+            {{! ============================================================ }}
+                {{#container}}
                     <div class="card my-4">
-                        <div class="card-body">
-                            <h1 class="text-center">
-                                <i class="fa fas fa-fw fa-spinner fa-pulse"></i>
-                            </h1>
+                        <div class="card-header">
+                            <h5 class="card-title">{{i18n
+                                    "pages.complete.alphaLevels"}}</h5>
+                            {{#if isDebugUser}}
+                                <span>
+                                {{i18n "thresholds.min"}}
+                                    : {{minCountAlphaLevel}}
+                            </span>
+                            {{/if}}
+                        </div>
+                        {{#if noScoredAlpha}}
+                            <div class="card-body h-100">
+                                {{> textGroup tts="pages.complete.noScoredAlpha" type=currentType}}
+                            </div>
+                        {{else}}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                <tr>
+                                    <th scope="col"></th>
+                                    <th scope="col">
+                                        {{i18n "common.description"}}
+                                    </th>
+                                    <th scope="col"
+                                        class="d-print-none w-25"></th>
+                                    {{#if isDebugUser}}
+                                        <th scope="col"
+                                            class="text-center d-none d-md-table-cell d-print-table-cell">
+                                            {{i18n "thresholds.count"}}
+                                        </th>
+                                        <th scope="col"
+                                            class="text-center d-none d-md-table-cell d-print-table-cell">
+                                            {{i18n "thresholds.correct"}}
+                                        </th>
+                                        <th scope="col"
+                                            class="text-center d-none d-md-table-cell d-print-table-cell">
+                                            {{i18n "thresholds.perc"}}
+                                        </th>
+                                    {{/if}}
+                                    <th scope="col" class="text-center">
+                                        {{i18n "thresholds.grade"}}
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {{#each alphaLevel in alphaLevels}}
+                                    <tr class="{{#unless showExtended alphaLevel.isGraded isDemoUser}}d-none{{/unless}}">
+                                        <td class="text-center">{{alphaLevel.shortCode}}</td>
+                                        <td>{{alphaLevel.description}}</td>
+                                        <td class="d-print-none align-middle">
+                                            {{#if alphaLevel.isGraded}}
+                                                <div class="progress border-{{currentType}} border"
+                                                     style="height: 0.75rem;">
+                                                    <div class="progress-bar bg-{{currentType}}"
+                                                         role="progressbar"
+                                                         style="width: {{alphaLevel.perc}}%;"
+                                                         aria-valuenow="{{alphaLevel.perc}}"
+                                                         aria-valuemin="0"
+                                                         aria-valuemax="100">
+                                                    </div>
+                                                </div>
+                                            {{/if}}
+                                        </td>
+                                        {{#if isDebugUser}}
+                                            <td class="text-center d-none d-md-table-cell d-print-table-cell">{{alphaLevel.count}}</td>
+                                            <td class="text-center d-none d-md-table-cell d-print-table-cell">{{alphaLevel.scored}}</td>
+                                            <td class="text-center d-none d-md-table-cell d-print-table-cell">{{alphaLevel.perc}}</td>
+                                        {{/if}}
+                                        <td class="text-center no-wrap">
+                                            {{> textGroup text=(i18n alphaLevel.gradeLabel)}}
+                                        </td>
+                                    </tr>
+                                {{else}}
+                                    <tr>
+                                        <th scope="row">{{>loading}}</th>
+                                        <td>{{>loading}}</td>
+                                        <td>{{>loading}}</td>
+                                        <td>{{>loading}}</td>
+                                        <td>{{>loading}}</td>
+                                    </tr>
+                                {{/each}}
+                                </tbody>
+                            </table>
+                        </div>
+                        {{/if}}
+                    </div>
+                {{/container}}
+
+                {{! ============================================================ }}
+                {{! COMPETENCIES }}
+                {{! ============================================================ }}
+                {{#container}}
+                    <div class="card my-4">
+                        <div class="card-header">
+                            <h5 class="card-title">{{i18n
+                                    "pages.complete.competencies"}}</h5>
+                            {{#if isDebugUser}}
+                                <span>
+                                {{i18n "thresholds.min"}}
+                                    : {{minCountCompetency}}
+                            </span>
+                            {{/if}}
+                        </div>
+                        {{#if noScoredCompetencies}}
+                            <div class="card-body h-100">
+                                {{> textGroup tts="pages.complete.noScoredComp" type=currentType}}
+                            </div>
+                        {{else}}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                <tr>
+                                    <th scope="col"></th>
+                                    <th scope="col">
+                                        {{i18n "common.description"}}
+                                    </th>
+                                    <th scope="col"
+                                        class="d-print-none w-25"></th>
+                                    {{#if isDebugUser}}
+                                        <th scope="col"
+                                            class="text-center d-none d-md-table-cell d-print-table-cell">
+                                            {{i18n "thresholds.count"}}
+                                        </th>
+                                        <th scope="col"
+                                            class="text-center d-none d-md-table-cell d-print-table-cell">
+                                            {{i18n "thresholds.correct"}}
+                                        </th>
+                                        <th scope="col"
+                                            class="text-center d-none d-md-table-cell d-print-table-cell">
+                                            {{i18n "thresholds.perc"}}
+                                        </th>
+                                    {{/if}}
+                                    <th scope="col" class="text-center">
+                                        {{i18n "thresholds.grade"}}
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {{#each competency in competencies}}
+                                    <tr class="{{#unless showExtended competency.isGraded isDemoUser}}d-none{{/unless}} {{#unless competency.isGraded}}text-muted{{/unless}}">
+                                        <td class="text-center">{{competency.shortCode}}</td>
+                                        <td>{{competency.description}}</td>
+                                        <td class="d-print-none align-middle">
+                                            {{#if competency.isGraded}}
+                                                <div class="progress border-{{currentType}} border"
+                                                     style="height: 0.75rem;">
+                                                    <div class="progress-bar bg-{{currentType}}"
+                                                         role="progressbar"
+                                                         style="width: {{competency.perc}}%;"
+                                                         aria-valuenow="{{competency.perc}}"
+                                                         aria-valuemin="0"
+                                                         aria-valuemax="100">
+                                                    </div>
+                                                </div>
+                                            {{/if}}
+                                        </td>
+                                        {{#if isDebugUser}}
+                                            <td class="text-center d-none d-md-table-cell d-print-table-cell">{{competency.count}}</td>
+                                            <td class="text-center d-none d-md-table-cell d-print-table-cell">{{competency.scored}}</td>
+                                            <td class="text-center d-none d-md-table-cell d-print-table-cell">{{competency.perc}}</td>
+                                        {{/if}}
+                                        <td class="text-center no-wrap">
+                                            {{> textGroup text=(i18n competency.gradeLabel)}}
+                                        </td>
+                                    </tr>
+                                {{else}}
+                                    <tr>
+                                        <th scope="row">{{>loading}}</th>
+                                        <td>{{>loading}}</td>
+                                        <td>{{>loading}}</td>
+                                        <td>{{>loading}}</td>
+                                        <td>{{>loading}}</td>
+                                    </tr>
+                                {{/each}}
+                                </tbody>
+                            </table>
+                        </div>
+                    {{/if}}
+                    </div>
+                {{/container}}
+            {{/onComplete}}
+
+            {{! ============================================================ }}
+            {{! RESPONSES (DEBUG-ONLY) }}
+            {{! ============================================================ }}
+
+            {{#if isDebugUser}}
+                {{#container}}
+                    <div class="card my-4">
+                        <div class="card-header">
+                            <h5 class="card-title">
+                                {{i18n "pages.complete.responses"}}
+                            </h5>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                <tr>
+                                    <th scope="col">Unit</th>
+                                    <th scope="col">page</th>
+                                    <th scope="col">responses</th>
+                                    <th scope="col">scores</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {{#each response in responses}}
+                                    <tr scope="row">
+                                        <td>{{response.unit.shortCode}}</td>
+                                        <td>{{response.page}}</td>
+                                        <td>
+                                            <pre><code>{{stringify
+                                                    response.responses}}</code></pre>
+                                        </td>
+                                        <td>
+                                            {{#each entry in response.scores}}
+                                                {{#each competencyId in
+                                                        entry.competency}}
+                                                    <div class="rounded border border-1 p-3 bg-{{#if
+                                                            isScored
+                                                            entry.score}}success{{else}}danger{{/if}} text-white">
+                                                        {{#with getCompetency
+                                                                competencyId}}{{this.shortCode}}{{/with}}
+                                                    </div>
+                                                {{/each}}
+                                            {{/each}}
+                                        </td>
+                                    </tr>
+                                {{/each}}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
-                {{/with}}
+                {{/container}}
+            {{/if}}
 
-
-                <div class="card-body">
-                    {{#with currentType}}
-                        {{> actionButton tts="common.forward" label=(i18n "common.forward") block=true btnClass="lea-showresults-forward-button" class="ml-auto" type=this}}
-                    {{/with}}
-                </div>
-            {{/container}}
-        {{/if}}
-
-
-        {{#if showPrint}}
+            {{!-- iterate all possible feedback levels
             {{#container}}
-                <div class="card lea-complete-showprint-container">
-                    <div class="card-body">
-                        {{#with currentType}}
-                            {{> textGroup tts="pages.complete.youCanPrint" type=this}}
+
+
+                {{#with feedbackLevels}}
+                    {{#each feedbackLevel in this}}
+
+                    {{! only display category if there are any competencies related }}
+                        {{#with (getCompetencies @index)}}
+                            <ul class="card list-group my-4">
+                                <li class="list-group-item font-weight-bold d-flex">
+                                    {{> textGroup text=feedbackLevel.description
+                                            label=feedbackLevel.description
+                                            groupClass="w-100"
+                                            type=currentType}}
+                                    {{> icon fw=true far=true name=feedbackLevel.icon scale=2}}
+                                </li>
+
+
+
+
+                                {{#each competencyId in this}}
+                                    <li class="list-group-item">
+                                        {{#let competency=(getCompetency competencyId)}}
+                                            {{> textGroup text=competency.description
+                                                    label=competency.description
+                                                    groupClass="w-100"
+                                                    type=currentType}}
+                                            {{#if competency.example}}
+                                                {{> textGroup text=competency.example
+                                                        label=competency.example
+                                                        groupClass="w-100"
+                                                        type=currentType}}
+                                            {{/if}}
+                                        {{/let}}
+                                    </li>
+                                {{/each}}
+                            </ul>
                         {{/with}}
+                    {{/each}}
+                {{/with}}
+            {{/container}}
+                --}}
+
+            {{#container class="d-print-none"}}
+                <div class="card lea-complete-showprint-container ">
+                    <div class="card-body font-weight-bold">
+                        {{> textGroup tts="pages.complete.youCanPrint" type=currentType}}
                     </div>
                     <div class="card-body">
                         {{#textGroup tts="pages.complete.printResults"
                                      groupClass="w-100"
                                      label=(i18n "pages.complete.printResults")
                                      type=currentType}}
-                            <button class="ml-auto btn btn-outline-{{currentType}}">
-                                <i class="fa fas fa-fw fa-print"></i>
-                            </button>
-                        {{/textGroup}}
-                    </div>
-                    <div class="card-body">
-                        {{#textGroup tts="pages.complete.printResultsTeacher"
-                                     groupClass="w-100"
-                                     label=(i18n "pages.complete.printResultsTeacher")
-                                     type=currentType}}
-                            <button class="ml-auto btn btn-outline-{{currentType}}">
-                                <i class="fa fas fa-fw fa-print"></i>
-                            </button>
+                            {{> actionButton
+                                    tts="actions.print"
+                                    type=currentType
+                                    outline=true
+                                    class="ml-auto print-simple"
+                                    icon="print"}}
                         {{/textGroup}}
                     </div>
                 </div>
 
-                <div class="card-body d-flex justify-content-between">
-                    {{> actionButton tts="common.back" label=(i18n "common.back") type=currentType
-                            btnClass="lea-showprint-back-button" outline=true}}
-
-                    {{> actionButton tts="common.forward" label=(i18n "common.forward") type=currentType
-                            btnClass="lea-showprint-forward-button"}}
+                <div class="card-body">
+                    {{> actionButton tts="common.forward" label=(i18n "common.forward") block=true btnClass="lea-showresults-forward-button" class="ml-auto" type=currentType}}
                 </div>
             {{/container}}
         {{/if}}
 
         {{#if showDecision}}
-            {{#container}}
+            {{#container class="d-print-none"}}
                 <div class="card lea-complete-showprint-container">
                     <div class="card-body">
                         {{#with currentType}}
@@ -166,7 +374,7 @@
                             btnClass="lea-showdecision-back-button" outline=true}}
                     {{> actionButton tts="common.end" label=(i18n "common.end") type=currentType
                             btnClass="lea-end-button" outline=true}}
-                    {{> actionButton tts="common.continue" label=(i18n "common.continue") type=currentType
+                    {{> actionButton tts="actions.continue" label=(i18n "actions.continue") type=currentType
                             btnClass="lea-continue-button"}}
                 </div>
             {{/container}}

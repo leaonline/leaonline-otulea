@@ -5,8 +5,8 @@
     "start": "meteor run",
     "test:once": "meteor test --once --driver-package meteortesting:mocha",
     "test:app": "TEST_WATCH=1 meteor test --full-app --driver-package meteortesting:mocha",
-    "lint:code": "standard | snazzy",
-    "lint:code-fix": "standard --fix | snazzy",
+    "lint:code": "standardx -v | snazzy",
+    "lint:code-fix": "standardx --fix -v | snazzy",
     "lint:style": "stylelint \"**/*.scss\"",
     "lint:style-fix": "stylelint --fix \"**/*.scss\"",
     "lint:markdown": "markdownlint \"**/*.md\" --config ./.markdownlint.json",
@@ -15,17 +15,20 @@
     "visualize": "meteor --production --extra-packages bundle-visualizer,dynamic-import --settings=settings.json"
   },
   "dependencies": {
-    "@babel/runtime": "^7.12.1",
-    "@fortawesome/fontawesome-free": "^5.15.1",
-    "bcrypt": "^5.0.0",
-    "bootstrap": "^4.5.3",
-    "debug": "^4.2.0",
-    "detect-os": "^1.1.1",
-    "jquery": "^3.5.1",
+    "@babel/runtime": "^7.15.4",
+    "@fortawesome/fontawesome-free": "^5.15.4",
+    "bcrypt": "^5.0.1",
+    "bootstrap": "^4.6.0",
+    "debug": "^4.3.2",
+    "detect-os": "^1.2.1",
+    "helmet": "^4.6.0",
+    "jquery": "^3.6.0",
     "lozad": "^1.16.0",
-    "meteor-node-stubs": "^1.0.1",
+    "meteor-node-stubs": "^1.1.0",
     "popper.js": "^1.16.1",
-    "simpl-schema": "^1.10.2"
+    "print-js": "^1.6.0",
+    "simpl-schema": "^1.12.0",
+    "ua-parser-js": "^0.7.28"
   },
   "meteor": {
     "mainModule": {
@@ -35,14 +38,43 @@
     "testModule": "tests/main.js"
   },
   "devDependencies": {
-    "chai": "^4.2.0",
-    "markdownlint-cli": "^0.25.0",
-    "puppeteer": "^5.5.0",
-    "sinon": "^9.2.1",
-    "snazzy": "^8.0.0",
-    "standard": "*",
-    "stylelint": "^13.8.0",
-    "stylelint-config-sass-guidelines": "^7.1.0",
-    "stylelint-config-standard": "^20.0.0"
+    "@babel/core": "^7.15.5",
+    "@babel/eslint-parser": "^7.15.4",
+    "babel-plugin-istanbul": "^6.0.0",
+    "chai": "^4.3.4",
+    "eslint-plugin-security": "^1.4.0",
+    "markdownlint-cli": "^0.28.1",
+    "puppeteer": "^10.2.0",
+    "sinon": "^11.1.2",
+    "snazzy": "^9.0.0",
+    "standardx": "^7.0.0",
+    "stylelint": "^13.13.1",
+    "stylelint-config-sass-guidelines": "^8.0.0",
+    "stylelint-config-standard": "^22.0.0"
+  },
+  "babel": {
+    "env": {
+      "COVERAGE": {
+        "plugins": [
+          "istanbul"
+        ]
+      }
+    }
+  },
+  "eslintConfig": {
+    "parser": "@babel/eslint-parser",
+    "parserOptions": {
+      "sourceType": "module",
+      "allowImportExportEverywhere": true
+    },
+    "rules": {
+      "brace-style": [
+        "error",
+        "stroustrup",
+        {
+          "allowSingleLine": true
+        }
+      ]
+    }
   }
 }
