@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor'
 import { Template } from 'meteor/templating'
 import { Legal } from '../../../contexts/legal/Legal' // TODO load dynamic  depending on i18n locale
 import settings from '../../../../resources/i18n/i18n_routes'
+
 import './legal.html'
 
 Template.legal.onCreated(function () {
@@ -34,10 +35,7 @@ Template.legal.onCreated(function () {
     Meteor.call(Legal.methods.get.name, { name: originalType }, (err, res) => {
       if (err) return console.error(err) // TODO LOG AS FATAL!
 
-      const content = (res || '').split(/\n\s*\n/g).map(line => line.split(/\n+/g))
-      console.info(content)
-
-      instance.state.set({ type: originalType, content })
+      instance.state.set({ type: originalType, content: res || '' })
     })
   })
 })

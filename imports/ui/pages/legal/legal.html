@@ -62,14 +62,7 @@
 
         {{#onComplete complete=content}}
             <div class="p-0 p-md-5">
-            {{#each line in content}}
-                <p class="lea-text">
-                    {{#each sub in line}}
-                        <div>{{sub}}</div>
-                        {{! > textGroup text=sub }}
-                    {{/each}}
-                </p>
-            {{/each}}
+                {{#markdown}}{{{content}}}{{/markdown}}
             </div>
         {{/onComplete}}
     </div>
