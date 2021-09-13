@@ -44,3 +44,8 @@ Template.registerHelper('url', function (path) {
 Template.registerHelper('isDebugUser', function () {
   return global.isDebugUser()
 })
+
+Template.registerHelper('isDemoUser', function (userObj) {
+  const user = userObj || Meteor.user() || {}
+  return user.demo
+})

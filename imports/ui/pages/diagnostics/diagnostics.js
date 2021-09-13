@@ -38,7 +38,7 @@ Template.diagnostics.onCreated(function () {
         map.set(entry.name, rest)
       })
 
-      const { osinfo, font, language, localStorage, serviceworker, performance, tts } = Object.fromEntries(map.entries())
+      const { osinfo, font, language, localStorage, serviceworker, performance, tts, screen, graphics } = Object.fromEntries(map.entries())
       const insertDoc = {
         bName: osinfo?.browser?.name,
         bVersion: osinfo?.browser?.version,
@@ -82,6 +82,20 @@ Template.diagnostics.onCreated(function () {
         perfLoaded: performance?.success,
         perfStart: performance?.startTime,
         perfDuration: performance?.duration,
+
+        // screen
+        availWidth: screen.availWidth,
+        availHeight: screen.availHeight,
+        width: screen.width,
+        height: screen.height,
+        colorDepth: screen.colorDepth,
+        pixelDepth: screen.pixelDepth,
+        orientation: screen.orientation?.type,
+
+        // gl
+        gl: graphics.gl,
+        glRenderer: graphics.glRenderer,
+        glVendor: graphics.glVendor,
 
         errors: []
       }

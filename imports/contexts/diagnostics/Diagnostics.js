@@ -24,6 +24,11 @@ const optionalNumber = {
 }
 
 Diagnostics.schema = {
+  createdAt: {
+    type: Date,
+    optional: true
+  },
+
   // browser
   bName: optionalStr,
   bVersion: optionalStr,
@@ -67,6 +72,20 @@ Diagnostics.schema = {
   perfLoaded: optionalBoolean,
   perfStart: optionalNumber,
   perfDuration: optionalNumber,
+
+  // screen
+  availWidth: optionalNumber,
+  availHeight: optionalNumber,
+  width: optionalNumber,
+  height: optionalNumber,
+  colorDepth: optionalNumber,
+  pixelDepth: optionalNumber,
+  orientation: optionalStr,
+
+  // graphics
+  gl: optionalStr,
+  glRenderer: optionalStr,
+  glVendor: optionalStr,
 
   errors: {
     type: Array,
@@ -117,6 +136,7 @@ Diagnostics.methods.send = {
   numRequests: 1,
   isPublic: true,
   run: onServer(function (data) {
+    data.createdAt = new Date()
     return Diagnostics.collection().insert(data)
   })
 }

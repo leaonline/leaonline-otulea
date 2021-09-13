@@ -61,6 +61,10 @@ Template.complete.onCreated(function () {
           // which are required to display the related texts
           const competencyIds = competencies.map(c => c.competencyId)
 
+          // by default this is true, but it will be set to false, once
+          // we have at least one graded competency
+          let noScoredCompetencies = true
+
           loadAllContentDocs(Competency, { ids: competencyIds })
             .catch(error => onFailed(error))
             .then(competencyDocs => {
@@ -73,6 +77,10 @@ Template.complete.onCreated(function () {
               const aggregatedResults = competencies.map(resultDoc => {
                 const { competencyId } = resultDoc
                 const competencyDoc = CompetencyCollection.findOne(competencyId)
+
+                if (noScoredCompetencies && resultDoc.gradeIndex > -1) {
+                  noScoredCompetencies = false
+                }
 
                 if (!competencyDoc) {
                   return console.warn('Found no competency doc for _id', competencyId)
@@ -89,11 +97,14 @@ Template.complete.onCreated(function () {
               debug({ aggregatedResults })
               instance.state.set({
                 aggregatedResults,
+                noScoredCompetencies,
                 competenciesLoaded: true
               })
             })
 
           const alphaLevelIds = alphaLevels.map(c => c.alphaLevelId)
+
+          let noScoredAlphas = true
 
           loadAllContentDocs(AlphaLevel, { ids: alphaLevelIds })
             .catch(error => onFailed(error))
@@ -108,6 +119,10 @@ Template.complete.onCreated(function () {
                 const { alphaLevelId } = alpha
                 const alphaLevelDoc = AlphaLevelCollection.findOne(alphaLevelId)
 
+                if (noScoredAlphas && alpha.gradeIndex > -1) {
+                  noScoredAlphas = false
+                }
+
                 if (!alphaLevelDoc) {
                   return console.warn('Found no alphaLevel doc for _id', alphaLevelId)
                 }
@@ -116,13 +131,13 @@ Template.complete.onCreated(function () {
                 alpha.description = alphaLevelDoc.description
                 alpha.gradeLabel = `thresholds.${alpha.gradeName}`
                 alpha.perc = alpha.perc * 100
-                console.debug(alpha)
                 return alpha
               })
                 .sort((a, b) => a.shortCode.localeCompare(b.shortCode))
 
               debug({ aggregatedAlphaLevels })
               instance.state.set({
+                noScoredAlphas,
                 alphaLevels: aggregatedAlphaLevels,
                 competenciesLoaded: true
               })
@@ -303,6 +318,15 @@ Template.complete.helpers({
   },
   isScored (entry) {
     return entry === 'true' || entry === true
+  },
+  showExtended (isGraded, isDemoUser) {
+    return isGraded || isDemoUser
+  },
+  noScoredCompetencies () {
+    return Template.getState('noScoredCompetencies')
+  },
+  noScoredAlpha () {
+    return Template.getState('noScoredAlphas')
   }
 })
 

@@ -7,6 +7,8 @@ import { getGrade } from '../../thresholds/api/getGrade'
 import { getAlphaLevels } from './getAlphaLevels'
 import { getCompetencies } from './getCompetencies'
 
+const isValidNumber = n => typeof n === 'number' && !Number.isNaN(n)
+
 export const generateFeedback = ({ sessionId, userId, debug = () => {} }) => {
   debug('(generateFeedback)', { sessionId, userId })
   const existingFeedback = Feedback.collection().findOne({ sessionId, userId })
@@ -23,15 +25,19 @@ export const generateFeedback = ({ sessionId, userId, debug = () => {} }) => {
 
   // someone could call this method with a passed sessionId through the console
   // so we need to make sure it is only called, when we are "done" with testing
-  if (
-    !sessionDoc ||
-    !sessionDoc?.completedAt ||
-    (sessionDoc.progress || 0) < (sessionDoc.maxProgress || 100)
-  ) {
+
+  if (!sessionDoc || !sessionDoc.completedAt) {
     throw new Meteor.Error(
       'generateFeedback.error',
       'generateFeedback.sessionNotComplete',
-      { userId, sessionId })
+      {
+        userId,
+        sessionId,
+        testCycle: sessionDoc?.testCycle,
+        completedAt: sessionDoc?.completedAt,
+        progress: sessionDoc?.progress,
+        maxProgress: sessionDoc?.maxProgress,
+      })
   }
 
   // ///////////////////////////////////////////////////////////////////////////

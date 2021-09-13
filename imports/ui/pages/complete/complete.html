@@ -64,6 +64,11 @@
                             </span>
                             {{/if}}
                         </div>
+                        {{#if noScoredAlpha}}
+                            <div class="card-body h-100">
+                                {{> textGroup tts="pages.complete.noScoredAlpha" type=currentType}}
+                            </div>
+                        {{else}}
                         <div class="table-responsive">
                             <table class="table table-hover">
                                 <thead>
@@ -72,7 +77,8 @@
                                     <th scope="col">
                                         {{i18n "common.description"}}
                                     </th>
-                                    <th scope="col" class="d-print-none w-25"></th>
+                                    <th scope="col"
+                                        class="d-print-none w-25"></th>
                                     {{#if isDebugUser}}
                                         <th scope="col"
                                             class="text-center d-none d-md-table-cell d-print-table-cell">
@@ -94,7 +100,7 @@
                                 </thead>
                                 <tbody>
                                 {{#each alphaLevel in alphaLevels}}
-                                    <tr class="{{#unless alphaLevel.isGraded}}text-muted{{/unless}}">
+                                    <tr class="{{#unless showExtended alphaLevel.isGraded isDemoUser}}d-none{{/unless}}">
                                         <td class="text-center">{{alphaLevel.shortCode}}</td>
                                         <td>{{alphaLevel.description}}</td>
                                         <td class="d-print-none align-middle">
@@ -132,12 +138,13 @@
                                 </tbody>
                             </table>
                         </div>
+                        {{/if}}
                     </div>
                 {{/container}}
 
-            {{! ============================================================ }}
-            {{! COMPETENCIES }}
-            {{! ============================================================ }}
+                {{! ============================================================ }}
+                {{! COMPETENCIES }}
+                {{! ============================================================ }}
                 {{#container}}
                     <div class="card my-4">
                         <div class="card-header">
@@ -150,6 +157,11 @@
                             </span>
                             {{/if}}
                         </div>
+                        {{#if noScoredCompetencies}}
+                            <div class="card-body h-100">
+                                {{> textGroup tts="pages.complete.noScoredComp" type=currentType}}
+                            </div>
+                        {{else}}
                         <div class="table-responsive">
                             <table class="table table-hover">
                                 <thead>
@@ -158,7 +170,8 @@
                                     <th scope="col">
                                         {{i18n "common.description"}}
                                     </th>
-                                    <th scope="col" class="d-print-none w-25"></th>
+                                    <th scope="col"
+                                        class="d-print-none w-25"></th>
                                     {{#if isDebugUser}}
                                         <th scope="col"
                                             class="text-center d-none d-md-table-cell d-print-table-cell">
@@ -180,7 +193,7 @@
                                 </thead>
                                 <tbody>
                                 {{#each competency in competencies}}
-                                    <tr class="{{#unless competency.isGraded}}text-muted{{/unless}}">
+                                    <tr class="{{#unless showExtended competency.isGraded isDemoUser}}d-none{{/unless}} {{#unless competency.isGraded}}text-muted{{/unless}}">
                                         <td class="text-center">{{competency.shortCode}}</td>
                                         <td>{{competency.description}}</td>
                                         <td class="d-print-none align-middle">
@@ -218,6 +231,7 @@
                                 </tbody>
                             </table>
                         </div>
+                    {{/if}}
                     </div>
                 {{/container}}
             {{/onComplete}}
@@ -250,15 +264,20 @@
                                         <td>{{response.unit.shortCode}}</td>
                                         <td>{{response.page}}</td>
                                         <td>
-                                            <pre><code>{{stringify response.responses}}</code></pre>
+                                            <pre><code>{{stringify
+                                                    response.responses}}</code></pre>
                                         </td>
                                         <td>
                                             {{#each entry in response.scores}}
-                                                    {{#each competencyId in entry.competency}}
-                                                    <div class="rounded border border-1 p-3 bg-{{#if isScored entry.score}}success{{else}}danger{{/if}} text-white">
-                                                        {{#with getCompetency competencyId}}{{this.shortCode}}{{/with}}
+                                                {{#each competencyId in
+                                                        entry.competency}}
+                                                    <div class="rounded border border-1 p-3 bg-{{#if
+                                                            isScored
+                                                            entry.score}}success{{else}}danger{{/if}} text-white">
+                                                        {{#with getCompetency
+                                                                competencyId}}{{this.shortCode}}{{/with}}
                                                     </div>
-                                                    {{/each}}
+                                                {{/each}}
                                             {{/each}}
                                         </td>
                                     </tr>

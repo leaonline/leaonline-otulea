@@ -31,6 +31,8 @@ export const runDiagnostics = async function runDiagnostics () {
   await inspect('serviceworker', checkServiceWorker)
   await inspect('tts', checkTTS)
   await inspect('language', checkLanguage)
+  await inspect('screen', checkScreen)
+  await inspect('graphics', checkGraphics)
   // canvas
   // lazy loading images
   // svg images
@@ -128,6 +130,39 @@ async function checkLanguage (collector) {
   const i18n = await initLanguage()
   i18n.set('de', translation)
   collector({ success: !i18n.get('diagnostics.title').includes('.') })
+}
+
+async function checkScreen (collector) {
+  const screen = window.screen || {}
+  collector({
+    availWidth: screen.availWidth,
+    availHeight: screen.availHeight,
+    width: screen.width,
+    height: screen.height,
+    colorDepth: screen.colorDepth,
+    pixelDepth: screen.pixelDepth,
+    orientation: screen.orientation?.type,
+    success: true
+  })
+}
+
+async function checkGraphics (collector) {
+  const gl = document.createElement('canvas').getContext('webgl')
+  if (!gl) {
+    return collector({ gl: 'no webgl' })
+  }
+
+  const debugInfo = gl.getExtension('WEBGL_debug_renderer_info')
+  if (debugInfo) {
+    return collector({
+      gl: gl.getParameter(gl.SHADING_LANGUAGE_VERSION),
+      glVendor: gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL),
+      glRenderer: gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL),
+      success: true
+    })
+  }
+
+  return collector({ gl: 'no WEBGL_debug_renderer_info' })
 }
 
 async function checkFont (collector) {

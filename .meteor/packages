@@ -91,3 +91,8 @@ zodern:hide-production-sourcemaps
 #========================================
 lmieulet:meteor-coverage
 meteortesting:mocha
+
+#========================================
+# APM
+#========================================
+leaonline:status

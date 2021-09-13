@@ -353,25 +353,20 @@ describe(generateFeedback.name, function () {
     const doc = {
       _id: sessionId
     }
+
+    // session doc does not exist
+    expect(() => generateFeedback({
+      sessionId,
+      userId
+    })).to.throw('generateFeedback.sessionNotComplete')
+
     stub(Session, 'collection', () => ({
       findOne () {
         return doc
       }
     }))
 
-    expect(() => generateFeedback({
-      sessionId,
-      userId
-    })).to.throw('generateFeedback.sessionNotComplete')
-
-    doc.completedAt = new Date()
-    expect(() => generateFeedback({
-      sessionId,
-      userId
-    })).to.throw('generateFeedback.sessionNotComplete')
-
-    doc.maxProgress = 100
-    doc.progress = 99
+    // session doc is not complete
     expect(() => generateFeedback({
       sessionId,
       userId

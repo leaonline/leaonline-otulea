@@ -85,6 +85,12 @@ const settingsSchema = schema({
       "passwordResetTokenExpirationInDays": SimpleSchema.Integer,
       "passwordEnrollTokenExpirationInDays": SimpleSchema.Integer
     })
+  }),
+  status: schema({
+    active: Boolean,
+    interval: Number,
+    secret: String,
+    url: String
   })
 })
 

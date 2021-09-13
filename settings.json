@@ -69,5 +69,11 @@
       "passwordResetTokenExpirationInDays": 1,
       "passwordEnrollTokenExpirationInDays": 3
     }
+  },
+  "status": {
+    "active": false,
+    "interval": 5000,
+    "secret": "lea.online.secret",
+    "url": "http://localhost:7070/collect"
   }
 }
