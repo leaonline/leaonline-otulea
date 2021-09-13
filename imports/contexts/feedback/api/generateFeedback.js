@@ -7,8 +7,6 @@ import { getGrade } from '../../thresholds/api/getGrade'
 import { getAlphaLevels } from './getAlphaLevels'
 import { getCompetencies } from './getCompetencies'
 
-const isValidNumber = n => typeof n === 'number' && !Number.isNaN(n)
-
 export const generateFeedback = ({ sessionId, userId, debug = () => {} }) => {
   debug('(generateFeedback)', { sessionId, userId })
   const existingFeedback = Feedback.collection().findOne({ sessionId, userId })
@@ -36,7 +34,7 @@ export const generateFeedback = ({ sessionId, userId, debug = () => {} }) => {
         testCycle: sessionDoc?.testCycle,
         completedAt: sessionDoc?.completedAt,
         progress: sessionDoc?.progress,
-        maxProgress: sessionDoc?.maxProgress,
+        maxProgress: sessionDoc?.maxProgress
       })
   }
 
