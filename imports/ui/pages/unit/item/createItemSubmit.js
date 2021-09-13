@@ -24,19 +24,23 @@ export const createItemSubmit = ({ loadValue, prepare, receive, onError, onSucce
     const unitId = unitDoc._id
     const allResponseDocs = []
 
-    const contentPage = getProperty(unitDoc.pages, page)
-    contentPage.content.forEach(entry => {
-      // we iterate the full page stgructure
-      // so we skip on any content
-      // that is not flagged as item tyoe
-      if (entry.type !== 'item') return
+    const contentPage = getProperty(unitDoc.pages || [], page)
 
-      const { contentId } = entry
-      const responseDoc = { sessionId, unitId, page, contentId }
-      const responseValue = loadValue(responseDoc)
-      responseDoc.responses = (responseValue?.responses) || []
-      allResponseDocs.push(responseDoc)
-    })
+    // xxx: circumvent special case, where there is no pages or no content
+    if (Array.isArray(contentPage?.content)) {
+      contentPage.content.forEach(entry => {
+        // we iterate the full page stgructure
+        // so we skip on any content
+        // that is not flagged as item tyoe
+        if (entry.type !== 'item') return
+
+        const { contentId } = entry
+        const responseDoc = { sessionId, unitId, page, contentId }
+        const responseValue = loadValue(responseDoc)
+        responseDoc.responses = (responseValue?.responses) || []
+        allResponseDocs.push(responseDoc)
+      })
+    }
 
     return Promise.all(allResponseDocs.map(responseDoc =>
       callMethod({

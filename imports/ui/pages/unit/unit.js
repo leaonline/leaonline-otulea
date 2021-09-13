@@ -120,6 +120,9 @@ Template.unit.onCreated(function () {
           sessionDoc.progress += currentPageCount
         }
 
+        // xxx: fix empty docs to be allowed to be skipped
+        unitDoc.pages = unitDoc.pages || []
+
         // otherwise we're good and can continue with the current session
         instance.state.set({
           sessionDoc,
