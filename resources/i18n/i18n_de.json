@@ -103,7 +103,7 @@
     "overview": {
       "title": "Übersicht",
       "chooseDimension": "Bitte wähle eine Kategorie aus.",
-      "chooseLevel": "Wir möchten die Aufgaben möglichst passend für Dich zusammenstellen. Bitte schätze hier deine Fähigkeiten ein. Wenn du mit dem Mauszeiger auf die Lautsprechersymbole klickst, werden die jeweiligen Schwierigkeitsgrade vorgelesen. Nachdem du auf eine Auswahlfläche geklickt hast, wird dir noch ein kurzes Beispiel angezeigt, welches du ebenfalls durch Klicken auf das Lautsprechersymbol vorlesen lassen kannst.",
+      "chooseLevel": "Wir möchten die Aufgaben möglichst passend für dich zusammenstellen. Bitte schätze hier deine Fähigkeiten ein. Wenn du mit dem Mauszeiger auf die Lautsprechersymbole klickst, werden die jeweiligen Schwierigkeitsgrade vorgelesen. Nachdem du auf eine Auswahlfläche geklickt hast, wird dir noch ein kurzes Beispiel angezeigt, welches du ebenfalls durch Klicken auf das Lautsprechersymbol vorlesen lassen kannst.",
       "confirm": "Aufgaben starten",
       "sessionFound": "Es läuft bereits eine Bearbeitung für diese Auswahl. Möchtest du die Bearbeitung fortsetzen oder neu starten?"
     },
@@ -117,7 +117,7 @@
     "complete": {
       "title": "Fertig",
       "thankYou": "Schön, dass du teilgenommen hast!",
-      "printResults": "Für Dich ausdrucken",
+      "printResults": "Für dich ausdrucken",
       "printResultsTeacher": "Für Kursleitende ausdrucken",
       "youCanPrint": "Du kannst das Ergebnis hier ausdrucken.",
       "continueOrEnd": "Was möchtest du als nächstes tun?",
