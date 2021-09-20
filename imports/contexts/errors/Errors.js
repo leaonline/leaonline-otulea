@@ -71,6 +71,10 @@ Errors.schema = {
   browser: {
     type: String,
     optional: true
+  },
+  code: {
+    type: String,
+    optional: true
   }
 }
 

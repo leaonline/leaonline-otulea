@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor'
 import { normalizeError } from '../../contexts/errors/api/normalizeError'
 import { persistError } from '../../contexts/errors/api/persistError'
 
@@ -15,13 +16,17 @@ export const errorMixin = options => {
     }
     catch (runtimeError) {
       console.error(runtimeError)
+
+      const userDoc = userId && Meteor.users.findOne(userId)
       const normalizedError = normalizeError({
         error: runtimeError,
         userId: userId,
+        code: userDoc ? userDoc.username : 'userNotFound',
         method: isMethod ? name : undefined,
         publication: isPublication ? name : undefined,
         endpoint: isEndpoint ? name : undefined
       })
+
       persistError(normalizedError)
 
       // finally throw original runtime error

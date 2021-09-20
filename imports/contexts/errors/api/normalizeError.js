@@ -1,13 +1,14 @@
 import { Meteor } from 'meteor/meteor'
 import { EJSON } from 'meteor/ejson'
 
-export const normalizeError = ({ error, browser, userId, template, method, publication, endpoint, isSystem }) => {
+export const normalizeError = ({ error, browser, userId, code, template, method, publication, endpoint, isSystem }) => {
   import { simpleHash } from '../../../utils/simpleHash'
 
   const errorDoc = ('errorType' in error)
     ? normalizeMeteorError(error)
     : normalizeNativeError(error)
 
+  errorDoc.code = code
   errorDoc.template = template
   errorDoc.isClient = Meteor.isClient
   errorDoc.isServer = Meteor.isServer
