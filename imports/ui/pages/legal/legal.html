@@ -9,56 +9,45 @@
         {{/unless}}
 
         <div class="w-100 d-flex justify-content-between">
-            <span>
-            {{#onComplete complete=dependenciesComplete}}
-                {{#textGroup
-                        tts="legal.title"
-                        autoText=false
-                        align="baseline"}}
-                    <h1>{{i18n "legal.title"}}</h1>
-                {{/textGroup}}
-                {{#textGroup
-                        tts=legalTitle
-                        autoText=false
-                        align="baseline"}}
-                    <h2>{{i18n legalTitle}}</h2>
-                {{/textGroup}}
-            {{/onComplete}}
-            </span>
-            <span>
-            {{#onComplete complete=dependenciesComplete}}
+            {{> actionButton
+                    outline=true
+                    type="secondary"
+                    class="back-button align-items-center"
+                    tts=(i18n "common.back")
+                    label=(i18n "common.back")
+                    icon="caret-left"}}
+
+            {{#if currentUser}}
                 {{> routeButton
                         outline=true
+                        href=(route "overview")
                         type="secondary"
-                        href=backRoute
-                        class="back-button"
-                        tts=(i18n "common.back")
-                        label=(i18n "common.back")
-                        icon="caret-left"}}
-                {{#if currentUser}}
-                    {{> routeButton
-                            outline=true
-                            href=(route "overview")
-                            type="secondary"
-                            class="home-button"
-                            tts=(i18n "common.toOverview")
-                            label=(i18n "common.toOverview")
-                            icon="home"}}
-                {{else}}
-                    {{> routeButton
-                            outline=true
-                            href=(route "welcome")
-                            type="secondary"
-                            class="home-button"
-                            tts=(i18n "common.toWelcome")
-                            label=(i18n "common.toWelcome")
-                            icon="home"}}
-                {{/if}}
-            {{/onComplete}}
-            </span>
+                        class="home-button"
+                        tts=(i18n "common.toOverview")
+                        label=(i18n "common.toOverview")
+                        icon="home"}}
+            {{else}}
+                {{> routeButton
+                        outline=true
+                        href=(route "welcome")
+                        type="secondary"
+                        class="home-button"
+                        tts=(i18n "common.toWelcome")
+                        label=(i18n "common.toWelcome")
+                        icon="home"}}
+            {{/if}}
         </div>
 
-        <hr>
+        {{#onComplete complete=dependenciesComplete}}
+        <div class="mt-5 w-100 text-center">
+            {{#textGroup
+                    tts=legalTitle
+                    autoText=false}}
+                <h1>{{i18n legalTitle}}</h1>
+            {{/textGroup}}
+        </div>
+        {{/onComplete}}
+
 
         {{#onComplete complete=content}}
             <div class="p-0 p-md-5">

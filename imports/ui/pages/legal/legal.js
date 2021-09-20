@@ -55,3 +55,9 @@ Template.legal.helpers({
     return `legal.${type}`
   }
 })
+
+Template.legal.events({
+  'click .back-button' (event, templateInstance) {
+    window.history.back()
+  }
+})
