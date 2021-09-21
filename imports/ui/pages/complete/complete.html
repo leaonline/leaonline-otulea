@@ -55,13 +55,14 @@
                 {{#container}}
                     <div class="card my-4">
                         <div class="card-header">
-                            <h5 class="card-title">{{i18n
-                                    "pages.complete.alphaLevels"}}</h5>
+                            <h5 class="card-title">
+                                {{> textGroup text=(i18n "pages.complete.alphaLevels")
+                                        type=currentType}}
+                            </h5>
                             {{#if isDebugUser}}
                                 <span>
-                                {{i18n "thresholds.min"}}
-                                    : {{minCountAlphaLevel}}
-                            </span>
+                                {{i18n "thresholds.min"}}: {{minCountAlphaLevel}}
+                                </span>
                             {{/if}}
                         </div>
                         {{#if noScoredAlpha}}
@@ -73,9 +74,11 @@
                             <table class="table table-hover">
                                 <thead>
                                 <tr>
-                                    <th scope="col"></th>
                                     <th scope="col">
-                                        {{i18n "common.description"}}
+                                        {{> textGroup text=(i18n "alphaLevel.level") type=currentType}}
+                                    </th>
+                                    <th scope="col">
+                                        {{> textGroup text=(i18n "common.description") type=currentType}}
                                     </th>
                                     <th scope="col"
                                         class="d-print-none w-25"></th>
@@ -94,19 +97,26 @@
                                         </th>
                                     {{/if}}
                                     <th scope="col" class="text-center">
-                                        {{i18n "thresholds.grade"}}
+                                        {{> textGroup text=(i18n "thresholds.grade") type=currentType}}
                                     </th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 {{#each alphaLevel in alphaLevels}}
                                     <tr class="{{#unless showExtended alphaLevel.isGraded isDemoUser}}d-none{{/unless}}">
-                                        <td class="text-center">{{alphaLevel.shortCode}}</td>
-                                        <td>{{alphaLevel.description}}</td>
-                                        <td class="d-print-none align-middle">
+                                        <td class="text-left no-wrap">
+                                            {{#if alphaLevel.dimension}}
+                                                {{> textGroup text=alphaLevel.dimension type=currentType}}
+                                            {{else}}
+                                                {{> textGroup text=alphaLevel.shortCode type=currentType}}
+                                            {{/if}}
+                                        </td>
+                                        <td>
+                                            {{> textGroup text=alphaLevel.description type=currentType}}
+                                        </td>
+                                        <td class="align-middle">
                                             {{#if alphaLevel.isGraded}}
-                                                <div class="progress border-{{currentType}} border"
-                                                     style="height: 0.75rem;">
+                                                <div class="progress bg-white border border-info">
                                                     <div class="progress-bar bg-{{currentType}}"
                                                          role="progressbar"
                                                          style="width: {{alphaLevel.perc}}%;"
@@ -123,7 +133,7 @@
                                             <td class="text-center d-none d-md-table-cell d-print-table-cell">{{alphaLevel.perc}}</td>
                                         {{/if}}
                                         <td class="text-center no-wrap">
-                                            {{> textGroup text=(i18n alphaLevel.gradeLabel)}}
+                                            {{> textGroup text=(i18n alphaLevel.gradeLabel) type=currentType}}
                                         </td>
                                     </tr>
                                 {{else}}
@@ -148,8 +158,9 @@
                 {{#container}}
                     <div class="card my-4">
                         <div class="card-header">
-                            <h5 class="card-title">{{i18n
-                                    "pages.complete.competencies"}}</h5>
+                            <h5 class="card-title">
+                                {{> textGroup tts="pages.complete.competencies" type=currentType}}
+                            </h5>
                             {{#if isDebugUser}}
                                 <span>
                                 {{i18n "thresholds.min"}}
@@ -168,7 +179,7 @@
                                 <tr>
                                     <th scope="col"></th>
                                     <th scope="col">
-                                        {{i18n "common.description"}}
+                                        {{> textGroup tts="pages.complete.iCan" type=currentType}}
                                     </th>
                                     <th scope="col"
                                         class="d-print-none w-25"></th>
@@ -187,18 +198,22 @@
                                         </th>
                                     {{/if}}
                                     <th scope="col" class="text-center">
-                                        {{i18n "thresholds.grade"}}
+                                        {{> textGroup tts="thresholds.grade" type=currentType}}
                                     </th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 {{#each competency in competencies}}
                                     <tr class="{{#unless showExtended competency.isGraded isDemoUser}}d-none{{/unless}} {{#unless competency.isGraded}}text-muted{{/unless}}">
-                                        <td class="text-center">{{competency.shortCode}}</td>
-                                        <td>{{competency.description}}</td>
-                                        <td class="d-print-none align-middle">
+                                        <td class="text-center">
+                                            {{> textGroup text=competency.shortCode type=currentType}}
+                                        </td>
+                                        <td>
+                                            {{> textGroup text=competency.description type=currentType}}
+                                        </td>
+                                        <td class="align-middle">
                                             {{#if competency.isGraded}}
-                                                <div class="progress border-{{currentType}} border"
+                                                <div class="progress bg-white border-{{currentType}} border"
                                                      style="height: 0.75rem;">
                                                     <div class="progress-bar bg-{{currentType}}"
                                                          role="progressbar"
@@ -216,7 +231,7 @@
                                             <td class="text-center d-none d-md-table-cell d-print-table-cell">{{competency.perc}}</td>
                                         {{/if}}
                                         <td class="text-center no-wrap">
-                                            {{> textGroup text=(i18n competency.gradeLabel)}}
+                                            {{> textGroup text=(i18n competency.gradeLabel) type=currentType}}
                                         </td>
                                     </tr>
                                 {{else}}
@@ -289,59 +304,15 @@
                 {{/container}}
             {{/if}}
 
-            {{!-- iterate all possible feedback levels
-            {{#container}}
-
-
-                {{#with feedbackLevels}}
-                    {{#each feedbackLevel in this}}
-
-                    {{! only display category if there are any competencies related }}
-                        {{#with (getCompetencies @index)}}
-                            <ul class="card list-group my-4">
-                                <li class="list-group-item font-weight-bold d-flex">
-                                    {{> textGroup text=feedbackLevel.description
-                                            label=feedbackLevel.description
-                                            groupClass="w-100"
-                                            type=currentType}}
-                                    {{> icon fw=true far=true name=feedbackLevel.icon scale=2}}
-                                </li>
-
-
-
-
-                                {{#each competencyId in this}}
-                                    <li class="list-group-item">
-                                        {{#let competency=(getCompetency competencyId)}}
-                                            {{> textGroup text=competency.description
-                                                    label=competency.description
-                                                    groupClass="w-100"
-                                                    type=currentType}}
-                                            {{#if competency.example}}
-                                                {{> textGroup text=competency.example
-                                                        label=competency.example
-                                                        groupClass="w-100"
-                                                        type=currentType}}
-                                            {{/if}}
-                                        {{/let}}
-                                    </li>
-                                {{/each}}
-                            </ul>
-                        {{/with}}
-                    {{/each}}
-                {{/with}}
-            {{/container}}
-                --}}
-
             {{#container class="d-print-none"}}
+                {{#onComplete complete=loadComplete}}
                 <div class="card lea-complete-showprint-container ">
                     <div class="card-body font-weight-bold">
-                        {{> textGroup tts="pages.complete.youCanPrint" type=currentType}}
+                        {{> textGroup text=(i18n "pages.complete.youCanPrint") type=currentType}}
                     </div>
                     <div class="card-body">
-                        {{#textGroup tts="pages.complete.printResults"
-                                     groupClass="w-100"
-                                     label=(i18n "pages.complete.printResults")
+                        {{#textGroup groupClass="w-100"
+                                     text=(i18n "pages.complete.printResults")
                                      type=currentType}}
                             {{> actionButton
                                     tts="actions.print"
@@ -356,6 +327,7 @@
                 <div class="card-body">
                     {{> actionButton tts="common.forward" label=(i18n "common.forward") block=true btnClass="lea-showresults-forward-button" class="ml-auto" type=currentType}}
                 </div>
+                {{/onComplete}}
             {{/container}}
         {{/if}}
 
@@ -364,7 +336,7 @@
                 <div class="card lea-complete-showprint-container">
                     <div class="card-body">
                         {{#with currentType}}
-                            {{> textGroup tts="pages.complete.continueOrEnd" type=this }}
+                            {{> textGroup text=(i18n "pages.complete.continueOrEnd") type=this }}
                         {{/with}}
                     </div>
                 </div>

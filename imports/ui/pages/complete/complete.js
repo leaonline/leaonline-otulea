@@ -11,6 +11,7 @@ import { Response } from '../../../contexts/response/Response'
 import { Unit } from '../../../contexts/Unit'
 import '../../components/container/container'
 import '../../layout/navbar/navbar'
+import './complete.scss'
 import './complete.html'
 
 const states = {
@@ -20,6 +21,7 @@ const states = {
 }
 
 const stateValues = Object.values(states)
+let callingFeedback = false
 
 Template.complete.onCreated(function () {
   const instance = this
@@ -127,6 +129,9 @@ Template.complete.onCreated(function () {
                   return console.warn('Found no alphaLevel doc for _id', alphaLevelId)
                 }
 
+                const dimension = Dimension.collection().findOne(alphaLevelDoc.dimension)
+                alpha.dimension = dimension && `${dimension.title} ${alphaLevelDoc.level}`
+                alpha.level = alphaLevelDoc.level
                 alpha.shortCode = alphaLevelDoc.shortCode
                 alpha.description = alphaLevelDoc.description
                 alpha.gradeLabel = `thresholds.${alpha.gradeName}`

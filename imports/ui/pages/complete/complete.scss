@@ -1,0 +1,14 @@
+.progress {
+  height: 0.75rem !important;
+}
+
+@media print {
+  .progress {
+    border-width: 2px;
+    border-color: #000 !important;
+  }
+
+  .progress-bar {
+    border: solid 2px #000 !important;
+  }
+}

@@ -4,6 +4,7 @@ import { onClient, onServer, onServerExec } from '../../utils/archUtils'
 
 const settings = Meteor.settings.public.accounts
 const codeLength = settings.code.length
+const defaultMaxRetries = settings.code.maxRetries
 
 export const Users = {
   name: 'users',
@@ -61,11 +62,12 @@ Users.methods.generate = {
     import { generateUserCode } from '../../api/accounts/generateUserCode'
 
     return function () {
-      const code = generateUserCode(5, 10)
-      if (!code) {
-        throw new Meteor.Error('generateUserCode.error', 'generateUserCode.maxTriesExceeded')
-      }
+      const usersLength = Meteor.users.find().count()
+      const maxRetries = usersLength > defaultMaxRetries
+        ? usersLength
+        : defaultMaxRetries
 
+      const code = generateUserCode(codeLength, maxRetries)
       const userId = Accounts.createUser({ username: code, password: code })
       return Meteor.users.findOne(userId, { fields: { services: 0 } })
     }
