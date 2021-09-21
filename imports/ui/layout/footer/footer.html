@@ -5,11 +5,13 @@
                 {{#if loadComplete}}
                     <div class="row w-100">
                         <div class="col col-12 col-md-4 d-flex flex-wrap align-items-center">
+                            <a class="navbar-brand" href="/">
                             {{> image src="/logo/logo-footer.png"
                                     alt="logo"
                                     width=200
                                     height=34.3
                                     class="lea-footer-image d-md-block mr-2"}}
+                            </a>
                             {{#each logo in logos}}
                                 <a class="navbar-brand" href="{{logo.url}}"
                                    target="_blank">

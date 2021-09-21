@@ -85,7 +85,8 @@
       "continueToTask": "Weiter zur Aufgabe"
     },
     "logout": {
-      "description": "Du bist nun abgemeldet und kannst das Fenster schließen."
+      "description": "Du bist nun abgemeldet und kannst das Fenster schließen.",
+      "toStart": "Zur Startseite"
     },
     "welcome": {
       "title": "Willkommen bei lea.",
@@ -112,6 +113,7 @@
       "description": "Es wurde die angeforderte Seite nicht im System gefunden. Möchten du uns diesen Fehler mitteilen?"
     },
     "unit": {
+      "title": "Aufgabe bearbeiten",
       "story": "Einleitung"
     },
     "complete": {

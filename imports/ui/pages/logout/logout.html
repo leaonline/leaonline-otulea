@@ -10,4 +10,17 @@
 			</div>
 		</div>
 	</div>
+
+    {{#if loadComplete}}
+    <div class="container mt-5">
+        <div class="card-body">
+        {{#routeButton
+                outline=true
+                tts="pages.logout.toStart"
+                href="/"
+                label=(i18n "pages.logout.toStart")}}
+        {{/routeButton}}
+        </div>
+    </div>
+    {{/if}}
 </template>
