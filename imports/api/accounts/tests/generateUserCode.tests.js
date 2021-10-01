@@ -8,13 +8,18 @@ describe(generateUserCode.name, function () {
       expect(generateUserCode().length).to.equal(5)
     }
   })
-  it('returns undefined if no code has been generated in given retries', function () {
-    let foundNone = false
+  it('throws an error if no code has been generated in given retries', function () {
+    let thrown = false
     for (let i = 0; i < 1000; i++) {
-      const code = generateUserCode(128, 1)
-      if (code === undefined) foundNone = true
+      try {
+        generateUserCode(128, 1)
+      }
+      catch (e) {
+        expect(e.reason).to.equal('generateUserCode.maxTriesExceeded')
+        thrown = true
+      }
     }
 
-    expect(foundNone).to.equal(true)
+    expect(thrown).to.equal(true)
   })
 })

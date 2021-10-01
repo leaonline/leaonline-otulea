@@ -21,7 +21,6 @@ const states = {
 }
 
 const stateValues = Object.values(states)
-let callingFeedback = false
 
 Template.complete.onCreated(function () {
   const instance = this

@@ -27,8 +27,7 @@ export const generateFeedback = ({ sessionId, userId, debug = () => {} }) => {
   if (!sessionDoc || !sessionDoc.completedAt) {
     throw new Meteor.Error(
       'generateFeedback.error',
-      'generateFeedback.sessionNotComplete',
-      {
+      'generateFeedback.sessionNotComplete', {
         userId,
         sessionId,
         testCycle: sessionDoc?.testCycle,
@@ -113,7 +112,8 @@ export const generateFeedback = ({ sessionId, userId, debug = () => {} }) => {
     getCompetency: id => competencyMap.get(id),
     getAlphaLevel: id => alphaLevelMap.get(id),
     minCountAlphaLevel: minCountAlphaLevel,
-    thresholds: sortedThresholdsCompetency
+    thresholds: sortedThresholdsCompetency,
+    sessionDoc: sessionDoc
   })
 
   // ///////////////////////////////////////////////////////////////////////////
@@ -188,8 +188,9 @@ export const countCompetencies = ({ responses, minCountCompetency }) => {
   return competencies
 }
 
-export const gradeCompetenciesAndCountAlphaLevels = ({ competencies, minCountAlphaLevel, thresholds, getCompetency, getAlphaLevel }) => {
+export const gradeCompetenciesAndCountAlphaLevels = ({ competencies, minCountAlphaLevel, thresholds, getCompetency, getAlphaLevel, sessionDoc = {} }) => {
   const alphaLevels = new Map()
+  const sessionId = sessionDoc._id
 
   competencies.forEach((current, competencyId) => {
     const grade = getGrade({
@@ -209,8 +210,14 @@ export const gradeCompetenciesAndCountAlphaLevels = ({ competencies, minCountAlp
     if (!competencyDoc) {
       throw new Meteor.Error(
         'generateFeedback.error',
-        'generateFeedback.noCompetencyDoc',
-        { competencyId }
+        'generateFeedback.noCompetencyDoc', {
+          competencyId,
+          sessionId,
+          testCycle: sessionDoc.testCycle,
+          completedAt: sessionDoc.completedAt,
+          progress: sessionDoc.progress,
+          maxProgress: sessionDoc.maxProgress
+        }
       )
     }
 
@@ -218,8 +225,15 @@ export const gradeCompetenciesAndCountAlphaLevels = ({ competencies, minCountAlp
     if (!alphaLevelDoc) {
       throw new Meteor.Error(
         'generateFeedback.error',
-        'generateFeedback.noAlphaLevelDoc',
-        { competencyId, alphaLevel: competencyDoc.level }
+        'generateFeedback.noAlphaLevelDoc', {
+          competencyId,
+          alphaLevel: competencyDoc.level,
+          sessionId,
+          testCycle: sessionDoc.testCycle,
+          completedAt: sessionDoc.completedAt,
+          progress: sessionDoc.progress,
+          maxProgress: sessionDoc.maxProgress
+        }
       )
     }
     const alpha = alphaLevels.get(competencyDoc.level) || {

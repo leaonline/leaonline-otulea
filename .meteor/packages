@@ -44,7 +44,6 @@ dburles:mongo-collection-instances@0.3.5
 mdg:validated-method
 
 # Accounts
-
 accounts-base@2.0.1! # todo rather update outdated packages that depen on 1.x
 accounts-password@2.0.1
 ongoworks:ddp-login
