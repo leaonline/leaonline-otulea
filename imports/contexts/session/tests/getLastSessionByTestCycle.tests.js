@@ -27,7 +27,6 @@ describe(getLastSessionByTestCylce.name, function () {
           userId: userId,
           testCycle: testCycleId,
           startedAt: { $exists: true },
-          completedAt: { $exists: false },
           cancelledAt: { $exists: false }
         })
         done()

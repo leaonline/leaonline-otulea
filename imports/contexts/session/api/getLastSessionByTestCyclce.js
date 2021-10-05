@@ -8,6 +8,7 @@ const projection = {
  * Gets the LATEST single RUNNING session for a given test cycle id
  * @param testCycleId
  * @param userId
+ * @param completed
  * @return {sessionDoc}
  */
 export const getLastSessionByTestCylce = ({ testCycleId, userId }) => {
@@ -15,7 +16,6 @@ export const getLastSessionByTestCylce = ({ testCycleId, userId }) => {
     userId: userId,
     testCycle: testCycleId,
     startedAt: { $exists: true },
-    completedAt: { $exists: false },
     cancelledAt: { $exists: false }
   }
 

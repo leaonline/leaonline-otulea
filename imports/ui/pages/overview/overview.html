@@ -117,8 +117,9 @@
                                 the default launch button
                             --}}
 
+
                             <div class="card-body">
-                                {{#with sessionDoc}}
+                                {{#if sessionAborted}}
                                     {{>textGroup
                                             text=(i18n "pages.overview.sessionFound")
                                             class="w-100"
@@ -148,7 +149,38 @@
                                                     btnClass="lea-restart-button p-5 font-weight-bold  no-wrap" }}
                                         </div>
                                     </div>
+                                {{else if sessionCompleted}}
+                                    {{>textGroup
+                                            text=(i18n "pages.overview.sessionCompleted")
+                                            class="w-100"
+                                            type=colorType}}
 
+                                    <div class="row mt-3">
+                                        <div class="col col-xs-12 col-md-6">
+                                            {{> routeButton
+                                                    href=(route "complete" sessionDoc._id)
+                                                    class="w-100 overview-button"
+                                                    block=true
+                                                    type=colorType
+                                                    outline=true
+                                                    disabled=starting
+                                                    tts=(i18n "pages.overview.showFeedback")
+                                                    label=(i18n "pages.overview.showFeedback")
+                                                    btnClass="lea-show-feedback-button p-5 font-weight-bold  no-wrap" }}
+                                        </div>
+                                        <div class="col col-xs-12 col-md-6">
+                                            {{> actionButton
+                                                    class="w-100 overview-button"
+                                                    data-restart="true"
+                                                    block=true
+                                                    type=colorType
+                                                    outline=true
+                                                    disabled=starting
+                                                    tts="pages.overview.confirm"
+                                                    label=(i18n "pages.overview.confirm")
+                                                    btnClass="lea-restart-button p-5 font-weight-bold  no-wrap" }}
+                                        </div>
+                                    </div>
                                 {{else}}
                                     {{> actionButton
                                             class="lea-overview-confirm-container w-100 mt-3"
@@ -160,7 +192,7 @@
                                             tts="pages.overview.confirm"
                                             label=(i18n "pages.overview.confirm")
                                             btnClass="lea-overview-confirm-button  no-wrap" }}
-                                {{/with}}
+                                {{/if}}
                             </div>
                         {{else}}
                             <div class="card-body">

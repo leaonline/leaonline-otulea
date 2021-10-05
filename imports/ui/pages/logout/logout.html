@@ -4,9 +4,13 @@
 			<div class="card-body">
 				{{#unless loadComplete}}
 					{{> loading}}
-				{{else}}
-					{{> textGroup tts="pages.logout.description"}}
-				{{/unless}}
+                {{else}}
+                    {{#if loggedOut}}
+                        {{> textGroup tts="pages.logout.description"}}
+                        {{else}}
+                        {{> loading title="pages.logout.loggingOut"}}
+                    {{/if}}
+                {{/unless}}
 			</div>
 		</div>
 	</div>

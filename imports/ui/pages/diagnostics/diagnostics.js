@@ -13,6 +13,9 @@ Template.diagnostics.onCreated(function () {
   try {
     instance.initDependencies({
       language: true,
+      translations: {
+        de: () => import('./i18n/de')
+      },
       onComplete () {
         instance.state.set('loadComplete', true)
       }

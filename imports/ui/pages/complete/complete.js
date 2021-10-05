@@ -28,14 +28,11 @@ Template.complete.onCreated(function () {
   const { api } = instance.initDependencies({
     language: true,
     tts: true,
+    translations: {
+      de: () => import('./i18n/de')
+    },
     contexts: [Dimension, Session, Competency, Thresholds, AlphaLevel, Response, Unit],
     onComplete: async function () {
-      import { addToLanguage } from '../../../api/i18n/addToLanguage'
-
-      await addToLanguage({
-        de: () => import('./i18n/de')
-      })
-
       instance.state.set({
         dependenciesComplete: true
       })

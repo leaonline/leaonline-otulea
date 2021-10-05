@@ -208,6 +208,10 @@ Session.methods.results = {
   })
 }
 
+/**
+ * Returns the last session doc by given test cylce, that has been started but
+ * neither completed nor cancelled
+ */
 Session.methods.byTestCycle = {
   name: 'session.methods.byTestCycle',
   schema: {

@@ -7,6 +7,9 @@ Template.notFound.onCreated(function () {
   instance.initDependencies({
     tts: true,
     language: true,
+    translations: {
+      de: () => import('./i18n/de')
+    },
     onComplete () {
       instance.state.set('dependenciesComplete', true)
     }

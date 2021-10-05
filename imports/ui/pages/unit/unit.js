@@ -42,6 +42,9 @@ Template.unit.onCreated(function () {
     language: true,
     tts: true,
     contexts: [Session, Unit, UnitSet, Response, Dimension, Level],
+    translations: {
+      de: () => import('./i18n/de')
+    },
     onComplete () {
       instance.onItemInput = createItemInput({
         cache: responseCache,

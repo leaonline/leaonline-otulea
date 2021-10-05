@@ -20,7 +20,7 @@ let autoLoadEnabled = false
  */
 
 Blaze.TemplateInstance.prototype.initDependencies =
-  function ({ language = false, tts = false, contexts = [], loaders = [], onComplete, onError }) {
+  function ({ translations, language = (translations || false), tts = false, contexts = [], loaders = [], onComplete, onError }) {
     import { Components } from 'meteor/leaonline:ui/components/Components'
 
     if (!autoLoadEnabled) {
@@ -107,11 +107,23 @@ Blaze.TemplateInstance.prototype.initDependencies =
       return onComplete()
     }
 
+    const addTranslations = async () => {
+      const { addToLanguage } = await import('../../api/i18n/addToLanguage')
+      return addToLanguage(translations)
+    }
+
     instance.autorun(c => {
       if (allComplete.every(rv => rv.get())) {
         c.stop()
         instance.api.info('call dependencies onComplete')
-        onComplete()
+        if (translations) {
+          addTranslations()
+            .catch(e => onError(e))
+            .then(onComplete)
+        }
+        else {
+          onComplete()
+        }
       }
     })
 

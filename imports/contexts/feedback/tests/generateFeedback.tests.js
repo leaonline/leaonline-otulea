@@ -1,6 +1,7 @@
 /* eslint-env mocha */
 import { Random } from 'meteor/random'
 import { Mongo } from 'meteor/mongo'
+import { Email } from 'meteor/email'
 import { expect } from 'chai'
 import { Session } from '../../session/Session'
 import { HTTP } from 'meteor/jkuester:http'

@@ -25,9 +25,14 @@ Template.overview.onCreated(function () {
   instance.state.set('color', 'secondary')
   instance.initDependencies({
     language: true,
+    translations: {
+      de: () => import('./i18n/de')
+    },
     tts: true,
     contexts: [Session, TestCycle, UnitSet, Dimension, Level],
-    onComplete: () => instance.state.set('dependenciesComplete', true)
+    onComplete: async () => {
+      instance.state.set('dependenciesComplete', true)
+    }
   })
 
   const { loadAllContentDocs, callMethod, debug } = instance.api
@@ -136,10 +141,30 @@ Template.overview.onCreated(function () {
       name: Session.methods.byTestCycle.name,
       args: { testCycleId: testCycle._id },
       success: sessionDoc => {
-        instance.api.debug('session doc loaded', { sessionDoc })
+        console.debug('session doc loaded', { sessionDoc })
+        if (!sessionDoc) {
+          return instance.state.set({
+            completedSessionDetected: false,
+            abortedSessionDetected: false,
+            sessionDoc: null
+          })
+        }
 
-        const abortedSessionDetected = testCycle && sessionDoc && sessionDoc.testCycle === testCycle._id
-        instance.state.set({ abortedSessionDetected, sessionDoc })
+        if (sessionDoc.completedAt) {
+          instance.state.set({ completedSessionDetected: true, sessionDoc })
+        }
+
+        else if (testCycle && sessionDoc && sessionDoc.testCycle === testCycle._id) {
+          instance.state.set({ abortedSessionDetected: true, sessionDoc })
+        }
+
+        else {
+          instance.api.debug('warning! session has undefined state', { sessionDoc })
+          instance.state.set({
+            completedSessionDetected: false,
+            abortedSessionDetected: false
+          })
+        }
       }
     })
   })
@@ -229,6 +254,12 @@ Template.overview.helpers({
   // ---------------------- // ----------------------
   // SESSION
   // ---------------------- // ----------------------
+  sessionAborted () {
+    return Template.getState('abortedSessionDetected')
+  },
+  sessionCompleted () {
+    return Template.getState('completedSessionDetected')
+  },
   sessionDoc () {
     return Template.getState('sessionDoc')
   },

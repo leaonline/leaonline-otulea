@@ -1,0 +1,17 @@
+{
+  "pages": {
+    "welcome": {
+      "title": "Willkommen bei lea.",
+      "introVideo": "Video mit Begrüßung",
+      "playIntro": "Einführungsvideo abspielen",
+      "loggedIn": "Du bist bereits angemeldet. Du kannst auf dieser Seite noch einmal die Einführung ansehen oder zur Übersicht zurückkehren.",
+      "wrongUser": "Klicke, wenn der dargestellte Benutzer nicht von dir erstellt wurde.",
+      "introduction": "Herzlich willkommen bei otu.lea! Du kannst hier angeben, ob du bereits einen Test absolviert hast. Wenn du bereits teilgenommen hast, klicke auf „Ja“. Falls du zum ersten Mal hier bist, klicke bitte auf „Nein“.",
+      "newCode": "Hier kannst du dich anmelden. Wenn du zum ersten Mal hier bist, bekommst du auf dieser Seite deinen persönlichen Code. Du kannst dich mit diesem Code immer wieder anmelden. Um den Code nicht zu vergessen hast du folgende Möglichkeiten: Du kannst den Code notieren, du kannst dir den Code nach der Befragung ausdrucken oder du kannst dir den Code mit dem Handy abfotografieren.",
+      "enterCode": "Bitte gib hier deinen Code ein.",
+      "loginFail": "Der Code war nicht korrekt. Bitte versuche es erneut.",
+      "login": "Anmelden",
+      "loggingIn": "Du wirst nun angemeldet"
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "pages": {
+    "diagnostics": {
+      "title": "Browser-Diagnose",
+      "info": "Die Diagnose prüft, ob dein Browser die wesentlichsten Funktionen erfüllt und übermittelt das Ergebnis an das otu.lea Team. Bist du damit einverstanden?",
+      "sending": "Übermittle Ergebnisse",
+      "sent": "Ergebnisse erfolgreich gesendet"
+    }
+  }
+}

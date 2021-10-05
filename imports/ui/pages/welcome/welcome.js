@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor'
 import { Template } from 'meteor/templating'
 import { ReactiveVar } from 'meteor/reactive-var'
-import { ReactiveDict } from 'meteor/reactive-dict'
 import { Random } from 'meteor/random'
 import { Users } from '../../../contexts/user/User'
 import { loggedIn } from '../../../utils/accountUtils'
@@ -18,7 +17,23 @@ let originalVideoHeight
 
 Template.welcome.onCreated(function () {
   const instance = this
-  instance.state = new ReactiveDict()
+
+  instance.initDependencies({
+    language: true,
+    tts: true,
+    translations: {
+      de: () => import('./i18n/de')
+    },
+    onComplete: () => {
+      instance.state.set('dependenciesComplete', true)
+    },
+    onError: e => {
+      // instance.data.onFail()
+      console.error(e)
+      instance.state.set('dependenciesComplete', true)
+    }
+  })
+
   instance.state.set('loginCode', null)
   instance.state.set('loadComplete', false)
   instance.state.set('isDemoUser', !!instance.data?.queryParams?.demo)
@@ -38,19 +53,6 @@ Template.welcome.onCreated(function () {
 
   instance.state.set('loadComplete', true)
   instance.wizard.intro(true)
-
-  instance.initDependencies({
-    language: true,
-    tts: true,
-    onComplete: () => {
-      instance.state.set('dependenciesComplete', true)
-    },
-    onError: e => {
-      // instance.data.onFail()
-      console.error(e)
-      instance.state.set('dependenciesComplete', true)
-    }
-  })
 })
 
 Template.welcome.helpers({
