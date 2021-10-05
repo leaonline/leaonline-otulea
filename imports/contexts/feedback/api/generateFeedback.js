@@ -6,6 +6,7 @@ import { getSessionResponses } from '../../session/api/getSessionResponses'
 import { getGrade } from '../../thresholds/api/getGrade'
 import { getAlphaLevels } from './getAlphaLevels'
 import { getCompetencies } from './getCompetencies'
+import { notifyUsersAboutError } from '../../../api/notify/notifyUsersAboutError'
 
 export const generateFeedback = ({ sessionId, userId, debug = () => {} }) => {
   debug('(generateFeedback)', { sessionId, userId })
@@ -80,10 +81,13 @@ export const generateFeedback = ({ sessionId, userId, debug = () => {} }) => {
   const alphaLevelIds = new Set()
 
   // iteration 1 to retrieve competencies and alpaheLevels
-  responses
-    .forEach(result => result
-      .forEach(({ competency }) => competency
-        .forEach(competencyId => competencyIds.add(competencyId))))
+  responses.forEach(scores => {
+    scores.forEach(({ competency }) => {
+      competency.forEach(competencyId => {
+        competencyIds.add(competencyId)
+      })
+    })
+  })
 
   debug('(generateFeedback)', 'get competencies')
   const competencyMap = getCompetencies(Array.from(competencyIds))
@@ -193,6 +197,26 @@ export const gradeCompetenciesAndCountAlphaLevels = ({ competencies, minCountAlp
   const sessionId = sessionDoc._id
 
   competencies.forEach((current, competencyId) => {
+    const competencyDoc = getCompetency(competencyId)
+
+    // XXX: to support older tests, where linked competencies didn't exist we
+    // need to skip them an send an error to inform about the incident but
+    // we do not throw the Error in order to preserve the feedback
+    if (!competencyDoc) {
+      const noCompetencyError = new Meteor.Error(
+        'generateFeedback.error',
+        'generateFeedback.noCompetencyDoc', {
+          competencyId,
+          sessionId,
+          testCycle: sessionDoc.testCycle,
+          completedAt: sessionDoc.completedAt,
+          progress: sessionDoc.progress,
+          maxProgress: sessionDoc.maxProgress
+        })
+
+      return notifyUsersAboutError(noCompetencyError)
+    }
+
     const grade = getGrade({
       minCount: current.min,
       count: current.count,
@@ -205,21 +229,6 @@ export const gradeCompetenciesAndCountAlphaLevels = ({ competencies, minCountAlp
     current.isGraded = grade.index > -1
 
     competencies.set(competencyId, current)
-
-    const competencyDoc = getCompetency(competencyId)
-    if (!competencyDoc) {
-      throw new Meteor.Error(
-        'generateFeedback.error',
-        'generateFeedback.noCompetencyDoc', {
-          competencyId,
-          sessionId,
-          testCycle: sessionDoc.testCycle,
-          completedAt: sessionDoc.completedAt,
-          progress: sessionDoc.progress,
-          maxProgress: sessionDoc.maxProgress
-        }
-      )
-    }
 
     const alphaLevelDoc = getAlphaLevel(competencyDoc.level)
     if (!alphaLevelDoc) {

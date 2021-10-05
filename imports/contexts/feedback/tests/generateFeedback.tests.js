@@ -159,6 +159,53 @@ describe(gradeCompetenciesAndCountAlphaLevels.name, function () {
       isGraded: false
     })
   })
+  it('informs if a competency is a dead link', function () {
+    let emailSent = false
+    const competencyId = Random.id()
+    const competencies = new Map()
+    competencies.set(competencyId, {
+      competencyId: competencyId,
+      count: 0,
+      scored: 0,
+      undef: 0,
+      min: 0,
+      perc: 1
+    })
+    stub(Email, 'send', ({ to, subject, replyTo, from, text }) => {
+      const errorStr = text
+        .replace('<html><body><pre><code>', '')
+        .replace('</code></pre></body></html>', '')
+      const parsedError = JSON.parse(errorStr)
+      expect(parsedError.error).to.equal('generateFeedback.error')
+      expect(parsedError.reason).to.equal('generateFeedback.noCompetencyDoc')
+      expect(parsedError.details.competencyId).to.equal(competencyId)
+      emailSent = true
+    })
+
+    const thresholds = [{
+      max: 1,
+      name: 'top'
+    }, {
+      max: 0.8,
+      name: 'good'
+    }, {
+      max: 0.5,
+      name: 'ok'
+    }, {
+      max: 0,
+      name: 'bad'
+    }]
+
+    gradeCompetenciesAndCountAlphaLevels({
+      competencies,
+      thresholds,
+      minCountAlphaLevel: 1,
+      getCompetency: id => undefined,
+      getAlphaLevel: id => undefined
+    })
+
+    expect(emailSent).to.equal(true)
+  })
   it('correctly counts alphaLevels', function () {
     const cid1 = Random.id()
     const cid2 = Random.id()
