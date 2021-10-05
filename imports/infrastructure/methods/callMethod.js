@@ -49,7 +49,7 @@ export const callMethod = ({ name, args, prepare, receive, success, failure, con
   promise.catch(error => {
     sendError({ error, isResponse: true })
     if (typeof failure === 'function') {
-      failure()
+      failure(error)
     }
   })
 
