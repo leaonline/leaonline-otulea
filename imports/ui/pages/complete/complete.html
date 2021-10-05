@@ -22,7 +22,7 @@
         {{/if}}
 
         {{!-- we display a failed state container to indicate to get feedback at a later point --}}
-        {{#if failed}}
+        {{#with failed}}
             {{#container}}
                 <div class="card my-4">
                     <div class="card-body">
@@ -31,8 +31,25 @@
                                     label=(i18n "pages.complete.failed")
                                     type=currentType}}
                         {{/onComplete}}
-
                     </div>
+
+
+                    {{#with failed.error}}
+                        <div class="card-body">
+                            {{#onComplete complete=loadComplete}}
+                                {{> textGroup text=(i18n failed.error) type=currentType}}
+                            {{/onComplete}}
+                        </div>
+                    {{/with}}
+
+
+                    {{#with failed.reason}}
+                        <div class="card-body">
+                            {{#onComplete complete=loadComplete}}
+                                {{> textGroup text=(i18n failed.reason) type=currentType}}
+                            {{/onComplete}}
+                        </div>
+                    {{/with}}
                 </div>
 
                 <div class="card-body">
@@ -45,7 +62,7 @@
                     {{/onComplete}}
                 </div>
             {{/container}}
-        {{/if}}
+        {{/with}}
 
         {{#if showResults}}
             {{#onComplete complete=loadComplete}}

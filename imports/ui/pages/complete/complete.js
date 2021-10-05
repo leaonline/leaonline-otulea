@@ -25,12 +25,17 @@ const stateValues = Object.values(states)
 Template.complete.onCreated(function () {
   const instance = this
   const { sessionId } = instance.data.params
-
   const { api } = instance.initDependencies({
     language: true,
     tts: true,
     contexts: [Dimension, Session, Competency, Thresholds, AlphaLevel, Response, Unit],
-    onComplete () {
+    onComplete: async function () {
+      import { addToLanguage } from '../../../api/i18n/addToLanguage'
+
+      await addToLanguage({
+        de: () => import('./i18n/de')
+      })
+
       instance.state.set({
         dependenciesComplete: true
       })
@@ -38,10 +43,18 @@ Template.complete.onCreated(function () {
   })
 
   const { queryParam, callMethod, loadAllContentDocs, info, debug, hasProperty } = api
-  const onFailed = err => instance.state.set('failed', err || true)
+  const onFailed = e => {
+    instance.state.set({
+      competenciesLoaded: true,
+      sessionLoaded: true,
+      failed: e
+        ? { error: e.error, reason: e.reason || e.message }
+        : true
+    })
+  }
 
   loadAllContentDocs(Thresholds, undefined, debug)
-    .catch(e => console.error(e))
+    .catch(e => onFailed(e))
     .then(() => {
       const thresholdDoc = Thresholds.collection().findOne()
       instance.state.set(thresholdDoc)
@@ -53,7 +66,7 @@ Template.complete.onCreated(function () {
         failure: err => onFailed(err),
         success: results => {
           if (!results) {
-            return onFailed() // TODO fallback with a message "we can't eval right now..."
+            return onFailed(new Meteor.Error('test 1')) // TODO fallback with a message "we can't eval right now..."
           }
 
           const { competencies, alphaLevels } = results
@@ -71,7 +84,7 @@ Template.complete.onCreated(function () {
             .then(competencyDocs => {
               if (competencyDocs.length === 0) {
                 instance.state.set('competenciesLoaded', true)
-                return onFailed()
+                return onFailed(new Meteor.Error('test 2'))
               }
 
               const CompetencyCollection = Competency.collection()
@@ -112,7 +125,7 @@ Template.complete.onCreated(function () {
             .then(alphaLevelDocs => {
               if (alphaLevelDocs.length === 0) {
                 instance.state.set('competenciesLoaded', true)
-                return onFailed()
+                return onFailed(new Meteor.Error('test 3'))
               }
 
               const AlphaLevelCollection = AlphaLevel.collection()

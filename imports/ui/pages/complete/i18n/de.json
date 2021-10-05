@@ -1,0 +1,8 @@
+{
+  "generateFeedback": {
+    "error": "Es ist ein Fehler beim Erstellen der Ergennisse aufgetreten",
+    "sessionNotComplete": "Testdurchlauf ist noch nicht abgeschlossen.",
+    "noCompetencyDoc": "Es konnten eine oder mehrere Kompetenzen nicht gefunden werden.",
+    "noAlphaLevelDoc": "Es konnten eine oder mehrere Alpha-Levels nicht gefunden werden."
+  }
+}
