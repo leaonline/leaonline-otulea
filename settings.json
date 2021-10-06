@@ -61,6 +61,8 @@
     "from": "system@example.com"
   },
   "accounts": {
+    "removeOlderThanDays": 3,
+    "removeIncompleteSessions": false,
     "config": {
       "forbidClientAccountCreation": true,
       "ambiguousErrorMessages": false,

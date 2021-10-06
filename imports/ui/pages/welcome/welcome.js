@@ -182,8 +182,8 @@ Template.welcome.events({
     }
 
     event.preventDefault()
-    const $target = templateInstance.$(event.currentTarget)
-    const indexStr = $target.data('index')
+    const $curent = templateInstance.$(event.currentTarget)
+    const indexStr = $curent.data('index')
     const index = parseInt(indexStr, 10)
 
     if (event.code === 'Backspace') {
@@ -193,7 +193,7 @@ Template.welcome.events({
       else {
         // update field and position
         const $prev = templateInstance.$(`input[data-index="${index - 1}"]`)
-        $target.val('')
+        $curent.val('')
         $prev.val('')
         $prev.focus()
         // update logincode
@@ -203,7 +203,7 @@ Template.welcome.events({
     }
     else if (event.code.indexOf('Key') > -1 || event.code.indexOf('Digit') > -1) {
       // update values
-      $target.val(event.key)
+      $curent.val(event.key)
       const loginCode = getLoginCode(templateInstance)
       templateInstance.state.set('loginCode', loginCode)
 

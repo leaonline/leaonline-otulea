@@ -77,6 +77,13 @@ const settingsSchema = schema({
     }
   }),
   accounts: schema({
+    removeOlderThanDays: {
+      type: SimpleSchema.Integer,
+      min: 1
+    },
+    removeIncompleteSessions: {
+      type: Boolean
+    },
     config: schema({
       "forbidClientAccountCreation": Boolean,
       "ambiguousErrorMessages": Boolean,
