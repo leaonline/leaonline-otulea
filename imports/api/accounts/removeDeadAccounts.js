@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor'
 import { check, Match } from 'meteor/check'
 import { isValidInteger } from '../../utils/number/validNumbers'
 import { Session } from '../../contexts/session/Session'

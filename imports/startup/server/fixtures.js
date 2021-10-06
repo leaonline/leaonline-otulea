@@ -4,7 +4,7 @@ import { createLog } from '../../utils/createLog'
 
 const { removeOlderThanDays, removeIncompleteSessions } = Meteor.settings.accounts
 
-Meteor.startup(function() {
+Meteor.startup(function () {
   const log = createLog({ name: 'removeDeadAccounts', type: 'log' })
   log('run', { removeOlderThanDays, removeIncompleteSessions })
   const removed = removeDeadAccounts({
