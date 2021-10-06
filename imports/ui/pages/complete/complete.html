@@ -174,17 +174,34 @@
                 {{! ============================================================ }}
                 {{#container}}
                     <div class="card my-4">
-                        <div class="card-header">
-                            <h5 class="card-title">
+                        <div class="card-header d-flex justify-content-between">
+                            <h5 class="card-title align-baseline">
                                 {{> textGroup tts="pages.complete.competencies" type=currentType}}
                             </h5>
                             {{#if isDebugUser}}
                                 <span>
-                                {{i18n "thresholds.min"}}
-                                    : {{minCountCompetency}}
-                            </span>
+                                    {{i18n "thresholds.min"}}:
+                                    {{minCountCompetency}}
+                                </span>
+                            {{/if}}
+                            {{#if showCompetencies}}
+                            {{> actionButton
+                                    label=(i18n "actions.hide")
+                                    type=currentType
+                                    outline=true
+                                    class="toggle-competency-display align-baseline"
+                                    icon="eye-slash"}}
+                            {{else}}
+                                {{> actionButton
+                                        label=(i18n "actions.show")
+                                        type=currentType
+                                        outline=true
+                                        class="toggle-competency-display align-baseline"
+                                        icon="eye"}}
                             {{/if}}
                         </div>
+
+                        <div class="competencies-body d-print-block" style="display: none;">
                         {{#if noScoredCompetencies}}
                             <div class="card-body h-100">
                                 {{> textGroup tts="pages.complete.noScoredComp" type=currentType}}
@@ -264,6 +281,7 @@
                             </table>
                         </div>
                     {{/if}}
+                        </div>
                     </div>
                 {{/container}}
             {{/onComplete}}

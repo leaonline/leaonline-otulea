@@ -36,5 +36,9 @@
     "correct": "Bestanden",
     "perc": "in Prozent",
     "grade": "Bewertung"
+  },
+  "actions": {
+    "show": "Anzeigen",
+    "hide": "Verbergen"
   }
 }

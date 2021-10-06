@@ -36,7 +36,7 @@ Blaze.TemplateInstance.prototype.initDependencies =
     import { createLog } from '../../utils/createInfoLog'
     import { loadAllContentDocs } from '../../ui/loading/loadAllContentDocs'
     import { loadContentDoc } from '../../ui/loading/loadContentDoc'
-    import { fadeOut } from '../../utils/animationUtils'
+    import { fadeOut, fadeIn } from '../../utils/animationUtils'
     import { hasProperty } from '../../utils/object/hasProperty'
     import { isDebugUser } from '../../api/accounts/isDebugUser'
     import { sendError } from '../../contexts/errors/api/sendError'
@@ -77,6 +77,9 @@ Blaze.TemplateInstance.prototype.initDependencies =
       },
       fadeOut: function (target, callback) {
         return fadeOut(target, instance, callback)
+      },
+      fadeIn: function (target, callback) {
+        return fadeIn(target, instance, callback)
       },
       sendError: ({ error, isResponse }) => {
         sendError({

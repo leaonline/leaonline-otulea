@@ -302,6 +302,9 @@ Template.complete.helpers({
       instance.state.get('sessionDoc') &&
       instance.state.get('view') === states.showDecision
   },
+  showCompetencies () {
+    return Template.getState('showCompetencies')
+  },
   navbarData () {
     const instance = Template.instance()
     const sessionDoc = instance.state.get('sessionDoc')
@@ -371,5 +374,19 @@ Template.complete.events({
   'click .lea-to-overview-button' (event, templateInstance) {
     event.preventDefault()
     templateInstance.api.fadeOut('.lea-complete-container', () => templateInstance.data?.next())
+  },
+  'click .toggle-competency-display' (event, templateInstance) {
+    event.preventDefault()
+    const showCompetencies = templateInstance.state.get('showCompetencies')
+
+    if (showCompetencies) {
+      templateInstance.state.set('showCompetencies', false)
+      templateInstance.api.fadeOut('.competencies-body', () => {})
+    }
+
+    else {
+      templateInstance.state.set('showCompetencies', true)
+      templateInstance.api.fadeIn('.competencies-body', () => {})
+    }
   }
 })
