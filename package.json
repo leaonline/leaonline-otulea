@@ -74,7 +74,8 @@
         {
           "allowSingleLine": true
         }
-      ]
+      ],
+      "import/no-duplicates": 0
     }
   }
 }

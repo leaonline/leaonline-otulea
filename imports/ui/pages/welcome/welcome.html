@@ -107,6 +107,8 @@
                                     {{> soundbutton text=this.tts lg=true outline=true}}
                                     {{> text src=this.text class="lea-text-xl ml-3 flex-fill d-flex" tokenClass="flex-fill text-center"}}
                                 </div>
+                            {{else}}
+                                {{> loading }}
                             {{/with}}
                         </div>
                     {{/if}}

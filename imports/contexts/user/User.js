@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor'
 import { Accounts } from 'meteor/accounts-base'
-import { onClient, onServer, onServerExec } from '../../utils/archUtils'
+import { onServer, onServerExec } from '../../utils/archUtils'
 
 const settings = Meteor.settings.public.accounts
 const codeLength = settings.code.length
@@ -74,6 +74,32 @@ Users.methods.generate = {
   })
 }
 
+Users.methods.generateCode = {
+  name: 'users.methods.generateCode',
+  schema: {},
+  isPublic: true,
+  numRequests: 1,
+  timeInterval: 5000,
+  run: onServerExec(function () {
+    import { generateUserCode } from '../../api/accounts/generateUserCode'
+
+    return function () {
+      const { userId } = this
+
+      if (userId) {
+        throw new Meteor.Error('generateCode.error', 'generateCode.alreadyLoggedIn', { userId })
+      }
+
+      const usersLength = Meteor.users.find().count()
+      const maxRetries = usersLength > defaultMaxRetries
+        ? usersLength
+        : defaultMaxRetries
+
+      return generateUserCode(codeLength, maxRetries)
+    }
+  })
+}
+
 Users.methods.register = {
   name: 'users.methods.register',
   schema: {
@@ -98,12 +124,6 @@ Users.methods.register = {
     }
 
     return userId
-  }),
-  /**
-   * @deprecated replace with callMethod function
-   */
-  call: onClient(function ({ code, isDemoUser }, cb) {
-    Meteor.call(Users.methods.register.name, { code, isDemoUser }, cb)
   })
 }
 
@@ -168,17 +188,6 @@ Users.methods.loggedIn = {
         $addToSet: { agents: updateDoc }
       })
     }
-  }),
-  /**
-   * @deprecated replace with callMethod function
-   */
-  call: onClient(function ({ screenWidth, screenHeight, viewPortWidth, viewPortHeight }, cb) {
-    Meteor.call(Users.methods.loggedIn.name, {
-      screenWidth,
-      screenHeight,
-      viewPortWidth,
-      viewPortHeight
-    }, cb)
   })
 }
 

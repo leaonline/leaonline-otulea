@@ -10,8 +10,8 @@ import './welcome.scss'
 import './welcome.html'
 
 const settings = Meteor.settings.public.accounts
-const MAX_INPUTS = settings.code.length
-const inputFieldIndices = [...new Array(MAX_INPUTS)].map((v, i) => i)
+const CODE_LENGTH = settings.code.length
+const inputFieldIndices = [...new Array(CODE_LENGTH)].map((v, i) => i)
 const whiteSpace = /\s+/g
 let originalVideoHeight
 
@@ -37,13 +37,38 @@ Template.welcome.onCreated(function () {
   instance.state.set('loginCode', null)
   instance.state.set('loadComplete', false)
   instance.state.set('isDemoUser', !!instance.data?.queryParams?.demo)
-  instance.newUser = new ReactiveVar(Random.id(MAX_INPUTS).toUpperCase())
+  instance.newUser = new ReactiveVar()
+
+  // see if we have a cached code and this may be a page refresh
+  const existingCode = window.localStorage.getItem('newUserCode')
+  if (existingCode) {
+    instance.newUser.set(existingCode)
+  }
 
   instance.wizard = {
     intro (value) {
       instance.state.set({ intro: value })
     },
     newCode (value) {
+      // if we have no case yet we need to ask the server to create one
+      if (!instance.newUser.get()) {
+        instance.api.callMethod({
+          name: Users.methods.generateCode,
+          args: {},
+          failure: err => {
+            // as a fallback due to server error we try to generate a code from
+            // client and hope it gets accepted on login
+            console.error(err)
+            const fallbackCode = Random.id(CODE_LENGTH).toUpperCase()
+            window.localStorage.setItem('newUserCode', fallbackCode)
+            instance.newUser.set(fallbackCode)
+          },
+          success: code => {
+            window.localStorage.setItem('newUserCode', code)
+            instance.newUser.set(code)
+          }
+        })
+      }
       instance.state.set({ newCode: value })
     },
     login (value) {
@@ -98,10 +123,10 @@ Template.welcome.helpers({
   },
   loggedIn () {
     if (!loggedIn()) return false
-    return !Template.getState('logginIn')
+    return !Template.getState('loggingIn')
   },
   loggingIn () {
-    return Template.getState('logginIn')
+    return Template.getState('loggingIn')
   },
   loginTTS () {
     const loginCode = Template.getState('loginCode')
@@ -133,10 +158,12 @@ Template.welcome.events({
   },
   'click .lea-welcome-no' (event, templateInstance) {
     event.preventDefault()
+
+    templateInstance.wizard.newCode(true)
+
     // if we have a video container we can shrink it's size using a nice effect
     // const $videoContainer = templateInstance.$('.intro-video-container')
     // $videoContainer.animate({ height: '200px' }, 500, 'swing', () => {})
-    templateInstance.wizard.newCode(true)
     setTimeout(() => focusInput(templateInstance), 50)
   },
   'paste .login-field' (event, templateInstance) {
@@ -156,7 +183,7 @@ Template.welcome.events({
     const pastedData = clipboardData.getData('Text').replace(whiteSpace, '')
 
     // we accept only the correct length of usernames
-    if (pastedData.length !== MAX_INPUTS) {
+    if (pastedData.length !== CODE_LENGTH) {
       console.debug('[Template.welcome]: rejected', pastedData)
       return false
     }
@@ -208,7 +235,7 @@ Template.welcome.events({
       templateInstance.state.set('loginCode', loginCode)
 
       // update pointer
-      if (index < MAX_INPUTS - 1) {
+      if (index < CODE_LENGTH - 1) {
         const $next = templateInstance.$(`input[data-index="${index + 1}"]`)
         $next.focus()
       }
@@ -220,7 +247,7 @@ Template.welcome.events({
   'keydown .lea-welcome-login' (event, templateInstance) {
     if (event.code === 'Backspace') {
       // update field and position
-      const $prev = templateInstance.$(`input[data-index="${MAX_INPUTS - 1}"]`)
+      const $prev = templateInstance.$(`input[data-index="${CODE_LENGTH - 1}"]`)
       $prev.val('')
       $prev.focus()
       // update logincode
@@ -231,14 +258,15 @@ Template.welcome.events({
   'click .lea-welcome-login' (event, templateInstance) {
     event.preventDefault()
 
-    templateInstance.state.set('logginIn', true)
+    templateInstance.state.set('loggingIn', true)
 
     const loginCode = getLoginCode(templateInstance)
-
     const newCode = templateInstance.state.get('newCode')
+
     if (newCode) {
       registerNewUser(loginCode.toUpperCase(), templateInstance)
     }
+
     else {
       loginUser(loginCode.toUpperCase(), templateInstance)
     }
@@ -290,7 +318,7 @@ function showLoginButton (templateInstance) {
 function loginFail (templateInstance, error) {
   resetInputs(templateInstance)
   focusInput(templateInstance)
-  templateInstance.state.set('logginIn', false)
+  templateInstance.state.set('loggingIn', false)
   templateInstance.state.set('loginFail', true)
 
   // tracking: record failed login attempt to better know how
@@ -305,46 +333,52 @@ function registerNewUser (code, templateInstance) {
   const registerCode = templateInstance.newUser.get()
   const isDemoUser = templateInstance.state.get('isDemoUser')
 
+  // a failed attempt resets the state to enable a re-type of the login code
   if (registerCode !== code) {
     return loginFail(templateInstance)
   }
-  else {
-    Users.methods.register.call({ code, isDemoUser }, (err) => {
-      if (err) {
-        loginFail(templateInstance, err)
-      }
-      else {
-        loginUser(code, templateInstance)
-      }
-    })
-  }
+
+  // on a match we want to register the new user
+  templateInstance.api.callMethod({
+    name: Users.methods.register,
+    args: { code, isDemoUser },
+    prepare: () => templateInstance.state.set('loggingIn', true),
+    failure: err => loginFail(templateInstance, err),
+    success: () => loginUser(code, templateInstance)
+  })
 }
 
 function loginUser (code, templateInstance) {
   Meteor.loginWithPassword(code, code, (err) => {
     if (err) {
-      loginFail(templateInstance, err)
+      return loginFail(templateInstance, err)
     }
-    else {
-      onLoggedIn()
-      fadeOut('.lea-welcome-container', templateInstance, () => {
-        templateInstance.data.next()
-      })
-    }
+
+    window.localStorage.removeItem('newUserCode')
+    onLoggedIn(templateInstance)
+    fadeOut('.lea-welcome-container', templateInstance, () => {
+      templateInstance.data.next()
+    })
   })
 }
 
-function onLoggedIn () {
+function onLoggedIn (templateInstance) {
+  templateInstance.state.set('loggingIn', false)
+  templateInstance.state.set('loginFail', false)
+
   const screenWidth = window.screen.width * window.devicePixelRatio
   const screenHeight = window.screen.height * window.devicePixelRatio
   const viewPortWidth = window.screen.availWidth
   const viewPortHeight = window.screen.availHeight
-  Users.methods.loggedIn.call({
-    screenWidth,
-    screenHeight,
-    viewPortWidth,
-    viewPortHeight
-  }, (err) => {
-    if (err) console.log(err)
+
+  templateInstance.api.callMethod({
+    name: Users.methods.loggedIn,
+    args: {
+      screenWidth,
+      screenHeight,
+      viewPortWidth,
+      viewPortHeight
+    },
+    failure: err => console.error(err)
   })
 }

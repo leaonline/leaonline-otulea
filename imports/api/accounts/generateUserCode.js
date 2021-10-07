@@ -18,7 +18,7 @@ const forbidden = /[0oq17ij5s]+/gi
  * @return {string} the code for the usernames
  */
 
-export const generateUserCode = (length = 5, maxRetries = 50) => {
+export const generateUserCode = (length = 5, maxRetries = 500) => {
   let count = 0
 
   while (count++ < maxRetries) {
