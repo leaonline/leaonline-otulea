@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 import { expect } from 'chai'
-import { HTTP } from 'meteor/jkuester:http'
+import { HTTP } from 'meteor/http'
 import { Random } from 'meteor/random'
 import { getAlphaLevels } from '../api/getAlphaLevels'
 import { restoreAll, stub } from '../../../../tests/helpers.tests'

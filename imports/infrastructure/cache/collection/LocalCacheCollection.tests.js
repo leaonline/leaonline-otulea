@@ -3,7 +3,7 @@ import { expect } from 'chai'
 import { Random } from 'meteor/random'
 import { Mongo } from 'meteor/mongo'
 import { LocalCacheCollection } from './LocalCacheCollection'
-import { HTTP } from 'meteor/jkuester:http'
+import { HTTP } from 'meteor/http'
 import { restoreAll, stub } from '../../../../tests/helpers.tests'
 
 describe(LocalCacheCollection.name, function () {

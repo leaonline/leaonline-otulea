@@ -71,9 +71,6 @@ jkuester:template-loader
 # pub/sub
 ccorcos:subs-cache
 
-# connection
-jkuester:http
-
 # reporting
 email@2.1.1
 

@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 import { expect } from 'chai'
-import { HTTP } from 'meteor/jkuester:http'
+import { HTTP } from 'meteor/http'
 import { getThresholds } from '../api/getThresholds'
 import { stub, restoreAll } from '../../../../tests/helpers.tests'
 import { toContentServerURL } from '../../../api/url/toContentServerURL'
