@@ -9,6 +9,7 @@ import '../../components/container/container'
 import './welcome.scss'
 import './welcome.html'
 
+const appStatus = Meteor.settings.public.status
 const settings = Meteor.settings.public.accounts
 const CODE_LENGTH = settings.code.length
 const inputFieldIndices = [...new Array(CODE_LENGTH)].map((v, i) => i)
@@ -34,10 +35,14 @@ Template.welcome.onCreated(function () {
     }
   })
 
-  instance.state.set('loginCode', null)
-  instance.state.set('loadComplete', false)
-  instance.state.set('isDemoUser', !!instance.data?.queryParams?.demo)
   instance.newUser = new ReactiveVar()
+  instance.state.set({
+    loginCode: null,
+    loadComplete: false,
+    isDemoUser: !!instance.data?.queryParams?.demo,
+    appStatus: appStatus,
+    isBeta: appStatus === 'beta'
+  })
 
   // see if we have a cached code and this may be a page refresh
   const existingCode = window.localStorage.getItem('newUserCode')
@@ -86,6 +91,9 @@ Template.welcome.helpers({
   },
   dependenciesComplete () {
     return Template.instance().state.get('dependenciesComplete')
+  },
+  isBeta () {
+    return Template.instance().state.get('isBeta')
   },
   intro () {
     return Template.instance().state.get('intro')
@@ -282,6 +290,14 @@ Template.welcome.events({
   'click .to-overview-button' (event, templateInstance) {
     fadeOut('.lea-welcome-container', templateInstance, () => {
       templateInstance.data.next()
+    })
+  },
+  'click .toggle-beta' (event, templateInstance) {
+    event.preventDefault()
+    templateInstance.api.fadeIn('.beta-content', () => {
+      templateInstance.api.fadeOut('.toggle-beta', () => {
+        event.currentTarget.remove()
+      })
     })
   }
 })

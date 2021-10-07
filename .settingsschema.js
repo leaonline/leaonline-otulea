@@ -3,6 +3,7 @@ const schema = def => new SimpleSchema(def)
 
 const settingsSchema = schema({
   public: schema({
+    status: String,
     accounts: schema({
       code: schema({
         length: SimpleSchema.Integer

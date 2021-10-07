@@ -1,5 +1,6 @@
 {
   "public": {
+    "status": "beta",
     "accounts": {
       "code": {
         "length": 5

@@ -25,6 +25,27 @@
                 </div>
             </div>
 
+            {{! we need to show a beta version warning in order to inform users }}
+            {{#if isBeta}}
+            {{#onComplete complete=dependenciesComplete}}
+                {{#container class="welcome-intro-container my-5"}}
+                <div class="card">
+                    <div class="card-header beta-header border border-primary bg-white d-flex justify-content-between">
+                        {{> textGroup type=this.type text=(i18n "pages.welcome.beta.title")}}
+                        {{> actionButton
+                                btnClass="btn-primary bg-primary text-white"
+                                type="primary"
+                                class="toggle-beta"
+                                label=(i18n "pages.welcome.beta.showHide")}}
+                    </div>
+                    <div class="card-body beta-content border border-primary" style="display: none;">
+                        {{> textGroup type=this.type text=(i18n "pages.welcome.beta.note")}}
+                    </div>
+                </div>
+                {{/container}}
+            {{/onComplete}}
+            {{/if}}
+
             {{#unless currentUser}}
                 {{#container class="welcome-intro-container my-5"}}
                     <div class="card">
