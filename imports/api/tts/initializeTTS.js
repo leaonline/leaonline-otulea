@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor'
-import { HTTP } from 'meteor/http'
+import { HTTP } from 'meteor/jkuester:http'
 import { sendError } from '../../contexts/errors/api/sendError'
 import { getOSInfo } from '../../ui/utils/getOSInfo'
 

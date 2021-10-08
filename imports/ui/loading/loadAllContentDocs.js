@@ -1,5 +1,5 @@
 import { toContentServerURL } from '../../api/url/toContentServerURL'
-import { HTTP } from 'meteor/http'
+import { HTTP } from 'meteor/jkuester:http'
 
 /**
  * Loads all docs from the content-server by given params.

@@ -1,5 +1,5 @@
 /* eslint-env mocha */
-import { HTTP } from 'meteor/http'
+import { HTTP } from 'meteor/jkuester:http'
 import { expect } from 'chai'
 import { Random } from 'meteor/random'
 import { stub, restoreAll } from '../../../../tests/helpers.tests'

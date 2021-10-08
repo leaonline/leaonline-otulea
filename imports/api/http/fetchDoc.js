@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor'
-import { HTTP } from 'meteor/http'
+import { HTTP } from 'meteor/jkuester:http'
 
 const origin = Meteor.absoluteUrl()
 const headers = {

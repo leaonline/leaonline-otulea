@@ -71,6 +71,9 @@ jkuester:template-loader
 # pub/sub
 ccorcos:subs-cache
 
+# client
+jkuester:http
+
 # reporting
 email@2.1.1
 
@@ -80,7 +83,7 @@ email@2.1.1
 audit-argument-checks@1.0.7
 force-ssl@1.1.0
 jquery@3.0.0!
-zodern:hide-production-sourcemaps
+# zodern:hide-production-sourcemaps # uncomment when stable release is up
 
 #========================================
 # testing

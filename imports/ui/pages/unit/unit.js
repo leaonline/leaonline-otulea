@@ -87,6 +87,7 @@ Template.unit.onCreated(function () {
 
     // simply skip if these params are not set, and let the router take care
     if (!unitId || !sessionId) {
+      info('no unitId/sessionId', { unitId, sessionId })
       return abortUnit(instance)
     }
 
@@ -94,13 +95,28 @@ Template.unit.onCreated(function () {
 
     instance.state.clear()
     sessionLoader({ sessionId, unitId })
-      .catch(err => abortUnit(instance, err))
+      .catch(err => {
+        info('session loader failed')
+        abortUnit(instance, err)
+      })
       .then(responseData => {
-        info(responseData)
+        if (!responseData) {
+          info('response data undefined')
+          return abortUnit(instance)
+        }
 
-        const { sessionDoc, unitDoc, unitSetDoc, dimensionDoc, levelDoc, color } = responseData
+        const {
+          sessionDoc,
+          unitDoc,
+          unitSetDoc,
+          dimensionDoc,
+          levelDoc,
+          color
+        } = responseData
+
         // first we check for all docs, even one left-out doc is not acceptable
         if (!sessionDoc || !unitDoc || !unitSetDoc || !dimensionDoc || !levelDoc) {
+          info('response data is incomplete')
           return abortUnit(instance)
         }
 
@@ -253,6 +269,7 @@ Template.unit.events({
       })
     }
     catch (e) {
+      templateInstance.api.info('session update failed')
       return abortUnit(templateInstance, e)
     }
 

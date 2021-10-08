@@ -38,6 +38,7 @@ export class LocalCacheCollection extends Mongo.Collection {
       }
     }
     catch (e) {
+      console.error('LocalCacheCollection error on doc request')
       console.error(e)
       log(e)
     }

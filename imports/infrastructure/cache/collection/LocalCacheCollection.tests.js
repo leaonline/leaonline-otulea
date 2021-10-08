@@ -3,7 +3,7 @@ import { expect } from 'chai'
 import { Random } from 'meteor/random'
 import { Mongo } from 'meteor/mongo'
 import { LocalCacheCollection } from './LocalCacheCollection'
-import { HTTP } from 'meteor/http'
+import { HTTP } from 'meteor/jkuester:http'
 import { restoreAll, stub } from '../../../../tests/helpers.tests'
 
 describe(LocalCacheCollection.name, function () {
@@ -32,7 +32,10 @@ describe(LocalCacheCollection.name, function () {
       expect(collection.findOne()).to.equal(undefined)
     })
     it('fetches the doc from the internally set url', function () {
-      const doc = { _id: Random.id() }
+      const doc = {
+        _id: Random.id(),
+        content: [{ response: { $regexp: '0', $flags: '' } }]
+      }
       stub(HTTP, 'get', () => ({
         data: doc
       }))
