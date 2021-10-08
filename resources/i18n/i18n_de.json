@@ -5,7 +5,9 @@
     "continue": "Fortsetzen",
     "restart": "Neu starten",
     "cancel": "Abbrechen",
-    "confirmCancel": "Möchtest du die Aufgaben wirklich abbrechen?"
+    "confirmCancel": "Möchtest du die Aufgaben wirklich abbrechen?",
+    "show": "Anzeigen",
+    "hide": "Verbergen"
   },
   "aria": {
     "readText": "Text als Audio abspielen"

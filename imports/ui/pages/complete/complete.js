@@ -121,7 +121,7 @@ Template.complete.onCreated(function () {
             .catch(error => onFailed(error))
             .then(alphaLevelDocs => {
               if (alphaLevelDocs.length === 0) {
-                instance.state.set('competenciesLoaded', true)
+                instance.state.set('alphaLevelsLoaded', true)
                 return onFailed(new Meteor.Error('test 3'))
               }
 
@@ -153,7 +153,7 @@ Template.complete.onCreated(function () {
               instance.state.set({
                 noScoredAlphas,
                 alphaLevels: aggregatedAlphaLevels,
-                competenciesLoaded: true
+                alphaLevelsLoaded: true
               })
             })
         }
@@ -249,14 +249,21 @@ Template.complete.helpers({
   loadComplete () {
     const instance = Template.instance()
     return instance.state.get('dependenciesComplete') &&
-      instance.state.get('competenciesLoaded') &&
+      // instance.state.get('competenciesLoaded') &&
       instance.state.get('sessionLoaded')
   },
   failed () {
     return Template.getState('failed')
   },
+  feedbackComplete () {
+    return Template.getState('competenciesLoaded') &&
+      Template.getState('alphaLevelsLoaded')
+  },
   competenciesLoaded () {
     return Template.getState('competenciesLoaded')
+  },
+  alphaLevelsLoaded () {
+    return Template.getState('alphaLevelsLoaded')
   },
   competencies () {
     return Template.getState('aggregatedResults')

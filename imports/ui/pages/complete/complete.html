@@ -21,6 +21,20 @@
             {{/container}}
         {{/if}}
 
+        {{#unless feedbackComplete}}
+            {{#onComplete complete=loadComplete}}
+                {{#container class="d-print-none"}}
+                    <div class="card my-4 border border-primary">
+                        <div class="card-body">
+                            {{> textGroup
+                                    text=(i18n "pages.complete.loading")
+                                    type=currentType}}
+                        </div>
+                    </div>
+                {{/container}}
+            {{/onComplete}}
+        {{/unless}}
+
         {{!-- we display a failed state container to indicate to get feedback at a later point --}}
         {{#with failed}}
             {{#container}}

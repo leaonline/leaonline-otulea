@@ -21,7 +21,8 @@
       "alphaLevels": "Alpha-Level",
       "noScoredAlpha": "Es sind noch nicht genug Aufgaben bearbeitet, um dein Alpha-Level einschätzen zu können.",
       "noScoredComp": "Es sind noch nicht genug Aufgaben bearbeitet, um Kompetenzen einschätzen zu können.",
-      "responses": "Alle Antworten"
+      "responses": "Alle Antworten",
+      "loading": "Deine persönliche Auswertung wird erstellt. Dies kann einen Moment dauern."
     }
   },
   "thresholds": {
@@ -36,9 +37,5 @@
     "correct": "Bestanden",
     "perc": "in Prozent",
     "grade": "Bewertung"
-  },
-  "actions": {
-    "show": "Anzeigen",
-    "hide": "Verbergen"
   }
 }
