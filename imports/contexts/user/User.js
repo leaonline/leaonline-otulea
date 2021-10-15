@@ -19,6 +19,13 @@ Users.schema = {
     min: codeLength,
     max: codeLength
   },
+  updatedAt: {
+    type: Date,
+    sort: -1
+  },
+
+  createdAt: Date,
+
   isDemoUser: {
     type: Boolean,
     optional: true
@@ -27,9 +34,6 @@ Users.schema = {
     type: Boolean,
     optional: true
   },
-  createdAt: Date,
-  updatedAt: Date,
-
   email: {
     type: String,
     optional: true
@@ -54,14 +58,19 @@ Users.methods = {}
 
 Users.methods.generate = {
   name: 'users.methods.generate',
-  schema: {},
+  schema: {
+    isDemo: {
+      type: Boolean,
+      optional: true
+    }
+  },
   backend: true,
   numRequests: 1,
   timeInterval: 1000,
   run: onServerExec(function () {
     import { generateUserCode } from '../../api/accounts/generateUserCode'
 
-    return function () {
+    return function ({ isDemo } = {}) {
       const usersLength = Meteor.users.find().count()
       const maxRetries = usersLength > defaultMaxRetries
         ? usersLength
@@ -69,6 +78,11 @@ Users.methods.generate = {
 
       const code = generateUserCode(codeLength, maxRetries)
       const userId = Accounts.createUser({ username: code, password: code })
+
+      if (isDemo === true) {
+        Meteor.users.update(userId, { $set: { isDemoUser: isDemo } })
+      }
+
       return Meteor.users.findOne(userId, { fields: { services: 0 } })
     }
   })
@@ -190,6 +204,23 @@ Users.methods.loggedIn = {
     }
   })
 }
+
+onServerExec(function () {
+  Users.actions = {
+    generateUser: {
+      key: 'generateUser',
+      label: 'users.generate',
+      icon: 'plus',
+      name: Users.methods.generate.name,
+      isAll: true,
+      color: 'success',
+      args: {
+        isDemo: Boolean,
+        isDebug: Boolean
+      }
+    }
+  }
+})
 
 /**
  * No publications for now
