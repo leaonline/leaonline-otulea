@@ -205,40 +205,58 @@ Template.welcome.events({
     showLoginButton(templateInstance)
   },
   'keydown .login-field' (event, templateInstance) {
+    const key = event.key.toLowerCase()
+
+    if (key === 'enter' || key === 'return') {
+      templateInstance.$('.lea-welcome-login').click()
+      return true
+    }
+
     // if there is a paste operation we skip the key-down and bubble to paste
-    if (event.key === 'v' && (event.ctrlKey || event.metaKey)) {
+    if (key === 'paste' || (key === 'v' && (event.ctrlKey || event.metaKey))) {
       return true
     }
 
     // skip everything on Tab to keep
     // accessibility in standard mode
-    if (event.code === 'Tab') {
+    if (['escape', 'tab', 'shift', 'control', 'alt', ' ', 'spacebar', 'space bar'].includes(key) || /F\d{1,2}/i.test(key)) {
       return true
     }
 
     event.preventDefault()
-    const $curent = templateInstance.$(event.currentTarget)
-    const indexStr = $curent.data('index')
+    const $current = templateInstance.$(event.currentTarget)
+    const indexStr = $current.data('index')
     const index = parseInt(indexStr, 10)
 
-    if (event.code === 'Backspace') {
-      if (index === 0) {
-        return true
-      }
-      else {
+    if (key === 'escape') {
+      $current.blur()
+      return true
+    }
+
+    // on any destructive operation we clear the current field
+    // and jump to the previous input and re-eszablish edit mode
+    if (['backspace', 'delete', 'clear', 'cut', 'undo'].includes(key)) {
+      if (index > 0) {
         // update field and position
         const $prev = templateInstance.$(`input[data-index="${index - 1}"]`)
-        $curent.val('')
+        $current.val('')
         $prev.val('')
         $prev.focus()
         // update logincode
         const loginCode = getLoginCode(templateInstance)
         templateInstance.state.set('loginCode', loginCode)
       }
+
+      else {
+        return true
+      }
     }
-    else if (event.code.indexOf('Key') > -1 || event.code.indexOf('Digit') > -1) {
+
+    // otherwise, if we enter a single valid character in the range of typical
+    // alphanumeric characters we enter the character and jump to the next input
+    else if (/^[a-zA-Z0-9]{1}$/i.test(key)) {
       // update values
-      $curent.val(event.key)
+      $current.val(event.key)
       const loginCode = getLoginCode(templateInstance)
       templateInstance.state.set('loginCode', loginCode)
 
@@ -250,10 +268,25 @@ Template.welcome.events({
       else {
         showLoginButton(templateInstance)
       }
+
+      return true
+    }
+
+    // as a fallback we collect error data in order to understand what caused
+    // the misinterpretation of the event key
+    else {
+      templateInstance.api.sendError({
+        error: new Meteor.Error('welcome.login.failed', 'keyDown.unknownKey', {
+          key: event.key,
+          code: event.code
+        })
+      })
     }
   },
   'keydown .lea-welcome-login' (event, templateInstance) {
-    if (event.code === 'Backspace') {
+    const key = event.key.toLowerCase()
+
+    if (['backspace', 'delete', 'clear', 'cut', 'undo'].includes(key)) {
       // update field and position
       const $prev = templateInstance.$(`input[data-index="${CODE_LENGTH - 1}"]`)
       $prev.val('')
