@@ -173,9 +173,7 @@ describe(gradeCompetenciesAndCountAlphaLevels.name, function () {
       perc: 1
     })
     stub(Email, 'send', ({ to, subject, replyTo, from, text }) => {
-      const errorStr = text
-        .replace('<html><body><pre><code>', '')
-        .replace('</code></pre></body></html>', '')
+      const errorStr = text.trim()
       const parsedError = JSON.parse(errorStr)
       expect(parsedError.error).to.equal('generateFeedback.error')
       expect(parsedError.reason).to.equal('generateFeedback.noCompetencyDoc')
