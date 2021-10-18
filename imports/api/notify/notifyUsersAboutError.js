@@ -13,7 +13,7 @@ export const notifyUsersAboutError = error => {
       subject: `${appName} [error]: ${error.type} - ${error.name}`,
       replyTo: replyTo,
       from: from,
-      text: `<html><body><pre><code>${JSON.stringify(error, null, 2)}</code></pre></body></html>`
+      text: JSON.stringify(error, null, 2)
     })
   })
 }

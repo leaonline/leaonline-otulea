@@ -21,7 +21,7 @@ describe(notifyUsersAboutError.name, function () {
       expect(from).to.equal('system@example.com')
       expect(replyTo).to.equal('noreply@example.com')
       expect(subject).to.equal('apps.otulea.title [error]: testError - Error')
-      expect(text).to.equal(`<html><body><pre><code>${JSON.stringify(err, null, 2)}</code></pre></body></html>`)
+      expect(text).to.equal(JSON.stringify(err, null, 2).trim())
     })
 
     notifyUsersAboutError(err)
