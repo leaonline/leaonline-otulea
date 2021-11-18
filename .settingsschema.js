@@ -99,6 +99,10 @@ const settingsSchema = schema({
     interval: Number,
     secret: String,
     url: String
+  }),
+  patches: schema({
+    dryRun: Boolean,
+    addDimensionToFeedback: Boolean
   })
 })
 
