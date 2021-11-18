@@ -93,5 +93,6 @@ jquery@3.0.0!
 #========================================
 # testing
 #========================================
-# lmieulet:meteor-coverage@4.1.0
-# meteortesting:mocha
+meteortesting:mocha
+lmieulet:meteor-coverage
+
