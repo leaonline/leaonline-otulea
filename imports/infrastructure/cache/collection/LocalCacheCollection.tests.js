@@ -2,8 +2,9 @@
 import { expect } from 'chai'
 import { Random } from 'meteor/random'
 import { Mongo } from 'meteor/mongo'
-import { LocalCacheCollection } from './LocalCacheCollection'
+import { EJSON } from 'meteor/ejson'
 import { HTTP } from 'meteor/jkuester:http'
+import { LocalCacheCollection } from './LocalCacheCollection'
 import { restoreAll, stub } from '../../../../tests/helpers.tests'
 
 describe(LocalCacheCollection.name, function () {
@@ -24,35 +25,33 @@ describe(LocalCacheCollection.name, function () {
       expect(collection.find().count()).to.equal(1)
       expect(collection.findOne()).to.deep.equal(doc)
     })
-    it('logs if the selector is not sufficient for fetching, returns undefined', function () {
+    it('throws, if the selector is not sufficient for fetching, returns undefined', function () {
       stub(HTTP, 'get', () => expect.fail())
-      const collection = new LocalCacheCollection('/', message => {
-        expect(message).to.equal('insufficient selector to fetch via HTTP')
-      })
-      expect(collection.findOne()).to.equal(undefined)
+      const collection = new LocalCacheCollection('/')
+      expect(() => collection.findOne()).to.throw('insufficient selector to fetch via HTTP')
     })
     it('fetches the doc from the internally set url', function () {
       const doc = {
         _id: Random.id(),
-        content: [{ response: { $regexp: '0', $flags: '' } }]
+        content: EJSON.stringify([{ response: /0/ }])
       }
       stub(HTTP, 'get', () => ({
-        data: doc
+        data: { _id: doc._id, content: EJSON.parse(doc.content )}
       }))
       const collection = new LocalCacheCollection('/')
-      expect(collection.findOne(doc._id)).to.deep.equal(doc)
+      const doc2 = collection.findOne(doc._id)
+      console.debug({ doc2 })
+      expect(doc2._id).to.equal(doc._id)
+      expect(doc2.content).to.deep.equal([{ response: /0/ }])
     })
-    it('catches a failed request', function (done) {
+    it('throw on a failed request', function () {
       const errorId = `expected error: ${Random.id()}`
       stub(HTTP, 'get', () => {
         throw new Error(errorId)
       })
-      const collection = new LocalCacheCollection('/', error => {
-        if (typeof error === 'string') return
-        expect(error.message).to.equal(errorId)
-        done()
-      })
-      expect(collection.findOne(Random.id())).to.deep.equal(undefined)
+      const collection = new LocalCacheCollection('/', )
+      expect(() => collection.findOne(Random.id()))
+        .to.throw(errorId)
     })
   })
 })

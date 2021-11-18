@@ -1,5 +1,4 @@
 import { toContentServerURL } from '../../api/url/toContentServerURL'
-
 import { isPlainObject } from '../../utils/object/isPlainObject'
 import { asyncHTTP } from './asyncHTTP'
 
@@ -12,13 +11,14 @@ import { asyncHTTP } from './asyncHTTP'
  */
 
 export const loadContentDoc = async (context, docId, debug = () => {}) => {
-  const cursor = context.collection().find(docId)
+  const collection = context.collection()
+  const cursor = collection.find(docId)
+
   if (cursor.count() > 0) {
     return cursor.fetch()[0]
   }
 
   const route = context.routes.byId
-  const collection = context.collection()
   const url = toContentServerURL(route.path)
 
   const method = route.method.toUpperCase()

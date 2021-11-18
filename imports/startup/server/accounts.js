@@ -1,6 +1,7 @@
 /* global ServiceConfiguration */
 import { Meteor } from 'meteor/meteor'
 import { Accounts } from 'meteor/accounts-base'
+import { HTTP } from 'meteor/jkuester:http'
 import { Users } from '../../contexts/user/User'
 import { ServiceRegistry } from '../../api/services/ServiceRegistry'
 import { createMethods } from '../../infrastructure/factories/method/createMethods'
@@ -9,7 +10,7 @@ import {
   rateLimitAccounts,
   rateLimitPublications
 } from '../../infrastructure/factories/ratelimit/rateLimit'
-import { registerOAuthDDPLoginHandler } from 'meteor/leaonline:ddp-login-handler'
+import { getOAuthDDPLoginHandler, defaultDDPLoginName } from 'meteor/leaonline:ddp-login-handler'
 import { createPublications } from '../../infrastructure/factories/publication/createPublication'
 import { removeUser } from '../../api/accounts/removeUser'
 
@@ -97,7 +98,13 @@ Meteor.startup(() => {
     }
   )
 
-  registerOAuthDDPLoginHandler({ identityUrl: oauth.identityUrl })
+  const loginHandler = getOAuthDDPLoginHandler({
+    identityUrl: oauth.identityUrl,
+    httpGet: (url, requestOptions) => HTTP.get(url, requestOptions),
+    debug: console.debug
+  })
+
+  Accounts.registerLoginHandler(defaultDDPLoginName, loginHandler)
 })
 
 ServiceRegistry.register(Users)

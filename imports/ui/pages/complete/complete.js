@@ -84,25 +84,29 @@ Template.complete.onCreated(function () {
                 return onFailed(new Meteor.Error('test 2'))
               }
 
+              console.debug({ competencyIds, competencies })
               const CompetencyCollection = Competency.collection()
-              const aggregatedResults = competencies.map(resultDoc => {
-                const { competencyId } = resultDoc
-                const competencyDoc = CompetencyCollection.findOne(competencyId)
+              const aggregatedResults = competencies
+                .map(resultDoc => {
+                  const { competencyId } = resultDoc
+                  const competencyDoc = CompetencyCollection.findOne(competencyId)
 
-                if (noScoredCompetencies && resultDoc.gradeIndex > -1) {
-                  noScoredCompetencies = false
-                }
+                  if (noScoredCompetencies && resultDoc.gradeIndex > -1) {
+                    noScoredCompetencies = false
+                  }
 
-                if (!competencyDoc) {
-                  return console.warn('Found no competency doc for _id', competencyId)
-                }
+                  if (!competencyDoc) {
+                    return console.warn('Found no competency doc for _id', competencyId)
+                  }
 
-                resultDoc.shortCode = competencyDoc.shortCode
-                resultDoc.description = competencyDoc.descriptionSimple
-                resultDoc.gradeLabel = `thresholds.${resultDoc.gradeName}`
-                resultDoc.perc = resultDoc.perc * 100
-                return resultDoc
-              })
+                  resultDoc.shortCode = competencyDoc.shortCode
+                  resultDoc.description = competencyDoc.descriptionSimple
+                  resultDoc.gradeLabel = `thresholds.${resultDoc.gradeName}`
+                  resultDoc.perc = resultDoc.perc * 100
+
+                  console.debug({ resultDoc })
+                  return resultDoc
+                })
                 .sort((a, b) => a.shortCode.localeCompare(b.shortCode))
 
               debug({ aggregatedResults })
@@ -168,7 +172,11 @@ Template.complete.onCreated(function () {
     .then(sessionData => {
       debug(sessionData)
 
-      if (!sessionData) return console.warn('no session data!')
+      if (!sessionData) {
+        return console.warn('no session data!')
+      } else {
+        console.debug('session data loaded')
+      }
 
       const { sessionDoc, unitSetDoc, dimensionDoc, levelDoc, color } = sessionData
       // first we check for all docs, even one left-out doc is not acceptable

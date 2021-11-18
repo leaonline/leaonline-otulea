@@ -19,3 +19,6 @@ import '../imports/startup/server/diagnostics'
 import '../imports/startup/server/rateLimit'
 import '../imports/startup/server/sanityCheck'
 import '../imports/startup/server/fixtures'
+
+// apply patches at the very last stage
+import '../imports/startup/server/patches'

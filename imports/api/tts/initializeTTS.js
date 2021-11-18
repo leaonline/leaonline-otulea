@@ -32,12 +32,13 @@ export const initializeTTS = async () => {
     throw error
   }
 
-  console.debug('[initializeTTS]: configure TTS')
+  console.debug('[initializeTTS]: configure TTS in mode', mode)
   return new Promise((resolve, reject) => {
     TTSEngine.configure({
       loader: externalServerTTSLoader,
       mode: mode,
       onError: error => {
+        sendError({ error })
         reject(error)
       },
       onComplete () {

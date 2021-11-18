@@ -1,5 +1,5 @@
 import { toContentServerURL } from '../../api/url/toContentServerURL'
-import { HTTP } from 'meteor/jkuester:http'
+import { asyncHTTP } from './asyncHTTP'
 
 /**
  * Loads all docs from the content-server by given params.
@@ -8,12 +8,13 @@ import { HTTP } from 'meteor/jkuester:http'
  * @param debug {Function?} optional debug logger
  * @return {Promise}
  */
-export const loadAllContentDocs = (context, params, debug = () => {}) => {
+export const loadAllContentDocs = async (context, params, debug = () => {}) => {
   const route = context.routes.all
   const collection = context.collection()
   const url = toContentServerURL(route.path)
   const method = route.method.toUpperCase()
   const requestOptions = {}
+
   requestOptions.headers = {
     mode: 'cors',
     cache: 'no-store'
@@ -26,37 +27,36 @@ export const loadAllContentDocs = (context, params, debug = () => {}) => {
   debug(method, url, 'start request')
   debug(method, url, 'request options', requestOptions)
 
-  return new Promise((resolve, reject) => {
-    HTTP.call(method, url, requestOptions, (error, response) => {
-      debug(method, url, 'response received', { error, response })
-      if (error) {
-        debug(method, url, 'failed')
-        return reject(error)
-      }
+  const response = await asyncHTTP(method, url, requestOptions)
+  let documents
 
-      let documents
+  if (Array.isArray(response.data)) {
+    documents = response.data
+  }
 
-      if (Array.isArray(response.data)) {
-        documents = response.data
-      }
+  else if (response.data) {
+    documents = [response.data]
+  }
 
-      else if (response.data) {
-        documents = [response.data]
-      }
+  else {
+    documents = []
+  }
 
-      else {
-        documents = []
-      }
+  // skip further processing if no documents have been received
+  if (documents.length === 0) {
+    debug(method, url, 'failed (no docs received)')
+    return documents
+  }
 
-      // skip further processing if no documents have been received
-      if (documents.length === 0) {
-        debug(method, url, 'failed (no docs received)')
-        return resolve(documents)
-      }
-
-      debug(method, url, `received ${documents.length} doc(s)`)
-      documents.forEach(doc => collection.upsert(doc._id, { $set: doc }))
-      resolve(documents)
-    })
+  debug(method, url, `received ${documents.length} doc(s)`)
+  documents.forEach(doc => {
+    if (!doc?._id) {
+      throw new Error(`Expected doc with _id to upsert`)
+    }
+    const docId = doc._id
+    collection.upsert(doc._id, { $set: doc })
+    doc._id = docId
   })
+
+  return documents
 }

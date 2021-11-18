@@ -10,6 +10,14 @@ Feedback.schema = {
   sessionId: String,
   testCycle: String,
   userId: String,
+
+  // XXX: added to collection in order to provide a one-step access
+  // to feedbacks from teacher dashboard, filtered by dimension
+  dimension: {
+    type: String,
+    optional: true
+  },
+  
   competencies: Array,
   'competencies.$': Object,
   'competencies.$.competencyId': String,
@@ -47,6 +55,39 @@ Feedback.methods.generate = {
     return function ({ sessionId }) {
       const { userId, debug } = this
       return generateFeedback({ sessionId, userId, debug })
+    }
+  })
+}
+
+Feedback.methods.getForUsers = {
+  name: 'feedback.methods.getForUsers',
+  schema: {
+    dimension: {
+      type: String,
+      optional: true
+    },
+    users: Array,
+    'users.$': String,
+    skip: {
+      type: Array,
+      optional: true
+    },
+    'skip.$': String
+  },
+  backend: true,
+  run: onServerExec(function () {
+    return function ({ users = [], dimension, skip = [] }) {
+      const query = { userId: { $in: users }}
+
+      if (dimension) {
+        query.dimension = dimension
+      }
+
+      if (skip.length > 0) {
+        query._id = { $nin: skip }
+      }
+
+      return Feedback.collection().find(query).fetch()
     }
   })
 }

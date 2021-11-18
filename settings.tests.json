@@ -1,0 +1,82 @@
+{
+  "public": {
+    "status": "beta",
+    "accounts": {
+      "code": {
+        "length": 5
+      }
+    },
+    "packages": {
+      "dynamic-import": {
+        "useLocationOrigin": true
+      }
+    },
+    "app": {
+      "name": "otu.lea",
+      "label": "apps.otulea.title",
+      "description": "apps.otulea.description",
+      "icon": "edit",
+      "logLevel": "info"
+    },
+    "tts": {
+      "url": "http://localhost:3099/tts"
+    },
+    "hosts": {
+      "content": {
+        "base": "http://localhost:3099",
+        "tts": "/tts",
+        "competency": "/competencies",
+        "url": "http://localhost:3099"
+      },
+      "sessions": {
+        "url": "http://localhost:3099",
+        "evalUrl": "http://localhost:3099/eval",
+        "responseUrl": "http://localhost:3099/response"
+      }
+    }
+  },
+  "oauth": {
+    "clientId": "abcdefghijklmnop",
+    "secret": "abcdefghijklmnopabcdefghijklmnop",
+    "dialogUrl": "http://localhost:9090/oauth/authorize",
+    "accessTokenUrl": "http://localhost:9090/oauth/token",
+    "authorizeUrl": "http://localhost:9090/oauth/authorize",
+    "identityUrl": "http://localhost:9090/oauth/ident",
+    "redirectUrl": "http://localhost:3000/_oauth/lea"
+  },
+  "hosts": {
+    "backend": {
+      "urlRegEx": "^http:\/\/.*$"
+    },
+    "sessions": {
+      "secret": "01234567890123456789"
+    },
+    "content": {
+      "username": "otuleasystem",
+      "password": "000111222333444555666777888999"
+    }
+  },
+  "email": {
+    "notify": ["admin@example.com"],
+    "replyTo": "noreply@example.com",
+    "from": "system@example.com"
+  },
+  "accounts": {
+    "removeOlderThanDays": 3,
+    "removeIncompleteSessions": false,
+    "config": {
+      "forbidClientAccountCreation": true,
+      "ambiguousErrorMessages": false,
+      "sendVerificationEmail": false,
+      "loginExpirationInDays": 90,
+      "passwordResetTokenExpirationInDays": 1,
+      "passwordEnrollTokenExpirationInDays": 3
+    }
+  },
+  "status": {
+    "active": false,
+    "interval": 5000,
+    "secret": "lea.online.secret",
+    "url": "http://localhost:7070/collect"
+  }
+}

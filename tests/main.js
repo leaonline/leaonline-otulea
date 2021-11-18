@@ -3,6 +3,7 @@ import { Meteor } from 'meteor/meteor'
 
 if (Meteor.isServer) {
   (function () {
+    import './webapp-server-helpers'
     import './infrastructure'
     import './api'
   })()

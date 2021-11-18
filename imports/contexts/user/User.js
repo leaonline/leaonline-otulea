@@ -162,10 +162,10 @@ Users.methods.exist = {
   numRequests: 1,
   timeInterval: 1000,
   schema: {
-    code: Boolean
+    code: String
   },
   run: onServer(function ({ code }) {
-    return Meteor.users.find({ code }).count() > 0
+    return Meteor.users.findOne({ username: code })
   })
 }
 

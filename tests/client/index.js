@@ -10,4 +10,5 @@ describe('routing', function () {
 
 describe('ui', function () {
   import '../../imports/ui/components/tests'
+  import '../../imports/ui/loading/tests'
 })

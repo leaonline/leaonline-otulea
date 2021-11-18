@@ -1,8 +1,8 @@
 /* eslint-env mocha */
 import { expect } from 'chai'
-import { getType } from './getType'
-import { hasProperty } from './hasProperty'
-import { isPlainObject } from './isPlainObject'
+import { getType } from '../getType'
+import { hasProperty } from '../hasProperty'
+import { isPlainObject } from '../isPlainObject'
 
 class ES6CustomWhatever {
   get [Symbol.toStringTag] () {

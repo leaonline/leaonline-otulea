@@ -14,6 +14,14 @@ export const unsafeInt = negative => negative
   ? (Number.MIN_SAFE_INTEGER - 1)
   : (Number.MAX_SAFE_INTEGER + 1)
 
+export const expectThrow = async function (fn) {
+  try {
+    await fn()
+  } catch (e) {
+    return e
+  }
+}
+
 // /////////////////////////////////////////////////////////////////////////////
 //
 // Stubbing, the easy way
