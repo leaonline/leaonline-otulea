@@ -16,6 +16,7 @@ import {
 import { stub, restoreAll } from '../../../../tests/helpers.tests'
 import { Competency } from '../../Competency'
 import { Response } from '../../response/Response'
+import { TestCycle } from '../../testcycle/TestCycle'
 
 describe(countCompetencies.name, function () {
   it('correctly counts scored competencies', function () {
@@ -436,13 +437,16 @@ describe(generateFeedback.name, function () {
     const FeedbackCollection = new Mongo.Collection(null)
     const SessionCollection = new Mongo.Collection(null)
     const ResponseCollection = new Mongo.Collection(null)
+    const TestCycleCollection = new Mongo.Collection(null)
 
     stub(Feedback, 'collection', () => FeedbackCollection)
     stub(Session, 'collection', () => SessionCollection)
     stub(Response, 'collection', () => ResponseCollection)
+    stub(TestCycle, 'collection', () => TestCycleCollection)
 
     // create sessionDoc
-    const testCycle = Random.id()
+    const dimensionId = Random.id()
+    const testCycle = TestCycleCollection.insert({ dimension: dimensionId })
     const sessionId = SessionCollection.insert({
       completedAt: new Date(),
       progress: 100,
@@ -527,6 +531,7 @@ describe(generateFeedback.name, function () {
       userId,
       sessionId,
       testCycle,
+      dimension: dimensionId,
       alphaLevels: [{
         alphaLevelId: aid,
         count: 2,
@@ -599,6 +604,7 @@ describe(generateFeedback.name, function () {
       userId,
       sessionId,
       testCycle,
+      dimension: dimensionId,
       alphaLevels: [{
         alphaLevelId: aid,
         count: 2,
@@ -671,6 +677,7 @@ describe(generateFeedback.name, function () {
       userId,
       sessionId,
       testCycle,
+      dimension: dimensionId,
       alphaLevels: [{
         alphaLevelId: aid,
         count: 2,
@@ -754,6 +761,7 @@ describe(generateFeedback.name, function () {
       userId,
       sessionId,
       testCycle,
+      dimension: dimensionId,
       alphaLevels: [{
         alphaLevelId: aid,
         count: 2,
@@ -836,6 +844,7 @@ describe(generateFeedback.name, function () {
       userId,
       sessionId,
       testCycle,
+      dimension: dimensionId,
       alphaLevels: [{
         alphaLevelId: aid,
         count: 2,

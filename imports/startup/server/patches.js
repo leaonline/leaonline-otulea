@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor'
 import { addDimensionToFeedback } from '../../patches/addDimensionToFeedback'
 
 const { patches } = Meteor.settings

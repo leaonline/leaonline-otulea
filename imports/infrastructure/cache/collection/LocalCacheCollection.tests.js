@@ -36,7 +36,7 @@ describe(LocalCacheCollection.name, function () {
         content: EJSON.stringify([{ response: /0/ }])
       }
       stub(HTTP, 'get', () => ({
-        data: { _id: doc._id, content: EJSON.parse(doc.content )}
+        data: { _id: doc._id, content: EJSON.parse(doc.content) }
       }))
       const collection = new LocalCacheCollection('/')
       const doc2 = collection.findOne(doc._id)
@@ -49,7 +49,7 @@ describe(LocalCacheCollection.name, function () {
       stub(HTTP, 'get', () => {
         throw new Error(errorId)
       })
-      const collection = new LocalCacheCollection('/', )
+      const collection = new LocalCacheCollection('/')
       expect(() => collection.findOne(Random.id()))
         .to.throw(errorId)
     })

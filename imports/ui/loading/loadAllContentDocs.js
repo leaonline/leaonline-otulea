@@ -51,7 +51,7 @@ export const loadAllContentDocs = async (context, params, debug = () => {}) => {
   debug(method, url, `received ${documents.length} doc(s)`)
   documents.forEach(doc => {
     if (!doc?._id) {
-      throw new Error(`Expected doc with _id to upsert`)
+      throw new Error('Expected doc with _id to upsert')
     }
     const docId = doc._id
     collection.upsert(doc._id, { $set: doc })

@@ -17,7 +17,8 @@ export const unsafeInt = negative => negative
 export const expectThrow = async function (fn) {
   try {
     await fn()
-  } catch (e) {
+  }
+  catch (e) {
     return e
   }
 }

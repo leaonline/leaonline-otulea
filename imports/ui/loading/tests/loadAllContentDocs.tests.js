@@ -33,7 +33,7 @@ describe(loadAllContentDocs.name, function () {
     expect(localDocs).to.deep.equal(docs)
 
     // cached response
-    const cachedDocs =  await loadAllContentDocs(RequestedDocsContext)
+    const cachedDocs = await loadAllContentDocs(RequestedDocsContext)
     expect(cachedDocs).to.deep.equal(docs)
     expect(RequestedDocsContext.collection().find().count()).to.equal(1)
   })

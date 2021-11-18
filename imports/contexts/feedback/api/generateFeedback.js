@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor'
 import { Feedback } from '../Feedback'
 import { Session } from '../../session/Session'
+import { TestCycle } from '../../testcycle/TestCycle'
 import { getThresholds } from '../../thresholds/api/getThresholds'
 import { getSessionResponses } from '../../session/api/getSessionResponses'
 import { getGrade } from '../../thresholds/api/getGrade'
@@ -29,6 +30,21 @@ export const generateFeedback = ({ sessionId, userId, debug = () => {} }) => {
     throw new Meteor.Error(
       'generateFeedback.error',
       'generateFeedback.sessionNotComplete', {
+        userId,
+        sessionId,
+        testCycle: sessionDoc?.testCycle,
+        completedAt: sessionDoc?.completedAt,
+        progress: sessionDoc?.progress,
+        maxProgress: sessionDoc?.maxProgress
+      })
+  }
+
+  const testCycleDoc = TestCycle.collection().findOne(sessionDoc.testCycle)
+
+  if (!testCycleDoc) {
+    throw new Meteor.Error(
+      'generateFeedback.error',
+      'generateFeedback.testCycleNotFound', {
         userId,
         sessionId,
         testCycle: sessionDoc?.testCycle,
@@ -137,6 +153,7 @@ export const generateFeedback = ({ sessionId, userId, debug = () => {} }) => {
   const feedbackDoc = {
     sessionId,
     userId,
+    dimension: testCycleDoc.dimension,
     testCycle: sessionDoc.testCycle,
     competencies: Array.from(aggregatedCompetencies.values()),
     alphaLevels: Array.from(aggregatedAlphaLevels.values())

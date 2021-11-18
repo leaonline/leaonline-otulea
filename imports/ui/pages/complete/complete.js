@@ -174,7 +174,8 @@ Template.complete.onCreated(function () {
 
       if (!sessionData) {
         return console.warn('no session data!')
-      } else {
+      }
+      else {
         console.debug('session data loaded')
       }
 

@@ -10,7 +10,7 @@ describe(loadContentDoc.name, function () {
   beforeEach(function () {
     RequestedDocsContext.collection().remove({})
   })
-  it('loads a single document from the content server',async function () {
+  it('loads a single document from the content server', async function () {
     const docId = RequestedDocsContext.routes.byId.docId
     const doc = await loadContentDoc(RequestedDocsContext, docId)
     expect(doc).to.deep.equal(RequestedDocsContext.doc)
@@ -22,7 +22,7 @@ describe(loadContentDoc.name, function () {
     expect(localDoc).to.deep.equal(doc)
 
     // cached response
-    const cachedDoc =  await loadContentDoc(RequestedDocsContext, docId)
+    const cachedDoc = await loadContentDoc(RequestedDocsContext, docId)
     expect(cachedDoc).to.deep.equal(doc)
     expect(RequestedDocsContext.collection().find().count()).to.equal(1)
   })

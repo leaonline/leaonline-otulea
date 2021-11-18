@@ -17,7 +17,7 @@ Feedback.schema = {
     type: String,
     optional: true
   },
-  
+
   competencies: Array,
   'competencies.$': Object,
   'competencies.$.competencyId': String,
@@ -77,7 +77,7 @@ Feedback.methods.getForUsers = {
   backend: true,
   run: onServerExec(function () {
     return function ({ users = [], dimension, skip = [] }) {
-      const query = { userId: { $in: users }}
+      const query = { userId: { $in: users } }
 
       if (dimension) {
         query.dimension = dimension

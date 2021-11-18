@@ -1,6 +1,7 @@
+import { Meteor } from 'meteor/meteor'
+import { Mongo } from 'meteor/mongo'
 import { WebApp } from 'meteor/webapp'
 import { Random } from 'meteor/random'
-import { Meteor } from 'meteor/meteor'
 import { EJSON } from 'meteor/ejson'
 
 const toPath = name => `/${name}`
@@ -9,7 +10,7 @@ export const createUrl = path => Meteor.absoluteUrl(path)
 
 export const urls = {
   path400: toPath('path400'),
-  path200: toPath('path200'),
+  path200: toPath('path200')
 }
 
 export const RequestedDocsContext = {
@@ -101,7 +102,7 @@ if (Meteor.isServer) {
 
     if (createError) {
       res.writeHead(404)
-      res.end(`Invalid request / createError`)
+      res.end('Invalid request / createError')
       return
     }
 
