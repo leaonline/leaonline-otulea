@@ -4,7 +4,8 @@ const originals = new Map()
 
 export const mockCollection = (context, collectionFn) => {
   originals.set(context.name, context.collection)
-  context.collection = collectionFn || (() => new Mongo.Collection(null))
+  const collection = new Mongo.Collection(null)
+  context.collection = collectionFn || (() => collection)
 }
 
 export const restoreCollection = context => {

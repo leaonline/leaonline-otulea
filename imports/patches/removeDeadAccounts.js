@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor'
 import { check, Match } from 'meteor/check'
-import { isValidInteger } from '../../utils/number/validNumbers'
-import { Session } from '../../contexts/session/Session'
-import { Response } from '../../contexts/response/Response'
+import { isValidInteger } from '../utils/number/validNumbers'
+import { Session } from '../contexts/session/Session'
+import { Response } from '../contexts/response/Response'
 
-const daysIsValid = d => isValidInteger(d) && d > 0
+const daysIsValid = d => isValidInteger(d) && d >= 0
 
 /**
  * We can safely remove accounts, that have not started any session and is older
@@ -12,7 +12,9 @@ const daysIsValid = d => isValidInteger(d) && d > 0
  * We also include that the session must be completed, otherwise the user may
  * have just started a session, aborted and then left the application.
  *
- * @param days {Number} a valid integer > 0
+ * @param removeOlderThanDays {Number} a valid integer > 0
+ * @param dryRun {Boolean} no actual DB writes will be performed
+ * @param dryRun {byComment} additional, optional flag to delete by comment field
  * @param removeIncompleteSessions {Boolean} set to true if you also want to remove users that
  *   started a session but never completed one
  * @param debug {Function|undefined} log debug statements
@@ -22,18 +24,25 @@ const daysIsValid = d => isValidInteger(d) && d > 0
  *   usersRemoved : Number
  * }}
  */
-export const removeDeadAccounts = function ({ days, removeIncompleteSessions = false, debug = () => {} }) {
-  check(days, Match.Where(daysIsValid))
+export const removeDeadAccounts = function ({ dryRun, removeOlderThanDays, removeIncompleteSessions = false, byComment, debug = () => {} }) {
+  check(removeOlderThanDays, Match.Where(daysIsValid))
   check(removeIncompleteSessions, Match.Maybe(Boolean))
+  check(byComment, Match.Maybe(String))
+  check(dryRun, Match.Maybe(Boolean))
   check(debug, Match.Maybe(Function))
 
   const lastDate = new Date()
-  lastDate.setDate(lastDate.getDate() - days)
+  lastDate.setDate(lastDate.getDate() - removeOlderThanDays)
 
   const sessionCollection = Session.collection()
   const userIds = []
+  const userQuery = { createdAt: { $lte: lastDate } }
 
-  Meteor.users.find({ createdAt: { $lte: lastDate } }).forEach(userDoc => {
+  if (byComment) {
+    userQuery.comment = byComment
+  }
+
+  Meteor.users.find(userQuery).forEach(userDoc => {
     const userId = userDoc._id
     const sessionQuery = { userId }
 
@@ -50,7 +59,7 @@ export const removeDeadAccounts = function ({ days, removeIncompleteSessions = f
   })
 
   // skip early to avoid expensive DB access
-  if (userIds.length === 0) {
+  if (userIds.length === 0 || dryRun) {
     debug('no users, skip')
     return {
       sessionsRemoved: 0,

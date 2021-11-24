@@ -26,14 +26,38 @@ Users.schema = {
 
   createdAt: Date,
 
+  /**
+   * Some users are generated only for demonstration purposes, we should
+   * flag them, so we can distinguish them from real users
+   */
   isDemoUser: {
     type: Boolean,
     optional: true
   },
+
+  /**
+   * The debug flag can be used to make the app show extended data that should
+   * not be visible to default users.
+   */
   debug: {
     type: Boolean,
     optional: true
   },
+
+  /**
+   * In case this user is created by a specific routing or backend, we want
+   * to provide the option to leave a comment, so we can associate this user
+   * later.
+   */
+  comment: {
+    type: String,
+    optional: true
+  },
+
+  /**
+   * Is users of the app willingly want to connect their email to restore
+   * passwords we can help with that
+   */
   email: {
     type: String,
     optional: true
@@ -42,6 +66,10 @@ Users.schema = {
     type: Object,
     blackbox: true // TODO specify
   },
+
+  /**
+   * We need to get better insight of the various user agents
+   */
   agents: {
     type: Array,
     optional: true

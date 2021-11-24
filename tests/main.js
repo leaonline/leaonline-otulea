@@ -6,6 +6,7 @@ if (Meteor.isServer) {
     import './webapp-server-helpers'
     import './infrastructure'
     import './api'
+    import './startup'
   })()
 }
 

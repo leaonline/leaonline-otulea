@@ -78,13 +78,6 @@ const settingsSchema = schema({
     }
   }),
   accounts: schema({
-    removeOlderThanDays: {
-      type: SimpleSchema.Integer,
-      min: 1
-    },
-    removeIncompleteSessions: {
-      type: Boolean
-    },
     config: schema({
       "forbidClientAccountCreation": Boolean,
       "ambiguousErrorMessages": Boolean,
@@ -101,8 +94,33 @@ const settingsSchema = schema({
     url: String
   }),
   patches: schema({
-    dryRun: Boolean,
-    addDimensionToFeedback: Boolean
+    removeDeadAccounts: schema({
+      active: Boolean,
+      dryRun: Boolean,
+      removeOlderThanDays: {
+        type: SimpleSchema.Integer,
+        min: 0
+      },
+      removeIncompleteSessions: {
+        type: Boolean
+      },
+      byComment: {
+        type: String,
+        optional: true
+      }
+    }),
+    addDimensionToFeedback: schema({
+      active: Boolean,
+      dryRun: Boolean
+    }),
+    generateAccounts: schema({
+      dryRun: Boolean,
+      active: Boolean,
+      amount: Number,
+      comment: String,
+      notify: Array,
+      'notify.$': String
+    })
   })
 })
 
