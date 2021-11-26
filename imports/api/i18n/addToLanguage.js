@@ -7,5 +7,5 @@ export const addToLanguage = async options => {
   if (!importFn) return
 
   const definitions = await importFn()
-  return i18n.set(locale, definitions)
+  return definitions && i18n.set(locale, definitions.default || definitions)
 }
