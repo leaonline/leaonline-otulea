@@ -34,8 +34,6 @@ export const sendError = async ({ error, isResponse, userId, template, prepare, 
     userId: userId || Meteor.userId()
   })
 
-  console.error(normalizedError.message)
-
   return callMethod({
     name: Errors.methods.create,
     args: normalizedError,
