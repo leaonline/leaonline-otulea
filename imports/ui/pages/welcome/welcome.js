@@ -8,6 +8,7 @@ import { fadeOut } from '../../../utils/animationUtils'
 import '../../components/container/container'
 import './welcome.scss'
 import './welcome.html'
+import { sendError } from '../../../contexts/errors/api/sendError'
 
 const appStatus = Meteor.settings.public.status
 const settings = Meteor.settings.public.accounts
@@ -203,6 +204,42 @@ Template.welcome.events({
     templateInstance.state.set('loginCode', pastedData)
     showLoginButton(templateInstance)
   },
+  'input .login-field' (event, templateInstance) {
+    const key = event.originalEvent.data
+    const $current = templateInstance.$(event.currentTarget)
+    console.debug('input', key)
+
+    if (/^[a-zA-Z0-9]{1}$/i.test(key)) {
+      const indexStr = $current.data('index')
+      const index = parseInt(indexStr, 10)
+
+      // update values
+      $current.val(key)
+      const loginCode = getLoginCode(templateInstance)
+      templateInstance.state.set('loginCode', loginCode)
+
+      // update pointer
+      if (index < CODE_LENGTH - 1) {
+        const $next = templateInstance.$(`input[data-index="${index + 1}"]`)
+        $next.focus()
+      }
+      else {
+        showLoginButton(templateInstance)
+      }
+
+      return true
+    }
+
+    else if (/\s+/.test(key)) {
+      $current.val(null)
+      $current.focus()
+    }
+
+    else {
+      event.preventDefault()
+      return false
+    }
+  },
   'keydown .login-field' (event, templateInstance) {
     const key = event.key.toLowerCase()
 
@@ -222,6 +259,10 @@ Template.welcome.events({
       return true
     }
 
+    else if (/^[a-zA-Z0-9]{1}$/i.test(key)) {
+      return true
+    }
+
     event.preventDefault()
     const $current = templateInstance.$(event.currentTarget)
     const indexStr = $current.data('index')
@@ -236,14 +277,26 @@ Template.welcome.events({
     // and jump to the previous input and re-eszablish edit mode
     if (['backspace', 'delete', 'clear', 'cut', 'undo'].includes(key)) {
       if (index > 0) {
-        // update field and position
-        const $prev = templateInstance.$(`input[data-index="${index - 1}"]`)
-        $current.val('')
-        $prev.val('')
-        $prev.focus()
-        // update logincode
-        const loginCode = getLoginCode(templateInstance)
-        templateInstance.state.set('loginCode', loginCode)
+        // if there is a value in this input we delete the current input
+        if ($current.val()) {
+          $current.val(null)
+          $current.focus()
+          const loginCode = getLoginCode(templateInstance)
+          templateInstance.state.set('loginCode', loginCode)
+        }
+
+        // if the current input contains no value we "jump" to the previous
+        // input and delete it
+        else {
+          // update field and position
+          const $prev = templateInstance.$(`input[data-index="${index - 1}"]`)
+          $current.val('')
+          $prev.val('')
+          $prev.focus()
+          // update logincode
+          const loginCode = getLoginCode(templateInstance)
+          templateInstance.state.set('loginCode', loginCode)
+        }
       }
 
       else {
@@ -251,35 +304,8 @@ Template.welcome.events({
       }
     }
 
-    // otherwise, if we enter a single valid character in the range of typical
-    // alphanumeric characters we enter the character and jump to the next input
-    else if (/^[a-zA-Z0-9]{1}$/i.test(key)) {
-      // update values
-      $current.val(event.key)
-      const loginCode = getLoginCode(templateInstance)
-      templateInstance.state.set('loginCode', loginCode)
-
-      // update pointer
-      if (index < CODE_LENGTH - 1) {
-        const $next = templateInstance.$(`input[data-index="${index + 1}"]`)
-        $next.focus()
-      }
-      else {
-        showLoginButton(templateInstance)
-      }
-
-      return true
-    }
-
-    // as a fallback we collect error data in order to understand what caused
-    // the misinterpretation of the event key
     else {
-      templateInstance.api.sendError({
-        error: new Meteor.Error('welcome.login.failed', 'keyDown.unknownKey', {
-          key: event.key,
-          code: event.code
-        })
-      })
+      return true
     }
   },
   'keydown .lea-welcome-login' (event, templateInstance) {
