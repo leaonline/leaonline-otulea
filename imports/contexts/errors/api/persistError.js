@@ -11,9 +11,7 @@ import { notifyUsersAboutError } from '../../../api/notify/notifyUsersAboutError
  * @return {*}
  */
 export const persistError = normalizedErrorDoc => {
-  notifyUsersAboutError(normalizedErrorDoc)
-
-  // let's see, if the same user created the same error already
+    // let's see, if the same user created the same error already
   const { hash } = normalizedErrorDoc
   const collection = Errors.collection()
   const existingError = collection.findOne({ hash })
@@ -22,6 +20,10 @@ export const persistError = normalizedErrorDoc => {
     return collection.update(existingError._id, {
       $inc: { count: 1 }
     })
+  }
+  else {
+    // inform only about new errors
+    notifyUsersAboutError(normalizedErrorDoc)
   }
 
   normalizedErrorDoc.count = 1
