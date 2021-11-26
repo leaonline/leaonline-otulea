@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor'
 import { Template } from 'meteor/templating'
 import { Legal } from '../../../contexts/legal/Legal' // TODO load dynamic  depending on i18n locale
-import settings from '../../../../resources/i18n/i18n_routes'
+import settings from '../../../../resources/i18n/de/routes'
 
 import './legal.html'
 

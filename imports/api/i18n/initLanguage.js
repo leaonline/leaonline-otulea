@@ -1,20 +1,20 @@
 import { Template } from 'meteor/templating'
-import { i18n } from '../../api/i18n/I18n'
+import { Meteor } from 'meteor/meteor'
 
-// also register a language helper for templates
+const defaultLocale = Meteor.settings.public.defaultLocale
 
-Template.registerHelper('i18n', function (...args) {
-  args.pop()
-  return i18n.get(...args)
-})
-
-export const initLanguage = async () => {
+export const initLanguage = async (debug = () => {}) => {
   const I18N = (await import('meteor/ostrio:i18n')).default
-  const settings = (await import('../../../resources/i18n/i18n_config')).default
-  const de = (await import('../../../resources/i18n/i18n_de')).default
   const { i18n } = await import('../../api/i18n/I18n')
-  const config = { settings, de }
-  const i18nProvider = new I18N({ i18n: config })
+  const settings = (await import('../../../resources/i18n/i18n_config')).default
+  const { load, ...localeSettings } = settings[defaultLocale]
+  const language = (await load()).default
+  const i18nProvider = new I18N({
+    i18n: {
+      settings: { defaultLocale, [defaultLocale]: localeSettings },
+      [defaultLocale]: language
+    }
+  })
 
   i18n.load({
     get: i18nProvider.get,
@@ -23,7 +23,14 @@ export const initLanguage = async () => {
     thisContext: i18nProvider
   })
 
-  document.documentElement.setAttribute('lang', 'de')
-  console.info('[initLanguage]: loaded')
+  document.documentElement.setAttribute('lang', defaultLocale)
+  debug('[initLanguage]: loaded')
+
   return i18n
 }
+
+// also register a language helper for templates
+Template.registerHelper('i18n', function (...args) {
+  args.pop()
+  return i18n.get(...args)
+})
