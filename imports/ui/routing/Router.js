@@ -98,7 +98,7 @@ function createRoute (routeDef, onError) {
       // we render by default a "loading" template if the Template has not been loaded yet
       // which can be explicitly prevented by switching showLoading to false
       if (!Template[routeDef.template] && routeDef.showLoading !== false) {
-        const title = routeDef.label && translate(routeDef.label)
+        // const title = routeDef.label && translate(routeDef.label)
         this.render(routeDef.target, _loadingTemplate)
       }
     },
@@ -109,6 +109,7 @@ function createRoute (routeDef, onError) {
           Tracker.autorun((computation) => {
             const loadComplete = !Meteor.loggingIn()
             if (loadComplete) {
+              computation.stop()
               resolve()
             }
           })

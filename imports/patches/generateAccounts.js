@@ -2,7 +2,6 @@ import { Meteor } from 'meteor/meteor'
 import { Accounts } from 'meteor/accounts-base'
 import { Random } from 'meteor/random'
 import { generateUserCode } from '../api/accounts/generateUserCode'
-import { createLog } from '../utils/createLog'
 
 const settings = Meteor.settings.public.accounts
 const codeLength = settings.code.length

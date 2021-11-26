@@ -11,7 +11,7 @@ export const addDimensionToFeedback = ({ dryRun, debug = () => {} } = {}) => {
     missing: []
   }
 
-  const cursor = FeedbackCollection.find({ dimension: { $exists: false }})
+  const cursor = FeedbackCollection.find({ dimension: { $exists: false } })
   result.found = cursor.count()
 
   cursor.forEach(feedbackDoc => {
@@ -29,7 +29,7 @@ export const addDimensionToFeedback = ({ dryRun, debug = () => {} } = {}) => {
 
     const { dimension } = tcDoc
 
-    let updated = dryRun
+    const updated = dryRun
       ? 0
       : FeedbackCollection.update(feedbackDoc._id, { $set: { dimension } })
 

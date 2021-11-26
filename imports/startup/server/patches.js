@@ -5,7 +5,7 @@ import { generateAccounts } from '../../patches/generateAccounts'
 import { removeDeadAccounts } from '../../patches/removeDeadAccounts'
 
 const appName = Meteor.settings.public.app.label
-const { notify:defaultNotify, replyTo, from } = Meteor.settings.email
+const { notify: defaultNotify, replyTo, from } = Meteor.settings.email
 
 const { patches } = Meteor.settings
 
@@ -30,8 +30,7 @@ if (patches.removeDeadAccounts?.active) {
 if (patches.addDimensionToFeedback?.active) {
   console.debug('[patches]: run addDimensionToFeedback')
   Meteor.defer(function () {
-    const result = addDimensionToFeedback(patches.addDimensionToFeedback)
-
+    addDimensionToFeedback(patches.addDimensionToFeedback)
   })
 }
 

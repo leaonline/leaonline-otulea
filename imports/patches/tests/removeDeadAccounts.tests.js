@@ -8,7 +8,6 @@ import { restoreAll, stub } from '../../../tests/helpers.tests'
 import { removeDeadAccounts } from '../removeDeadAccounts'
 import { mockCollection } from '../../../tests/mockCollection'
 
-
 mockCollection(Session)
 mockCollection(Response)
 
@@ -18,7 +17,7 @@ describe(removeDeadAccounts.name, function () {
   })
   it('throws if the days is not a valid integer', function () {
     [1.1, -1, '1'].forEach(removeOlderThanDays => {
-      expect(() => removeDeadAccounts({ removeOlderThanDays  }))
+      expect(() => removeDeadAccounts({ removeOlderThanDays }))
         .to.throw('Match error: Failed Match.Where validation')
     })
   })
@@ -77,7 +76,6 @@ describe(removeDeadAccounts.name, function () {
   it('optionally removes dead accounts with started but not completed session', function () {
     const users = [{ _id: Random.id() }]
     let findCalled = false
-
 
     stub(Meteor.users, 'find', () => users)
     stub(Session, 'collection', () => ({

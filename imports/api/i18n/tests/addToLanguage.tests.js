@@ -9,7 +9,7 @@ describe(addToLanguage.name, function () {
   afterEach(function () {
     restoreAll()
   })
-  it('skips if the current locale is not found',async function () {
+  it('skips if the current locale is not found', async function () {
     stub(i18n, 'getLocale', () => Random.id())
     stub(i18n, 'set', () => expect.fail('should not be reached'))
 
@@ -38,7 +38,7 @@ describe(addToLanguage.name, function () {
     stub(i18n, 'getLocale', () => locale)
 
     let setCalled
-    const definitions = { foo: 'bar '}
+    const definitions = { foo: 'bar ' }
 
     stub(i18n, 'set', (loc, defs) => {
       expect(loc).to.equal(locale)

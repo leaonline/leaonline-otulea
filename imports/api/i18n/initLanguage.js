@@ -26,11 +26,11 @@ export const initLanguage = async (debug = () => {}) => {
   document.documentElement.setAttribute('lang', defaultLocale)
   debug('[initLanguage]: loaded')
 
+  // also register a language helper for templates
+  Template.registerHelper('i18n', function (...args) {
+    args.pop()
+    return i18n.get(...args)
+  })
+
   return i18n
 }
-
-// also register a language helper for templates
-Template.registerHelper('i18n', function (...args) {
-  args.pop()
-  return i18n.get(...args)
-})

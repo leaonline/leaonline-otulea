@@ -1,5 +1,4 @@
 import { Blaze } from 'meteor/blaze'
-import { createLog } from '../../utils/createInfoLog'
 
 // if we use the autoload functionality we don't need to explicitly load basic
 // and generic (stateless) templates, since they are loaded at runtime using
@@ -61,7 +60,7 @@ Blaze.TemplateInstance.prototype.initDependencies =
       devOnly: false
     })
 
-    let errorHandler = onError || createLog({
+    const errorHandler = onError || createLog({
       name: instance.view.name,
       type: 'error',
       devOnly: false

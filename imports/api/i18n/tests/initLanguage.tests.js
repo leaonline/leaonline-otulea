@@ -1,5 +1,4 @@
 /* eslint-env mocha */
-import { Meteor } from 'meteor/meteor'
 import { initLanguage } from '../initLanguage'
 import { i18n } from '../I18n'
 import { expect } from 'chai'
