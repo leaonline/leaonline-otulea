@@ -12,8 +12,7 @@
                 <div class="card my-4">
                     <div class="card-body">
                         {{#onComplete complete=loadComplete}}
-                            {{> textGroup text=(i18n "pages.complete.thankYou")
-                                    type=currentType}}
+                            {{> textGroup text=(i18n "pages.complete.thankYou") type=currentType}}
                         {{/onComplete}}
                     </div>
                 </div>
@@ -25,9 +24,7 @@
                 {{#container class="d-print-none"}}
                     <div class="card my-4 border border-primary">
                         <div class="card-body">
-                            {{> textGroup
-                                    text=(i18n "pages.complete.loading")
-                                    type=currentType}}
+                            {{> textGroup text=(i18n "pages.complete.loading") type=currentType}}
                         </div>
                     </div>
                 {{/container}}
@@ -40,8 +37,7 @@
                 <div class="card my-4">
                     <div class="card-body">
                         {{#onComplete complete=loadComplete}}
-                            {{> textGroup text=(i18n "pages.complete.failed")
-                                    type=currentType}}
+                            {{> textGroup text=(i18n "pages.complete.failed") type=currentType}}
                         {{/onComplete}}
                     </div>
 
@@ -85,8 +81,7 @@
                     <div class="card my-4">
                         <div class="card-header">
                             <h5 class="card-title">
-                                {{> textGroup text=(i18n "pages.complete.alphaLevels")
-                                        type=currentType}}
+                                {{> textGroup text=(i18n "pages.complete.alphaLevels") type=currentType}}
                             </h5>
                             {{#if isDebugUser}}
                                 <span>
@@ -96,7 +91,7 @@
                         </div>
                         {{#if noScoredAlpha}}
                             <div class="card-body h-100">
-                                {{> textGroup text=("pages.complete.noScoredAlpha") type=currentType}}
+                                {{> textGroup text=(i18n "pages.complete.noScoredAlpha") type=currentType}}
                             </div>
                         {{else}}
                         <div class="table-responsive">
@@ -358,9 +353,7 @@
                         {{> textGroup text=(i18n "pages.complete.youCanPrint") type=currentType}}
                     </div>
                     <div class="card-body">
-                        {{#textGroup groupClass="w-100"
-                                     text=(i18n "pages.complete.printResults")
-                                     type=currentType}}
+                        {{#textGroup groupClass="w-100" text=(i18n "pages.complete.printResults") type=currentType}}
                             {{> actionButton
                                     tts="actions.print"
                                     type=currentType

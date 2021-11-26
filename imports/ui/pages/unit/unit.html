@@ -9,8 +9,8 @@
 
     <div class="lea-unit-container mb-5">
         {{#unless loadComplete}}
-            <div class="w-100 text-center">
-                <i class="fa fas fa-3x fa-fw fa-spinner fa-pulse"></i>
+            <div class="w-100 text-center text-primary">
+                {{> icon pulse=true name="spinner" class="fa-3x"}}
             </div>
         {{else}}
             {{#container class="lea-unit-content-container h-auto"}}
