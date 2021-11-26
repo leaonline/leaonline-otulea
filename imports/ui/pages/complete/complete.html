@@ -12,8 +12,7 @@
                 <div class="card my-4">
                     <div class="card-body">
                         {{#onComplete complete=loadComplete}}
-                            {{> textGroup tts="pages.complete.thankYou"
-                                    label=(i18n "pages.complete.thankYou")
+                            {{> textGroup text=(i18n "pages.complete.thankYou")
                                     type=currentType}}
                         {{/onComplete}}
                     </div>
@@ -41,8 +40,7 @@
                 <div class="card my-4">
                     <div class="card-body">
                         {{#onComplete complete=loadComplete}}
-                            {{> textGroup tts="pages.complete.failed"
-                                    label=(i18n "pages.complete.failed")
+                            {{> textGroup text=(i18n "pages.complete.failed")
                                     type=currentType}}
                         {{/onComplete}}
                     </div>
@@ -98,7 +96,7 @@
                         </div>
                         {{#if noScoredAlpha}}
                             <div class="card-body h-100">
-                                {{> textGroup tts="pages.complete.noScoredAlpha" type=currentType}}
+                                {{> textGroup text=("pages.complete.noScoredAlpha") type=currentType}}
                             </div>
                         {{else}}
                         <div class="table-responsive">
@@ -190,7 +188,7 @@
                     <div class="card my-4">
                         <div class="card-header d-flex justify-content-between">
                             <h5 class="card-title align-baseline">
-                                {{> textGroup tts="pages.complete.competencies" type=currentType}}
+                                {{> textGroup text=(i18n "pages.complete.competencies") type=currentType}}
                             </h5>
                             {{#if isDebugUser}}
                                 <span>
@@ -218,7 +216,7 @@
                         <div class="competencies-body d-print-block" style="display: none;">
                         {{#if noScoredCompetencies}}
                             <div class="card-body h-100">
-                                {{> textGroup tts="pages.complete.noScoredComp" type=currentType}}
+                                {{> textGroup text=(i18n "pages.complete.noScoredComp") type=currentType}}
                             </div>
                         {{else}}
                         <div class="table-responsive">
@@ -227,7 +225,7 @@
                                 <tr>
                                     <th scope="col"></th>
                                     <th scope="col">
-                                        {{> textGroup tts="pages.complete.iCan" type=currentType}}
+                                        {{> textGroup text=(i18n "pages.complete.iCan") type=currentType}}
                                     </th>
                                     <th scope="col"
                                         class="d-print-none w-25"></th>
@@ -246,7 +244,7 @@
                                         </th>
                                     {{/if}}
                                     <th scope="col" class="text-center">
-                                        {{> textGroup tts="thresholds.grade" type=currentType}}
+                                        {{> textGroup text=(i18n "thresholds.grade") type=currentType}}
                                     </th>
                                 </tr>
                                 </thead>

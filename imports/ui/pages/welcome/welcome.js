@@ -30,7 +30,6 @@ Template.welcome.onCreated(function () {
     },
     onError: e => {
       // instance.data.onFail()
-      console.error(e)
       instance.state.set('dependenciesComplete', true)
     }
   })

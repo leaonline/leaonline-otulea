@@ -4,6 +4,9 @@
             {{> loading}}
         {{/unless}}
 
+        {{#if dependenciesComplete}}<div></div>{{/if}}
+        {{#if loadComplete}}<div></div>{{/if}}
+
         {{#if intro}}
             <div class="w-100">
                 <div class="container intro-video-container">
@@ -51,7 +54,7 @@
                     <div class="card">
                         <div class="card-body">
                             {{#onComplete complete=dependenciesComplete}}
-                                {{> textGroup tts="pages.welcome.introduction"}}
+                                {{> textGroup text=(i18n "pages.welcome.introduction")}}
                             {{/onComplete}}
                         </div>
                     </div>
@@ -84,7 +87,7 @@
                 <div class="card">
                     <div class="card-body">
                         {{#onComplete complete=dependenciesComplete}}
-                            {{> textGroup tts="pages.welcome.loggedIn" }}
+                            {{> textGroup text=(i18n "pages.welcome.loggedIn")}}
                         {{/onComplete}}
                     </div>
                     <div class="card-body text-center">
@@ -109,7 +112,7 @@
                 <div class="card">
                     {{#if login}}
                         <div class="card-body">
-                            {{#textGroup tts="pages.welcome.enterCode"
+                            {{#textGroup text=(i18n "pages.welcome.enterCode")
                                          class="w-100"}}
                                 {{> actionButton outline=true tts="common.back" icon="arrow-up" btnClass="lea-back-button" sndBtnClass="border-0" }}
                             {{/textGroup}}
@@ -118,7 +121,7 @@
 
                     {{#if newCode}}
                         <div class="card-body d-flex align-items-start">
-                            {{#textGroup tts="pages.welcome.newCode"}}
+                            {{#textGroup text=(i18n "pages.welcome.newCode")}}
                                 {{> actionButton outline=true tts="common.back" icon="arrow-up" btnClass="lea-back-button" sndBtnClass="border-0" }}
                             {{/textGroup}}
                         </div>
@@ -153,7 +156,7 @@
                     {{#if loginFail}}
                         <div class="card-body">
                             <div class="bg-primary rounded py-3">
-                                {{> textGroup tts="pages.welcome.loginFail" type="warning" groupClass="w-100 text-light"}}
+                                {{> textGroup text=(i18n "pages.welcome.loginFail") type="warning" groupClass="w-100 text-light"}}
                             </div>
                         </div>
                     {{/if}}

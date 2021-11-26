@@ -6,9 +6,9 @@
 					{{> loading}}
                 {{else}}
                     {{#if loggedOut}}
-                        {{> textGroup tts="pages.logout.description"}}
+                        {{> textGroup text=(i18n "pages.logout.description")}}
                         {{else}}
-                        {{> loading title="pages.logout.loggingOut"}}
+                        {{> loading title=(i18n "pages.logout.loggingOut")}}
                     {{/if}}
                 {{/unless}}
 			</div>
