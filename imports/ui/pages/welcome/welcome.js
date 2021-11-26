@@ -8,7 +8,6 @@ import { fadeOut } from '../../../utils/animationUtils'
 import '../../components/container/container'
 import './welcome.scss'
 import './welcome.html'
-import { sendError } from '../../../contexts/errors/api/sendError'
 
 const appStatus = Meteor.settings.public.status
 const settings = Meteor.settings.public.accounts
