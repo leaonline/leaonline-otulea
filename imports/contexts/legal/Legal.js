@@ -88,7 +88,7 @@ Legal.methods.get = {
       return config
     }
     else {
-      return config[name]
+      return config && config[name]
     }
   }),
   /**
