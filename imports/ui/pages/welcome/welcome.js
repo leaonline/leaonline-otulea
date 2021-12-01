@@ -275,27 +275,24 @@ Template.welcome.events({
     // on any destructive operation we clear the current field
     // and jump to the previous input and re-eszablish edit mode
     if (['backspace', 'delete', 'clear', 'cut', 'undo'].includes(key)) {
-      if (index > 0) {
-        // if there is a value in this input we delete the current input
-        if ($current.val()) {
-          $current.val(null)
-          $current.focus()
-          const loginCode = getLoginCode(templateInstance)
-          templateInstance.state.set('loginCode', loginCode)
-        }
+      // if there is a value in this input we delete the current input
+      if ($current.val()) {
+        $current.val(null)
+        $current.focus()
+        const loginCode = getLoginCode(templateInstance)
+        templateInstance.state.set('loginCode', loginCode)
+      }
 
+      else if (index > 0) {
         // if the current input contains no value we "jump" to the previous
-        // input and delete it
-        else {
-          // update field and position
-          const $prev = templateInstance.$(`input[data-index="${index - 1}"]`)
-          $current.val('')
-          $prev.val('')
-          $prev.focus()
-          // update logincode
-          const loginCode = getLoginCode(templateInstance)
-          templateInstance.state.set('loginCode', loginCode)
-        }
+        // input and delete it, then update field and position
+        const $prev = templateInstance.$(`input[data-index="${index - 1}"]`)
+        $current.val('')
+        $prev.val('')
+        $prev.focus()
+        // update logincode
+        const loginCode = getLoginCode(templateInstance)
+        templateInstance.state.set('loginCode', loginCode)
       }
 
       else {

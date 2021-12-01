@@ -34,15 +34,23 @@ export const initializeTTS = async () => {
     TTSEngine.configure({
       loader: externalServerTTSLoader,
       mode: mode,
-      onError: error => {
+      globalErrorHandler: error => {
+        console.error(error)
+        sendError({ error })
+      },
+      onError: err => {
+        const error = err && err instanceof Error
+          ? err
+          : new Meteor.Error('tts.failed', 'tts.initFailed', err)
         console.debug('[initializeTTS]: configure failed => ', error.message)
         // TODO communicate error to user in an understandable way
         // TODO fallback to server-rendered TTS
         sendError({ error })
         resolve(TTSEngine)
       },
-      onComplete () {
-        console.debug('[initializeTTS]: configure complete')
+      onComplete (voices) {
+        console.debug('[initializeTTS]: configure complete', voices)
+        sendError({ error: new Meteor.Error('tts.loaded', 'tts.loadtest', { voices: voices.length }) })
         resolve(TTSEngine)
       }
     })
