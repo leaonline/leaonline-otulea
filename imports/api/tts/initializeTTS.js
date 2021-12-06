@@ -1,33 +1,9 @@
+import { Meteor } from 'meteor/meteor'
 import { sendError } from '../../contexts/errors/api/sendError'
-import { getOSInfo } from '../../ui/utils/getOSInfo'
 
 export const initializeTTS = async () => {
   const { TTSEngine } = await import('../../api/tts/TTSEngine')
-  let mode
-  try {
-    const { detected, types } = await getOSInfo()
-    console.debug('[initializeTTS]: detected os', detected.os)
-
-    switch (detected.os) {
-      case types.macos.os:
-      case types.windows.os:
-      case types.ios.os:
-      case types.android.os:
-      case types.linux.os:
-        mode = TTSEngine.modes.browser
-        break
-      default:
-        mode = TTSEngine.modes.browser
-        // TODO: switch to mode = TTSEngine.modes.server when imeplemented
-    }
-  }
-  catch (error) {
-    mode = TTSEngine.modes.server
-    console.error('[initializeTTS]: Failed to detect os, use fallback. (Error send)')
-    console.error('[initializeTTS]: Fallback User Agent:', window.navigator.userAgent)
-    console.error('[initializeTTS]: Fallback Platform:', window.navigator.platform)
-    sendError({ error })
-  }
+  const mode = TTSEngine.modes.browser
 
   console.debug('[initializeTTS]: configure TTS in mode', mode)
   return await new Promise((resolve) => {
@@ -48,9 +24,8 @@ export const initializeTTS = async () => {
         sendError({ error })
         resolve(TTSEngine)
       },
-      onComplete (voices) {
-        console.debug('[initializeTTS]: configure complete', voices)
-        sendError({ error: new Meteor.Error('tts.loaded', 'tts.loadtest', { voices: voices.length }) })
+      onComplete () {
+        console.debug('[initializeTTS]: configure complete')
         resolve(TTSEngine)
       }
     })

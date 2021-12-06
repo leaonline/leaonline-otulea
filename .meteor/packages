@@ -62,7 +62,6 @@ service-configuration@1.3.0
 
 # UI
 reactive-dict@1.3.0
-perak:markdown
 hot-module-replacement@0.4.0
 blaze-hot
 

@@ -45,7 +45,7 @@ export const sendError = async ({ error, isResponse, userId, template, prepare, 
       if (failure) failure()
     },
     success: () => {
-      console.error('error reported to server')
+      console.error('error reported to server: ', normalizedError.message)
       if (success) success()
     }
   })
