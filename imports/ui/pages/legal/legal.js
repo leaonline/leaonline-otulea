@@ -22,7 +22,7 @@ Template.legal.onCreated(function () {
 
   let count = 0
   const renderer = {
-    text (text, level) {
+    text (text /*, level */) {
       const transformed = text
         .replace(/§§/g, i18n.get('pages.legal.paragraphs'))
         .replace(/§/g, i18n.get('pages.legal.paragraph'))
@@ -40,10 +40,9 @@ Template.legal.onCreated(function () {
       }, 1000)
       return `<span><span id="${id}"></span>${text}</span>`
     }
-  };
+  }
 
-  marked.use({ renderer });
-
+  marked.use({ renderer })
 
   instance.autorun(() => {
     const dependenciesComplete = instance.state.get('dependenciesComplete')
@@ -61,20 +60,24 @@ Template.legal.onCreated(function () {
 
     if (!originalType) {
       instance.state.set({
-        error: new Error('unknown legal key') // TODO translate
+        error: new Error(i18n.get('pages.legal.unknownKey', { name: originalType }))
       })
     }
 
     Meteor.call(Legal.methods.get.name, { name: originalType }, (err, res) => {
-      if (err) return console.error(err) // TODO LOG AS FATAL!
+      if (err) return instance.state.set({ error: err })
 
       const markedOptions = {
-        mangle: false
+        mangle: false,
+        breaks: true,
+        gfm: true
       }
 
-      console.log(marked.lexer(res))
+      marked.parse(res, markedOptions, (parsingError, content) => {
+        if (parsingError) {
+          return instance.state.set({ error: parsingError })
+        }
 
-      marked.parse(res, markedOptions, (err, content) => {
         instance.state.set({ content })
       })
       instance.state.set({ type: originalType })

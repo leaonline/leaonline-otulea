@@ -8,7 +8,8 @@
       "contact": "Kontakt",
       "paragraph": "Paragraph",
       "paragraphs": "Paragraphen",
-      "section": "Absatz {{number}}"
+      "section": "Absatz {{number}}",
+      "unknownKey": "Unbekannte Kategorie: {{name}}"
     }
   }
 }
