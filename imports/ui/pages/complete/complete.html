@@ -372,6 +372,7 @@
         {{/if}}
 
         {{#if showDecision}}
+            {{#onComplete complete=loadComplete}}
             {{#container class="d-print-none"}}
                 <div class="card lea-complete-showprint-container">
                     <div class="card-body">
@@ -390,6 +391,7 @@
                             btnClass="lea-continue-button"}}
                 </div>
             {{/container}}
+            {{/onComplete}}
         {{/if}}
     </div>
 </template>
