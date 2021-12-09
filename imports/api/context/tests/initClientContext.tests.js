@@ -18,7 +18,6 @@ describe(initClientContext.name, function () {
       loadCalled = true
     })
 
-
     initClientContext({
       name: Random.id(),
       schema: { title: String }
@@ -29,7 +28,7 @@ describe(initClientContext.name, function () {
   it('creates a new collection', function () {
     const ctx = {
       name: Random.id(),
-        schema: { title: String }
+      schema: { title: String }
     }
 
     const build = initClientContext(ctx, debug)
@@ -45,11 +44,10 @@ describe(initClientContext.name, function () {
       schema: { title: String }
     }
 
-
     initClientContext(ctx, debug)
     const collection = ctx.collection()
     expect(collection.attachSchema).to.be.a('function')
-    expect(() => collection.insert({ name: 'foo'}))
+    expect(() => collection.insert({ name: 'foo' }))
       .to.throw('After filtering out keys not in the schema, your object is now empty')
   })
 })
