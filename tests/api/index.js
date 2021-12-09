@@ -1,5 +1,5 @@
 /* eslint-env mocha */
-import { onServerExec } from '../../imports/utils/archUtils'
+import { onServerExec, onClientExec } from '../../imports/utils/archUtils'
 
 describe('api', function () {
   onServerExec(function () {
@@ -11,4 +11,8 @@ describe('api', function () {
   import '../../imports/api/lists/tests/DocumentLists.tests'
   import '../../imports/api/scoring/tests'
   import '../../imports/api/url/tests'
+
+  onClientExec(function () {
+    import '../../imports/api/context/tests'
+  })
 })

@@ -11,6 +11,8 @@ const routes = {
     path: '/'
   }
 }
+const debug = () => {}
+
 describe(createCollection.name, function () {
   if (Meteor.isServer) {
     it('creates a LocalCachedCollection, if flagged as such', function () {
@@ -21,7 +23,7 @@ describe(createCollection.name, function () {
         schema: {}
       }
 
-      const local = createCollection(ctx)
+      const local = createCollection(ctx, debug)
       expect(local instanceof LocalCacheCollection).to.equal(true)
       expect(local instanceof Mongo.Collection).to.equal(true)
       expect(local._name).to.equal(null)
@@ -37,7 +39,7 @@ describe(createCollection.name, function () {
         isLocalCollection: true,
         schema: {}
       }
-      const local = createCollection(ctx)
+      const local = createCollection(ctx, debug)
       expect(local instanceof LocalCacheCollection).to.equal(false)
       expect(local instanceof Mongo.Collection).to.equal(true)
       expect(local._name).to.equal(null)
@@ -51,7 +53,7 @@ describe(createCollection.name, function () {
       name: collectionName,
       schema: {}
     }
-    const collection = createCollection(ctx)
+    const collection = createCollection(ctx, debug)
     expect(collection instanceof LocalCacheCollection).to.equal(false)
     expect(collection instanceof Mongo.Collection).to.equal(true)
     expect(collection._name).to.equal(collectionName)

@@ -22,12 +22,25 @@ describe(isDebugUser.name, function () {
   it('updates the current user values when value is passed', function () {
     let called = false
     stub(Meteor, 'user', () => ({ debug: false }))
-    stub(Meteor, 'call', () => {
+    stub(Meteor, 'call', (name, val, cb) => {
       called = true
+      cb()
     })
 
     expect(isDebugUser()).to.equal(false)
-    expect(isDebugUser(true)).to.equal(true)
+    expect(isDebugUser(true, () => {})).to.equal(true)
+    expect(called).to.equal(true)
+  })
+  it('sticks to the old value if an error occurred', function () {
+    let called = false
+
+    stub(Meteor, 'user', () => ({ debug: false }))
+    stub(Meteor, 'call', (name, val, cb) => {
+      called = true
+      cb(new Error())
+    })
+
+    expect(isDebugUser(true), () => {}).to.equal(false)
     expect(called).to.equal(true)
   })
 })

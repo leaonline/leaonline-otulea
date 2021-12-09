@@ -8,7 +8,7 @@ const collectionFactory = createCollectionFactory({
   schemaFactory: Schema.create
 })
 
-export const createCollection = (context) => {
+export const createCollection = (context, debug = console.debug) => {
   const { name } = context
 
   if (context.isLocalCollection) {
@@ -32,7 +32,7 @@ export const createCollection = (context) => {
   }
 
   const localText = context.isLocalCollection ? '(local)' : ''
-  console.info(`[collectionFactory]: create ${name} ${localText}`)
+  debug(`[collectionFactory]: create ${name} ${localText}`)
 
   const collection = collectionFactory(context)
   context.collection = () => collection

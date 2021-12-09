@@ -10,22 +10,27 @@ let debug = false
  *
  * @locus client
  * @param value {Boolean|undefined} set true/false to enable/disable debug mode
+ * @param debugFn {Function} optional function for debugging messages
  * @return {boolean} true/false whether debug is enabled/disabled
  */
-export const isDebugUser = (value = undefined) => {
+export const isDebugUser = (value = undefined, debugFn = () => {}) => {
+  debug = !!(Meteor.user()?.debug)
+
   if (typeof value !== 'undefined') {
     check(value, Boolean)
+
     const oldValue = debug
     debug = value
+
     Meteor.call(Users.methods.isDebug.name, { value }, (err, res) => {
       if (err) {
         debug = oldValue
-        return console.error(err)
+        return debugFn(err)
       }
 
-      console.info('[User]: changed debug to ', value, ' success=', !!res)
+      debugFn('changed debug to ', value, ' success=', !!res)
     })
   }
 
-  return !!(Meteor.user()?.debug || debug)
+  return debug
 }
