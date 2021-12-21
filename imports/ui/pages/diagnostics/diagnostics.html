@@ -52,4 +52,15 @@
         {{/with}}
     </div>
     {{/if}}
+
+    <div class="container p-4">
+    {{#each error in errors}}
+        <div class="alert alert-danger">
+            <div class="alert-heading">
+                {{error.name}} ({{error.type}})
+            </div>
+            <div class="d-block">{{error.message}}</div>
+        </div>
+    {{/each}}
+    </div>
 </template>
