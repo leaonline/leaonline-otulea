@@ -59,6 +59,38 @@ Feedback.methods.generate = {
   })
 }
 
+// TODO move the following methods into own context, for example "Teacher"
+
+Feedback.methods.recent = {
+  name: 'feedback.methods.recent',
+  schema: {
+    users: Array,
+    'users.$': String,
+  },
+  backend: true,
+  run: onServerExec(function () {
+    import { Session } from '../session/Session'
+
+    return function ({ users }) {
+      const unique = new Set()
+      const query = { userId: { $in: users } }
+      const transform = { limit: users.length + 1,  hint: { $natural: -1 } }
+
+      return Session.collection()
+        .find(query, transform)
+        .fetch()
+        .filter(sessionDoc => {
+          if (unique.has(sessionDoc.userId)) {
+            return false
+          }
+
+          unique.add(sessionDoc.userId)
+          return true
+        })
+    }
+  })
+}
+
 Feedback.methods.getForUsers = {
   name: 'feedback.methods.getForUsers',
   schema: {
@@ -72,22 +104,45 @@ Feedback.methods.getForUsers = {
       type: Array,
       optional: true
     },
-    'skip.$': String
+    'skip.$': String,
+    addSession: {
+      type: Boolean,
+      optional: true
+    }
   },
   backend: true,
   run: onServerExec(function () {
-    return function ({ users = [], dimension, skip = [] }) {
+    import { Session } from '../session/Session'
+
+    return function ({ users = [], dimension, skip = [], addSession }) {
       const query = { userId: { $in: users } }
 
       if (dimension) {
         query.dimension = dimension
       }
 
+      // skip allows to not include those docs, which are
+      // already cached on the target server
+
       if (skip.length > 0) {
         query._id = { $nin: skip }
       }
 
-      return Feedback.collection().find(query).fetch()
+      const feedbackDocs = Feedback.collection().find(query).fetch()
+
+      if (!addSession) { return feedbackDocs }
+
+      // if we add sessions we need to iterate the docs and get all session
+      // docs as well in order to fulfill them in one request
+
+      const sessionIds = new Set()
+      feedbackDocs.forEach(doc => sessionIds.add(doc.sessionId))
+
+      const sessionDocs = Session.collection()
+        .find({ _id: { $in: Array.from(sessionIds) } })
+        .fetch()
+
+      return { feedbackDocs, sessionDocs }
     }
   })
 }
