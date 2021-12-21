@@ -65,7 +65,7 @@ Feedback.methods.recent = {
   name: 'feedback.methods.recent',
   schema: {
     users: Array,
-    'users.$': String,
+    'users.$': String
   },
   backend: true,
   run: onServerExec(function () {
@@ -74,7 +74,7 @@ Feedback.methods.recent = {
     return function ({ users }) {
       const unique = new Set()
       const query = { userId: { $in: users } }
-      const transform = { limit: users.length + 1,  hint: { $natural: -1 } }
+      const transform = { limit: users.length + 1, hint: { $natural: -1 } }
 
       return Session.collection()
         .find(query, transform)

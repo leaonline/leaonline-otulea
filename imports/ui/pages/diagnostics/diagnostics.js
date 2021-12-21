@@ -27,7 +27,6 @@ Template.diagnostics.onCreated(function () {
         instance.initDependencies({
           translations: diagnosticsLanguage,
           onComplete () {
-
             instance.state.set('loadComplete', true)
           }
         })
@@ -141,7 +140,8 @@ Template.diagnostics.onCreated(function () {
       .then(result => {
         try {
           processResults(result)
-        } catch (error) {
+        }
+        catch (error) {
           instance.addError(error)
         }
       })
