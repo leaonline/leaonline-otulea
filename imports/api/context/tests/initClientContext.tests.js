@@ -37,6 +37,9 @@ describe(initClientContext.name, function () {
     expect(ctx.collection()).to.be.instanceOf(Mongo.Collection)
     const collection = Mongo.Collection.get(ctx.name)
     expect(ctx.collection()).to.equal(collection)
+
+    // skip second creation
+    expect(initClientContext(ctx)).to.deep.equal(ctx)
   })
   it('has schema attached', function () {
     const ctx = {
