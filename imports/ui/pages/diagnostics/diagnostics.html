@@ -2,27 +2,28 @@
 
     <div class="container p-4">
         {{#onComplete complete=loadComplete}}
-        <h1 class="text-center">{{i18n "pages.diagnostics.title"}}</h1>
+            <h1 class="text-center">{{i18n "pages.diagnostics.title"}}</h1>
 
-        {{> textGroup text=(i18n "pages.diagnostics.info")}}
+            {{> textGroup text=(i18n "pages.diagnostics.info")}}
 
-        {{#unless confirmed}}
-        <div class="d-flex justify-content-center">
-            {{> routeButton label=(i18n "common.no") href=(route "root") outline=true}}
-            {{> actionButton label=(i18n "common.yes") class="confirm-button"}}
-        </div>
-        {{/unless}}
+            {{#unless confirmed}}
+                <div class="d-flex justify-content-center">
+                    {{> routeButton label=(i18n "common.no") href=(route "root") outline=true}}
+                    {{> actionButton label=(i18n "common.yes") class="confirm-button"}}
+                </div>
+            {{/unless}}
         {{/onComplete}}
     </div>
 
-    {{#if confirmed}}
-    <div class="container p-4">
 
-        {{#with results}}
+    <div class="container p-4">
+    {{#onComplete complete=loadComplete}}
             <ul class="list-group">
                 {{#each result in results}}
-                    <li class="list-group-item text-white d-flex justify-content-between bg-{{#if result.success}}success{{else}}danger{{/if}}">
-                        <div class="font-weight-bold">{{i18n result.label}}</div>
+                    <li class="list-group-item text-white d-flex justify-content-between bg-{{#if
+                            result.success}}success{{else}}danger{{/if}}">
+                        <div class="font-weight-bold">{{i18n
+                                result.label}}</div>
                         {{#if result.success}}
                             {{> icon name="check"}}
                         {{else}}
@@ -32,35 +33,32 @@
                 {{/each}}
             </ul>
 
-            {{#if sending}}
-                {{> loading title=(i18n "pages.diagnostics.sending")}}
-            {{/if}}
+        {{#if sending}}
+            {{> loading title=(i18n "pages.diagnostics.sending")}}
+        {{/if}}
 
-            {{#with sendError}}
-                <div class="alert alert-danger">
-                    {{this.name}} / {{this.type}} - {{this.message}}
-                </div>
-            {{/with}}
-
-            {{#if sendComplete}}
-                <div class="alert alert-success mt-4">
+        {{#if sendComplete}}
+            <div class="alert alert-success mt-4">
+                {{#onComplete complete=loadComplete}}
                     {{> textGroup text=(i18n "pages.diagnostics.sent")}}
-                </div>
-            {{/if}}
-        {{else}}
-            {{>loading}}
-        {{/with}}
+                {{/onComplete}}
+            </div>
+        {{/if}}
+
+        {{#if running}}
+            {{>loading title=(i18n "pages.diagnostics.run")}}
+        {{/if}}
+    {{/onComplete}}
     </div>
-    {{/if}}
 
     <div class="container p-4">
-    {{#each error in errors}}
-        <div class="alert alert-danger">
-            <div class="alert-heading">
-                {{error.name}} ({{error.type}})
+        {{#each error in errors}}
+            <div class="alert alert-danger">
+                <div class="alert-heading">
+                    {{error.name}} ({{error.type}})
+                </div>
+                <div class="d-block">{{error.message}}</div>
             </div>
-            <div class="d-block">{{error.message}}</div>
-        </div>
-    {{/each}}
+        {{/each}}
     </div>
 </template>

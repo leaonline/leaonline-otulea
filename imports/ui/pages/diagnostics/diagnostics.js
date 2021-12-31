@@ -38,7 +38,6 @@ Template.diagnostics.onCreated(function () {
     })
 
   const processResults = results => {
-    instance.state.set('diagnosticsComplete', true)
     instance.allData = results
     console.log('%c [diagnostics]: complete', 'background: #222; color: #bada55')
 
@@ -48,7 +47,12 @@ Template.diagnostics.onCreated(function () {
       map.set(entry.name, rest)
     })
 
-    const { osinfo, font, language, localStorage, serviceworker, performance, tts, screen, graphics } = Object.fromEntries(map.entries())
+    const entries = {}
+    for (const entry of map.entries()) {
+      entries[entry[0]] = entry[1]
+    }
+
+    const { osinfo, font, language, localStorage, serviceworker, performance, tts, screen, graphics } = entries
     const insertDoc = {
       bName: osinfo?.browser?.name,
       bVersion: osinfo?.browser?.version,
@@ -110,26 +114,13 @@ Template.diagnostics.onCreated(function () {
       errors: []
     }
 
-    for (const val in map.values()) {
+    for (const val of map.values()) {
       if (val?.error) {
         insertDoc.errors.push(val.error)
       }
     }
 
-    callMethod({
-      name: Diagnostics.methods.send,
-      args: insertDoc,
-      prepare: () => instance.state.set('sending', true),
-      receive: () => instance.state.set('sending', false),
-      failure: er => {
-        instance.addError(er)
-        instance.state.set('sendError', normalizeError({
-          error: er || new Error('failed'),
-          template: 'diagnostics'
-        }))
-      },
-      success: () => instance.state.set('sendComplete', true)
-    })
+    return insertDoc
   }
 
   instance.autorun(() => {
@@ -139,16 +130,36 @@ Template.diagnostics.onCreated(function () {
     Diagnostics.api.run()
       .then(result => {
         try {
-          processResults(result)
+          const insertDoc = processResults(result)
+          callMethod({
+            name: Diagnostics.methods.send,
+            args: insertDoc,
+            prepare: () => instance.state.set('sending', true),
+            receive: () => instance.state.set('sending', false),
+            failure: er => {
+              instance.addError(er)
+              instance.state.set({
+                sendError: normalizeError({
+                  error: er || new Error('failed'),
+                  template: 'diagnostics'
+                }),
+                sending: false
+              })
+            },
+            success: () => instance.state.set('sendComplete', true)
+          })
         }
         catch (error) {
           instance.addError(error)
+        } finally {
+          instance.state.set('diagnosticsComplete', true)
         }
       })
       .catch(error => {
         instance.addError(error)
         sendError({ error: error })
       })
+      .finally(() => instance.state.set('diagnosticsComplete', true))
   })
 })
 
@@ -174,6 +185,9 @@ Template.diagnostics.helpers({
   },
   errors () {
     return Template.getState('errors')
+  },
+  running () {
+    return Template.getState('confirmed') && !Template.getState('diagnosticsComplete')
   }
 })
 

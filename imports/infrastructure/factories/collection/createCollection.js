@@ -34,7 +34,12 @@ export const createCollection = (context, debug = console.debug) => {
   const localText = context.isLocalCollection ? '(local)' : ''
   debug(`[collectionFactory]: create ${name} ${localText}`)
 
-  const collection = collectionFactory(context)
+  const collection = collectionFactory({
+    name: context.name,
+    schema: context.schema,
+    collection: context.collection,
+    attachSchema: true
+  })
   context.collection = () => collection
 
   return collection

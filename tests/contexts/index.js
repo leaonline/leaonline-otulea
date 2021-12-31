@@ -7,4 +7,5 @@ describe('contexts', function () {
   import '../../imports/contexts/unitSet/tests'
   import '../../imports/contexts/thresholds/tests'
   import '../../imports/contexts/feedback/tests'
+  import '../../imports/contexts/record/tests'
 })

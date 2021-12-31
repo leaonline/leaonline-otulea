@@ -1,4 +1,5 @@
 import { onServerExec } from '../../utils/archUtils'
+import { Session } from '../session/Session'
 
 export const Feedback = {
   name: 'feedback',
@@ -95,8 +96,7 @@ Feedback.methods.getForUsers = {
   name: 'feedback.methods.getForUsers',
   schema: {
     dimension: {
-      type: String,
-      optional: true
+      type: String
     },
     users: Array,
     'users.$': String,
@@ -105,20 +105,16 @@ Feedback.methods.getForUsers = {
       optional: true
     },
     'skip.$': String,
-    addSession: {
-      type: Boolean,
-      optional: true
-    }
   },
   backend: true,
   run: onServerExec(function () {
     import { Session } from '../session/Session'
 
-    return function ({ users = [], dimension, skip = [], addSession }) {
-      const query = { userId: { $in: users } }
-
-      if (dimension) {
-        query.dimension = dimension
+    return function ({ users = [], dimension, skip = [] }) {
+      const query = {
+        userId: { $in: users },
+        dimension: dimension,
+        completedAt: { $exists: true }
       }
 
       // skip allows to not include those docs, which are
@@ -128,9 +124,16 @@ Feedback.methods.getForUsers = {
         query._id = { $nin: skip }
       }
 
+      const unique = new Set()
+
+      Session.collection()
+        .find(query)
+        .fetch()
+
+
+
       const feedbackDocs = Feedback.collection().find(query).fetch()
 
-      if (!addSession) { return feedbackDocs }
 
       // if we add sessions we need to iterate the docs and get all session
       // docs as well in order to fulfill them in one request
@@ -138,9 +141,8 @@ Feedback.methods.getForUsers = {
       const sessionIds = new Set()
       feedbackDocs.forEach(doc => sessionIds.add(doc.sessionId))
 
-      const sessionDocs = Session.collection()
-        .find({ _id: { $in: Array.from(sessionIds) } })
-        .fetch()
+
+      // now we need to filter these documents
 
       return { feedbackDocs, sessionDocs }
     }
