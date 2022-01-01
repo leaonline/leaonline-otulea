@@ -10,7 +10,7 @@ export const mockCollection = (context, { collectionFn, attachSchema = true } = 
   originals.set(context.name, context.collection)
   const collection = new Mongo.Collection(null)
 
-  if (context.schema && attachSchema) {
+  if (context.schema && attachSchema === true) {
     const schema = Schema.create(context.schema)
     collection.attachSchema(schema)
   }
@@ -21,4 +21,8 @@ export const mockCollection = (context, { collectionFn, attachSchema = true } = 
 export const restoreCollection = context => {
   context.collection = originals.get(context.name)
   originals.delete(context.name)
+}
+
+export const clearCollection = context => {
+  return context.collection().remove({})
 }

@@ -18,10 +18,10 @@ describe(createSubmitResponse.name, function () {
     mockCollection(Response)
   })
   afterEach(function () {
+    restoreAll()
     restoreCollection(Unit)
     restoreCollection(Session)
     restoreCollection(Response)
-    restoreAll()
   })
   it('throws if the session and unit do not match', function () {
     const submitResponse = createSubmitResponse({})

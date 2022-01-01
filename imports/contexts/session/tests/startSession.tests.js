@@ -3,6 +3,7 @@ import { expect } from 'chai'
 import { Random } from 'meteor/random'
 import { startSession } from '../api/startSession'
 import {
+  clearCollection,
   mockCollection,
   restoreCollection
 } from '../../../../tests/mockCollection'
@@ -14,16 +15,26 @@ import { Unit } from '../../Unit'
 import { DocNotFoundError } from '../../errors/DocNotFoundError'
 
 describe(startSession.name, function () {
-  beforeEach(function () {
+  before(function () {
     mockCollection(Session)
     mockCollection(TestCycle)
     mockCollection(UnitSet)
     mockCollection(Unit)
   })
 
-  afterEach(function () {
+  after(function () {
     restoreCollection(Session)
+    restoreCollection(TestCycle)
+    restoreCollection(UnitSet)
+    restoreCollection(Unit)
+  })
+
+  afterEach(function () {
     restoreAll()
+    clearCollection(Session)
+    clearCollection(TestCycle)
+    clearCollection(UnitSet)
+    clearCollection(Unit)
   })
 
   it('throws if a running session already exists for this test', function () {

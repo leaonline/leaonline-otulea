@@ -2,7 +2,11 @@
 import { expect } from 'chai'
 import { Random } from 'meteor/random'
 import { updateSession } from '../api/updateSession'
-import { mockCollection, restoreCollection } from '../../../../tests/mockCollection'
+import {
+  clearCollection,
+  mockCollection,
+  restoreCollection
+} from '../../../../tests/mockCollection'
 import { stub, restoreAll } from '../../../../tests/helpers.tests'
 import { Session } from '../Session'
 import { TestCycle } from '../../testcycle/TestCycle'
@@ -12,25 +16,36 @@ import { DocNotFoundError } from '../../errors/DocNotFoundError'
 import { DocumentList } from '../../../api/lists/DocumentList'
 
 describe(updateSession.name, function () {
-  let sessionId
-  let userId
-  let currentUnit
-  beforeEach(function () {
+  before(function () {
     mockCollection(Session)
     mockCollection(TestCycle)
     mockCollection(UnitSet)
     mockCollection(Unit)
+  })
+
+  after(function () {
+    restoreCollection(Session)
+    restoreCollection(TestCycle)
+    restoreCollection(UnitSet)
+    restoreCollection(Unit)
+  })
+
+  let sessionId
+  let userId
+  let currentUnit
+
+  beforeEach(function () {
     sessionId = Random.id()
     userId = Random.id()
     currentUnit = Random.id()
   })
 
   afterEach(function () {
-    restoreCollection(Session)
-    restoreCollection(TestCycle)
-    restoreCollection(UnitSet)
-    restoreCollection(Unit)
     restoreAll()
+    clearCollection(Session)
+    clearCollection(TestCycle)
+    clearCollection(UnitSet)
+    clearCollection(Unit)
   })
 
   it('throws if there is no sessionDoc for sessionId', function () {

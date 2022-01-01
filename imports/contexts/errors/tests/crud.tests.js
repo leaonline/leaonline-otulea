@@ -6,18 +6,23 @@ import { getAllErrors } from '../api/getAllErrors'
 import { removeError } from '../api/removeError'
 import { Errors } from '../Errors'
 import {
+  clearCollection,
   mockCollection,
   restoreCollection
 } from '../../../../tests/mockCollection'
 import { stub, restoreAll } from '../../../../tests/helpers.tests'
 
 describe('crud', function () {
-  beforeEach(function () {
+  before(function () {
     mockCollection(Errors)
   })
-  afterEach(function () {
+  after(function () {
     restoreCollection(Errors)
+  })
+
+  afterEach(function () {
     restoreAll()
+    clearCollection(Errors)
   })
 
   describe(getError.name, function () {

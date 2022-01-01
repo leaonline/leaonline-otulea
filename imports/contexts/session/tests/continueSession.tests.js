@@ -4,6 +4,7 @@ import { Random } from 'meteor/random'
 import { continueSession } from '../api/continueSession'
 import { UnitSet } from '../../unitSet/UnitSet'
 import {
+  clearCollection,
   mockCollection,
   restoreCollection
 } from '../../../../tests/mockCollection'
@@ -13,19 +14,31 @@ import { restoreAll, stub } from '../../../../tests/helpers.tests'
 import { DocNotFoundError } from '../../errors/DocNotFoundError'
 
 describe(continueSession.name, function () {
-  let sessionId
-  let userId
-  beforeEach(function () {
+  before(function () {
     mockCollection(Session)
     mockCollection(TestCycle)
     mockCollection(UnitSet)
+  })
+
+  after(function () {
+    restoreCollection(Session)
+    restoreCollection(TestCycle)
+    restoreCollection(UnitSet)
+  })
+
+  let sessionId
+  let userId
+
+  beforeEach(function () {
     sessionId = Random.id()
     userId = Random.id()
   })
 
   afterEach(function () {
-    restoreCollection(Session)
     restoreAll()
+    clearCollection(Session)
+    clearCollection(TestCycle)
+    clearCollection(UnitSet)
   })
 
   it('throws if there is no sessionDoc for sessionId', function () {

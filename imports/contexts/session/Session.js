@@ -226,3 +226,21 @@ Session.methods.byTestCycle = {
     }
   })
 }
+
+/**
+ * Returns the N recent completed sessions for given users.
+ */
+Session.methods.recentCompleted = {
+  name: 'session.methods.recentCompleted',
+  schema: {
+    users: Array,
+    'users.$': String
+  },
+  backend: true,
+  run: onServerExec(function () {
+    import { recentCompleted } from './api/recentCompleted'
+    return function ({ users }) {
+      return recentCompleted({ users })
+    }
+  })
+}

@@ -2,20 +2,31 @@
 import { Random } from 'meteor/random'
 import { expect } from 'chai'
 import { addDimensionToFeedback } from '../addDimensionToFeedback'
-import { mockCollection } from '../../../tests/mockCollection'
+import { mockCollection, restoreCollection } from '../../../tests/mockCollection'
 import { Feedback } from '../../contexts/feedback/Feedback'
 import { TestCycle } from '../../contexts/testcycle/TestCycle'
-
-mockCollection(Feedback)
-mockCollection(TestCycle)
+import { randomHex } from '../../../tests/random'
 
 describe(addDimensionToFeedback.name, function () {
+  before(function () {
+    mockCollection(Feedback, { attachSchema: false })
+    mockCollection(TestCycle, { attachSchema: false })
+  })
+
   beforeEach(function () {
     Feedback.collection().remove({})
   })
+
+  after(function () {
+    restoreCollection(Feedback)
+    restoreCollection(TestCycle)
+  })
+
   it('runs through all feedback docs that have no dimension entry yet', function () {
-    const testCycle = TestCycle.collection().insert({ dimension: Random.id() })
-    Feedback.collection().insert({ testCycle, dimension: Random.id() })
+    const testCycle = TestCycle.collection().insert({
+      dimension: randomHex()
+    })
+    Feedback.collection().insert({ testCycle, dimension: randomHex() })
     Feedback.collection().insert({ testCycle })
 
     const result = addDimensionToFeedback({ dryRun: false })

@@ -7,17 +7,25 @@ import { restoreAll, stub } from '../../../../tests/helpers.tests'
 import { Session } from '../Session'
 
 describe(getLastSessionByTestCylce.name, function () {
+  before(function () {
+    mockCollection(Session)
+  })
+
+  after(function () {
+    restoreCollection(Session)
+  })
+
   let testCycleId
   let userId
+
   beforeEach(function () {
-    mockCollection(Session)
     testCycleId = Random.id()
     userId = Random.id()
   })
 
   afterEach(function () {
-    restoreCollection(Session)
     restoreAll()
+    Session.collection().remove({})
   })
 
   it('returns a doc if the query matches', function (done) {

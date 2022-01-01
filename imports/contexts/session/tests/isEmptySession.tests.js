@@ -3,21 +3,28 @@ import { expect } from 'chai'
 import { isEmptySession } from '../utils/isEmptySession'
 import {
   mockCollection,
-  restoreCollection
+  restoreCollection,
+  clearCollection
 } from '../../../../tests/mockCollection'
 import { stub, restoreAll } from '../../../../tests/helpers.tests'
 import { Session } from '../Session'
 import { Response } from '../../response/Response'
 
 describe(isEmptySession.name, function () {
-  beforeEach(function () {
+  before(function () {
     mockCollection(Session)
     mockCollection(Response)
   })
-  afterEach(function () {
+
+  after(function () {
     restoreCollection(Session)
     restoreCollection(Response)
+  })
+
+  afterEach(function () {
     restoreAll()
+    clearCollection(Session)
+    clearCollection(Response)
   })
 
   it('returns false, if the session has progress', function () {

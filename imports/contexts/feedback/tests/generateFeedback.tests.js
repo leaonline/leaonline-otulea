@@ -17,6 +17,11 @@ import { stub, restoreAll } from '../../../../tests/helpers.tests'
 import { Competency } from '../../Competency'
 import { Response } from '../../response/Response'
 import { TestCycle } from '../../testcycle/TestCycle'
+import {
+  clearCollection,
+  mockCollection,
+  restoreCollection
+} from '../../../../tests/mockCollection'
 
 describe(countCompetencies.name, function () {
   it('correctly counts scored competencies', function () {
@@ -391,8 +396,24 @@ describe(gradeAlphaLevels.name, function () {
 })
 
 describe(generateFeedback.name, function () {
+  before(function () {
+    mockCollection(Feedback)
+    mockCollection(Session, { attachSchema: false })
+    mockCollection(Response, { attachSchema: false })
+    mockCollection(TestCycle, { attachSchema: false })
+  })
+  after(function () {
+    restoreCollection(Feedback)
+    restoreCollection(Session)
+    restoreCollection(Response)
+    restoreCollection(TestCycle)
+  })
   afterEach(function () {
     restoreAll()
+    clearCollection(Feedback)
+    clearCollection(Session)
+    clearCollection(Response)
+    clearCollection(TestCycle)
   })
   it('throws if session is not done yet', function () {
     const sessionId = Random.id()
@@ -434,15 +455,10 @@ describe(generateFeedback.name, function () {
 
   it('correctly grades a session', function () {
     const userId = Random.id()
-    const FeedbackCollection = new Mongo.Collection(null)
-    const SessionCollection = new Mongo.Collection(null)
-    const ResponseCollection = new Mongo.Collection(null)
-    const TestCycleCollection = new Mongo.Collection(null)
-
-    stub(Feedback, 'collection', () => FeedbackCollection)
-    stub(Session, 'collection', () => SessionCollection)
-    stub(Response, 'collection', () => ResponseCollection)
-    stub(TestCycle, 'collection', () => TestCycleCollection)
+    const ResponseCollection = Response.collection()
+    const FeedbackCollection = Feedback.collection()
+    const SessionCollection = Session.collection()
+    const TestCycleCollection = TestCycle.collection()
 
     // create sessionDoc
     const dimensionId = Random.id()
@@ -538,7 +554,6 @@ describe(generateFeedback.name, function () {
         gradeIndex: 0,
         gradeName: 'good',
         isGraded: true,
-        min: 2,
         perc: 1,
         scored: 2
       }],
@@ -548,7 +563,6 @@ describe(generateFeedback.name, function () {
         gradeIndex: 0,
         gradeName: 'good',
         isGraded: true,
-        min: 2,
         perc: 1,
         scored: 6,
         undef: 0
@@ -558,7 +572,6 @@ describe(generateFeedback.name, function () {
         gradeIndex: 0,
         gradeName: 'good',
         isGraded: true,
-        min: 2,
         perc: 1,
         scored: 2,
         undef: 0
@@ -611,7 +624,6 @@ describe(generateFeedback.name, function () {
         gradeIndex: 2,
         gradeName: 'bad',
         isGraded: true,
-        min: 2,
         perc: 0,
         scored: 0
       }],
@@ -621,7 +633,6 @@ describe(generateFeedback.name, function () {
         gradeIndex: 2,
         gradeName: 'bad',
         isGraded: true,
-        min: 2,
         perc: 0,
         scored: 0,
         undef: 0
@@ -631,7 +642,6 @@ describe(generateFeedback.name, function () {
         gradeIndex: 2,
         gradeName: 'bad',
         isGraded: true,
-        min: 2,
         perc: 0,
         scored: 0,
         undef: 0
@@ -684,7 +694,6 @@ describe(generateFeedback.name, function () {
         gradeIndex: 0,
         gradeName: 'good',
         isGraded: true,
-        min: 2,
         perc: 1,
         scored: 2
       }],
@@ -694,7 +703,6 @@ describe(generateFeedback.name, function () {
         gradeIndex: 0,
         gradeName: 'good',
         isGraded: true,
-        min: 2,
         perc: 1,
         scored: 6,
         undef: 0
@@ -704,7 +712,6 @@ describe(generateFeedback.name, function () {
         gradeIndex: 0,
         gradeName: 'good',
         isGraded: true,
-        min: 2,
         perc: 1,
         scored: 2,
         undef: 0
@@ -714,7 +721,6 @@ describe(generateFeedback.name, function () {
         gradeIndex: -1,
         gradeName: 'notEnough',
         isGraded: false,
-        min: 2,
         perc: 1,
         scored: 1,
         undef: 0
@@ -768,7 +774,6 @@ describe(generateFeedback.name, function () {
         gradeIndex: 2,
         gradeName: 'bad',
         isGraded: true,
-        min: 2,
         perc: 0.5,
         scored: 1
       }],
@@ -778,7 +783,6 @@ describe(generateFeedback.name, function () {
         gradeIndex: 0,
         gradeName: 'good',
         isGraded: true,
-        min: 2,
         perc: 1,
         scored: 6,
         undef: 0
@@ -788,7 +792,6 @@ describe(generateFeedback.name, function () {
         gradeIndex: 2,
         gradeName: 'bad',
         isGraded: true,
-        min: 2,
         perc: 0,
         scored: 0,
         undef: 0
@@ -798,7 +801,6 @@ describe(generateFeedback.name, function () {
         gradeIndex: -1,
         gradeName: 'notEnough',
         isGraded: false,
-        min: 2,
         perc: 1,
         scored: 1,
         undef: 0
@@ -851,7 +853,6 @@ describe(generateFeedback.name, function () {
         gradeIndex: 0,
         gradeName: 'good',
         isGraded: true,
-        min: 2,
         perc: (1 + (5 / 6)) / 2,
         scored: 1 + (5 / 6)
       }],
@@ -861,7 +862,6 @@ describe(generateFeedback.name, function () {
         gradeIndex: 0,
         gradeName: 'good',
         isGraded: true,
-        min: 2,
         perc: 5 / 6,
         scored: 5,
         undef: 0
@@ -871,7 +871,6 @@ describe(generateFeedback.name, function () {
         gradeIndex: 0,
         gradeName: 'good',
         isGraded: true,
-        min: 2,
         perc: 1,
         scored: 2,
         undef: 0
@@ -881,7 +880,6 @@ describe(generateFeedback.name, function () {
         gradeIndex: -1,
         gradeName: 'notEnough',
         isGraded: false,
-        min: 2,
         perc: 1,
         scored: 1,
         undef: 0

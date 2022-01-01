@@ -4,6 +4,7 @@ import { expect } from 'chai'
 import { Random } from 'meteor/random'
 import { removeUser } from '../removeUser'
 import {
+  clearCollection,
   mockCollection,
   restoreCollection
 } from '../../../../tests/mockCollection'
@@ -13,16 +14,22 @@ import { Feedback } from '../../../contexts/feedback/Feedback'
 import { stub, restoreAll } from '../../../../tests/helpers.tests'
 
 describe(removeUser.name, function () {
-  beforeEach(function () {
+  before(function () {
     mockCollection(Session)
     mockCollection(Response)
     mockCollection(Feedback)
   })
-  afterEach(function () {
+  after(function () {
     restoreCollection(Session)
     restoreCollection(Response)
     restoreCollection(Feedback)
+  })
+
+  afterEach(function () {
     restoreAll()
+    clearCollection(Session)
+    clearCollection(Response)
+    clearCollection(Feedback)
   })
 
   it('throws if the given user is not found', function () {

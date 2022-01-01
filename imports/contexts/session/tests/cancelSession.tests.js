@@ -9,20 +9,28 @@ import { Response } from '../../response/Response'
 import { DocNotFoundError } from '../../errors/DocNotFoundError'
 
 describe(cancelSession.name, function () {
+  before(function () {
+    mockCollection(Session)
+    mockCollection(Response)
+  })
+
+  after(function () {
+    restoreCollection(Session)
+    restoreCollection(Response)
+  })
+
   let sessionId
   let userId
 
   beforeEach(function () {
-    mockCollection(Session)
-    mockCollection(Response)
     sessionId = Random.id()
     userId = Random.id()
   })
 
   afterEach(function () {
-    restoreCollection(Session)
-    restoreCollection(Response)
     restoreAll()
+    Session.collection().remove({})
+    Response.collection().remove({})
   })
   it('throws if there is no sessionDoc by id', function () {
     stub(Session, 'collection', () => ({ findOne: () => {} }))

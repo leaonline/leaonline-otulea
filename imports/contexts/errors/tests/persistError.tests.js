@@ -4,6 +4,7 @@ import { expect } from 'chai'
 import { Random } from 'meteor/random'
 import { persistError } from '../api/persistError'
 import {
+  clearCollection,
   mockCollection,
   restoreCollection
 } from '../../../../tests/mockCollection'
@@ -11,13 +12,18 @@ import { Errors } from '../Errors'
 import { restoreAll, stub } from '../../../../tests/helpers.tests'
 
 describe(persistError.name, function () {
-  beforeEach(function () {
-    stub(Email, 'send', () => {})
+  before(function () {
     mockCollection(Errors)
   })
-  afterEach(function () {
+  after(function () {
     restoreCollection(Errors)
+  })
+  beforeEach(function () {
+    stub(Email, 'send', () => {})
+  })
+  afterEach(function () {
     restoreAll()
+    clearCollection(Errors)
   })
   it('saves the error to the collection', function (done) {
     const insertDoc = { hash: Random.id() }
