@@ -29,7 +29,10 @@ export class LocalCacheCollection extends Mongo.Collection {
     const document = fetchDoc(url, params)
 
     if (document) {
-      this.upsert(document._id, { $set: document })
+      // we need to clone the document in order to prevent collection2 from
+      // accidentally cleaning things that should not be cleaned
+      const result = this.upsert(document._id, { $set: { ...document } })
+      this.log(result)
     }
 
     return document
