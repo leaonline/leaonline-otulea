@@ -17,6 +17,7 @@ import { createSessionLoader } from '../../loading/createSessionLoader'
 import { sessionIsComplete } from '../../../contexts/session/utils/sessionIsComplete'
 import '../../components/container/container'
 import '../../layout/navbar/navbar'
+import '../../templates/initMarkdownRenderer'
 import './unit.html'
 
 const renderersLoaded = new ReactiveVar()
