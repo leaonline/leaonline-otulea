@@ -302,7 +302,9 @@
                     <div class="card my-4">
                         <div class="card-header">
                             <h5 class="card-title">
-                                {{i18n "pages.complete.responses"}}
+                                {{#onComplete complete=loadComplete}}
+                                    {{i18n "pages.complete.responses"}}
+                                {{/onComplete}}
                             </h5>
                         </div>
                         <div class="table-responsive">
