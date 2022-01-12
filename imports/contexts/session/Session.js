@@ -208,7 +208,31 @@ Session.methods.results = {
     return function ({ sessionId }) {
       const { userId, debug } = this
       const sessionDoc = Session.collection().findOne(sessionId)
-      const testCycleDoc = sessionDoc && TestCycle.collection().findOne(sessionDoc.testCycle)
+
+      if (!sessionDoc) {
+        throw new Meteor.Error(
+          'generateFeedback.error',
+          'generateFeedback.sessionNotFound', {
+            userId,
+            sessionId
+          })
+      }
+
+      const testCycleDoc = TestCycle.collection().findOne(sessionDoc.testCycle)
+
+      if (!testCycleDoc) {
+        throw new Meteor.Error(
+          'generateFeedback.error',
+          'generateFeedback.testCycleNotFound', {
+            userId,
+            sessionId,
+            testCycle: sessionDoc.testCycle,
+            completedAt: sessionDoc.completedAt,
+            progress: sessionDoc.progress,
+            maxProgress: sessionDoc.maxProgress
+          })
+      }
+
       const feedbackDoc = generateFeedback({
         sessionDoc,
         testCycleDoc,

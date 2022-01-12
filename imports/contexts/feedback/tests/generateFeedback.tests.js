@@ -417,38 +417,32 @@ describe(generateFeedback.name, function () {
   it('throws if session is not done yet', function () {
     const sessionId = Random.id()
     const userId = Random.id()
-    const doc = {
-      _id: sessionId
-    }
+    const sessionDoc = { _id: sessionId }
 
     // session doc does not exist
-    expect(() => generateFeedback({
-      sessionId,
-      userId
-    })).to.throw('generateFeedback.sessionNotComplete')
+    expect(() => generateFeedback({ userId })).to.throw('Match error: Missing key \'sessionDoc\'')
 
-    stub(Session, 'collection', () => ({
-      findOne () {
-        return doc
-      }
-    }))
-
-    // session doc is not complete
     expect(() => generateFeedback({
-      sessionId,
-      userId
+      sessionDoc,
+      userId,
+      testCycleDoc: { _id: Random.id() }
     })).to.throw('generateFeedback.sessionNotComplete')
   })
 
   it('returns a cached feedback, if one exists', function () {
     const doc = { _id: Random.id() }
+    const userId = Random.id()
     stub(Feedback, 'collection', () => ({
       findOne () {
         return doc
       }
     }))
 
-    const existing = generateFeedback({})
+    const existing = generateFeedback({
+      sessionDoc: { _id: Random.id(), completedAt: new Date() },
+      userId,
+      testCycleDoc: { _id: Random.id() }
+    })
     expect(existing).to.deep.equal(doc)
   })
 
@@ -468,6 +462,9 @@ describe(generateFeedback.name, function () {
       maxProgress: 100,
       testCycle
     })
+
+    const testCycleDoc = TestCycleCollection.findOne(testCycle)
+    const sessionDoc = SessionCollection.findOne(sessionId)
 
     // mock thresholds
     const thresholds = {
@@ -538,7 +535,8 @@ describe(generateFeedback.name, function () {
     })
 
     const { _id, ...feedbackDoc } = generateFeedback({
-      sessionId,
+      sessionDoc,
+      testCycleDoc,
       userId
     })
 
@@ -606,7 +604,8 @@ describe(generateFeedback.name, function () {
     })
 
     const feedbackDoc2 = generateFeedback({
-      sessionId,
+      sessionDoc,
+      testCycleDoc,
       userId
     })
 
@@ -676,7 +675,8 @@ describe(generateFeedback.name, function () {
     })
 
     const feedbackDoc3 = generateFeedback({
-      sessionId,
+      sessionDoc,
+      testCycleDoc,
       userId
     })
 
@@ -756,7 +756,8 @@ describe(generateFeedback.name, function () {
     })
 
     const feedbackDoc4 = generateFeedback({
-      sessionId,
+      sessionDoc,
+      testCycleDoc,
       userId
     })
 
@@ -835,7 +836,8 @@ describe(generateFeedback.name, function () {
     })
 
     const feedbackDoc5 = generateFeedback({
-      sessionId,
+      sessionDoc,
+      testCycleDoc,
       userId
     })
 

@@ -62,30 +62,30 @@ export const addRecord = (options) => {
   // then iterate the entries from the feedback and create a merged version
   // of both documents, containing all relevant data for analysis
 
-  const competencyDocs = competencies.map(competency => {
-    const { competencyId } = competency
-    const doc = competencyDocsMap.get(competencyId)
+  const competencyDocs = competencies.map(feedbackCompetency => {
+    const { competencyId } = feedbackCompetency
+    const competencyDoc = competencyDocsMap.get(competencyId)
     const previousDoc = previousRecordData.competency(competencyId)
 
     let status = Record.status.new
 
     if (previousDoc) {
-      status = getStatus(previousDoc.perc, competency.perc)
+      status = getStatus(previousDoc.perc, feedbackCompetency.perc)
     }
 
     return {
-      _id: doc._id,
-      shortCode: doc.shortCode,
-      description: doc.description,
-      alphaLevel: doc.level,
-      category: doc.category,
-      count: competency.count,
-      scored: competency.scored,
-      perc: competency.perc,
-      undef: competency.undef,
-      isGraded: competency.isGraded,
-      gradeName: competency.gradeName,
-      example: competency.example,
+      _id: competencyDoc._id,
+      shortCode: competencyDoc.shortCode,
+      description: competencyDoc.description,
+      alphaLevel: competencyDoc.level,
+      category: competencyDoc.category,
+      count: feedbackCompetency.count,
+      scored: feedbackCompetency.scored,
+      perc: feedbackCompetency.perc,
+      undef: feedbackCompetency.undef,
+      isGraded: feedbackCompetency.isGraded,
+      gradeName: feedbackCompetency.gradeName,
+      example: feedbackCompetency.example,
       development: status
     }
   })

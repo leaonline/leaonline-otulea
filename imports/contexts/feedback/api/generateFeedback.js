@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor'
+import { check, Match } from 'meteor/check'
 import { Feedback } from '../Feedback'
 import { getThresholds } from '../../thresholds/api/getThresholds'
 import { getSessionResponses } from '../../session/api/getSessionResponses'
@@ -7,7 +8,15 @@ import { getAlphaLevels } from './getAlphaLevels'
 import { getCompetencies } from './getCompetencies'
 import { notifyUsersAboutError } from '../../../api/notify/notifyUsersAboutError'
 
-export const generateFeedback = ({ sessionDoc, testCycleDoc, userId, debug = () => {} }) => {
+export const generateFeedback = (options) => {
+  check(options, {
+    sessionDoc: Match.ObjectIncluding({ _id: String }),
+    testCycleDoc: Match.ObjectIncluding({ _id: String }),
+    userId: String,
+    debug: Match.Maybe(Function)
+  })
+
+  const { sessionDoc, testCycleDoc, userId, debug = () => {} } = options
   const sessionId = sessionDoc._id
 
   debug('(generateFeedback)', { sessionId, userId })
@@ -26,29 +35,16 @@ export const generateFeedback = ({ sessionDoc, testCycleDoc, userId, debug = () 
   // someone could call this method with a passed sessionId through the console
   // so we need to make sure it is only called, when we are "done" with testing
 
-  if (!sessionDoc || !sessionDoc.completedAt) {
+  if (!sessionDoc.completedAt) {
     throw new Meteor.Error(
       'generateFeedback.error',
       'generateFeedback.sessionNotComplete', {
         userId,
         sessionId,
-        testCycle: sessionDoc?.testCycle,
-        completedAt: sessionDoc?.completedAt,
-        progress: sessionDoc?.progress,
-        maxProgress: sessionDoc?.maxProgress
-      })
-  }
-
-  if (!testCycleDoc) {
-    throw new Meteor.Error(
-      'generateFeedback.error',
-      'generateFeedback.testCycleNotFound', {
-        userId,
-        sessionId,
-        testCycle: sessionDoc?.testCycle,
-        completedAt: sessionDoc?.completedAt,
-        progress: sessionDoc?.progress,
-        maxProgress: sessionDoc?.maxProgress
+        testCycle: sessionDoc.testCycle,
+        completedAt: sessionDoc.completedAt,
+        progress: sessionDoc.progress,
+        maxProgress: sessionDoc.maxProgress
       })
   }
 

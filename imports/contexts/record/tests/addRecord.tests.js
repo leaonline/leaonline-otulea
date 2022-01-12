@@ -5,7 +5,12 @@ import { Random } from 'meteor/random'
 import { Record } from '../Record'
 import { Competency } from '../../Competency'
 import { AlphaLevel } from '../../AlphaLevel'
-import { mockCollection, restoreCollection } from '../../../../tests/mockCollection'
+import {
+  mockCollection,
+  restoreCollection
+} from '../../../../tests/mockCollection'
+import { stub, restoreAll } from '../../../../tests/helpers.tests'
+import { HTTP } from 'meteor/jkuester:http'
 
 const randomHex = () => Math.round(Math.random() * 100000).toString(16)
 
@@ -19,6 +24,7 @@ describe(addRecord.name, function () {
     restoreCollection(Record)
     restoreCollection(Competency)
     restoreCollection(AlphaLevel)
+    restoreAll()
   })
 
   it('throws if params are missing or invalid', function () {
@@ -89,7 +95,8 @@ describe(addRecord.name, function () {
           scored: 9,
           perc: 0.9,
           undef: 0,
-          isGraded: true
+          isGraded: true,
+          gradeName: 'accomplished'
         }],
         alphaLevels: [{
           alphaLevelId: alphaLevelId,
@@ -102,6 +109,22 @@ describe(addRecord.name, function () {
       }
     }
 
+    const alphaLevelDoc = AlphaLevel.collection().findOne(alphaLevelId)
+    const competencyDoc = Competency.collection().findOne(competencyId)
+
+    // stubbing fetch to content server
+    stub(HTTP, 'get', (url, params) => {
+      if (url.includes(AlphaLevel.routes.all.path)) {
+        return { data: [alphaLevelDoc] }
+      }
+
+      if (url.includes(Competency.routes.all.path)) {
+        return { data: [competencyDoc] }
+      }
+
+      throw new Error(url)
+    })
+
     const result = addRecord(data)
     expect(result.numberAffected).to.equal(1)
     expect(result.insertedId).to.be.a('string')
@@ -111,9 +134,6 @@ describe(addRecord.name, function () {
     const { completedAt, startedAt, ...rest } = recordDoc
     expect(completedAt).to.be.instanceOf(Date)
     expect(startedAt).to.be.instanceOf(Date)
-
-    const alphaLevelDoc = AlphaLevel.collection().findOne(alphaLevelId)
-    const competencyDoc = Competency.collection().findOne(competencyId)
 
     expect(rest).to.deep.equal({
       _id: result.insertedId,
@@ -135,6 +155,7 @@ describe(addRecord.name, function () {
         perc: data.feedbackDoc.competencies[0].perc,
         undef: data.feedbackDoc.competencies[0].undef,
         isGraded: data.feedbackDoc.competencies[0].isGraded,
+        gradeName: data.feedbackDoc.competencies[0].gradeName,
         development: 'new'
       }],
 
@@ -164,6 +185,22 @@ describe(addRecord.name, function () {
       category: randomHex()
     })
 
+    const alphaLevelDoc = AlphaLevel.collection().findOne(alphaLevelId)
+    const competencyDoc = Competency.collection().findOne(competencyId)
+
+    // stubbing fetch to content server
+    stub(HTTP, 'get', (url, params) => {
+      if (url.includes(AlphaLevel.routes.all.path)) {
+        return { data: [alphaLevelDoc] }
+      }
+
+      if (url.includes(Competency.routes.all.path)) {
+        return { data: [competencyDoc] }
+      }
+
+      throw new Error(url)
+    })
+
     const data = {
       userId: Random.id(6),
       testCycleDoc: {
@@ -185,7 +222,8 @@ describe(addRecord.name, function () {
           scored: 9,
           perc: 0.9,
           undef: 0,
-          isGraded: true
+          isGraded: true,
+          gradeName: 'accomplished'
         }],
         alphaLevels: [{
           alphaLevelId: alphaLevelId,
@@ -216,9 +254,6 @@ describe(addRecord.name, function () {
     expect(completedAt).to.be.instanceOf(Date)
     expect(startedAt).to.be.instanceOf(Date)
 
-    const alphaLevelDoc = AlphaLevel.collection().findOne(alphaLevelId)
-    const competencyDoc = Competency.collection().findOne(competencyId)
-
     expect(rest).to.deep.equal({
       _id: result.insertedId,
       userId: data.userId,
@@ -239,6 +274,7 @@ describe(addRecord.name, function () {
         perc: data.feedbackDoc.competencies[0].perc,
         undef: data.feedbackDoc.competencies[0].undef,
         isGraded: data.feedbackDoc.competencies[0].isGraded,
+        gradeName: data.feedbackDoc.competencies[0].gradeName,
         development: 'new'
       }],
 
@@ -268,6 +304,22 @@ describe(addRecord.name, function () {
       category: randomHex()
     })
 
+    const alphaLevelDoc = AlphaLevel.collection().findOne(alphaLevelId)
+    const competencyDoc = Competency.collection().findOne(competencyId)
+
+    // stubbing fetch to content server
+    stub(HTTP, 'get', (url, params) => {
+      if (url.includes(AlphaLevel.routes.all.path)) {
+        return { data: [alphaLevelDoc] }
+      }
+
+      if (url.includes(Competency.routes.all.path)) {
+        return { data: [competencyDoc] }
+      }
+
+      throw new Error(url)
+    })
+
     const data = {
       userId: Random.id(6),
       testCycleDoc: {
@@ -289,7 +341,8 @@ describe(addRecord.name, function () {
           scored: 9,
           perc: 0.9,
           undef: 0,
-          isGraded: true
+          isGraded: true,
+          gradeName: 'accomplished'
         }],
         alphaLevels: [{
           alphaLevelId: alphaLevelId,
