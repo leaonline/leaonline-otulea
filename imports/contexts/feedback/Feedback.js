@@ -1,6 +1,3 @@
-import { onServerExec } from '../../utils/archUtils'
-import { Session } from '../session/Session'
-
 export const Feedback = {
   name: 'feedback',
   label: 'feedback.title',
@@ -44,18 +41,3 @@ Feedback.schema = {
 Feedback.publications = {}
 
 Feedback.methods = {}
-
-Feedback.methods.generate = {
-  name: 'feedback.methods.generate',
-  schema: {
-    sessionId: String
-  },
-  run: onServerExec(function () {
-    import { generateFeedback } from './api/generateFeedback'
-
-    return function ({ sessionId }) {
-      const { userId, debug } = this
-      return generateFeedback({ sessionId, userId, debug })
-    }
-  })
-}

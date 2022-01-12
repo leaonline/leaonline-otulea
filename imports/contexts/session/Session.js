@@ -1,4 +1,6 @@
 import { onServerExec } from '../../utils/archUtils'
+import { addRecord } from '../record/api/addRecord'
+import { Meteor } from "meteor/meteor"
 
 export const Session = {
   name: 'session',
@@ -199,11 +201,42 @@ Session.methods.results = {
   numRequests: 1,
   timeInterval: 1000,
   run: onServerExec(function () {
+    import { Meteor } from 'meteor/meteor'
+    import { Session } from '../session/Session'
+    import { TestCycle } from '../testcycle/TestCycle'
     import { generateFeedback } from '../feedback/api/generateFeedback'
+    import { addRecord } from '../record/api/addRecord'
 
     return function ({ sessionId }) {
       const { userId, debug } = this
-      return generateFeedback({ sessionId, userId, debug })
+      const sessionDoc = Session.collection().findOne(sessionId)
+      const testCycleDoc = sessionDoc && TestCycle.collection().findOne(sessionDoc.testCycle)
+      const feedbackDoc = generateFeedback({
+        sessionDoc,
+        testCycleDoc,
+        userId,
+        debug
+      })
+
+      // if the feedback is new we also want to add a new entry record
+      // we need this flag, because users can reload the page to retrieve
+      // the feedback doc as often as they want to and we don't want to
+      // create a new record every time they do so
+      if (!feedbackDoc.fromDB) {
+        // if this fails it will not affect the user experience in the client
+        // but it will also not automatically send an error email to our system
+        Meteor.defer(function () {
+          const recordsAdded = addRecord({
+            userId,
+            sessionDoc,
+            testCycleDoc,
+            feedbackDoc
+          })
+          debug('records added', recordsAdded)
+        })
+      }
+
+      return feedbackDoc
     }
   })
 }

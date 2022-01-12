@@ -1,13 +1,22 @@
 import { check, Match } from 'meteor/check'
 import { Record } from '../Record'
-import { Competency } from '../../Competency'
-import { AlphaLevel } from '../../AlphaLevel'
 import { docsToMap } from '../../../utils/documents/docsToMap'
+import { getCompetencies } from '../../feedback/api/getCompetencies'
+import { getAlphaLevels } from '../../feedback/api/getAlphaLevels'
 
 const hint = { $natural: -1 }
 const byCompetencyId = c => c.competencyId
 const byAlphaLevelId = a => a.alphaLevelId
 
+/**
+ *
+ * @param options
+ * @param options.userId {string}
+ * @param options.testCycleDoc {object}
+ * @param options.sessionDoc {object}
+ * @param options.feedbackDoc {object}
+ * @return {any | void}
+ */
 export const addRecord = (options) => {
   check(options, Match.ObjectIncluding({
     userId: String,
@@ -47,15 +56,8 @@ export const addRecord = (options) => {
   // first we need to iterate the competencies / alphalevels
   // and map them to their docs, which we need to assign their info
 
-  const competencyDocsMap = docsToMap(Competency
-    .collection()
-    .find({ _id: { $in: competencies.map(byCompetencyId) } })
-    .fetch())
-
-  const alphaLevelDocsMap = docsToMap(AlphaLevel
-    .collection()
-    .find({ _id: { $in: alphaLevels.map(byAlphaLevelId) } })
-    .fetch())
+  const competencyDocsMap = getCompetencies(competencies.map(byCompetencyId))
+  const alphaLevelDocsMap = getAlphaLevels(alphaLevels.map(byAlphaLevelId))
 
   // then iterate the entries from the feedback and create a merged version
   // of both documents, containing all relevant data for analysis
@@ -82,6 +84,8 @@ export const addRecord = (options) => {
       perc: competency.perc,
       undef: competency.undef,
       isGraded: competency.isGraded,
+      gradeName: competency.gradeName,
+      example: competency.example,
       development: status
     }
   })

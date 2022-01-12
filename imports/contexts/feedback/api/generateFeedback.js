@@ -1,7 +1,5 @@
 import { Meteor } from 'meteor/meteor'
 import { Feedback } from '../Feedback'
-import { Session } from '../../session/Session'
-import { TestCycle } from '../../testcycle/TestCycle'
 import { getThresholds } from '../../thresholds/api/getThresholds'
 import { getSessionResponses } from '../../session/api/getSessionResponses'
 import { getGrade } from '../../thresholds/api/getGrade'
@@ -9,11 +7,14 @@ import { getAlphaLevels } from './getAlphaLevels'
 import { getCompetencies } from './getCompetencies'
 import { notifyUsersAboutError } from '../../../api/notify/notifyUsersAboutError'
 
-export const generateFeedback = ({ sessionId, userId, debug = () => {} }) => {
+export const generateFeedback = ({ sessionDoc, testCycleDoc, userId, debug = () => {} }) => {
+  const sessionId = sessionDoc._id
+
   debug('(generateFeedback)', { sessionId, userId })
   const existingFeedback = Feedback.collection().findOne({ sessionId, userId })
 
   if (existingFeedback) {
+    existingFeedback.fromDB = true
     return existingFeedback
   }
 
@@ -21,7 +22,6 @@ export const generateFeedback = ({ sessionId, userId, debug = () => {} }) => {
   // STEP 0 - CHECK
   // ///////////////////////////////////////////////////////////////////////////
   debug('(generateFeedback)', 'generate new')
-  const sessionDoc = Session.collection().findOne(sessionId)
 
   // someone could call this method with a passed sessionId through the console
   // so we need to make sure it is only called, when we are "done" with testing
@@ -38,8 +38,6 @@ export const generateFeedback = ({ sessionId, userId, debug = () => {} }) => {
         maxProgress: sessionDoc?.maxProgress
       })
   }
-
-  const testCycleDoc = TestCycle.collection().findOne(sessionDoc.testCycle)
 
   if (!testCycleDoc) {
     throw new Meteor.Error(

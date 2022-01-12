@@ -59,12 +59,20 @@ Record.schema = {
   'competencies.$.shortCode': String,
   'competencies.$.description': String,
   'competencies.$.alphaLevel': String,
-  'competencies.$.category': String,
+  'competencies.$.category': {
+    type: String,
+    optional: true
+  },
   'competencies.$.count': Number,
   'competencies.$.scored': Number,
   'competencies.$.undef': Number,
   'competencies.$.perc': Number,
   'competencies.$.isGraded': Boolean,
+  'competencies.$.gradeName': String,
+  'competencies.$.example': {
+    type: String,
+    optional: true
+  },
   'competencies.$.development': {
     type: String,
     allowedValues: Object.values(Record.status)
@@ -87,7 +95,7 @@ Record.schema = {
 }
 
 Record.methods.getForUsers = {
-  name: 'feedback.methods.getForUsers',
+  name: 'record.methods.getForUsers',
   schema: {
     users: Array,
     'users.$': String,
@@ -108,6 +116,9 @@ Record.methods.getForUsers = {
   },
   backend: true,
   run: onServerExec(function () {
+    const transform = {
+      hint: { $natural: -1 }
+    }
     return function ({ users = [], dimension, skip = [], oldest, newest }) {
       const query = {
         userId: { $in: users },
@@ -139,7 +150,7 @@ Record.methods.getForUsers = {
         query.completedAt = { $lte: newest }
       }
 
-      return Record.collection().find(query).fetch()
+      return Record.collection().find(query, transform).fetch()
     }
   })
 }
