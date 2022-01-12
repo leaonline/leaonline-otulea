@@ -33,7 +33,7 @@ describe(addRecord.name, function () {
       userId: Random.id(6),
       testCycleDoc: {
         dimension: Random.id(4),
-        level: Random.id(4),
+        level: Random.id(4)
       },
       sessionDoc: {},
       feedbackDoc: {}
@@ -42,7 +42,7 @@ describe(addRecord.name, function () {
       userId: Random.id(6),
       testCycleDoc: {
         dimension: Random.id(4),
-        level: Random.id(4),
+        level: Random.id(4)
       },
       sessionDoc: {
         startedAt: new Date(),
@@ -51,7 +51,7 @@ describe(addRecord.name, function () {
       },
       feedbackDoc: {
         competencies: [],
-        alphaLevels: ['foo'],
+        alphaLevels: ['foo']
       }
     })).to.throw('Expected object, got string in field feedbackDoc.alphaLevels[0]')
   })
@@ -73,7 +73,7 @@ describe(addRecord.name, function () {
       testCycleDoc: {
         _id: Random.id(6),
         dimension: Random.id(4),
-        level: Random.id(4),
+        level: Random.id(4)
       },
       sessionDoc: {
         _id: Random.id(6),
@@ -98,7 +98,7 @@ describe(addRecord.name, function () {
           perc: 1,
           undef: 0,
           isGraded: true
-        }],
+        }]
       }
     }
 
@@ -169,7 +169,7 @@ describe(addRecord.name, function () {
       testCycleDoc: {
         _id: Random.id(6),
         dimension: Random.id(4),
-        level: Random.id(4),
+        level: Random.id(4)
       },
       sessionDoc: {
         _id: Random.id(6),
@@ -194,7 +194,7 @@ describe(addRecord.name, function () {
           perc: 1,
           undef: 0,
           isGraded: true
-        }],
+        }]
       }
     }
 
@@ -273,7 +273,7 @@ describe(addRecord.name, function () {
       testCycleDoc: {
         _id: Random.id(6),
         dimension: Random.id(4),
-        level: Random.id(4),
+        level: Random.id(4)
       },
       sessionDoc: {
         _id: Random.id(6),
@@ -298,7 +298,7 @@ describe(addRecord.name, function () {
           perc: 1,
           undef: 0,
           isGraded: true
-        }],
+        }]
       }
     }
     const yesterday = data.sessionDoc.startedAt.getDate() - 1

@@ -1,6 +1,4 @@
 import { onServerExec } from '../../utils/archUtils'
-import { addRecord } from '../record/api/addRecord'
-import { Meteor } from "meteor/meteor"
 
 export const Session = {
   name: 'session',

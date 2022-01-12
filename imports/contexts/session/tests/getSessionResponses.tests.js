@@ -23,7 +23,6 @@ describe(getSessionResponses.name, function () {
   let userId
 
   beforeEach(function () {
-
     sessionId = Random.id()
     userId = Random.id()
   })

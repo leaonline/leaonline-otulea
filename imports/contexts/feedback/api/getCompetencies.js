@@ -4,7 +4,8 @@ import { fetchDoc } from '../../../api/http/fetchDoc'
 
 const url = toContentServerURL(Competency.routes.all.path)
 
-const cache = new Map()
+// TODO implement caching
+// const cache = new Map()
 
 export const getCompetencies = ids => {
   const docs = fetchDoc(url, { ids }) || []

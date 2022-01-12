@@ -162,5 +162,5 @@ const getStatus = (prev, current) => {
   if (prev > current) { return Record.status.declined }
   if (prev === current) { return Record.status.same }
 
-  throw new Error(`this should never occur`)
+  throw new Error('this should never occur')
 }

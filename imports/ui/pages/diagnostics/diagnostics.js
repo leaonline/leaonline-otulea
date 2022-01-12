@@ -151,7 +151,8 @@ Template.diagnostics.onCreated(function () {
         }
         catch (error) {
           instance.addError(error)
-        } finally {
+        }
+        finally {
           instance.state.set('diagnosticsComplete', true)
         }
       })
