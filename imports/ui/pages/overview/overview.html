@@ -15,18 +15,21 @@
                     </div>
                     <div class="card-body mt-3">
                         <div class="row d-flex justify-content-center">
-                            {{#each dimension in allDimensions}}
+                            {{#each allDimensions}}
                                 <div class="col col-xs-12 col-md-6 col-lg-3 my-1">
-                                    {{> actionButton
+                                    {{#actionButton
                                             block=true
                                             outline=true
-                                            icon=dimension.icon
-                                            type=(colorTypeName dimension)
-                                            iconClass="d-block ml-auto mr-auto my-2 fa-3x"
-                                            data-dimension=dimension._id
-                                            active=(isSelectedDimension dimension._id)
-                                            label=dimension.title
-                                            btnClass="lea-dimension-button p-5 font-weight-bold  no-wrap"}}
+                                            type=(colorTypeName this)
+                                            data-dimension=this._id
+                                            active=(isSelectedDimension this._id)
+                                            btnClass="lea-dimension-button p-3 font-weight-bold  no-wrap"}}
+                                        {{> icon name=this.icon
+                                                class="d-block ml-auto mr-auto my-2 fa-3x"}}
+                                        <span class="lea-text">
+                                            {{this.title}}
+                                        </span>
+                                    {{/actionButton}}
                                 </div>
                             {{else}}
                                 {{> loading}}
