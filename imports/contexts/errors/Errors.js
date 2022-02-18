@@ -8,11 +8,15 @@ export const Errors = {
 
 Errors.schema = {
   name: {
-    type: String
+    type: String,
+    optional: true,
+    defaultValue: 'error'
   },
 
   type: {
-    type: String
+    type: String,
+    optional: true,
+    defaultValue: 'Native.Error'
   },
 
   message: {
@@ -52,8 +56,14 @@ Errors.schema = {
     optional: true
   },
 
-  isServer: Boolean,
-  isClient: Boolean,
+  isServer: {
+    type: Boolean,
+    optional: true,
+  },
+  isClient: {
+    type: Boolean,
+    optional: true,
+  },
   method: {
     type: String,
     optional: true
