@@ -121,7 +121,7 @@
                                         </th>
                                     {{/if}}
                                     <th scope="col" class="text-center">
-                                        {{> textGroup text=(i18n "thresholds.grade") type=currentType}}
+                                        {{! > textGroup text=(i18n "thresholds.grade") type=currentType}}
                                     </th>
                                 </tr>
                                 </thead>
@@ -196,14 +196,14 @@
                                     label=(i18n "actions.hide")
                                     type=currentType
                                     outline=true
-                                    class="toggle-competency-display align-baseline"
+                                    class="toggle-competency-display align-baseline d-print-none"
                                     icon="eye-slash"}}
                             {{else}}
                                 {{> actionButton
                                         label=(i18n "actions.show")
                                         type=currentType
                                         outline=true
-                                        class="toggle-competency-display align-baseline"
+                                        class="toggle-competency-display align-baseline d-print-none"
                                         icon="eye"}}
                             {{/if}}
                         </div>
@@ -239,7 +239,7 @@
                                         </th>
                                     {{/if}}
                                     <th scope="col" class="text-center">
-                                        {{> textGroup text=(i18n "thresholds.grade") type=currentType}}
+                                        {{! > textGroup text=(i18n "thresholds.grade") type=currentType}}
                                     </th>
                                 </tr>
                                 </thead>
