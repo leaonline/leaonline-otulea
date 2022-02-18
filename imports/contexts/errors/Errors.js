@@ -58,11 +58,11 @@ Errors.schema = {
 
   isServer: {
     type: Boolean,
-    optional: true,
+    optional: true
   },
   isClient: {
     type: Boolean,
-    optional: true,
+    optional: true
   },
   method: {
     type: String,
@@ -104,6 +104,7 @@ Errors.methods.create = {
   isPublic: true,
   run: onServerExec(function () {
     import { persistError } from './api/persistError'
+    import { Meteor } from 'meteor/meteor'
 
     return function (errorDoc) {
       const { userId } = this

@@ -61,7 +61,6 @@ Template.diagnostics.onCreated(function () {
     console.debug({ results })
     console.log('%c [diagnostics]: complete', 'background: #222; color: #bada55')
 
-
     const map = new Map()
     results.forEach(entry => {
       const { name, label, ...rest } = entry
@@ -153,7 +152,8 @@ Template.diagnostics.onCreated(function () {
         try {
           const insertDoc = processResults(result)
 
-          // cap log intercept to 500 lines
+          // restore console and cap log intercept to 500 lines
+          consoleTypes.forEach(restoreLog)
           if (log.length > 500) log.length = 500
 
           insertDoc.log = log

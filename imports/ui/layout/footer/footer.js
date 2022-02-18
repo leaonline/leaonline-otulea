@@ -14,8 +14,8 @@ const legalRoutes = Object.keys(Legal.schema).map(key => {
 
 Template.footer.onCreated(function () {
   const instance = this
-  const params = new URLSearchParams(window.location.search);
-  const tts = params.get('tts');
+  const params = new URLSearchParams(window.location.search)
+  const tts = params.get('tts')
   const ttsIsActive = tts !== '0'
 
   setTimeout(() => {

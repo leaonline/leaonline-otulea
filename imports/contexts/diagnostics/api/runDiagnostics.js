@@ -101,11 +101,12 @@ async function checkTTS (collector) {
 
   try {
     engine = await initializeTTS()
-  } catch (initError) {
+  }
+  catch (initError) {
     console.error('init error', initError.message)
     result.error = initError
     result.status = 'failed'
-    return resolve(collector(result))
+    return collector(result)
   }
 
   if (!engine?.isConfigured()) {

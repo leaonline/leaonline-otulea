@@ -30,7 +30,8 @@ export const sendError = async ({ error, isResponse, userId, template, prepare, 
   try {
     const result = await getOSInfo()
     detected = result.detected
-  } catch (e) {
+  }
+  catch (e) {
     detected = {
       platform: window.navigator.platform,
       userAgent: window.navigator.userAgent
