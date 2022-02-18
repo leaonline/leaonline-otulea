@@ -94,6 +94,14 @@ Diagnostics.schema = {
   'errors.$': {
     type: Object,
     blackbox: true
+  },
+  log: {
+    type: Array,
+    optional: true,
+    max: 500
+  },
+  'log.$': {
+    type: String
   }
 }
 

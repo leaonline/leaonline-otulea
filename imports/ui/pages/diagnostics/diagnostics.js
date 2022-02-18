@@ -8,9 +8,27 @@ import diagnosticsLanguage from './i18n/diagnosticsLanguage'
 import '../../components/complete/onComplete'
 import './diagnostics.html'
 
+const consoleTypes = ['error', 'warn', 'info', 'log', 'debug']
+
 Template.diagnostics.onCreated(function () {
   const instance = this
   instance.allData = []
+
+  const log = []
+  const originals = {}
+
+  const overrideLog = (target) => {
+    originals[target] = console[target]
+    console[target] = (...args) => {
+      log.push(`[${target}]` + args.join(','))
+      originals[target](...args)
+    }
+  }
+  const restoreLog = target => {
+    console[target] = originals[target]
+  }
+
+  consoleTypes.forEach(overrideLog)
 
   instance.addError = error => {
     const normalized = normalizeError({ error })
@@ -134,6 +152,12 @@ Template.diagnostics.onCreated(function () {
       .then(result => {
         try {
           const insertDoc = processResults(result)
+
+          // cap log intercept to 500 lines
+          if (log.length > 500) log.length = 500
+
+          insertDoc.log = log
+
           callMethod({
             name: Diagnostics.methods.send,
             args: insertDoc,
