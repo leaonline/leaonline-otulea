@@ -97,10 +97,20 @@ async function checkTTS (collector) {
   const { initializeTTS } = await import('../../../api/tts/initializeTTS')
 
   const result = {}
-  const engine = await initializeTTS()
+  let engine
+
+  try {
+    engine = await initializeTTS()
+  } catch (initError) {
+    console.error('init error', initError.message)
+    result.error = initError
+    result.status = 'failed'
+    return resolve(collector(result))
+  }
 
   if (!engine?.isConfigured()) {
     result.status = 'failed'
+    result.error = new Error('TTS engine config failed')
     return collector(result)
   }
 
@@ -114,6 +124,7 @@ async function checkTTS (collector) {
         resolve(collector(result))
       },
       onError: event => {
+        console.error('play error', event.error.message)
         if (event.error) {
           result.error = event.error
         }

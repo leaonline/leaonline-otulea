@@ -1,15 +1,19 @@
 <template name="diagnostics">
 
-    <div class="container p-4">
+    <div class="container p-4 col-12 col-md-4 col-lg-4">
         {{#onComplete complete=loadComplete}}
             <h1 class="text-center">{{i18n "pages.diagnostics.title"}}</h1>
 
-            {{> textGroup text=(i18n "pages.diagnostics.info")}}
+            <p>{{i18n "pages.diagnostics.info"}}</p>
 
             {{#unless confirmed}}
                 <div class="d-flex justify-content-center">
-                    {{> routeButton label=(i18n "common.no") href=(route "root") outline=true}}
-                    {{> actionButton label=(i18n "common.yes") class="confirm-button"}}
+                    <a href="{{route "root"}}" class="btn btn-outline-secondary">
+                        {{i18n "common.no"}}
+                    </a>
+                    <button class="btn btn-outline-secondary confirm-button ml-3">
+                        {{i18n "common.yes"}}
+                    </button>
                 </div>
             {{/unless}}
         {{/onComplete}}
@@ -20,16 +24,28 @@
     {{#onComplete complete=loadComplete}}
             <ul class="list-group">
                 {{#each result in results}}
-                    <li class="list-group-item text-white d-flex justify-content-between bg-{{#if
-                            result.success}}success{{else}}danger{{/if}}">
-                        <div class="font-weight-bold">{{i18n
-                                result.label}}</div>
-                        {{#if result.success}}
+                    {{#if result.success}}
+                        <li class="list-group-item text-white d-flex justify-content-between bg-success p-2">
                             {{> icon name="check"}}
-                        {{else}}
-                            {{> icon name="times"}}
-                        {{/if}}
-                    </li>
+                            <span class="font-weight-bold">{{i18n result.label}}</span>
+                        </li>
+                    {{else}}
+                        <li class="list-group-item text-white bg-danger p-2">
+                            <div class="w-100 d-flex justify-content-between">
+                                <button class="btn btb-danger" type="button"
+                                        data-toggle="collapse" data-target="#collapse-{{@index}}"
+                                        aria-expanded="false" aria-controls="collapse-{{@index}}">
+                                    {{> icon name="times"}}
+                                </button>
+                                <span class="font-weight-bold">{{i18n result.label}}</span>
+                            </div>
+                            <div class="collapse" id="collapse-{{@index}}">
+                                {{#if result.error}}
+                                    {{result.error.message}}
+                                {{/if}}
+                            </div>
+                        </li>
+                    {{/if}}
                 {{/each}}
             </ul>
 
@@ -37,13 +53,12 @@
             {{> loading title=(i18n "pages.diagnostics.sending")}}
         {{/if}}
 
-        {{#if sendComplete}}
+
+        {{#with sendComplete}}
             <div class="alert alert-success mt-4">
-                {{#onComplete complete=loadComplete}}
-                    {{> textGroup text=(i18n "pages.diagnostics.sent")}}
-                {{/onComplete}}
+                {{i18n "pages.diagnostics.sent"}}
             </div>
-        {{/if}}
+        {{/with}}
 
         {{#if running}}
             {{>loading title=(i18n "pages.diagnostics.run")}}

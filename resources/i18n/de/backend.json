@@ -91,7 +91,9 @@
     "swWaiting": "W.Warte",
     "perfLoaded": "Performance",
     "perfStart": "Start",
-    "perfDuration": "Dauer"
+    "perfDuration": "Dauer",
+    "graphics": "Grafik",
+    "screen": "Bildschirm"
   },
   "response": {
     "title": "Antworten",

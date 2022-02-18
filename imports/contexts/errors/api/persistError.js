@@ -10,7 +10,7 @@ import { notifyUsersAboutError } from '../../../api/notify/notifyUsersAboutError
  * @param normalizedErrorDoc
  * @return {*}
  */
-export const persistError = normalizedErrorDoc => {
+export const persistError = (normalizedErrorDoc) => {
   // let's see, if the same user created the same error already
   const { hash } = normalizedErrorDoc
   const collection = Errors.collection()

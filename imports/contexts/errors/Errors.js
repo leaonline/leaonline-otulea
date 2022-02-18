@@ -82,6 +82,12 @@ Errors.schema = {
     type: String,
     optional: true
   },
+  // these are added by the server-side method, no matter what
+  // has been defined in "createdAt" field or being sent by client
+  userId: {
+    type: String,
+    optional: true
+  },
   code: {
     type: String,
     optional: true
@@ -100,6 +106,14 @@ Errors.methods.create = {
     import { persistError } from './api/persistError'
 
     return function (errorDoc) {
+      const { userId } = this
+      errorDoc.userId = userId
+
+      if (userId && !errorDoc.code) {
+        const user = Meteor.users.findOne(userId)
+        errorDoc.code = user?.username
+      }
+
       return persistError(errorDoc)
     }
   })

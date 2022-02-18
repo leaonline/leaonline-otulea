@@ -25,6 +25,7 @@ Template.diagnostics.onCreated(function () {
     .then(() => {
       try {
         instance.initDependencies({
+          tts: false,
           translations: diagnosticsLanguage,
           onComplete () {
             instance.state.set('loadComplete', true)
@@ -39,7 +40,9 @@ Template.diagnostics.onCreated(function () {
 
   const processResults = results => {
     instance.allData = results
+    console.debug({ results })
     console.log('%c [diagnostics]: complete', 'background: #222; color: #bada55')
+
 
     const map = new Map()
     results.forEach(entry => {

@@ -25,11 +25,21 @@ export const sendError = async ({ error, isResponse, userId, template, prepare, 
     return console.error(error)
   }
 
-  const { detected } = await getOSInfo()
+  let detected
+
+  try {
+    const result = await getOSInfo()
+    detected = result.detected
+  } catch (e) {
+    detected = {
+      platform: window.navigator.platform,
+      userAgent: window.navigator.userAgent
+    }
+  }
 
   const normalizedError = normalizeError({
     error: error,
-    template,
+    template: template,
     browser: detected,
     userId: userId || Meteor.userId()
   })

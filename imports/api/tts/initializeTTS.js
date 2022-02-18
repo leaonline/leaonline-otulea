@@ -21,6 +21,7 @@ export const initializeTTS = async () => {
         console.debug('[initializeTTS]: configure failed => ', error.message)
         // TODO communicate error to user in an understandable way
         // TODO fallback to server-rendered TTS
+
         sendError({ error })
         resolve(TTSEngine)
       },

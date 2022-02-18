@@ -14,10 +14,13 @@ const legalRoutes = Object.keys(Legal.schema).map(key => {
 
 Template.footer.onCreated(function () {
   const instance = this
+  const params = new URLSearchParams(window.location.search);
+  const tts = params.get('tts');
+  const ttsIsActive = tts !== '0'
 
   setTimeout(() => {
     instance.initDependencies({
-      tts: true,
+      tts: ttsIsActive,
       language: true,
       translations: {
         de: () => import('./i18n/de')

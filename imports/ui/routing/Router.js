@@ -22,7 +22,7 @@ Router.go = function (value, ...optionalArgs) {
     return FlowRouter.go(value)
   }
   else {
-    throw new Error(`Unexpected format: [${typeof type}], expected string or object`)
+    throw new Error(`Unexpected format: got [${type}], expected string or object`)
   }
 }
 
