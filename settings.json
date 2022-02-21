@@ -34,6 +34,9 @@
         "evalUrl": "http://localhost:6060/eval",
         "responseUrl": "http://localhost:6060/response"
       }
+    },
+    "error": {
+      "maxStackSize": 1500
     }
   },
   "oauth": {

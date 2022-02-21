@@ -40,6 +40,9 @@ const settingsSchema = schema({
         evalUrl: String,
         responseUrl: String
       })
+    }),
+    error: schema({
+      maxStackSize: SimpleSchema.Integer
     })
   }),
   oauth: schema({

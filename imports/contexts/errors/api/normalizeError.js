@@ -1,6 +1,8 @@
 import { Meteor } from 'meteor/meteor'
 import { EJSON } from 'meteor/ejson'
 
+const { maxStackSize } = Meteor.settings.public.error
+
 export const normalizeError = ({ error, browser, userId, code, template, method, publication, endpoint, isSystem }) => {
   import { simpleHash } from '../../../utils/simpleHash'
 
@@ -55,9 +57,9 @@ const stringifyDetails = details => {
 }
 
 const truncateStack = (stack = '') => {
-  const lines = stack.split(/\n/g)
-  if (lines.length > 3) {
-    lines.length = 3
+  if (stack.length < maxStackSize) {
+    return stack
   }
-  return lines.join('\n')
+
+  return stack.substring(0, maxStackSize)
 }
