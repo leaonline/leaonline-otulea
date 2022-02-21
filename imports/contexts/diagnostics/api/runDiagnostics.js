@@ -16,7 +16,7 @@ const getInspect = (results, debug) => async (name, fn) => {
   }
 
   try {
-    debug(name,'collect')
+    debug(name, 'collect')
     await fn(collector)
   }
   catch (error) {

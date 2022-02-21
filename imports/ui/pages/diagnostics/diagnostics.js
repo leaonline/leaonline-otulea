@@ -20,7 +20,7 @@ Template.diagnostics.onCreated(function () {
   let $logOut
   const logOutput = line => {
     if (!$logOut) {
-      $logOut= document.querySelector('#diagnostics-log')
+      $logOut = document.querySelector('#diagnostics-log')
     }
 
     if (!$logOut) { return }
