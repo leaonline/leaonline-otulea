@@ -35,11 +35,19 @@
                 <div class="card">
                     <div class="card-header beta-header border border-primary bg-white d-flex justify-content-between">
                         {{> textGroup type=this.type text=(i18n "pages.welcome.beta.title")}}
+                        {{#unless betaMessageOpen}}
                         {{> actionButton
                                 btnClass="btn-primary bg-primary text-white"
                                 type="primary"
                                 class="toggle-beta"
                                 label=(i18n "actions.show")}}
+                        {{else}}
+                            {{> actionButton
+                                    btnClass="btn-primary bg-primary text-white"
+                                    type="primary"
+                                    class="toggle-beta"
+                                    label=(i18n "actions.hide")}}
+                        {{/unless}}
                     </div>
                     <div class="card-body beta-content border border-primary" style="display: none;">
                         {{> textGroup type=this.type text=(i18n "pages.welcome.beta.note")}}

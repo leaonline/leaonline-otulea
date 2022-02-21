@@ -94,6 +94,9 @@ Template.welcome.helpers({
   isBeta () {
     return Template.instance().state.get('isBeta')
   },
+  betaMessageOpen () {
+    return Template.instance().state.get('betaMessageOpen')
+  },
   intro () {
     return Template.instance().state.get('intro')
   },
@@ -348,11 +351,26 @@ Template.welcome.events({
   },
   'click .toggle-beta' (event, templateInstance) {
     event.preventDefault()
-    templateInstance.api.fadeIn('.beta-content', () => {
-      templateInstance.api.fadeOut('.toggle-beta', () => {
-        event.currentTarget.remove()
-      })
-    })
+
+    // prevent multiple clicks here
+    if (templateInstance.state.get('betaToggling')) {
+      return
+    }
+
+    templateInstance.state.get('betaToggling', true)
+
+    const betaMessageOpen = templateInstance.state.get('betaMessageOpen')
+    const betaToggleComplete = () => {
+      templateInstance.state.set('betaMessageOpen', !betaMessageOpen)
+      templateInstance.state.get('betaToggling', false)
+    }
+
+    if (betaMessageOpen) {
+      templateInstance.api.fadeOut('.beta-content', betaToggleComplete)
+    }
+    else {
+      templateInstance.api.fadeIn('.beta-content', betaToggleComplete)
+    }
   }
 })
 
