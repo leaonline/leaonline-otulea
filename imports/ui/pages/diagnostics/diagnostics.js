@@ -14,13 +14,25 @@ Template.diagnostics.onCreated(function () {
   const instance = this
   instance.allData = []
 
+  instance.debug = (...args) => console.debug('[diagnostics]:', ...args)
   const log = []
   const originals = {}
+  let $logOut
+  const logOutput = line => {
+    if (!$logOut) {
+      $logOut= document.querySelector('#diagnostics-log')
+    }
+
+    if (!$logOut) { return }
+    $logOut.value = ($logOut.value) + line + '\n'
+  }
 
   const overrideLog = (target) => {
     originals[target] = console[target]
     console[target] = (...args) => {
-      log.push(`[${target}]` + args.join(','))
+      const line = `[${target}]` + args.join(' ')
+      log.push(line)
+      logOutput(line)
       originals[target](...args)
     }
   }
@@ -31,6 +43,7 @@ Template.diagnostics.onCreated(function () {
   consoleTypes.forEach(overrideLog)
 
   instance.addError = error => {
+    console.error('[diagnostics]:', error.message)
     const normalized = normalizeError({ error })
     const errors = instance.state.get('errors') || []
     errors.push(normalized)
@@ -38,14 +51,17 @@ Template.diagnostics.onCreated(function () {
     instance.state.set({ errors })
   }
 
+  instance.debug('init template')
   initLanguage()
     .catch(e => instance.addError(e))
     .then(() => {
       try {
         instance.initDependencies({
           tts: false,
+          debug: true,
           translations: diagnosticsLanguage,
           onComplete () {
+            instance.debug('init complete')
             instance.state.set('loadComplete', true)
           }
         })
@@ -57,21 +73,23 @@ Template.diagnostics.onCreated(function () {
     })
 
   const processResults = results => {
+    instance.debug('process results')
     instance.allData = results
-    console.debug({ results })
-    console.log('%c [diagnostics]: complete', 'background: #222; color: #bada55')
 
+    instance.debug('map results')
     const map = new Map()
     results.forEach(entry => {
       const { name, label, ...rest } = entry
       map.set(entry.name, rest)
     })
 
+    instance.debug('flatten entries')
     const entries = {}
     for (const entry of map.entries()) {
       entries[entry[0]] = entry[1]
     }
 
+    instance.debug('create doc to send')
     const { osinfo, font, language, localStorage, serviceworker, performance, tts, screen, graphics } = entries
     const insertDoc = {
       bName: osinfo?.browser?.name,
@@ -140,18 +158,21 @@ Template.diagnostics.onCreated(function () {
       }
     }
 
+    instance.debug('processing complete')
     return insertDoc
   }
 
   instance.autorun(() => {
     const confirmed = instance.state.get('confirmed')
     if (!confirmed) return
+    instance.debug('run diagnostics')
 
-    Diagnostics.api.run()
+    Diagnostics.api.run({ debug: instance.debug })
       .then(result => {
+        instance.debug('diagnostics collected')
         try {
           const insertDoc = processResults(result)
-
+          instance.debug('send data to server')
           // restore console and cap log intercept to 500 lines
           consoleTypes.forEach(restoreLog)
           if (log.length > 500) log.length = 500

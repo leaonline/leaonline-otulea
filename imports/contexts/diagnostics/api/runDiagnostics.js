@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor'
 import { normalizeError } from '../../errors/api/normalizeError'
 
-const getInspect = (results) => async (name, fn) => {
+const getInspect = (results, debug) => async (name, fn) => {
   const collector = (data) => {
+    debug(name, 'result', JSON.stringify(data))
     if (data.error) {
       data.error = normalizeError({
         error: data.error,
@@ -10,20 +11,25 @@ const getInspect = (results) => async (name, fn) => {
       })
     }
     const label = `diagnostics.${name}`
-    results.push({ label, ...data, name })
+    const result = { label, ...data, name }
+    results.push(result)
   }
 
   try {
+    debug(name,'collect')
     await fn(collector)
   }
   catch (error) {
+    debug(name, 'collect failed', error.message)
     collector({ error })
   }
 }
 
-export const runDiagnostics = async function runDiagnostics () {
+export const runDiagnostics = async function runDiagnostics ({ debug = () => {} } = {}) {
   const results = []
-  const inspect = getInspect(results)
+  debug('exec runDiagnostics()')
+  debug('get inspector')
+  const inspect = getInspect(results, debug)
   await inspect('performance', initPerformance)
   await inspect('osinfo', checkOSInfo)
   await inspect('font', checkFont)
@@ -37,6 +43,7 @@ export const runDiagnostics = async function runDiagnostics () {
   // lazy loading images
   // svg images
   await inspect('performance', measurePerformance)
+  debug('runDiagnostics() return result')
   return results
 }
 
@@ -168,8 +175,8 @@ async function checkGraphics (collector) {
   if (debugInfo) {
     return collector({
       gl: gl.getParameter(gl.SHADING_LANGUAGE_VERSION),
-      glVendor: gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL),
-      glRenderer: gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL),
+      glVendor: gl.getParameter(gl.VENDOR) || gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL),
+      glRenderer: gl.getParameter(gl.RENDERER) || gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL),
       success: true
     })
   }

@@ -53,6 +53,11 @@
             {{> loading title=(i18n "pages.diagnostics.sending")}}
         {{/if}}
 
+        {{#if running}}
+            {{>loading title=(i18n "pages.diagnostics.run")}}
+        {{/if}}
+
+        <textarea readonly id="diagnostics-log" class="form-control mt-2" rows="8" wrap="off"></textarea>
 
         {{#with sendComplete}}
             <div class="alert alert-success mt-4">
@@ -60,9 +65,6 @@
             </div>
         {{/with}}
 
-        {{#if running}}
-            {{>loading title=(i18n "pages.diagnostics.run")}}
-        {{/if}}
     {{/onComplete}}
     </div>
 
