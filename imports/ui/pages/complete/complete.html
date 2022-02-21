@@ -104,8 +104,7 @@
                                     <th scope="col">
                                         {{> textGroup text=(i18n "common.description") type=currentType}}
                                     </th>
-                                    <th scope="col"
-                                        class="d-print-none w-25"></th>
+                                    <th scope="col" class="w-25"></th>
                                     {{#if isDebugUser}}
                                         <th scope="col"
                                             class="text-center d-none d-md-table-cell d-print-table-cell">
@@ -138,7 +137,7 @@
                                         <td>
                                             {{> textGroup text=alphaLevel.description type=currentType}}
                                         </td>
-                                        <td class="align-middle">
+                                        <td class="align-middle w-25">
                                             {{#if alphaLevel.isGraded}}
                                                 <div class="progress bg-white border border-info">
                                                     <div class="progress-bar bg-{{currentType}}"
@@ -156,8 +155,12 @@
                                             <td class="text-center d-none d-md-table-cell d-print-table-cell">{{alphaLevel.scored}}</td>
                                             <td class="text-center d-none d-md-table-cell d-print-table-cell">{{alphaLevel.perc}}</td>
                                         {{/if}}
-                                        <td class="text-center no-wrap">
-                                            {{> textGroup text=(i18n alphaLevel.gradeLabel) type=currentType}}
+                                        <td class="text-right no-wrap">
+                                            {{! > textGroup text=(i18n alphaLevel.gradeLabel) type=currentType}}
+                                            {{! WE ONLY DISPLAY THE PERCENT VALUE IF IT IS GREATER THAN 0 }}
+                                            {{#with truncate alphaLevel.perc}}
+                                                {{> textGroup text=(i18n "pages.complete.percent" this) type=currentType}}
+                                            {{/with}}
                                         </td>
                                     </tr>
                                 {{else}}
@@ -252,7 +255,7 @@
                                         <td>
                                             {{> textGroup text=competency.description type=currentType}}
                                         </td>
-                                        <td class="align-middle">
+                                        <td class="align-middle w-25">
                                             {{#if competency.isGraded}}
                                                 <div class="progress bg-white border-{{currentType}} border"
                                                      style="height: 0.75rem;">
@@ -272,7 +275,11 @@
                                             <td class="text-center d-none d-md-table-cell d-print-table-cell">{{competency.perc}}</td>
                                         {{/if}}
                                         <td class="text-center no-wrap">
-                                            {{> textGroup text=(i18n competency.gradeLabel) type=currentType}}
+                                            {{! > textGroup text=(i18n competency.gradeLabel) type=currentType}}
+                                            {{! WE ONLY DISPLAY THE PERCENT VALUE IF IT IS GREATER THAN 0 }}
+                                            {{#with truncate competency.perc}}
+                                                {{> textGroup text=(i18n "pages.complete.percent" this) type=currentType}}
+                                            {{/with}}
                                         </td>
                                     </tr>
                                 {{else}}

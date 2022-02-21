@@ -340,6 +340,12 @@ Template.complete.helpers({
   currentType () {
     return Template.instance().state.get('color')
   },
+  truncate (percent = 0) {
+    console.debug(percent)
+    const int = Math.trunc(percent)
+    console.debug(int)
+    return Number.isNaN(int) ? 0 : int
+  },
   // ///////////////////////////////////////////////////////////////////////////
   // DEBUG-USER-ONLY!
   // ///////////////////////////////////////////////////////////////////////////
