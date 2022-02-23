@@ -1,6 +1,10 @@
 import { Meteor } from 'meteor/meteor'
 import { normalizeError } from '../../errors/api/normalizeError'
 
+const asyncTimeout = ms => new Promise(resolve => {
+  setTimeout(() => resolve(), ms)
+})
+
 const getInspect = (results, debug) => async (name, fn) => {
   const collector = (data) => {
     debug(name, 'result', JSON.stringify(data))
@@ -15,14 +19,21 @@ const getInspect = (results, debug) => async (name, fn) => {
     results.push(result)
   }
 
-  try {
-    debug(name, 'collect')
-    await fn(collector)
+  const inspect = async () => {
+    try {
+      debug(name, 'collect')
+      await fn(collector)
+    }
+    catch (error) {
+      debug(name, 'collect failed', error.message)
+      collector({ error })
+    }
   }
-  catch (error) {
-    debug(name, 'collect failed', error.message)
-    collector({ error })
-  }
+
+  return Promise.race([
+    inspect(),
+    asyncTimeout(500)
+  ])
 }
 
 export const runDiagnostics = async function runDiagnostics ({ debug = () => {} } = {}) {
@@ -110,36 +121,46 @@ async function checkTTS (collector) {
     engine = await initializeTTS()
   }
   catch (initError) {
-    console.error('init error', initError.message)
+    console.error('TTS init error', initError.message)
     result.error = initError
     result.status = 'failed'
     return collector(result)
   }
 
   if (!engine?.isConfigured()) {
+    console.error('TTS config error, config is invalid')
     result.status = 'failed'
     result.error = new Error('TTS engine config failed')
     return collector(result)
   }
 
-  return new Promise((resolve) => {
-    engine.play({
-      text: ' ',
-      volume: 0.1,
-      onEnd: () => {
-        result.status = 'successful'
-        result.success = true
-        resolve(collector(result))
-      },
-      onError: event => {
-        console.error('play error', event.error.message)
-        if (event.error) {
-          result.error = event.error
-        }
-        result.status = 'failed'
-        resolve(collector(result))
+  await new Promise((resolve) => {
+    const fail = error => {
+      console.error('play error', error && error.message)
+
+      if (error) {
+        result.error = error || new Error('unknown TTS play error')
       }
-    })
+
+      result.status = 'failed'
+      resolve(collector(result))
+    }
+
+    try {
+      engine.play({
+        text: ' ',
+        volume: 0.1,
+        onEnd: () => {
+          result.status = 'successful'
+          result.success = true
+          resolve(collector(result))
+        },
+        onError: event => fail(event.error)
+      })
+    }
+    catch (error) {
+      fail(error)
+    }
   })
 }
 
