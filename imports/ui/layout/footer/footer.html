@@ -4,26 +4,7 @@
             <div class="container">
                 {{#if loadComplete}}
                     <div class="row w-100">
-                        <div class="col col-12 col-md-4 d-flex flex-wrap align-items-center">
-                            <a class="navbar-brand" href="/">
-                            {{> image src="/logo/logo-200x34.png"
-                                    alt="logo"
-                                    width=200
-                                    height=34
-                                    class="lea-footer-image d-md-block mr-2"}}
-                            </a>
-                            {{#each logo in logos}}
-                                <a class="navbar-brand" href="{{logo.url}}"
-                                   target="_blank" rel="noopener noreferrer">
-                                    {{> image src=logo.url
-                                            title=logo.title
-                                            alt=logo.title
-                                            class="lea-footer-image mr-auto"
-                                            cors="Anonymous"}}
-                                </a>
-                            {{/each}}
-                        </div>
-                        <div class="col col-12 col-md-8 d-flex flex-wrap align-items-center py-md-0 py-4">
+                        <div class="col col-12 d-flex flex-wrap align-items-start justify-content-center">
                             {{#each legalRoute in legalRoutes}}
                                 {{#if loadComplete}}
                                     {{#routeButton
@@ -34,13 +15,13 @@
                                             group=true
                                             href=(route "legal" legalRoute.name)
                                             label=(i18n legalRoute.label)
-                                            class="ml-auto mb-2 mb-lg-0"
+                                            class="mb-2 no-wrap"
                                             labelClass="lea-text-sm"
                                             data-key=legalRoute.name}}
                                     {{/routeButton}}
                                 {{else}}
                                     <a href="{{route "legal" legalRoute.name}}"
-                                       class="mx-2">{{legalRoute.name}}</a>
+                                       class="mb-2 no-wrap">{{legalRoute.name}}</a>
                                 {{/if}}
                             {{/each}}
                             {{#with currentUser}}
@@ -53,7 +34,7 @@
                                             border=true
                                             group=true
                                             href=(route "logout")
-                                            class="logout-button ml-auto no-wrap"}}
+                                            class="logout-button mb-2 no-wrap"}}
                                         <span class="lea-text-sm">{{this.username}}</span>
                                         <span class="lea-text-sm">{{i18n
                                                 "common.logout"}}</span>
@@ -67,6 +48,27 @@
                                     </a>
                                 {{/if}}
                             {{/with}}
+                        </div>
+                        <div class="col col-12 d-flex flex-wrap align-items-center justify-content-center">
+                            <a class="navbar-brand" href="/">
+                                {{> image src="/logo/logo-200x34.png"
+                                        alt="logo"
+                                        width=200
+                                        height=34
+                                        class="lea-footer-image d-md-block mr-2"}}
+                            </a>
+                            {{#each logo in logos}}
+                                <a class="navbar-brand" href="{{logo.href}}"
+                                   target="_blank" rel="noopener noreferrer">
+                                    {{> image src=logo.url
+                                            title=logo.title
+                                            alt=logo.title
+                                            width=logo.width
+                                            height=logo.height
+                                            class="lea-footer-image mr-auto"
+                                            cors="Anonymous"}}
+                                </a>
+                            {{/each}}
                         </div>
                     </div>
                 {{/if}}
