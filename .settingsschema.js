@@ -4,6 +4,7 @@ const schema = def => new SimpleSchema(def)
 const settingsSchema = schema({
   public: schema({
     defaultLocale: String,
+    issueMail: String,
     status: String,
     accounts: schema({
       code: schema({

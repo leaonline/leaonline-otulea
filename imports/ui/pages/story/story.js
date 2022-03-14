@@ -17,6 +17,9 @@ Template.story.onCreated(function () {
   const { api } = instance.initDependencies({
     tts: true,
     language: true,
+    translations: {
+      de: () => import('./i18n/de')
+    },
     contexts: [UnitSet, Session, Dimension, Level],
     onComplete () {
       instance.state.set('dependenciesComplete', true)

@@ -28,6 +28,7 @@ Blaze.TemplateInstance.prototype.initDependencies =
     }
 
     import { Router } from '../../ui/routing/Router'
+    import { fatal } from '../components/fatal/fatal'
     import { initLanguage } from '../../api/i18n/initLanguage'
     import { initializeTTS } from '../../api/tts/initializeTTS'
     import { initClientContext } from '../../api/context/initClientContext'
@@ -133,7 +134,17 @@ Blaze.TemplateInstance.prototype.initDependencies =
         instance.api.info('call dependencies onComplete')
         if (translations) {
           addTranslations()
-            .catch(e => errorHandler(e))
+            .catch(e => {
+              fatal({
+                error: {
+                  message: 'unknown',
+                  original: e.message
+                }
+              })
+
+              sendError({ error: e })
+              errorHandler(e)
+            })
             .then(() => {
               onComplete()
             })

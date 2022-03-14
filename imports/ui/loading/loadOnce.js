@@ -1,4 +1,6 @@
 import { ReactiveVar } from 'meteor/reactive-var'
+import { fatal } from '../components/fatal/fatal'
+import { sendError } from '../../contexts/errors/api/sendError'
 
 const cache = new Map()
 
@@ -22,6 +24,15 @@ export const loadOnce = function (asyncInitFunc, { onError, debug = () => {}, na
     .catch(e => {
       debug('[loadOnce]: failed with error:')
       debug(e)
+
+      fatal({
+        error: {
+          message: 'unknown',
+          original: e.message
+        }
+      })
+
+      sendError({ error: e })
 
       if (onError) {
         onError(e)

@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor'
 import { sendError } from '../../contexts/errors/api/sendError'
+import { fatal } from '../../ui/components/fatal/fatal'
 
 export const initializeTTS = async () => {
   const { TTSEngine } = await import('../../api/tts/TTSEngine')
@@ -18,9 +19,15 @@ export const initializeTTS = async () => {
         const error = err && err instanceof Error
           ? err
           : new Meteor.Error('tts.failed', 'tts.initFailed', err)
-        console.debug('[initializeTTS]: configure failed => ', error.message)
+        console.error('[initializeTTS]: configure failed => ', error.message)
         // TODO communicate error to user in an understandable way
         // TODO fallback to server-rendered TTS
+        fatal({
+          error: {
+            message: 'tts.failed',
+            original: error.message
+          }
+        })
 
         sendError({ error })
         resolve(TTSEngine)

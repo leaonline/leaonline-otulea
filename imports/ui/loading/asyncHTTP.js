@@ -1,6 +1,8 @@
 import { HTTP } from 'meteor/jkuester:http'
 import { check, Match } from 'meteor/check'
 
+const defaultTimeout = 5000
+
 HTTP.debug((...args) => {
   console.debug('[HTTP]:', ...args)
 })
@@ -16,6 +18,10 @@ HTTP.debug((...args) => {
  */
 export const asyncHTTP = (method, url, requestOptions = {}) => {
   check({ method, url }, Match.ObjectIncluding({ method: String, url: String }))
+
+  if (!requestOptions.timeout) {
+    requestOptions.timeout = defaultTimeout
+  }
 
   return new Promise((resolve, reject) => {
     HTTP.call(method, url, requestOptions, (error, response) => {

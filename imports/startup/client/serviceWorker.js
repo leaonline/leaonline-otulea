@@ -6,6 +6,7 @@ Meteor.startup(() => {
     return console.warn('[serviceWorker]: not found, skipped')
   }
 
+  // absence of service worker is not a fatal error so we continue silently
   navigator.serviceWorker
     .register('/sw.js')
     .then(() => console.info('[serviceWorker]: registered successfully'))

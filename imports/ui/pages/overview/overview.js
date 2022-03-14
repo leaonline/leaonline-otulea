@@ -14,6 +14,7 @@ import { loadContentDoc } from '../../loading/loadContentDoc'
 import '../../components/container/container'
 import './overview.scss'
 import './overview.html'
+import { fatal } from '../../components/fatal/fatal'
 
 Template.overview.onDestroyed(function () {
   const instance = this
@@ -29,6 +30,7 @@ Template.overview.onCreated(function () {
       de: () => import('./i18n/de')
     },
     tts: true,
+    debug: true,
     contexts: [Session, TestCycle, UnitSet, Dimension, Level],
     onComplete: async () => {
       instance.state.set('dependenciesComplete', true)
@@ -37,8 +39,12 @@ Template.overview.onCreated(function () {
 
   const { loadAllContentDocs, callMethod, debug } = instance.api
   const loadContentDocuments = async () => {
-    debugger
     const allTestCycles = await loadAllContentDocs(TestCycle, { isLegacy: true }, debug)
+
+    if (!allTestCycles?.length) {
+      throw new Error('content.notAvailable')
+    }
+
     const dimensions = new Set()
     const levels = new Set()
 
@@ -172,6 +178,13 @@ Template.overview.onCreated(function () {
 
   loadContentDocuments()
     .catch(e => {
+      fatal({
+        error: {
+          message: 'content.notAvailable',
+          original: e.message
+        }
+      })
+
       instance.api.sendError({ error: e })
     })
 })

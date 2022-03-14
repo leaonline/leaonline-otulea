@@ -42,7 +42,7 @@ Logos.schema = {
     type: String,
     label: 'logos.href',
     optional: true
-  },
+  }
 }
 
 Logos.methods = {}

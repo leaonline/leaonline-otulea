@@ -1,6 +1,7 @@
 {
   "public": {
     "defaultLocale": "de",
+    "issueMail": "mail@example.com",
     "status": "beta",
     "accounts": {
       "code": {
