@@ -5,7 +5,7 @@
                 {{#if loadComplete}}
                     <div class="row w-100">
                         <div class="col col-12 d-flex flex-wrap align-items-start justify-content-around">
-                            {{#each legalRoute in legalRoutes}}
+                              {{#each legalRoute in legalRoutes}}
                                 {{#if loadComplete}}
                                     {{#routeButton
                                             tts=legalRoute.label
@@ -24,6 +24,23 @@
                                        class="mb-2 no-wrap">{{legalRoute.name}}</a>
                                 {{/if}}
                             {{/each}}
+
+                            {{!-- ISSUES BUTTON --}}
+                            {{#if issuesLink}}
+                                {{#routeButton
+                                        tts="issues.title"
+                                        sm=true
+                                        outline=true
+                                        border=true
+                                        group=true
+                                        href=(issuesLink currentRouteName)
+                                        label=(i18n "issues.title")
+                                        class="mb-2 no-wrap"
+                                        labelClass="lea-text-sm"}}
+                                {{/routeButton}}
+                            {{/if}}
+
+                            {{!-- LOGOUT BUTTON --}}
                             {{#with currentUser}}
                                 {{#if loadComplete}}
                                     {{#routeButton

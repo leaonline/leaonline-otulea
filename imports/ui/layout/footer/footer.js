@@ -1,6 +1,7 @@
 import { Template } from 'meteor/templating'
 import { Legal } from '../../../contexts/legal/Legal'
 import { Logos } from '../../../contexts/logos/Logos'
+import { createIssuesLink } from './createIssuesLink'
 import './footer.scss'
 import './footer.html'
 
@@ -56,5 +57,9 @@ Template.footer.helpers({
   },
   legalRoutes () {
     return legalRoutes
+  },
+  issuesLink () {
+    return createIssuesLink({ url: window.location.href })
   }
 })
+

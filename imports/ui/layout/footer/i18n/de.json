@@ -5,5 +5,10 @@
     "privacy": "Datenschutz",
     "terms": "Nutzungsbedingungen",
     "contact": "Kontakt"
+  },
+  "issues": {
+    "title": "Problem melden",
+    "subject": "[otu.lea] - Problem",
+    "body": "Zusammenfassung:\n\nDas Problem kann wie folgt reproduziert werden:\n\nLink:{{url}}"
   }
 }
