@@ -62,4 +62,3 @@ Template.footer.helpers({
     return createIssuesLink({ url: window.location.href })
   }
 })
-

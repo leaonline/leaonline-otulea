@@ -22,10 +22,11 @@ Template.legal.onCreated(function () {
 
   let count = 0
   const renderer = {
-    text (text /*, level */) {
+    paragraph (text /*, level */) {
       const transformed = text
         .replace(/§§/g, i18n.get('pages.legal.paragraphs'))
         .replace(/§/g, i18n.get('pages.legal.paragraph'))
+        .replace(/<[^>]*>/g, '')
 
       const id = `sound-${count++}`
       setTimeout(() => {
@@ -38,7 +39,7 @@ Template.legal.onCreated(function () {
           class: 'border-0'
         }, parent)
       }, 1000)
-      return `<span><span id="${id}"></span>${text}</span>`
+      return `<p><span id="${id}"></span>${text}</p>`
     }
   }
 
