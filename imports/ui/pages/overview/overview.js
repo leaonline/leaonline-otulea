@@ -37,6 +37,7 @@ Template.overview.onCreated(function () {
 
   const { loadAllContentDocs, callMethod, debug } = instance.api
   const loadContentDocuments = async () => {
+    debugger
     const allTestCycles = await loadAllContentDocs(TestCycle, { isLegacy: true }, debug)
     const dimensions = new Set()
     const levels = new Set()

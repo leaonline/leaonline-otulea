@@ -66,8 +66,6 @@
     "from": "system@example.com"
   },
   "accounts": {
-    "removeOlderThanDays": 3,
-    "removeIncompleteSessions": false,
     "config": {
       "forbidClientAccountCreation": true,
       "ambiguousErrorMessages": false,
@@ -76,6 +74,9 @@
       "passwordResetTokenExpirationInDays": 1,
       "passwordEnrollTokenExpirationInDays": 3
     }
+  },
+  "records": {
+    "defaultOldest": 180
   },
   "status": {
     "active": false,

@@ -289,13 +289,17 @@ Session.methods.recentCompleted = {
   name: 'session.methods.recentCompleted',
   schema: {
     users: Array,
-    'users.$': String
+    'users.$': String,
+    resolve: {
+      type: Boolean,
+      optional: true
+    }
   },
   backend: true,
   run: onServerExec(function () {
     import { recentCompleted } from './api/recentCompleted'
-    return function ({ users }) {
-      return recentCompleted({ users })
+    return function ({ users, resolve }) {
+      return recentCompleted({ users, resolve })
     }
   })
 }

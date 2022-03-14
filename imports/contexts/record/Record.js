@@ -116,9 +116,20 @@ Record.methods.getForUsers = {
   },
   backend: true,
   run: onServerExec(function () {
+    import { Meteor } from 'meteor/meteor'
+
+    const { defaultOldest } = Meteor.settings.records
     const transform = {
       hint: { $natural: -1 }
     }
+
+    const getMaxOldest = () => {
+      const maxOldest = new Date()
+      const aMonthAgo = maxOldest.getDate() - defaultOldest
+      maxOldest.setDate(aMonthAgo)
+      return maxOldest
+    }
+
     return function ({ users = [], dimension, skip = [], oldest, newest }) {
       const query = {
         userId: { $in: users },
@@ -132,21 +143,23 @@ Record.methods.getForUsers = {
         query._id = { $nin: skip }
       }
 
-      // we can let users determine an "oldest" or "newest" date
-      // to fetch a specific range of records
+      const maxOldest = getMaxOldest()
 
-      if (oldest) {
+      // we can let users determine an "oldest"
+      // as long as it's not older than the oldest possible
+
+      if (oldest && oldest > maxOldest) {
         query.completedAt = { $gte: oldest }
       }
 
       else {
-        const defaultOldest = new Date()
-        const aMonthAgo = defaultOldest.getDate() - 31 // this is just an estimate
-        defaultOldest.setDate(aMonthAgo)
-        query.completedAt = { $gte: defaultOldest }
+        query.completedAt = { $gte: maxOldest }
       }
 
-      if (newest) {
+      // we can also let users determine oldest date
+      // as long as it's not older than the oldest possible
+
+      if (newest && newest > maxOldest) {
         query.completedAt = { $lte: newest }
       }
 

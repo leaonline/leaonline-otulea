@@ -1,6 +1,10 @@
 import { HTTP } from 'meteor/jkuester:http'
 import { check, Match } from 'meteor/check'
 
+HTTP.debug((...args) => {
+  console.debug('[HTTP]:', ...args)
+})
+
 /**
  * Wraps {HTTP.call} with a Promise. Everything else is the same.
  *

@@ -10,7 +10,6 @@ const { notify: defaultNotify, replyTo, from } = Meteor.settings.email
 const { patches } = Meteor.settings
 
 console.debug('[patches]: run patches, if active')
-console.debug(patches)
 
 if (patches.removeDeadAccounts?.active) {
   console.debug('[patches]: run removeDeadAccounts')

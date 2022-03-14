@@ -75,6 +75,9 @@
       "passwordEnrollTokenExpirationInDays": 3
     }
   },
+  "records": {
+    "defaultOldest": 180
+  },
   "status": {
     "active": false,
     "interval": 5000,

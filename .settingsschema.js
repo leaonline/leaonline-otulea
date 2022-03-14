@@ -91,6 +91,9 @@ const settingsSchema = schema({
       "passwordEnrollTokenExpirationInDays": SimpleSchema.Integer
     })
   }),
+  records: schema({
+    defaultOldest: SimpleSchema.Integer
+  }),
   status: schema({
     active: Boolean,
     interval: Number,

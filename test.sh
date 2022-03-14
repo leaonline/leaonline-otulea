@@ -86,8 +86,8 @@ PORT=3099
 
 if [ "$T_VERBOSE" -eq "1" ];
 then
-	echo "=> Test CARO-CORE"
-	echo "=> CARO path: [${PROJECT_PATH}]"
+	echo "=> Test leaonline-otulea"
+	echo "=> Project path: [${PROJECT_PATH}]"
 	echo "=> Port: [${PORT}]"
 	echo "=> Lib path(s): [${T_PACKAGE_DIRS}]"
 	echo "=> Run once? [${T_RUN_ONCE}]"

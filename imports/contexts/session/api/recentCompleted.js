@@ -1,4 +1,5 @@
 import { Session } from '../Session'
+import { TestCycle } from '../../testcycle/TestCycle'
 
 /**
  * Returns the N recent completed sessions for given users, filters by userId
@@ -7,7 +8,7 @@ import { Session } from '../Session'
  * @param users
  * @return {*}
  */
-export const recentCompleted = function ({ users }) {
+export const recentCompleted = function ({ users, resolve }) {
   const unique = new Set()
   const query = {
     userId: { $in: users },
@@ -21,7 +22,7 @@ export const recentCompleted = function ({ users }) {
     hint: { $natural: -1 }
   }
 
-  return Session.collection()
+  const docs = Session.collection()
     .find(query, transform)
     .fetch()
     .filter(sessionDoc => {
@@ -32,4 +33,13 @@ export const recentCompleted = function ({ users }) {
       unique.add(sessionDoc.userId)
       return true
     })
+
+  if (resolve) {
+    return docs.map(sessionDoc => {
+      sessionDoc.testCycle = TestCycle.collection().findOne(sessionDoc.testCycle)
+      return sessionDoc
+    })
+  }
+
+  return docs
 }
