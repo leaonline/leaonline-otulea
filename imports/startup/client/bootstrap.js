@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor'
 import { Tracker } from 'meteor/tracker'
+import { initFullTheme } from '../../ui/layout/theme/initFullTheme'
 import './minimal.scss'
 
 Meteor.startup(() => {
@@ -12,9 +13,7 @@ Meteor.startup(() => {
   // the service worker will have most of the
   Tracker.autorun(async function (computation) {
     if (Meteor.userId()) {
-      console.debug('[theme]: import full theme')
-      await import('bootstrap')
-      await import('./theme.scss')
+      await initFullTheme()
       computation.stop()
     }
   })

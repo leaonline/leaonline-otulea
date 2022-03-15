@@ -3,6 +3,7 @@ import { ReactiveVar } from 'meteor/reactive-var'
 import { ReactiveDict } from 'meteor/reactive-dict'
 import { Random } from 'meteor/random'
 import './fatal.html'
+import { initFullTheme } from '../../layout/theme/initFullTheme'
 
 const modalOpen = new ReactiveVar(false)
 const errors = new ReactiveDict()
@@ -15,6 +16,7 @@ Template.fatal.onCreated(function () {
     translations: {
       de: () => import('./i18n/de')
     },
+    loaders:[initFullTheme],
     onComplete: async () => {
       instance.state.set('dependenciesComplete', true)
     },
@@ -31,7 +33,7 @@ Template.fatal.onRendered(function () {
   instance.autorun(() => {
     const open = modalOpen.get()
 
-    if (open) {
+    if (open &&  instance.state.get('dependenciesComplete')) {
       instance.$('#fatal-modal').modal('show')
     }
   })
