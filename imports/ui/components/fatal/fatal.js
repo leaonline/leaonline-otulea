@@ -16,7 +16,7 @@ Template.fatal.onCreated(function () {
     translations: {
       de: () => import('./i18n/de')
     },
-    loaders:[initFullTheme],
+    loaders: [initFullTheme],
     onComplete: async () => {
       instance.state.set('dependenciesComplete', true)
     },
@@ -33,7 +33,7 @@ Template.fatal.onRendered(function () {
   instance.autorun(() => {
     const open = modalOpen.get()
 
-    if (open &&  instance.state.get('dependenciesComplete')) {
+    if (open && instance.state.get('dependenciesComplete')) {
       instance.$('#fatal-modal').modal('show')
     }
   })
