@@ -1,15 +1,15 @@
 import { onServerExec } from '../../utils/archUtils'
 
 /**
- * The record is a dataset for each user, that represents the current state,
- * like a snapshot to be used for evaluation purposes (as with the teacher's
- * dashboard application).
+ * The record is a dataset for each user for evaluation purposes
+ * (as with the teacher's dashboard application).
  *
- * It summarizes, which tests (sessions) were made and which results were
- * assigned and which documents are associated to minimize effort for loading
+ * It summarizes, which TestCycles (sessions) were completed and which results
+ * were assigned and which documents are associated to minimize effort for loading
  * and processing such data.
  *
- * A record entry is unique by
+ * In contrast to Feedback it also contains comparable information between the
+ * records. See Record.status for more information.
  */
 export const Record = {
   name: 'record',
@@ -19,9 +19,13 @@ export const Record = {
   publications: {}
 }
 
+/**
+ * The record contains info on how this recent feedback compares to past ones.
+ * It always compares to the immediate predecessor.
+ */
 Record.status = {
   /**
-   * There is no previous record
+   * There is no previous record for the same TestCycle
    */
   new: 'new',
   /**
@@ -29,11 +33,11 @@ Record.status = {
    */
   same: 'same',
   /**
-   * Current is "better" than previous
+   * Current is "better" than previous; perc value is higher
    */
   improved: 'improved',
   /**
-   * Current is "worse" tha previous
+   * Current is "worse" tha previous; perc value is lower
    */
   declined: 'declined'
 }
@@ -48,6 +52,10 @@ Record.schema = {
   testCycle: String,
   session: String,
   feedback: String,
+  previousId: {
+    type: String, // the previous record doc id to be compared with
+    optional: true
+  },
 
   // timestamps
   startedAt: Date,

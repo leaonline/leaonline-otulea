@@ -1,3 +1,9 @@
+/**
+ * A feedback represents a evaluation-snapshot of one TestCycle, independent
+ * from others or recent ones.
+ *
+ * This is to give immediate feedback in regards to this TestCycle to the user.
+ */
 export const Feedback = {
   name: 'feedback',
   label: 'feedback.title',

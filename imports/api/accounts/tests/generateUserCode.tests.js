@@ -4,6 +4,7 @@ import { generateUserCode } from '../generateUserCode'
 
 describe(generateUserCode.name, function () {
   it('generates a random code of given length', function () {
+    this.timeout(5000)
     for (let i = 0; i < 1000; i++) {
       expect(generateUserCode().length).to.equal(5)
     }

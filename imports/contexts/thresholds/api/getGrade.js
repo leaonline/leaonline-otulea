@@ -24,13 +24,17 @@ import { Schema } from '../../../api/schema/Schema'
 export const getGrade = ({ count, minCount, percent, thresholds }) => {
   gradeSchema.validate({ count, minCount, percent, thresholds })
 
-  if (count <= 0 || count < minCount) return { name: 'notEnough', index: -1 }
+  // XXX: uncommented, we should not defy the grade with a "notEnough"
+  // but rather use the hypothetical grade that we found
+  // and indicate with a flag, that it has not been graded enough
+  // if () return { name: 'notEnough', index: -1 }
+  const notEnough = count < 1 || count < minCount
 
   for (let index = 0; index < thresholds.length; index++) {
     const { max, name } = thresholds[index]
 
     if (percent >= max) {
-      return { name, index }
+      return { name, index, notEnough }
     }
   }
 

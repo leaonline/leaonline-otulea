@@ -9,6 +9,13 @@ const byCompetencyId = c => c.competencyId
 const byAlphaLevelId = a => a.alphaLevelId
 
 /**
+ * Creates a new record document for a given feedback and testCycle.
+ *
+ * It looks first, whether another record has been created today. This is,
+ * because records are focused on a single date. If a testCycle has been
+ * completed multiple times on the same date, then it will only update
+ * the doc. Otherwise we cannot create a comparable overview.
+ *
  *
  * @param options
  * @param options.userId {string}
@@ -35,6 +42,7 @@ export const addRecord = (options) => {
       alphaLevels: [Object]
     })
   }))
+
   const { userId, testCycleDoc, sessionDoc, feedbackDoc } = options
   const { dimension, level } = testCycleDoc
   const { startedAt, completedAt, cancelledAt, continuedAt } = sessionDoc
@@ -45,6 +53,8 @@ export const addRecord = (options) => {
   compareDate.setMinutes(0)
   compareDate.setSeconds(0)
   compareDate.setMilliseconds(0)
+
+  // TODO: update the current record if we already have a record doc generated
 
   const previousRecordData = getPreviousRecord({
     userId: userId,
@@ -68,9 +78,10 @@ export const addRecord = (options) => {
     const previousDoc = previousRecordData.competency(competencyId)
 
     let status = Record.status.new
-
+    let previousId = ''
     if (previousDoc) {
       status = getStatus(previousDoc.perc, feedbackCompetency.perc)
+      previousId = previousDoc._id
     }
 
     return {
@@ -86,6 +97,7 @@ export const addRecord = (options) => {
       isGraded: feedbackCompetency.isGraded,
       gradeName: feedbackCompetency.gradeName,
       example: feedbackCompetency.example,
+      previousId: previousId,
       development: status
     }
   })
