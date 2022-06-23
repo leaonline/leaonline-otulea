@@ -12,19 +12,24 @@ describe(initClientContext.name, function () {
   afterEach(function () {
     restoreAll()
   })
-  it('loads collection2 lazy', function () {
-    let loadCalled = false
-    stub(Collection2, 'load', function () {
-      loadCalled = true
+
+  // XXX: backwards compat for pre 4.0 collection2
+  if (Collection2 && typeof Collection2.load === 'function') {
+    it('loads collection2 lazy', function () {
+      let loadCalled = false
+      stub(Collection2, 'load', function () {
+        loadCalled = true
+      })
+
+      initClientContext({
+        name: Random.id(),
+        schema: { title: String }
+      }, debug)
+
+      expect(loadCalled).to.equal(true)
     })
+  }
 
-    initClientContext({
-      name: Random.id(),
-      schema: { title: String }
-    }, debug)
-
-    expect(loadCalled).to.equal(true)
-  })
   it('creates a new collection', function () {
     const ctx = {
       name: Random.id(),
