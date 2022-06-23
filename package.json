@@ -21,7 +21,7 @@
     "bootstrap": "^4.6.0",
     "debug": "^4.3.2",
     "detect-os": "^1.2.1",
-    "easy-speech": "file:../libnpm/easy-speech",
+    "easy-speech": "^1.2.0",
     "helmet": "^4.6.0",
     "jquery": "^3.6.0",
     "lozad": "^1.16.0",
