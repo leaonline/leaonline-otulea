@@ -2,7 +2,7 @@ import { createCollection } from '../../infrastructure/factories/collection/crea
 import Collection2 from 'meteor/aldeed:collection2'
 
 const created = new Set()
-const collection2Init = false
+let collection2Init = false
 
 /**
  * Lightweight initialization for contexts on the client-side.
@@ -17,7 +17,11 @@ export const initClientContext = (context, debug = console.debug) => {
   }
 
   if (!collection2Init) {
-    Collection2.load()
+    // XXX: backwards compat for pre 4.0 collection2
+    if (Collection2 && typeof Collection2.load === 'function') {
+      Collection2.load()
+    }
+    collection2Init = true
   }
 
   createCollection(context, debug)
