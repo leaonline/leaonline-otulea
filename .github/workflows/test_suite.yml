@@ -164,7 +164,7 @@ jobs:
         run: meteor npm ci
 
       - name: Run Tests
-        run: sh ./test.sh -c
+        run: sh ./test.sh -c -o # run -o once with -c coverage
 
       - name: Upload coverage
         uses: actions/upload-artifact@v2

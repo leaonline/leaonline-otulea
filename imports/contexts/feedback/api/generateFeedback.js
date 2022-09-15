@@ -8,6 +8,41 @@ import { getAlphaLevels } from './getAlphaLevels'
 import { getCompetencies } from './getCompetencies'
 import { notifyUsersAboutError } from '../../../api/notify/notifyUsersAboutError'
 
+/**
+ * The general evaluation algorithm for a single TestCycle.
+ * This can be considered "atomic" to the extend, that it won't look
+ * into prior TestCycles to generate comparative results.
+ * It works by collecting the responses, competencies and their alpha levels,
+ * which were covered during a TestCycle.
+ *
+ * It then compares the scores for each competency against thresholds (defined
+ * in the lea. backend) and assigns a gradeName (how the score is titled),
+ * a gradeIndex (the position in the thresholds list) and a isGraded flag
+ * (indicating, that this grade may not be accurate due to not enough covered
+ * items during the TestCycle).
+ *
+ * It then creates a mean for all competencies, that associate with the same
+ * alpha level and uses this mean score in order to apply the same grading
+ * mechanism (as described above) but with alpha level.
+ *
+ * The advantage of this approach is, that we have a clear and reproducible
+ * procedure, easily testable with few parameters (compared to other models).
+ *
+ * The drawback of this approach is, that we might face a situation, where
+ * we never have enough competencies covered to reach a certain threshold
+ * and since we don't compare with recent feedback, we may end up having
+ * many competencies marked as isGraded = false
+ *
+ * Note: isGraded means here "reached the threshold of minimum count of graded
+ * occurrences" - it just remains isGraded due to backwards compatibility.
+ *
+ * @param options
+ * @param options.sessionDoc {document} the related doc from this session
+ * @param options.testCycleDoc {document} the related doc from this session's testCycle
+ * @param options.userId {string} the user, for which this feedback applies
+ * @param options.debug {function=} optional function for debugging
+ * @return {*}
+ */
 export const generateFeedback = (options) => {
   check(options, {
     sessionDoc: Match.ObjectIncluding({ _id: String }),
@@ -237,7 +272,7 @@ export const gradeCompetenciesAndCountAlphaLevels = ({ competencies, minCountAlp
 
     current.gradeName = grade.name
     current.gradeIndex = grade.index
-    current.isGraded = grade.index > -1
+    current.isGraded = !grade.notEnough
 
     competencies.set(competencyId, current)
 
@@ -295,7 +330,7 @@ export const gradeAlphaLevels = ({ alphaLevels, thresholds }) => {
 
     alpha.gradeName = grade.name
     alpha.gradeIndex = grade.index
-    alpha.isGraded = grade.index > -1
+    alpha.isGraded = !grade.notEnough
 
     alphaLevels.set(alphaLevelId, alpha)
   })

@@ -160,8 +160,10 @@ describe(gradeCompetenciesAndCountAlphaLevels.name, function () {
       undef: 0,
       min: 3,
       perc: 0.5,
-      gradeName: 'notEnough',
-      gradeIndex: -1,
+      gradeName: 'ok',
+      gradeIndex: 2,
+      // note how isGraded: false does not affect
+      // hypotehtical gradeName and gradeIndex
       isGraded: false
     })
   })
@@ -387,8 +389,10 @@ describe(gradeAlphaLevels.name, function () {
       count: 2,
       scored: 2,
       perc: 1,
-      gradeName: 'notEnough',
-      gradeIndex: -1,
+      gradeName: 'top',
+      gradeIndex: 0,
+      // note how isGraded:false does not affect
+      // the hypothetical gradeName and gradeIndex
       isGraded: false
     })
   })
@@ -717,8 +721,10 @@ describe(generateFeedback.name, function () {
       }, {
         competencyId: cid3,
         count: 1,
-        gradeIndex: -1,
-        gradeName: 'notEnough',
+        gradeIndex: 0,
+        gradeName: 'good',
+        // note how isGraded: false does not affect
+        // hypothetical gradeName and gradeIndex
         isGraded: false,
         perc: 1,
         scored: 1,
@@ -798,8 +804,8 @@ describe(generateFeedback.name, function () {
       }, {
         competencyId: cid3,
         count: 1,
-        gradeIndex: -1,
-        gradeName: 'notEnough',
+        gradeIndex: 0,
+        gradeName: 'good',
         isGraded: false,
         perc: 1,
         scored: 1,
@@ -878,8 +884,8 @@ describe(generateFeedback.name, function () {
       }, {
         competencyId: cid3,
         count: 1,
-        gradeIndex: -1,
-        gradeName: 'notEnough',
+        gradeIndex: 0,
+        gradeName: 'good',
         isGraded: false,
         perc: 1,
         scored: 1,

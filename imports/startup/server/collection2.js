@@ -1,3 +1,6 @@
 import Collection2 from 'meteor/aldeed:collection2'
 
-Collection2.load()
+// XXX: backwards compat for pre 4.0 collection2
+if (Collection2 && typeof Collection2.load === 'function') {
+  Collection2.load()
+}
