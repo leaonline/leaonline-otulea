@@ -19,7 +19,9 @@ while getopts "pr" opt; do
   esac
 done
 
-PACKAGE_DIRS="../lib:../liboauth:../libext:../meteor-collection2/package"
+PACKAGE_DIRS="../blaze/packages:../lib:../liboauth:../libext:../meteor-collection2/package"
+
+# final command to run
 DEBUG="app" METEOR_PACKAGE_DIRS=${PACKAGE_DIRS}  meteor \
     --exclude-archs=web.cordova \
     --settings=settings.json \
