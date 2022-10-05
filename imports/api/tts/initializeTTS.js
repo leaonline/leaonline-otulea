@@ -34,6 +34,7 @@ export const initializeTTS = async () => {
       },
       onComplete () {
         console.debug('[initializeTTS]: configure complete')
+        TTSEngine.defaults({ rate: 0.8 })
         resolve(TTSEngine)
       }
     })
