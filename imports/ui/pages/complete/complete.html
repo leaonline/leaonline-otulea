@@ -157,10 +157,7 @@
                                         {{/if}}
                                         <td class="text-right no-wrap">
                                             {{! > textGroup text=(i18n alphaLevel.gradeLabel) type=currentType}}
-                                            {{! WE ONLY DISPLAY THE PERCENT VALUE IF IT IS GREATER THAN 0 }}
-                                            {{#with truncate alphaLevel.perc}}
-                                                {{> textGroup text=(i18n "pages.complete.percent" this) type=currentType}}
-                                            {{/with}}
+                                            {{> textGroup text=(getPercent alphaLevel) type=currentType}}
                                         </td>
                                     </tr>
                                 {{else}}
@@ -274,12 +271,9 @@
                                             <td class="text-center d-none d-md-table-cell d-print-table-cell">{{competency.scored}}</td>
                                             <td class="text-center d-none d-md-table-cell d-print-table-cell">{{competency.perc}}</td>
                                         {{/if}}
-                                        <td class="text-center no-wrap">
+                                        <td class="align-middle text-center no-wrap">
                                             {{! > textGroup text=(i18n competency.gradeLabel) type=currentType}}
-                                            {{! WE ONLY DISPLAY THE PERCENT VALUE IF IT IS GREATER THAN 0 }}
-                                            {{#with truncate competency.perc}}
-                                                {{> textGroup text=(i18n "pages.complete.percent" this) type=currentType}}
-                                            {{/with}}
+                                            {{> textGroup text=(getPercent competency) type=currentType}}
                                         </td>
                                     </tr>
                                 {{else}}

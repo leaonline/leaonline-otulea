@@ -28,19 +28,15 @@
         </style>
     </noscript>
 
-    <style type="text/css">
-        body {
-            font-family: Times, "Times New Roman", serif;
-        }
-
+    <style>
         @font-face {
             font-family: 'Semikolon';
-            src: url('/SemikolonPlus-Regular.woff') format('woff'),
-            url('/SemikolonPlus-Regular.ttf') format('truetype'),
-            url('/SemikolonPlus-Regular.otf') format('opentype'),
-            url('/SemikolonPlus-Regular.woff2') format('woff2'),
-            url('/SemikolonPlus-Regular.eot') format('embedded-opentype');
+            src: url('/fonts/SemikolonPlus-Regular.ttf') format('truetype');
             font-display: auto;
+        }
+
+        body {
+            font-family: sans-serif;
         }
 
         .card {
@@ -62,23 +58,23 @@
         }
 
         .lea-text {
-            font-family: Semikolon, Times, "Times New Roman", serif;
+            font-family: Semikolon, sans-serif;
             font-size: 24px;
         }
 
         .lea-text-bold {
-            font-family: Semikolon, Times, "Times New Roman", serif;
+            font-family: Semikolon, sans-serif;
             font-size: 24px;
             font-weight: bold;
         }
 
         h1 {
-            font-family: Semikolon, Times, "Times New Roman", serif;
+            font-family: Semikolon, sans-serif;
             font-size: 30px;
         }
 
         .lea-text-sm {
-            font-family: Semikolon, Times, "Times New Roman", serif;
+            font-family: Semikolon, sans-serif;
             font-size: 12px !important;
         }
 
@@ -122,7 +118,7 @@
             border-width: thick !important;
         }
     </style>
-    <meteor-bundled-js/>
+    <meteor-bundled-css/>
 </head>
 
 <body></body>

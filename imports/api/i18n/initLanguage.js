@@ -13,7 +13,9 @@ export const initLanguage = async (debug = () => {}) => {
     i18n: {
       settings: { defaultLocale, [defaultLocale]: localeSettings },
       [defaultLocale]: language
-    }
+    },
+    helperName: '___i18n___',
+    helperSettingsName: '___i18n___'
   })
 
   i18n.load({

@@ -10,7 +10,7 @@ const go = (...args) => {
 
 const settings = () => {
   // TODO load dynamically using i18n locale
-  import settingsFile from '../../../resources/i18n/de/routes'
+  import settingsFile from '../../../resources/i18n/de/routes.json'
   return settingsFile
 }
 

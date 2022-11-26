@@ -3,6 +3,7 @@ import { Email } from 'meteor/email'
 import { addDimensionToFeedback } from '../../patches/addDimensionToFeedback'
 import { generateAccounts } from '../../patches/generateAccounts'
 import { removeDeadAccounts } from '../../patches/removeDeadAccounts'
+import { alphaUsers } from '../../patches/alphaUsers'
 
 const appName = Meteor.settings.public.app.label
 const { notify: defaultNotify, replyTo, from } = Meteor.settings.email
@@ -61,5 +62,12 @@ function notifyUsers ({ notify = [], patchName, result, dryRun }) {
       from: from,
       text: JSON.stringify(result, null, 2)
     })
+  })
+}
+
+if (patches.alphaUsers?.active) {
+  console.debug('[patches]: run alphaUsers')
+  Meteor.defer(function () {
+    alphaUsers(patches.alphaUsers)
   })
 }

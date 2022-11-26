@@ -8,7 +8,7 @@
  * If not `weak` is explicilty set to `true` a `Map` will be used,
  * otherwise a `WeakMap` is used.
  *
- * @param {Array} docs
+ * @param {Array|Mongo.Cursor} docs
  * @param {string} key
  * @param {boolean} weak
  * @return {Map|WeakMap}
