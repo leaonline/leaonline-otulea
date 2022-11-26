@@ -47,7 +47,7 @@
     "chai": "^4.3.4",
     "eslint-plugin-security": "^1.4.0",
     "markdownlint-cli": "^0.31.1",
-    "puppeteer": "^10.4.0",
+    "puppeteer": "19.3.0",
     "sinon": "^11.1.2",
     "snazzy": "^9.0.0",
     "standardx": "^7.0.0",
