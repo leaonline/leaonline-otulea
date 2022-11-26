@@ -20,7 +20,7 @@ describe(notifyUsersAboutError.name, function () {
       expect(to).to.equal('admin@example.com')
       expect(from).to.equal('system@example.com')
       expect(replyTo).to.equal('noreply@example.com')
-      expect(subject).to.equal('apps.otulea.title [error]: testError - Error')
+      expect(subject).to.equal('otu.lea [error]: foobar')
       expect(text).to.equal(JSON.stringify(err, null, 2).trim())
     })
 

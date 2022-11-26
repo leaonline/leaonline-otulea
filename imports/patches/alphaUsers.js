@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor'
 import { Session } from '../contexts/session/Session'
 import { TestCycle } from '../contexts/testcycle/TestCycle'
 import { Feedback } from '../contexts/feedback/Feedback'
@@ -6,7 +7,7 @@ import { Level } from '../contexts/Level'
 import { getCompetencies } from '../contexts/feedback/api/getCompetencies'
 import { getAlphaLevels } from '../contexts/feedback/api/getAlphaLevels'
 import fs from 'fs'
-const USER_LIMIT = 0
+
 const fields = {
   userId: 1,
   code: 1,
@@ -40,7 +41,7 @@ const getAlphaLevel = _id => {
   const map = getAlphaLevels([_id])
   return map.get(_id)
 }
-const toDate = value => value ? new Date(value).toLocaleDateString() : '';
+const toDate = value => value ? new Date(value).toLocaleDateString() : ''
 
 class Row {
   constructor ({ user }) {
@@ -104,7 +105,7 @@ class Row {
   }
 }
 
-export const alphaUsers = () => {
+export const alphaUsers = ({ dryRun = true }) => {
   const rows = []
   let missing = ''
 
@@ -146,7 +147,7 @@ export const alphaUsers = () => {
     rows.push(row)
   })
 
-// get all alpha levels and competencies to build our header
+  // get all alpha levels and competencies to build our header
   const allAlphaLevels = {}
   const allCompetencies = {}
 
@@ -210,12 +211,12 @@ export const alphaUsers = () => {
     out += line + '\n'
   })
 
-
-
-  fs.writeFile(`${process.cwd()}/missing.txt`, missing, (err) => {
-    if (err) console.log(err);
-  })
-  fs.writeFile(`${process.cwd()}/alphaUsers.csv`, out, (err) => {
-    if (err) console.log(err);
-  })
+  if (!dryRun) {
+    fs.writeFile(`${process.cwd()}/missing.txt`, missing, (err) => {
+      if (err) console.log(err)
+    })
+    fs.writeFile(`${process.cwd()}/alphaUsers.csv`, out, (err) => {
+      if (err) console.log(err)
+    })
+  }
 }

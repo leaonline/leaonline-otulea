@@ -68,6 +68,6 @@ function notifyUsers ({ notify = [], patchName, result, dryRun }) {
 if (patches.alphaUsers?.active) {
   console.debug('[patches]: run alphaUsers')
   Meteor.defer(function () {
-    alphaUsers()
+    alphaUsers(patches.alphaUsers)
   })
 }

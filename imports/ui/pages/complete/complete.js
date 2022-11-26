@@ -9,6 +9,8 @@ import { sessionIsComplete } from '../../../contexts/session/utils/sessionIsComp
 import { AlphaLevel } from '../../../contexts/AlphaLevel'
 import { Response } from '../../../contexts/response/Response'
 import { Unit } from '../../../contexts/Unit'
+import { truncatePercent } from './helpers/truncatePercent'
+import { translate } from '../../../api/i18n/translate'
 import '../../components/container/container'
 import '../../layout/navbar/navbar'
 import './complete.scss'
@@ -102,7 +104,9 @@ Template.complete.onCreated(function () {
                   resultDoc.shortCode = competencyDoc.shortCode
                   resultDoc.description = competencyDoc.descriptionSimple
                   resultDoc.gradeLabel = `thresholds.${resultDoc.gradeName}`
-                  resultDoc.perc = resultDoc.perc * 100
+
+                  const percentValue = Number(resultDoc.perc ?? 0) * 100
+                  resultDoc.perc = truncatePercent(percentValue)
 
                   console.debug({ resultDoc })
                   return resultDoc
@@ -148,7 +152,10 @@ Template.complete.onCreated(function () {
                 alpha.shortCode = alphaLevelDoc.shortCode
                 alpha.description = alphaLevelDoc.description
                 alpha.gradeLabel = `thresholds.${alpha.gradeName}`
-                alpha.perc = alpha.perc * 100
+
+                const percentValue = Number(alpha.perc ?? 0) * 100
+                alpha.perc = truncatePercent(percentValue)
+
                 return alpha
               })
                 .sort((a, b) => a.shortCode.localeCompare(b.shortCode))
@@ -340,11 +347,9 @@ Template.complete.helpers({
   currentType () {
     return Template.instance().state.get('color')
   },
-  truncate (percent = 0) {
-    console.debug(percent)
-    const int = Math.trunc(percent)
-    console.debug(int)
-    return Number.isNaN(int) ? 0 : int
+  getPercent (doc = {}) {
+    const percent = String(doc.perc ?? 0)
+    return translate('pages.complete.percent', { percent })
   },
   // ///////////////////////////////////////////////////////////////////////////
   // DEBUG-USER-ONLY!
