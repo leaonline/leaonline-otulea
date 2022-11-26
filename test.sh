@@ -80,7 +80,7 @@ done
 # build paths:
 
 PROJECT_PATH=$(pwd)
-T_PACKAGE_DIRS="../lib:../libnpm:../liboauth:../libext:../meteor-collection2/package:./github"
+T_PACKAGE_DIRS="../lib:../libnpm:../liboauth:../libext:../meteor-collection2/package:./github:./github/meteor-collection2/package"
 
 PORT=3099
 

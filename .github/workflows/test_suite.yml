@@ -127,7 +127,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: Meteor-Community-Packages/meteor-collection2
-          path: meteor-collection2
+          path: github/meteor-collection2
           ref: release/v4
 
       # CACHING
