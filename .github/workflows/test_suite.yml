@@ -18,7 +18,7 @@ jobs:
     - name: setup node
       uses: actions/setup-node@v3
       with:
-        node-version: '14.x'
+        node-version: 14
 
     - name: cache dependencies
       uses: actions/cache@v3
@@ -42,7 +42,7 @@ jobs:
     - name: setup node
       uses: actions/setup-node@v3
       with:
-        node-version: '14.x'
+        node-version: 14
 
     - name: cache dependencies
       uses: actions/cache@v3
@@ -65,7 +65,7 @@ jobs:
     - name: setup node
       uses: actions/setup-node@v3
       with:
-        node-version: '14.x'
+        node-version: 14
 
     - name: cache dependencies
       uses: actions/cache@v3
@@ -165,7 +165,7 @@ jobs:
       - name: Setup meteor
         uses: meteorengineer/setup-meteor@v1
         with:
-          meteor-release: '2.2'
+          meteor-release: '2.7.3'
 
       - name: Install NPM Dependencies
         run: meteor npm ci
