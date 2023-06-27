@@ -21,7 +21,7 @@
     "bootstrap": "^4.6.0",
     "debug": "^4.3.2",
     "detect-os": "^1.2.1",
-    "easy-speech": "^1.2.0",
+    "easy-speech": "^2.1.0",
     "helmet": "^4.6.0",
     "jquery": "^3.6.0",
     "lozad": "^1.16.0",
@@ -41,9 +41,9 @@
     "testModule": "tests/main.js"
   },
   "devDependencies": {
-    "@babel/core": "^7.15.5",
+    "@babel/core": "^7.22.5",
     "@babel/eslint-parser": "^7.15.4",
-    "babel-plugin-istanbul": "^6.0.0",
+    "babel-plugin-istanbul": "^6.1.1",
     "chai": "^4.3.4",
     "eslint-plugin-security": "^1.4.0",
     "markdownlint-cli": "^0.31.1",
