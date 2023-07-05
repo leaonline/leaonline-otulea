@@ -3,7 +3,8 @@
     <meta name="viewport" content="initial-scale=1, maximum-scale=5, minimum-scale=-5"/>
     <title>otu.lea</title>
 
-    <link rel="preload" href="/fonts/SemikolonPlus-Regular.ttf" as="font" type="font/tts" crossorigin="anonymous">
+    <link rel="preload" href="/fonts/SemikolonPlus-Regular.ttf" as="font" crossorigin="anonymous">
+    <link rel="preload" href="/fonts/SemikolonPlus-Bold.otf" as="font" crossorigin="anonymous">
     <link rel="icon" href="/favicon.svg" sizes="any" type="image/svg+xml">
     <link rel="apple-touch-icon" sizes="180x180"
           href="/apple-touch-icon-180.png">
@@ -31,6 +32,11 @@
         @font-face {
             font-family: 'Semikolon';
             src: url('/fonts/SemikolonPlus-Regular.ttf') format('truetype');
+            font-display: swap;
+        }
+        @font-face {
+            font-family: 'SemikolonBold';
+            src: url('/fonts/SemikolonPlus-Bold.otf') format('opentype');
             font-display: swap;
         }
 
@@ -62,9 +68,8 @@
         }
 
         .lea-text-bold {
-            font-family: Semikolon, sans-serif;
+            font-family: SemikolonBold, Semikolon, sans-serif;
             font-size: 24px;
-            font-weight: bold;
         }
 
         h1 {

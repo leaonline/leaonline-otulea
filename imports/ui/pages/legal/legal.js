@@ -4,13 +4,20 @@ import { Template } from 'meteor/templating'
 import { Legal } from '../../../contexts/legal/Legal' // TODO load dynamic  depending on i18n locale
 import settings from '../../../../resources/i18n/de/routes'
 import legalLanguage from './i18n/legalLanguage'
-import { marked } from 'marked'
+import { LeaMarkdown } from '../../../api/markdown/LeaMarkdown'
+import { legalRenderer } from './markdown/legalRenderer'
 import 'meteor/leaonline:ui/components/soundbutton/soundbutton'
-import './legal.html'
 import { i18n } from '../../../api/i18n/I18n'
+import './legal.html'
+import './legal.scss'
+
+const legalRendererName = 'legalRenderer'
+
+LeaMarkdown.addRenderer(legalRendererName, legalRenderer())
 
 Template.legal.onCreated(function () {
   const instance = this
+
   instance.initDependencies({
     contexts: [Legal],
     translations: legalLanguage,
@@ -19,31 +26,6 @@ Template.legal.onCreated(function () {
       instance.state.set('dependenciesComplete', true)
     }
   })
-
-  let count = 0
-  const renderer = {
-    paragraph (text /*, level */) {
-      const transformed = text
-        .replace(/§§/g, i18n.get('pages.legal.paragraphs'))
-        .replace(/§/g, i18n.get('pages.legal.paragraph'))
-        .replace(/<[^>]*>/g, '')
-
-      const id = `sound-${count++}`
-      setTimeout(() => {
-        const parent = document.querySelector(`#${id}`)
-        Blaze.renderWithData(Template.soundbutton, {
-          text: transformed,
-          outline: true,
-          sm: true,
-          type: 'secondary',
-          class: 'border-0'
-        }, parent)
-      }, 1000)
-      return `<p><span id="${id}"></span>${text}</p>`
-    }
-  }
-
-  marked.use({ renderer })
 
   instance.autorun(() => {
     const dependenciesComplete = instance.state.get('dependenciesComplete')
@@ -68,19 +50,16 @@ Template.legal.onCreated(function () {
     Meteor.call(Legal.methods.get.name, { name: originalType }, (err, res) => {
       if (err) return instance.state.set({ error: err })
 
-      const markedOptions = {
-        mangle: false,
-        breaks: true,
-        gfm: true
-      }
+      LeaMarkdown.parse({
+          input: res,
+          renderer: legalRendererName
+        })
+        .then((content) => instance.state.set({ content }))
+        .catch(error => {
+          console.error(error)
+          instance.state.set({ error })
+        })
 
-      marked.parse(res, markedOptions, (parsingError, content) => {
-        if (parsingError) {
-          return instance.state.set({ error: parsingError })
-        }
-
-        instance.state.set({ content })
-      })
       instance.state.set({ type: originalType })
     })
   })

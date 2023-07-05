@@ -62,7 +62,7 @@ leaonline:publication-factory@1.1.1
 leaonline:ratelimit-factory@1.0.0
 leaonline:service-registry@1.0.0
 leaonline:theme@1.1.0
-leaonline:ui@1.0.0
+leaonline:ui@1.1.0
 livedata@1.0.18
 lmieulet:meteor-coverage@3.2.0
 localstorage@1.2.0

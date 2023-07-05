@@ -9,6 +9,8 @@ import { Unit } from '../../../contexts/Unit'
 import { TaskRenderers } from '../../renderers/TaskRenderers'
 import { ResponseCache } from './cache/ResponseCache'
 import { UnitPageCache } from './cache/UnitPageCache'
+import { LeaMarkdown } from '../../../api/markdown/LeaMarkdown'
+import { defaultMarkdownRenderer } from '../../renderers/defaultMarkdownRenderer'
 import { isCurrentUnit } from '../../../contexts/session/utils/isCurrentUnit'
 import { createItemLoad } from './item/createItemLoad'
 import { createItemInput } from './item/createItemInput'
@@ -32,6 +34,10 @@ const submitItems = createItemSubmit({
   },
   onError: (error, responseDoc) => console.error(error, responseDoc)
 })
+
+// register markdown renderer
+const defaultMarkdownRendererName = 'default'
+LeaMarkdown.addRenderer(defaultMarkdownRendererName, defaultMarkdownRenderer())
 
 Template.unit.onCreated(function () {
   const instance = this
@@ -75,7 +81,14 @@ Template.unit.onCreated(function () {
       return computation.stop()
     }
 
-    TaskRenderers.init()
+    TaskRenderers.init({
+        markdown: {
+          renderer: async txt => {
+            const mdOptions = { input: txt, renderer: defaultMarkdownRendererName }
+            return LeaMarkdown.parse(mdOptions)
+          }
+        }
+      })
       .then(() => renderersLoaded.set(true))
       .catch(e => console.error(e)) // TODO sendError
   })
@@ -253,8 +266,7 @@ Template.unit.events({
 
     try {
       await submitItems({ sessionId, unitDoc, page })
-    }
-    catch (e) {
+    } catch (e) {
       console.error(e)
     }
 
@@ -268,8 +280,7 @@ Template.unit.events({
         name: Session.methods.next.name,
         args: { sessionId }
       })
-    }
-    catch (e) {
+    } catch (e) {
       templateInstance.api.info('session update failed')
       return abortUnit(templateInstance, e)
     }

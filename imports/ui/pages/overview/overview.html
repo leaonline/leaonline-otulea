@@ -24,7 +24,7 @@
                                             type=(colorTypeName this)
                                             data-dimension=this._id
                                             active=(isSelectedDimension this._id)
-                                            btnClass="lea-dimension-button p-3 font-weight-bold  no-wrap"}}
+                                            btnClass="lea-dimension-button p-3 lea-text-bold  no-wrap"}}
                                         {{> icon name=this.icon
                                                 class="d-block ml-auto mr-auto my-2 fa-3x"}}
                                         <span class="lea-text">
@@ -78,7 +78,7 @@
                                                 active=(isSelectedLevel level._id)
                                                 tts=level.title
                                                 label=(level.title)
-                                                btnClass="lea-level-button p-5 font-weight-bold  no-wrap" }}
+                                                btnClass="lea-level-button p-5 lea-text-bold  no-wrap" }}
                                     </div>
                                 {{else}}
                                     {{> loading}}
@@ -139,7 +139,7 @@
                                                     disabled=starting
                                                     tts=(i18n "actions.continue")
                                                     label=(i18n "actions.continue")
-                                                    btnClass="lea-continue-button p-5 font-weight-bold  no-wrap" }}
+                                                    btnClass="lea-continue-button p-5 lea-text-bold  no-wrap" }}
                                         </div>
                                         <div class="col col-xs-12 col-md-6">
                                             {{> actionButton
@@ -150,7 +150,7 @@
                                                     disabled=starting
                                                     tts=(i18n "actions.restart")
                                                     label=(i18n "actions.restart")
-                                                    btnClass="lea-restart-button p-5 font-weight-bold  no-wrap" }}
+                                                    btnClass="lea-restart-button p-5 lea-text-bold  no-wrap" }}
                                         </div>
                                     </div>
                                 {{else if sessionCompleted}}
@@ -170,7 +170,7 @@
                                                     disabled=starting
                                                     tts=(i18n "pages.overview.showFeedback")
                                                     label=(i18n "pages.overview.showFeedback")
-                                                    btnClass="lea-show-feedback-button p-5 font-weight-bold  no-wrap" }}
+                                                    btnClass="lea-show-feedback-button p-5 lea-text-bold  no-wrap" }}
                                         </div>
                                         <div class="col col-xs-12 col-md-6">
                                             {{> actionButton
@@ -182,7 +182,7 @@
                                                     disabled=starting
                                                     tts="pages.overview.confirm"
                                                     label=(i18n "pages.overview.confirm")
-                                                    btnClass="lea-restart-button p-5 font-weight-bold  no-wrap" }}
+                                                    btnClass="lea-restart-button p-5 lea-text-bold  no-wrap" }}
                                         </div>
                                     </div>
                                 {{else}}
