@@ -1,6 +1,6 @@
 /* eslint-env mocha */
-import { Meteor } from 'meteor/meteor'
 import { Session } from '../Session'
+import { onServerExec } from '../../../utils/archUtils'
 
 describe(Session.name, function () {
   describe('utils', function () {
@@ -11,7 +11,7 @@ describe(Session.name, function () {
     import './sessionIsComplete.tests'
   })
 
-  if (Meteor.isServer) {
+  onServerExec(function () {
     describe('api', function () {
       import './startSession.tests'
       import './updateSession.tests'
@@ -19,6 +19,8 @@ describe(Session.name, function () {
       import './continueSession.tests'
       import './getLastSessionByTestCycle.tests'
       import './getSessionResponses.tests'
+      import './recentCompleted.tests'
+      import './results.tests'
     })
-  }
+  })
 })

@@ -26,8 +26,7 @@ import { Unit } from '../../Unit'
 export const updateSession = function (options = {}) {
   check(options, Match.ObjectIncluding({
     sessionId: String,
-    userId: String,
-    debug: Match.Maybe(Function)
+    userId: String
   }))
 
   const { sessionId, userId, debug = () => {} } = options

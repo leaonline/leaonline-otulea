@@ -1,7 +1,6 @@
 /* eslint-env mocha */
 import { expect } from 'chai'
 import { Random } from 'meteor/random'
-import { startSession } from '../api/startSession'
 import {
   clearCollection,
   mockCollection,
@@ -14,12 +13,19 @@ import { UnitSet } from '../../unitSet/UnitSet'
 import { Unit } from '../../Unit'
 import { DocNotFoundError } from '../../errors/DocNotFoundError'
 
-describe(startSession.name, function () {
+const startSession = Session.methods.start.run
+
+describe(Session.methods.start.name, function () {
+  let userId
+  let testCycleId
+  
   before(function () {
     mockCollection(Session)
     mockCollection(TestCycle)
     mockCollection(UnitSet)
     mockCollection(Unit)
+    userId = Random.id()
+    testCycleId = Random.id()
   })
 
   after(function () {
@@ -42,33 +48,27 @@ describe(startSession.name, function () {
     stub(Session, 'collection', () => ({
       findOne: () => doc
     }))
-    const options = {
-      testCycleId: Random.id(),
-      userId: Random.id()
-    }
-    expect(() => startSession(options)).to.throw('session.existsAlready')
+    const env = { userId }
+    const arg = { testCycleId }
+    expect(() => startSession.call(env, arg)).to.throw('session.existsAlready')
   })
   it('throws if there is no doc for the given testCycleId', function () {
     stub(Session, 'collection', () => ({ findOne: () => {} }))
     stub(TestCycle, 'collection', () => ({ findOne: () => {} }))
-    const options = {
-      testCycleId: Random.id(),
-      userId: Random.id()
-    }
-    expect(() => startSession(options)).to.throw(DocNotFoundError.reason)
+    const env = { userId }
+    const arg = { testCycleId }
+    expect(() => startSession.call(env, arg)).to.throw(DocNotFoundError.reason)
   })
   it('throws if there is no doc for the linked unitSetId', function () {
     const doc = {}
     stub(TestCycle, 'collection', () => ({ findOne: () => doc }))
     stub(UnitSet, 'collection', () => ({ findOne: () => {} }))
-    const options = {
-      testCycleId: Random.id(),
-      userId: Random.id()
-    }
-    expect(() => startSession(options)).to.throw(DocNotFoundError.reason)
+    const env = { userId }
+    const arg = { testCycleId }
+    expect(() => startSession.call(env, arg)).to.throw(DocNotFoundError.reason)
 
     doc.unitSets = []
-    expect(() => startSession(options)).to.throw(DocNotFoundError.reason)
+    expect(() => startSession.call(env, arg)).to.throw(DocNotFoundError.reason)
   })
   it('throws if there is no doc for the linked unitId', function () {
     const usDoc = { _id: Random.id() }
@@ -78,14 +78,12 @@ describe(startSession.name, function () {
     stub(TestCycle, 'collection', () => ({ findOne: () => tcDoc }))
     stub(UnitSet, 'collection', () => ({ findOne: () => usDoc }))
     stub(Unit, 'collection', () => ({ findOne: () => {} }))
-    const options = {
-      testCycleId: Random.id(),
-      userId: Random.id()
-    }
-    expect(() => startSession(options)).to.throw(DocNotFoundError.reason)
+    const env = { userId }
+    const arg = { testCycleId }
+    expect(() => startSession.call(env, arg)).to.throw(DocNotFoundError.reason)
 
     usDoc.units = []
-    expect(() => startSession(options)).to.throw(DocNotFoundError.reason)
+    expect(() => startSession.call(env, arg)).to.throw(DocNotFoundError.reason)
   })
   it('creates a new session doc', function () {
     const unitDoc = { _id: Random.id() }
@@ -98,11 +96,10 @@ describe(startSession.name, function () {
     stub(TestCycle, 'collection', () => ({ findOne: () => tcDoc }))
     stub(UnitSet, 'collection', () => ({ findOne: () => usDoc }))
     stub(Unit, 'collection', () => ({ findOne: () => unitDoc }))
-    const options = {
-      testCycleId: tcDoc._id,
-      userId: Random.id()
-    }
-    const sessionDoc = startSession(options)
+
+    const env = { userId }
+    const arg = { testCycleId: tcDoc._id }
+    const sessionDoc = startSession.call(env, arg)
 
     expect(sessionDoc.startedAt instanceof Date).to.equal(true)
     expect(sessionDoc.testCycle).to.equal(tcDoc._id)

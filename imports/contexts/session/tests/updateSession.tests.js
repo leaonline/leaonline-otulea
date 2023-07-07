@@ -1,7 +1,6 @@
 /* eslint-env mocha */
 import { expect } from 'chai'
 import { Random } from 'meteor/random'
-import { updateSession } from '../api/updateSession'
 import {
   clearCollection,
   mockCollection,
@@ -15,7 +14,9 @@ import { Unit } from '../../Unit'
 import { DocNotFoundError } from '../../errors/DocNotFoundError'
 import { DocumentList } from '../../../api/lists/DocumentList'
 
-describe(updateSession.name, function () {
+const updateSession = Session.methods.next.run
+
+describe(Session.methods.next.name, function () {
   before(function () {
     mockCollection(Session)
     mockCollection(TestCycle)
@@ -51,16 +52,18 @@ describe(updateSession.name, function () {
   it('throws if there is no sessionDoc for sessionId', function () {
     stub(Session, 'collection', () => ({ findOne: () => {} }))
 
-    const options = { sessionId, userId }
-    expect(() => updateSession(options)).to.throw(DocNotFoundError.reason)
+    const env = { userId }
+    const arg = { sessionId }
+    expect(() => updateSession.call(env, arg)).to.throw(DocNotFoundError.reason)
   })
   it('throws if there is no testCycleDoc for the given testCycle', function () {
     const sessionDoc = {}
     stub(Session, 'collection', () => ({ findOne: () => sessionDoc }))
     stub(TestCycle, 'collection', () => ({ findOne: () => {} }))
 
-    const options = { sessionId, userId }
-    expect(() => updateSession(options)).to.throw(DocNotFoundError.reason)
+    const env = { userId }
+    const arg = { sessionId }
+    expect(() => updateSession.call(env, arg)).to.throw(DocNotFoundError.reason)
   })
   it('throws if there is no UnitSet doc for the given unitSet id', function () {
     const sessionDoc = {}
@@ -69,8 +72,9 @@ describe(updateSession.name, function () {
     stub(TestCycle, 'collection', () => ({ findOne: () => tcDoc }))
     stub(UnitSet, 'collection', () => ({ findOne: () => {} }))
 
-    const options = { sessionId, userId }
-    expect(() => updateSession(options)).to.throw(DocNotFoundError.reason)
+    const env = { userId }
+    const arg = { sessionId }
+    expect(() => updateSession.call(env, arg)).to.throw(DocNotFoundError.reason)
   })
   it('throws if there is no unit doc for the given unit id', function () {
     const sessionDoc = {}
@@ -81,8 +85,9 @@ describe(updateSession.name, function () {
     stub(UnitSet, 'collection', () => ({ findOne: () => usDoc }))
     stub(Unit, 'collection', () => ({ findOne: () => {} }))
 
-    const options = { sessionId, userId }
-    expect(() => updateSession(options)).to.throw(DocNotFoundError.reason)
+    const env = { userId }
+    const arg = { sessionId }
+    expect(() => updateSession.call(env, arg)).to.throw(DocNotFoundError.reason)
   })
   it('throws if there can be no lists created from the given documents', function () {
     const sessionDoc = {}
@@ -94,8 +99,9 @@ describe(updateSession.name, function () {
     stub(UnitSet, 'collection', () => ({ findOne: () => usDoc }))
     stub(Unit, 'collection', () => ({ findOne: () => unitDoc }))
 
-    const options = { sessionId, userId }
-    expect(() => updateSession(options)).to.throw(DocumentList.noList)
+    const env = { userId }
+    const arg = { sessionId }
+    expect(() => updateSession.call(env, arg)).to.throw(DocumentList.noList)
   })
   it('completes unitSet and cycle if this is the very last unit', function () {
     const usDoc = {
@@ -127,8 +133,9 @@ describe(updateSession.name, function () {
       }
     }))
 
-    const options = { sessionId, userId }
-    const result = updateSession(options)
+    const env = { userId }
+    const arg = { sessionId }
+    const result = updateSession.call(env, arg)
     expect(result).to.deep.equal({
       nextUnit: null,
       nextUnitSet: null,
@@ -178,8 +185,9 @@ describe(updateSession.name, function () {
       }
     }))
 
-    const options = { sessionId, userId }
-    const result = updateSession(options)
+    const env = { userId }
+    const arg = { sessionId }
+    const result = updateSession.call(env, arg)
     expect(result).to.deep.equal({
       nextUnit: nextUnitId,
       nextUnitSet: nextUnitSetId,
@@ -218,8 +226,9 @@ describe(updateSession.name, function () {
       }
     }))
 
-    const options = { sessionId, userId }
-    const result = updateSession(options)
+    const env = { userId }
+    const arg = { sessionId }
+    const result = updateSession.call(env, arg)
     expect(result).to.deep.equal({
       nextUnit: nextUnitId,
       nextUnitSet: null,
