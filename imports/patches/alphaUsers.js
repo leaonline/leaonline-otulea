@@ -23,7 +23,7 @@ const fields = {
   cancelledAt: 1,
   progress: 1,
   maxProgress: 1,
-  isComplete: 1,
+  isComplete: 1
 }
 
 const fieldNames = Object.keys(fields)
@@ -120,7 +120,7 @@ class Row {
 
 export const alphaUsers = ({ dryRun = true, includeAlphaLevels, includeCompetencies }) => {
   const rows = []
-  let eventLog = []
+  const eventLog = []
   const log = (...args) => eventLog.push(args.join(' '))
 
   Meteor.users.find({}).forEach((user) => {
@@ -128,16 +128,12 @@ export const alphaUsers = ({ dryRun = true, includeAlphaLevels, includeCompetenc
       return log('[Skip] incomplete user', JSON.stringify(user, null, 0))
     }
 
-    const username =  `${user.username}-(${user._id})`
+    const username = `${user.username}-(${user._id})`
     const sessionCursor = Session.collection().find({ userId: user._id, completedAt: { $exists: true } })
 
     if (sessionCursor.count() === 0) {
       return log('[Skip] incomplete session for user', username)
     }
-
-
-
-    let rowHasData = false
 
     sessionCursor.forEach(sessionDoc => {
       const row = new Row({ user })
@@ -168,7 +164,6 @@ export const alphaUsers = ({ dryRun = true, includeAlphaLevels, includeCompetenc
 
       // finally add records from this feedback doc
       feedbackDocs.forEach(doc => row.addRecord(doc))
-      rowHasData = true
       rows.push(row)
     })
   })
@@ -236,7 +231,7 @@ export const alphaUsers = ({ dryRun = true, includeAlphaLevels, includeCompetenc
         case 'p':
           return addToLine(value.perc)
         default:
-          log( `[Warning] unknown type ${type} in alphe/competency ${key}`)
+          log(`[Warning] unknown type ${type} in alphe/competency ${key}`)
       }
     }
 
@@ -259,7 +254,8 @@ export const alphaUsers = ({ dryRun = true, includeAlphaLevels, includeCompetenc
     fs.writeFile(logFilePath, eventLog.join('\n'), (err) => {
       if (err) {
         console.log('error', logFilePath, err.message)
-      } else {
+      }
+      else {
         console.log(logFilePath, 'saved')
       }
     })
@@ -269,7 +265,8 @@ export const alphaUsers = ({ dryRun = true, includeAlphaLevels, includeCompetenc
     fs.writeFile(alphaCsvPath, out, (err) => {
       if (err) {
         console.log('error', alphaCsvPath, err)
-      } else {
+      }
+      else {
         console.log(alphaCsvPath, 'saved')
       }
     })
@@ -278,13 +275,14 @@ export const alphaUsers = ({ dryRun = true, includeAlphaLevels, includeCompetenc
 
 const getFeedbackDocs = ({ sessionDoc, testCycleDoc, user, log }) => {
   const query = { sessionId: sessionDoc._id }
-  let cursor =  Feedback.collection().find(query)
+  let cursor = Feedback.collection().find(query)
 
   if (cursor.count() === 0) {
     log(`[Create] feedback for ${user.username} session ${sessionDoc._id}`)
     try {
       generateFeedback({ sessionDoc, testCycleDoc, userId: user._id })
-    } catch (e) {
+    }
+    catch (e) {
       log('[Error]', e.message)
     }
   }

@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor'
-import { Blaze } from 'meteor/blaze'
 import { Template } from 'meteor/templating'
 import { Legal } from '../../../contexts/legal/Legal' // TODO load dynamic  depending on i18n locale
 import settings from '../../../../resources/i18n/de/routes'
@@ -51,9 +50,9 @@ Template.legal.onCreated(function () {
       if (err) return instance.state.set({ error: err })
 
       LeaMarkdown.parse({
-          input: res,
-          renderer: legalRendererName
-        })
+        input: res,
+        renderer: legalRendererName
+      })
         .then((content) => instance.state.set({ content }))
         .catch(error => {
           console.error(error)

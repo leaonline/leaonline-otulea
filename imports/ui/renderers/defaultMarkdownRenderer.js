@@ -5,10 +5,6 @@ export const defaultMarkdownRenderer = () => {
 }
 
 class DefaultRenderer extends Renderer {
-  constructor (options) {
-    super(options)
-  }
-
   heading (text) {
     return `<span class="lea-text-bold">${text}</span>`
   }

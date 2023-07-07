@@ -11,7 +11,6 @@ const defaultOptions = {
   headerIds: false
 }
 
-
 LeaMarkdown.addRenderer = (name, impl) => {
   renderers.set(name, impl)
 }

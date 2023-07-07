@@ -82,13 +82,13 @@ Template.unit.onCreated(function () {
     }
 
     TaskRenderers.init({
-        markdown: {
-          renderer: async txt => {
-            const mdOptions = { input: txt, renderer: defaultMarkdownRendererName }
-            return LeaMarkdown.parse(mdOptions)
-          }
+      markdown: {
+        renderer: async txt => {
+          const mdOptions = { input: txt, renderer: defaultMarkdownRendererName }
+          return LeaMarkdown.parse(mdOptions)
         }
-      })
+      }
+    })
       .then(() => renderersLoaded.set(true))
       .catch(e => console.error(e)) // TODO sendError
   })
@@ -266,7 +266,8 @@ Template.unit.events({
 
     try {
       await submitItems({ sessionId, unitDoc, page })
-    } catch (e) {
+    }
+    catch (e) {
       console.error(e)
     }
 
@@ -280,7 +281,8 @@ Template.unit.events({
         name: Session.methods.next.name,
         args: { sessionId }
       })
-    } catch (e) {
+    }
+    catch (e) {
       templateInstance.api.info('session update failed')
       return abortUnit(templateInstance, e)
     }
