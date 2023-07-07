@@ -102,6 +102,11 @@ Record.schema = {
   }
 }
 
+/**
+ * Returns all records for given users and dimension.
+ * Optionally allows to skip documents and define a range of dates of completion.
+ * @realm dashboard
+ */
 Record.methods.getForUsers = {
   name: 'record.methods.getForUsers',
   schema: {
