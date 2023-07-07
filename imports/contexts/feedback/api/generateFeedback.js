@@ -36,11 +36,12 @@ import { notifyUsersAboutError } from '../../../api/notify/notifyUsersAboutError
  * Note: isGraded means here "reached the threshold of minimum count of graded
  * occurrences" - it just remains isGraded due to backwards compatibility.
  *
- * @param options
+ * @param options {object}
  * @param options.sessionDoc {document} the related doc from this session
  * @param options.testCycleDoc {document} the related doc from this session's testCycle
  * @param options.userId {string} the user, for which this feedback applies
  * @param options.debug {function=} optional function for debugging
+ * @param options.flagFromDb {boolean=} optional to flag existing feedback docs as fromDB
  * @return {*}
  */
 export const generateFeedback = (options) => {
@@ -48,17 +49,20 @@ export const generateFeedback = (options) => {
     sessionDoc: Match.ObjectIncluding({ _id: String }),
     testCycleDoc: Match.ObjectIncluding({ _id: String }),
     userId: String,
+    flagFromDb: Match.Maybe(Boolean),
     debug: Match.Maybe(Function)
   })
 
-  const { sessionDoc, testCycleDoc, userId, debug = () => {} } = options
+  const { sessionDoc, testCycleDoc, userId, flagFromDb, debug = () => {} } = options
   const sessionId = sessionDoc._id
 
   debug('(generateFeedback)', { sessionId, userId })
   const existingFeedback = Feedback.collection().findOne({ sessionId, userId })
 
   if (existingFeedback) {
-    existingFeedback.fromDB = true
+    if (flagFromDb) {
+      existingFeedback.fromDB = true
+    }
     return existingFeedback
   }
 
