@@ -18,7 +18,7 @@ const startSession = Session.methods.start.run
 describe(Session.methods.start.name, function () {
   let userId
   let testCycleId
-  
+
   before(function () {
     mockCollection(Session)
     mockCollection(TestCycle)

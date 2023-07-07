@@ -21,7 +21,7 @@ describe(getSessionDoc.name, function () {
     userId = Random.id()
     sessionId = Random.id()
     val = Random.id()
-    stubSession = () =>  stub(Session, 'collection', () => ({
+    stubSession = () => stub(Session, 'collection', () => ({
       findOne: ({ _id, userId }) => {
         expect(_id).to.equal(sessionId)
         expect(userId).to.equal(userId)

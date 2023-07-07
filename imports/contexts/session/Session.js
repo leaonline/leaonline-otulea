@@ -253,7 +253,7 @@ Session.methods.results = {
         testCycleDoc,
         userId,
         flagFromDb,
-        debug,
+        debug
       })
 
       // if the feedback is new we also want to add a new entry record

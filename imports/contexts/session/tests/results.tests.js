@@ -1,4 +1,5 @@
 /* eslint-env mocha */
+import { Meteor } from 'meteor/meteor'
 import { expect } from 'chai'
 import { Random } from 'meteor/random'
 import {
@@ -28,12 +29,10 @@ describe(Session.methods.results.name, function () {
 
   let sessionId
   let userId
-  let currentUnit
 
   beforeEach(function () {
     sessionId = Random.id()
     userId = Random.id()
-    currentUnit = Random.id()
   })
 
   afterEach(function () {
@@ -42,7 +41,6 @@ describe(Session.methods.results.name, function () {
     clearCollection(TestCycle)
     clearCollection(Feedback)
   })
-
 
   it('throws if no session doc is found', function () {
     const env = { userId }
