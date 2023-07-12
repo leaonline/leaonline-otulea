@@ -17,6 +17,7 @@ public/logos/
 
 .deploy
 .production
+.dev
 
 # Logs
 logs
