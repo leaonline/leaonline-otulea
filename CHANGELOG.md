@@ -16,6 +16,7 @@
 
 ### ui/client
 
+- replace logos with "lea.online" to "otu.lea"
 - use renderer loading with options from updated leaonline:ui package
 - include `SemikolonBold` font
 - implement custom markdown renderers
