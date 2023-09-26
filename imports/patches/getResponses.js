@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor'
 import { Response } from '../contexts/response/Response'
 import { Unit } from '../contexts/Unit'
 import fs from 'fs'
@@ -47,7 +48,8 @@ export const getResponses = ({ dryRun }) => {
     fs.writeFile(filePath, csvContent, (err) => {
       if (err) {
         console.log(filePath, err)
-      } else {
+      }
+      else {
         console.log(filePath, 'saved')
       }
     })
@@ -64,7 +66,7 @@ const toRow = ({ responseDoc, userDoc, unitDoc }) => {
 
   let score = 0
   scores.forEach((entry) => {
-    const value = entry.score === "true" ? 1 : 0
+    const value = entry.score === 'true' ? 1 : 0
     score = (score + value) / scores.length
   })
 
