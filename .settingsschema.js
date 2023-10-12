@@ -121,6 +121,10 @@ const settingsSchema = schema({
       active: Boolean,
       dryRun: Boolean
     }),
+    getResponses: schema({
+      active: Boolean,
+      dryRun: Boolean
+    }),
     generateAccounts: schema({
       dryRun: Boolean,
       active: Boolean,
