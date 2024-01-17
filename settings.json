@@ -111,8 +111,8 @@
       "notify": ["admin@example.com"]
     },
     "getResponses": {
-      "active": true,
-      "dryRun": false
+      "active": false,
+      "dryRun": true
     }
   }
 }
