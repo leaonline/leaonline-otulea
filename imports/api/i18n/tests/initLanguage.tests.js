@@ -22,7 +22,7 @@ describe(initLanguage.name, function () {
 
     // dynamically add attributes
     expect(loaded.get('foo.bar')).to.equal('de.foo.bar')
-    loaded.set(loaded.getLocale(), { foo: { bar: 'moo' }})
+    loaded.set(loaded.getLocale(), { foo: { bar: 'moo' } })
     expect(loaded.get('foo.bar')).to.equal('moo')
   })
   it('registered a global TemplateHelper', async () => {
