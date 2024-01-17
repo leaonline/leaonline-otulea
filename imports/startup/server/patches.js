@@ -4,6 +4,7 @@ import { addDimensionToFeedback } from '../../patches/addDimensionToFeedback'
 import { generateAccounts } from '../../patches/generateAccounts'
 import { removeDeadAccounts } from '../../patches/removeDeadAccounts'
 import { alphaUsers } from '../../patches/alphaUsers'
+import { getResponses } from '../../patches/getResponses'
 
 const appName = Meteor.settings.public.app.label
 const { notify: defaultNotify, replyTo, from } = Meteor.settings.email
@@ -69,5 +70,12 @@ if (patches.alphaUsers?.active) {
   console.debug('[patches]: run alphaUsers')
   Meteor.defer(function () {
     alphaUsers(patches.alphaUsers)
+  })
+}
+
+if (patches?.getResponses?.active) {
+  console.debug('[patches]: run getResponses')
+  Meteor.defer(function () {
+    getResponses(patches.getResponses)
   })
 }
