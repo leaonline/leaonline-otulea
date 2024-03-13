@@ -1,7 +1,7 @@
 <template name="navbar">
 	<div class="w-100 text-center mt-4">
 		{{#with labels}}
-			<span class="lea-text font-weight-bold no-wrap text-{{this.type}}">
+			<span class="lea-text-bold no-wrap text-{{this.type}}">
                 {{#if ../showUsername}}{{currentUser.username}} - {{/if}}{{this.dimension}} - {{this.level}}
             </span>
 		{{/with}}

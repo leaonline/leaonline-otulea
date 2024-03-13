@@ -86,6 +86,12 @@
     "url": "http://localhost:7070/collect"
   },
   "patches": {
+    "alphaUsers": {
+      "active": true,
+      "dryRun": false,
+      "includeAlphaLevels": false,
+      "includeCompetencies": true
+    },
     "removeDeadAccounts": {
       "active": false,
       "dryRun": false,
@@ -105,8 +111,8 @@
       "notify": ["admin@example.com"]
     },
     "getResponses": {
-      "active": true,
-      "dryRun": false
+      "active": false,
+      "dryRun": true
     }
   }
 }

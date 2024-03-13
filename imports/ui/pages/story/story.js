@@ -1,16 +1,15 @@
 import { Template } from 'meteor/templating'
-import { ReactiveVar } from 'meteor/reactive-var'
-import { TaskRenderers } from '../../renderers/TaskRenderers'
 import { UnitSet } from '../../../contexts/unitSet/UnitSet'
 import { Dimension } from '../../../contexts/Dimension'
 import { Session } from '../../../contexts/session/Session'
 import { Level } from '../../../contexts/Level'
 import { createSessionLoader } from '../../loading/createSessionLoader'
+import { initTaskRenderers } from '../../renderers/initTaskRenderers'
 import '../../components/container/container'
 import '../../layout/navbar/navbar'
 import './story.html'
 
-const renderersLoaded = new ReactiveVar()
+const renderersLoaded = initTaskRenderers()
 
 Template.story.onCreated(function () {
   const instance = this
@@ -34,10 +33,6 @@ Template.story.onCreated(function () {
       debug('renderers loaded')
       return computation.stop()
     }
-
-    TaskRenderers.init()
-      .then(() => renderersLoaded.set(true))
-      .catch(e => console.error(e))
   })
 
   instance.autorun(() => {

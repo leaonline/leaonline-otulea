@@ -9,15 +9,17 @@ export const initLanguage = async (debug = () => {}) => {
   const settings = (await import('../../../resources/i18n/i18n_config')).default
   const { load, ...localeSettings } = settings[defaultLocale]
   const language = (await load()).default
+  console.debug('before instance')
   const i18nProvider = new I18N({
     i18n: {
       settings: { defaultLocale, [defaultLocale]: localeSettings },
       [defaultLocale]: language
     },
     helperName: '___i18n___',
-    helperSettingsName: '___i18n___'
+    helperSettingsName: '___i18nSettings___'
   })
 
+  console.debug('load instance')
   i18n.load({
     get: i18nProvider.get,
     set: (locale, definitions) => i18nProvider.addl10n({ [locale]: definitions }),

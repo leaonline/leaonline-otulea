@@ -5,8 +5,9 @@ import { TestCycle } from '../../testcycle/TestCycle'
  * Returns the N recent completed sessions for given users, filters by userId
  * to return only unique entries.
  *
- * @param users
- * @return {*}
+ * @param users {string[]} list of userIds
+ * @param resolve {boolean=} optional flag to enable resolving ids
+ * @return {object[]}
  */
 export const recentCompleted = function ({ users, resolve }) {
   const unique = new Set()
@@ -19,6 +20,9 @@ export const recentCompleted = function ({ users, resolve }) {
     : 15
   const transform = {
     limit: limit,
+    sort: {
+      completedAt: -1
+    },
     hint: { $natural: -1 }
   }
 

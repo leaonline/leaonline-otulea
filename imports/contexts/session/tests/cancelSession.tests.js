@@ -1,14 +1,15 @@
 /* eslint-env mocha */
 import { expect } from 'chai'
 import { Random } from 'meteor/random'
-import { cancelSession } from '../api/cancelSession'
 import { mockCollection, restoreCollection } from '../../../../tests/mockCollection'
 import { stub, restoreAll } from '../../../../tests/helpers.tests'
 import { Session } from '../Session'
 import { Response } from '../../response/Response'
 import { DocNotFoundError } from '../../errors/DocNotFoundError'
 
-describe(cancelSession.name, function () {
+const cancelSession = Session.methods.cancel.run
+
+describe(Session.methods.cancel.name, function () {
   before(function () {
     mockCollection(Session)
     mockCollection(Response)
@@ -34,8 +35,9 @@ describe(cancelSession.name, function () {
   })
   it('throws if there is no sessionDoc by id', function () {
     stub(Session, 'collection', () => ({ findOne: () => {} }))
-    const options = { sessionId, userId }
-    expect(() => cancelSession(options)).to.throw(DocNotFoundError.reason)
+    const env = { userId }
+    const arg = { sessionId }
+    expect(() => cancelSession.call(env, arg)).to.throw(DocNotFoundError.reason)
   })
   it('deletes the sessionDoc if its empty', function () {
     const doc = { _id: sessionId }
@@ -47,8 +49,9 @@ describe(cancelSession.name, function () {
       }
     }))
     stub(Response, 'collection', () => ({ find: () => ({ count: () => 0 }) }))
-    const options = { sessionId, userId }
-    const removed = cancelSession(options)
+    const env = { userId }
+    const arg = { sessionId }
+    const removed = cancelSession.call(env, arg)
     expect(removed).to.equal(1)
   })
   it('sets the sessionDoc as cancelled if not empty', function () {
@@ -62,8 +65,9 @@ describe(cancelSession.name, function () {
       }
     }))
     stub(Response, 'collection', () => ({ find: () => ({ count: () => 1 }) }))
-    const options = { sessionId, userId }
-    const updated = cancelSession(options)
+    const env = { userId }
+    const arg = { sessionId }
+    const updated = cancelSession.call(env, arg)
     expect(updated).to.equal(1)
   })
 })

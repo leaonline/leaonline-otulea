@@ -27,7 +27,7 @@
                     {{#if result.success}}
                         <li class="list-group-item text-white d-flex justify-content-between bg-success p-2">
                             {{> icon name="check"}}
-                            <span class="font-weight-bold">{{i18n result.label}}</span>
+                            <span class="lea-text-bold">{{i18n result.label}}</span>
                         </li>
                     {{else}}
                         <li class="list-group-item text-white bg-danger p-2">
@@ -37,7 +37,7 @@
                                         aria-expanded="false" aria-controls="collapse-{{@index}}">
                                     {{> icon name="times"}}
                                 </button>
-                                <span class="font-weight-bold">{{i18n result.label}}</span>
+                                <span class="lea-text-bold">{{i18n result.label}}</span>
                             </div>
                             <div class="collapse" id="collapse-{{@index}}">
                                 {{#if result.error}}

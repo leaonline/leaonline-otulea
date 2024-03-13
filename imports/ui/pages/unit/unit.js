@@ -6,9 +6,9 @@ import { UnitSet } from '../../../contexts/unitSet/UnitSet'
 import { Dimension } from '../../../contexts/Dimension'
 import { Level } from '../../../contexts/Level'
 import { Unit } from '../../../contexts/Unit'
-import { TaskRenderers } from '../../renderers/TaskRenderers'
 import { ResponseCache } from './cache/ResponseCache'
 import { UnitPageCache } from './cache/UnitPageCache'
+import { initTaskRenderers } from '../../renderers/initTaskRenderers'
 import { isCurrentUnit } from '../../../contexts/session/utils/isCurrentUnit'
 import { createItemLoad } from './item/createItemLoad'
 import { createItemInput } from './item/createItemInput'
@@ -20,7 +20,7 @@ import '../../layout/navbar/navbar'
 import '../../templates/initMarkdownRenderer'
 import './unit.html'
 
-const renderersLoaded = new ReactiveVar()
+const renderersLoaded = initTaskRenderers()
 const responseCache = ResponseCache.create(window.localStorage)
 const pageCache = UnitPageCache.create(window.localStorage)
 const submitItems = createItemSubmit({
@@ -68,18 +68,6 @@ Template.unit.onCreated(function () {
   })
 
   const { info } = api
-
-  instance.autorun(computation => {
-    if (renderersLoaded.get()) {
-      info('renderers loaded')
-      return computation.stop()
-    }
-
-    TaskRenderers.init()
-      .then(() => renderersLoaded.set(true))
-      .catch(e => console.error(e)) // TODO sendError
-  })
-
   const sessionLoader = createSessionLoader({ info })
 
   instance.autorun(() => {

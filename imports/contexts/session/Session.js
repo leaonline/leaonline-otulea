@@ -1,5 +1,20 @@
 import { onServerExec } from '../../utils/archUtils'
 
+/**
+ * Represents a user's ongoing test-suite for a given testCycle,
+ * which itself wraps unitSets for a given dimension/level combination.
+ *
+ * Contains schema and endpoints to implement the session.
+ * @type {{
+ *   name: string,
+ *   icon: string,
+ *   label: string,
+ *   collection: function():Mongo.Collection,
+ *   schema: {},
+ *   methods: {},
+ *   publications: {}
+ * }}
+ */
 export const Session = {
   name: 'session',
   label: 'session.title',
@@ -206,7 +221,7 @@ Session.methods.results = {
     import { addRecord } from '../record/api/addRecord'
 
     return function ({ sessionId }) {
-      const { userId, debug } = this
+      const { userId, debug, flagFromDb = true } = this
       const sessionDoc = Session.collection().findOne(sessionId)
 
       if (!sessionDoc) {
@@ -237,6 +252,7 @@ Session.methods.results = {
         sessionDoc,
         testCycleDoc,
         userId,
+        flagFromDb,
         debug
       })
 
@@ -245,9 +261,10 @@ Session.methods.results = {
       // the feedback doc as often as they want to and we don't want to
       // create a new record every time they do so
       if (!feedbackDoc.fromDB) {
+        debug('add records for session', sessionId)
         // if this fails it will not affect the user experience in the client
         // but it will also not automatically send an error email to our system
-        Meteor.defer(function () {
+        Meteor.defer(function addRecordFromFeedback () {
           const recordsAdded = addRecord({
             userId,
             sessionDoc,
@@ -284,6 +301,7 @@ Session.methods.byTestCycle = {
 
 /**
  * Returns the N recent completed sessions for given users.
+ * @realm: dashboard
  */
 Session.methods.recentCompleted = {
   name: 'session.methods.recentCompleted',

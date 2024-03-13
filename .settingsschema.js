@@ -102,6 +102,12 @@ const settingsSchema = schema({
     url: String
   }),
   patches: schema({
+    alphaUsers: schema({
+      active: Boolean,
+      dryRun: Boolean,
+      includeCompetencies: Boolean,
+      includeAlphaLevels: Boolean
+    }),
     removeDeadAccounts: schema({
       active: Boolean,
       dryRun: Boolean,

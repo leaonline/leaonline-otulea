@@ -1,7 +1,6 @@
 /* eslint-env mocha */
 import { expect } from 'chai'
 import { Random } from 'meteor/random'
-import { continueSession } from '../api/continueSession'
 import { UnitSet } from '../../unitSet/UnitSet'
 import {
   clearCollection,
@@ -13,7 +12,9 @@ import { TestCycle } from '../../testcycle/TestCycle'
 import { restoreAll, stub } from '../../../../tests/helpers.tests'
 import { DocNotFoundError } from '../../errors/DocNotFoundError'
 
-describe(continueSession.name, function () {
+const continueSession = Session.methods.continue.run
+
+describe(Session.methods.continue.name, function () {
   before(function () {
     mockCollection(Session)
     mockCollection(TestCycle)
@@ -44,23 +45,26 @@ describe(continueSession.name, function () {
   it('throws if there is no sessionDoc for sessionId', function () {
     stub(Session, 'collection', () => ({ findOne: () => {} }))
 
-    const options = { sessionId, userId }
-    expect(() => continueSession(options)).to.throw(DocNotFoundError.reason)
+    const env = { userId }
+    const arg = { sessionId }
+    expect(() => continueSession.call(env, arg)).to.throw(DocNotFoundError.reason)
   })
 
   it('throws if the session is already complete', function () {
     const doc = { completedAt: new Date() }
     stub(Session, 'collection', () => ({ findOne: () => doc }))
 
-    const options = { sessionId, userId }
-    expect(() => continueSession(options)).to.throw('session.isComplete')
+    const env = { userId }
+    const arg = { sessionId }
+    expect(() => continueSession.call(env, arg)).to.throw('session.isComplete')
   })
   it('throws if the session is already cancelled', function () {
     const doc = { cancelledAt: new Date() }
     stub(Session, 'collection', () => ({ findOne: () => doc }))
 
-    const options = { sessionId, userId }
-    expect(() => continueSession(options)).to.throw('session.isCancelled')
+    const env = { userId }
+    const arg = { sessionId }
+    expect(() => continueSession.call(env, arg)).to.throw('session.isCancelled')
   })
   it('updates the session accordingly and returns the doc', function () {
     const doc = { _id: sessionId }
@@ -73,8 +77,9 @@ describe(continueSession.name, function () {
       }
     }))
 
-    const options = { sessionId, userId }
-    const updated = continueSession(options)
+    const env = { userId }
+    const arg = { sessionId }
+    const updated = continueSession.call(env, arg)
     expect(updated).to.deep.equal(doc)
   })
 })

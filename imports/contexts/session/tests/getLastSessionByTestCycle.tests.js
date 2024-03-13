@@ -1,12 +1,13 @@
 /* eslint-env mocha */
 import { expect } from 'chai'
 import { Random } from 'meteor/random'
-import { getLastSessionByTestCylce } from '../api/getLastSessionByTestCyclce'
 import { mockCollection, restoreCollection } from '../../../../tests/mockCollection'
 import { restoreAll, stub } from '../../../../tests/helpers.tests'
 import { Session } from '../Session'
 
-describe(getLastSessionByTestCylce.name, function () {
+const lastByTestCycle = Session.methods.byTestCycle.run
+
+describe(Session.methods.byTestCycle.name, function () {
   before(function () {
     mockCollection(Session)
   })
@@ -40,6 +41,8 @@ describe(getLastSessionByTestCylce.name, function () {
         done()
       }
     }))
-    getLastSessionByTestCylce({ testCycleId, userId })
+    const env = { userId }
+    const arg = { testCycleId }
+    lastByTestCycle.call(env, arg)
   })
 })

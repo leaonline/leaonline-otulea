@@ -1,13 +1,10 @@
 <head>
     <meta charset="utf-8"/>
-    <meta name="application-name" content="otue.lea">
-    <meta name="description"
-          content="Online Testumgebung zur Literalitätsentwicklung von Arbeitskräften">
-    <meta name="viewport"
-          content="initial-scale=1, maximum-scale=5, minimum-scale=-5"/>
-    <meta name="theme-color" content="#f5f5f5">
-    <link rel="manifest" href="/manifest.json">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=5, minimum-scale=-5"/>
+    <title>otu.lea</title>
 
+    <link rel="preload" href="/fonts/SemikolonPlus-Regular.ttf" as="font" crossorigin="anonymous">
+    <link rel="preload" href="/fonts/SemikolonPlus-Bold.otf" as="font" crossorigin="anonymous">
     <link rel="icon" href="/favicon.svg" sizes="any" type="image/svg+xml">
     <link rel="apple-touch-icon" sizes="180x180"
           href="/apple-touch-icon-180.png">
@@ -15,7 +12,10 @@
     <link rel="mask-icon" href="/mask-icon.svg" color="#f5f5f5">
     <link rel="fluid-icon" href="/fluidicon.png" title="otu.lea">
 
-    <title>otu.lea</title>
+    <meta name="application-name" content="otue.lea">
+    <meta name="description" content="Online Testumgebung zur Literalitätsentwicklung von Arbeitskräften">
+    <meta name="theme-color" content="#f59d1d">
+    <link rel="manifest" href="/manifest.json">
     <noscript>
         <style>
             body:lang(de):before {
@@ -32,7 +32,12 @@
         @font-face {
             font-family: 'Semikolon';
             src: url('/fonts/SemikolonPlus-Regular.ttf') format('truetype');
-            font-display: auto;
+            font-display: swap;
+        }
+        @font-face {
+            font-family: 'SemikolonBold';
+            src: url('/fonts/SemikolonPlus-Bold.otf') format('opentype');
+            font-display: swap;
         }
 
         body {
@@ -63,9 +68,8 @@
         }
 
         .lea-text-bold {
-            font-family: Semikolon, sans-serif;
+            font-family: SemikolonBold, Semikolon, sans-serif;
             font-size: 24px;
-            font-weight: bold;
         }
 
         h1 {
