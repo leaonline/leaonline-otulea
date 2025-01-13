@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor'
 import { Errors } from '../Errors'
 import { notifyUsersAboutError } from '../../../api/notify/notifyUsersAboutError'
 
@@ -10,23 +11,23 @@ import { notifyUsersAboutError } from '../../../api/notify/notifyUsersAboutError
  * @param normalizedErrorDoc
  * @return {*}
  */
-export const persistError = (normalizedErrorDoc) => {
+export const persistError = async (normalizedErrorDoc) => {
   // let's see, if the same user created the same error already
   const { hash } = normalizedErrorDoc
   const collection = Errors.collection()
-  const existingError = collection.findOne({ hash })
+  const existingError = collection.findOneAsync({ hash })
 
   if (existingError) {
-    return collection.update(existingError._id, {
+    return collection.updateAsync(existingError._id, {
       $inc: { count: 1 }
     })
   }
   else {
     // inform only about new errors
-    notifyUsersAboutError(normalizedErrorDoc)
+    await notifyUsersAboutError(normalizedErrorDoc)
   }
 
   normalizedErrorDoc.count = 1
 
-  return collection.insert(normalizedErrorDoc)
+  return collection.insertAsync(normalizedErrorDoc)
 }

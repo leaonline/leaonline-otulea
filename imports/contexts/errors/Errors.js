@@ -106,12 +106,12 @@ Errors.methods.create = {
     import { persistError } from './api/persistError'
     import { Meteor } from 'meteor/meteor'
 
-    return function (errorDoc) {
+    return async function (errorDoc) {
       const { userId } = this
       errorDoc.userId = userId
 
       if (userId && !errorDoc.code) {
-        const user = Meteor.users.findOne(userId)
+        const user = await Meteor.users.findOneAsync(userId)
         errorDoc.code = user?.username
       }
 

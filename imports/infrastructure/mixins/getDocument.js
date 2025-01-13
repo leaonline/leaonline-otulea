@@ -1,7 +1,8 @@
 /**
  * Simple wrapper to return a document by id and given context.
+ * @async
  * @param docId
  * @param context
- * @return {any}
+ * @return {Promise<object|undefined>}
  */
-export const getDocument = (docId, context) => context.collection().findOne(docId)
+export const getDocument = (docId, context) => context.collection().findOneAsync(docId)

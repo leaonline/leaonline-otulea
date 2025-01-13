@@ -3,30 +3,36 @@ import { expect } from 'chai'
 import { Random } from 'meteor/random'
 import { createSubmitResponse } from '../api/createSubmitResponse'
 import {
+  clearCollection,
   mockCollection,
   restoreCollection
 } from '../../../../tests/mockCollection'
 import { Unit } from '../../Unit'
 import { Session } from '../../session/Session'
 import { Response } from '../Response'
-import { restoreAll, stub } from '../../../../tests/helpers.tests'
+import { expectThrow, restoreAll, stub } from '../../../../tests/helpers.tests'
 
 describe(createSubmitResponse.name, function () {
-  beforeEach(function () {
+  before(function () {
     mockCollection(Unit)
     mockCollection(Session)
     mockCollection(Response)
   })
-  afterEach(function () {
-    restoreAll()
+  after(function () {
+
     restoreCollection(Unit)
     restoreCollection(Session)
     restoreCollection(Response)
   })
-  it('throws if the session and unit do not match', function () {
+  afterEach(async () => {
+    await clearCollection(Unit)
+    await clearCollection(Session)
+    await clearCollection(Response)
+    restoreAll()
+  })
+  it('throws if the session and unit do not match', async function () {
     const submitResponse = createSubmitResponse({})
-
-    ;[
+    const input = [
       undefined,
       {},
       { responseDoc: {} },
@@ -36,10 +42,14 @@ describe(createSubmitResponse.name, function () {
           unitId: Random.id()
         }
       }
-    ].forEach(input => {
-      expect(() => submitResponse(input))
-        .to.throw('response.isNotCurrentUnit')
-    })
+    ];
+
+    for (const entry of input) {
+      await expectThrow({
+        fn: () => submitResponse(input),
+        message: 'response.isNotCurrentUnit'
+      })
+    }
   })
   it('submits a scored response', function (done) {
     stub(Session, 'collection', () => ({

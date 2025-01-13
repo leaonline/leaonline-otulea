@@ -26,6 +26,11 @@ export const restoreCollection = context => {
   originals.delete(context.name)
 }
 
+/**
+ * Removes all docs from collection
+ * @param context
+ * @return {Promise<number>}
+ */
 export const clearCollection = context => {
-  return context.collection().remove({})
+  return context.collection().removeAsync({})
 }

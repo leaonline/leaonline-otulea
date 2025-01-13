@@ -1,6 +1,6 @@
 export const createRemoveMethod = ({ context, run }) => {
-  const removeFunction = run || function ({ _id }) {
-    return context.collection().remove({ _id })
+  const removeFunction = run || async function ({ _id }) {
+    return context.collection().removeAsync({ _id })
   }
 
   return {

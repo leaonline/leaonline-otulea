@@ -15,11 +15,11 @@ console.debug('[patches]: run patches, if active')
 
 if (patches.removeDeadAccounts?.active) {
   console.debug('[patches]: run removeDeadAccounts')
-  Meteor.defer(function () {
+  Meteor.defer(async function () {
     const result = removeDeadAccounts(patches.removeDeadAccounts)
     const { notify, dryRun } = patches.removeDeadAccounts
 
-    notifyUsers({
+    await notifyUsers({
       patchName: removeDeadAccounts.name,
       dryRun: dryRun,
       result: result,
@@ -30,15 +30,15 @@ if (patches.removeDeadAccounts?.active) {
 
 if (patches.addDimensionToFeedback?.active) {
   console.debug('[patches]: run addDimensionToFeedback')
-  Meteor.defer(function () {
-    addDimensionToFeedback(patches.addDimensionToFeedback)
+  Meteor.defer(async function () {
+    await addDimensionToFeedback(patches.addDimensionToFeedback)
   })
 }
 
 if (patches.generateAccounts?.active) {
   console.debug('[patches]: run generateAccounts')
-  Meteor.defer(function () {
-    generateAccounts(patches.generateAccounts, function (result) {
+  Meteor.defer(async function () {
+    await generateAccounts(patches.generateAccounts, function (result) {
       const { notify, dryRun } = patches.generateAccounts
       notifyUsers({
         patchName: generateAccounts.name,
@@ -55,7 +55,7 @@ function notifyUsers ({ notify = [], patchName, result, dryRun }) {
   const subject = `${appName} [patch][${patchName}]: successful ${isDryRun}`
   const allEmails = new Set(defaultNotify.concat(notify))
 
-  allEmails.forEach(address => {
+  return Promise.all([allEmails.map(address => {
     Email.send({
       to: address,
       subject: subject,
@@ -63,19 +63,19 @@ function notifyUsers ({ notify = [], patchName, result, dryRun }) {
       from: from,
       text: JSON.stringify(result, null, 2)
     })
-  })
+  })])
 }
 
 if (patches.alphaUsers?.active) {
   console.debug('[patches]: run alphaUsers')
-  Meteor.defer(function () {
-    alphaUsers(patches.alphaUsers)
+  Meteor.defer(async function () {
+    await alphaUsers(patches.alphaUsers)
   })
 }
 
 if (patches?.getResponses?.active) {
   console.debug('[patches]: run getResponses')
-  Meteor.defer(function () {
-    getResponses(patches.getResponses)
+  Meteor.defer(async function () {
+    await getResponses(patches.getResponses)
   })
 }

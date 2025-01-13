@@ -1,5 +1,6 @@
 /* eslint-env mocha */
 import { Meteor } from 'meteor/meteor'
+import 'meteor/aldeed:collection2/static'
 
 if (Meteor.isServer) {
   (function () {

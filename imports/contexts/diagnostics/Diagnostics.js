@@ -1,6 +1,10 @@
 import { runDiagnostics } from './api/runDiagnostics'
 import { onServer } from '../../utils/archUtils'
 
+/**
+ * Diagnoses the current client's (usually browser) technical
+ * stats and availability if features.
+ */
 export const Diagnostics = {
   name: 'diagnostics',
   label: 'diagnostics.title',
@@ -126,12 +130,12 @@ Diagnostics.methods.getAll = {
     },
     'dependencies.$': String
   },
-  run: onServer(function ({ ids }) {
+  run: onServer(async function ({ ids }) {
     const query = {}
     if (ids?.length > 0) {
       query._id = { $in: ids }
     }
-    const all = Diagnostics.collection().find(query).fetch()
+    const all = await Diagnostics.collection().find(query).fetchAsync()
 
     return { [Diagnostics.name]: all }
   })
@@ -143,9 +147,9 @@ Diagnostics.methods.send = {
   timeInterval: 60 * 1000,
   numRequests: 1,
   isPublic: true,
-  run: onServer(function (data) {
+  run: onServer(async function (data) {
     data.createdAt = new Date()
-    return Diagnostics.collection().insert(data)
+    return Diagnostics.collection().insertAsync(data)
   })
 }
 

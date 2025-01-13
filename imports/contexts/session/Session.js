@@ -119,7 +119,7 @@ Session.methods.currentById = {
   run: onServerExec(function () {
     import { getSessionDoc } from './utils/getSessionDoc'
 
-    return function ({ sessionId }) {
+    return async function ({ sessionId }) {
       const { userId } = this
       return getSessionDoc({ sessionId, userId })
     }
@@ -136,7 +136,7 @@ Session.methods.start = {
   run: onServerExec(function () {
     import { startSession } from './api/startSession'
 
-    return function ({ testCycleId }) {
+    return async function ({ testCycleId }) {
       const api = this
       return startSession({
         testCycleId: testCycleId,
@@ -156,7 +156,7 @@ Session.methods.cancel = {
   run: onServerExec(function () {
     import { cancelSession } from './api/cancelSession'
 
-    return function ({ sessionId }) {
+    return async function ({ sessionId }) {
       const api = this
       return cancelSession({
         sessionId: sessionId,
@@ -176,7 +176,7 @@ Session.methods.continue = {
   run: onServerExec(function () {
     import { continueSession } from './api/continueSession'
 
-    return function ({ sessionId }) {
+    return async function ({ sessionId }) {
       const api = this
       return continueSession({
         sessionId: sessionId,
@@ -195,7 +195,7 @@ Session.methods.next = {
   timeInterval: 1000,
   run: onServerExec(function () {
     import { updateSession } from './api/updateSession'
-    return function ({ sessionId }) {
+    return async function ({ sessionId }) {
       const api = this
       return updateSession({
         sessionId: sessionId,

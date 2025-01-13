@@ -12,7 +12,7 @@ import {
   countCompetencies,
   gradeCompetenciesAndCountAlphaLevels, gradeAlphaLevels
 } from '../api/generateFeedback'
-import { stub, restoreAll } from '../../../../tests/helpers.tests'
+import { stub, restoreAll, expectThrow } from '../../../../tests/helpers.tests'
 import { Competency } from '../../Competency'
 import { Response } from '../../response/Response'
 import { TestCycle } from '../../testcycle/TestCycle'
@@ -411,38 +411,43 @@ describe(generateFeedback.name, function () {
     restoreCollection(Response)
     restoreCollection(TestCycle)
   })
-  afterEach(function () {
+  afterEach(async function () {
     restoreAll()
-    clearCollection(Feedback)
-    clearCollection(Session)
-    clearCollection(Response)
-    clearCollection(TestCycle)
+    await clearCollection(Feedback)
+    await clearCollection(Session)
+    await clearCollection(Response)
+    await clearCollection(TestCycle)
   })
-  it('throws if session is not done yet', function () {
+  it('throws if session is not done yet',async function () {
     const sessionId = Random.id()
     const userId = Random.id()
     const sessionDoc = { _id: sessionId }
 
     // session doc does not exist
-    expect(() => generateFeedback({ userId })).to.throw('Match error: Missing key \'sessionDoc\'')
-
-    expect(() => generateFeedback({
-      sessionDoc,
-      userId,
-      testCycleDoc: { _id: Random.id() }
-    })).to.throw('generateFeedback.sessionNotComplete')
+    await expectThrow({ 
+      fn: () => generateFeedback({ userId }),
+      message: 'Match error: Missing key \'sessionDoc\''
+    })
+    await expectThrow({
+      fn: () => generateFeedback({
+        sessionDoc,
+        userId,
+        testCycleDoc: { _id: Random.id() }
+      }),
+      message: 'generateFeedback.sessionNotComplete' 
+    })
   })
 
-  it('returns a cached feedback, if one exists', function () {
+  it('returns a cached feedback, if one exists', async function () {
     const doc = { _id: Random.id() }
     const userId = Random.id()
     stub(Feedback, 'collection', () => ({
-      findOne () {
+      findOneAsync () {
         return doc
       }
     }))
 
-    const existing = generateFeedback({
+    const existing = await generateFeedback({
       sessionDoc: { _id: Random.id(), completedAt: new Date() },
       userId,
       testCycleDoc: { _id: Random.id() }
@@ -450,7 +455,7 @@ describe(generateFeedback.name, function () {
     expect(existing).to.deep.equal(doc)
   })
 
-  it('correctly grades a session', function () {
+  it('correctly grades a session', async function () {
     const userId = Random.id()
     const ResponseCollection = Response.collection()
     const FeedbackCollection = Feedback.collection()
@@ -459,16 +464,16 @@ describe(generateFeedback.name, function () {
 
     // create sessionDoc
     const dimensionId = Random.id()
-    const testCycle = TestCycleCollection.insert({ dimension: dimensionId })
-    const sessionId = SessionCollection.insert({
+    const testCycle = await TestCycleCollection.insertAsync({ dimension: dimensionId })
+    const sessionId = await SessionCollection.insertAsync({
       completedAt: new Date(),
       progress: 100,
       maxProgress: 100,
       testCycle
     })
 
-    const testCycleDoc = TestCycleCollection.findOne(testCycle)
-    const sessionDoc = SessionCollection.findOne(sessionId)
+    const testCycleDoc = await TestCycleCollection.findOneAsync(testCycle)
+    const sessionDoc = await SessionCollection.findOneAsync(sessionId)
 
     // mock thresholds
     const thresholds = {
@@ -498,7 +503,7 @@ describe(generateFeedback.name, function () {
     const cDoc3 = { _id: cid3, level: aid }
 
     // stubbing fetch to content server
-    stub(HTTP, 'get', (url, params) => {
+    stub(HTTP, 'get', async (url, params) => {
       if (url.includes(Thresholds.routes.all.path)) {
         return { data: thresholds }
       }
@@ -518,7 +523,7 @@ describe(generateFeedback.name, function () {
     // CASE 1 - All perfect and graded
     // /////////////////////////////////////////////////////////////////////////
 
-    ResponseCollection.insert({
+    await ResponseCollection.insertAsync({
       userId,
       sessionId,
       scores: [
@@ -528,7 +533,7 @@ describe(generateFeedback.name, function () {
       ]
     })
 
-    ResponseCollection.insert({
+    await  ResponseCollection.insertAsync({
       userId,
       sessionId,
       scores: [
@@ -538,7 +543,7 @@ describe(generateFeedback.name, function () {
       ]
     })
 
-    const { _id, ...feedbackDoc } = generateFeedback({
+    const { _id, ...feedbackDoc } = await generateFeedback({
       sessionDoc,
       testCycleDoc,
       userId
@@ -582,12 +587,12 @@ describe(generateFeedback.name, function () {
     // /////////////////////////////////////////////////////////////////////////
     // CASE 2 - All false
     // /////////////////////////////////////////////////////////////////////////
-    ResponseCollection.remove({})
-    FeedbackCollection.remove({})
+    await ResponseCollection.removeAsync({})
+    await FeedbackCollection.removeAsync({})
 
-    expect(ResponseCollection.find().count()).to.equal(0)
+    expect(await ResponseCollection.countDocuments({})).to.equal(0)
 
-    ResponseCollection.insert({
+    await ResponseCollection.insertAsync({
       userId,
       sessionId,
       scores: [
@@ -597,7 +602,7 @@ describe(generateFeedback.name, function () {
       ]
     })
 
-    ResponseCollection.insert({
+    await ResponseCollection.insertAsync({
       userId,
       sessionId,
       scores: [
@@ -607,7 +612,7 @@ describe(generateFeedback.name, function () {
       ]
     })
 
-    const feedbackDoc2 = generateFeedback({
+    const feedbackDoc2 = await generateFeedback({
       sessionDoc,
       testCycleDoc,
       userId
@@ -652,12 +657,12 @@ describe(generateFeedback.name, function () {
     // /////////////////////////////////////////////////////////////////////////
     // CASE 3 - 2 True + 1 not enough
     // /////////////////////////////////////////////////////////////////////////
-    ResponseCollection.remove({})
-    FeedbackCollection.remove({})
+    await ResponseCollection.removeAsync({})
+    await FeedbackCollection.removeAsync({})
 
-    expect(ResponseCollection.find().count()).to.equal(0)
+    expect(await ResponseCollection.countDocuments({})).to.equal(0)
 
-    ResponseCollection.insert({
+    await ResponseCollection.insertAsync({
       userId,
       sessionId,
       scores: [
@@ -667,7 +672,7 @@ describe(generateFeedback.name, function () {
       ]
     })
 
-    ResponseCollection.insert({
+    await ResponseCollection.insertAsync({
       userId,
       sessionId,
       scores: [
@@ -678,7 +683,7 @@ describe(generateFeedback.name, function () {
       ]
     })
 
-    const feedbackDoc3 = generateFeedback({
+    const feedbackDoc3 = await generateFeedback({
       sessionDoc,
       testCycleDoc,
       userId
@@ -735,12 +740,12 @@ describe(generateFeedback.name, function () {
     // /////////////////////////////////////////////////////////////////////////
     // CASE 4 - 1 True + 1 false + 1 not enough
     // /////////////////////////////////////////////////////////////////////////
-    ResponseCollection.remove({})
-    FeedbackCollection.remove({})
+    await ResponseCollection.removeAsync({})
+    await FeedbackCollection.removeAsync({})
 
-    expect(ResponseCollection.find().count()).to.equal(0)
+    expect(await ResponseCollection.countDocuments({})).to.equal(0)
 
-    ResponseCollection.insert({
+    ResponseCollection.insertAsync({
       userId,
       sessionId,
       scores: [
@@ -750,7 +755,7 @@ describe(generateFeedback.name, function () {
       ]
     })
 
-    ResponseCollection.insert({
+    ResponseCollection.insertAsync({
       userId,
       sessionId,
       scores: [
@@ -761,7 +766,7 @@ describe(generateFeedback.name, function () {
       ]
     })
 
-    const feedbackDoc4 = generateFeedback({
+    const feedbackDoc4 =await  generateFeedback({
       sessionDoc,
       testCycleDoc,
       userId
@@ -815,12 +820,12 @@ describe(generateFeedback.name, function () {
     // /////////////////////////////////////////////////////////////////////////
     // CASE 5 - 1 good + 1 best + 1 not enough
     // /////////////////////////////////////////////////////////////////////////
-    ResponseCollection.remove({})
-    FeedbackCollection.remove({})
+    await ResponseCollection.removeAsync({})
+    await FeedbackCollection.removeAsync({})
 
-    expect(ResponseCollection.find().count()).to.equal(0)
+    expect(await ResponseCollection.countDocuments({})).to.equal(0)
 
-    ResponseCollection.insert({
+    await ResponseCollection.insertAsync({
       userId,
       sessionId,
       scores: [
@@ -830,7 +835,7 @@ describe(generateFeedback.name, function () {
       ]
     })
 
-    ResponseCollection.insert({
+    await ResponseCollection.insertAsync({
       userId,
       sessionId,
       scores: [
@@ -841,7 +846,7 @@ describe(generateFeedback.name, function () {
       ]
     })
 
-    const feedbackDoc5 = generateFeedback({
+    const feedbackDoc5 = await generateFeedback({
       sessionDoc,
       testCycleDoc,
       userId

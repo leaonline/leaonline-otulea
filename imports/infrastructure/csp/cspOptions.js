@@ -1,7 +1,7 @@
 /* global __meteor_runtime_config__ */
 import { Meteor } from 'meteor/meteor'
 import { check } from 'meteor/check'
-import crypto from 'crypto'
+import crypto from 'node:crypto'
 import { WebApp } from 'meteor/webapp'
 import { Autoupdate } from 'meteor/autoupdate'
 

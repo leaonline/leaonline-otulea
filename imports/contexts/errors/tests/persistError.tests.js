@@ -15,41 +15,45 @@ describe(persistError.name, function () {
   before(function () {
     mockCollection(Errors)
   })
-  after(function () {
+  after(async function () {
     restoreCollection(Errors)
   })
   beforeEach(function () {
     stub(Email, 'send', () => {})
   })
-  afterEach(function () {
+  afterEach(async function () {
     restoreAll()
-    clearCollection(Errors)
+    await clearCollection(Errors)
   })
-  it('saves the error to the collection', function (done) {
+  it('saves the error to the collection', async function () {
     const insertDoc = { hash: Random.id() }
+    let inserted = false
     stub(Errors, 'collection', () => ({
-      findOne: () => {},
-      update: () => done(new Error('unexpected')),
-      insert: doc => {
+      findOneAsync: () => {},
+      updateAsync: expect.fail,
+      insertAsync: doc => {
         expect(doc).to.deep.equal(insertDoc)
-        done()
+        inserted = true
       }
     }))
-    persistError(insertDoc)
+    await persistError(insertDoc)
+    expect(inserted).to.equal(true)
   })
-  it('counts up if the error exists by hash', function (done) {
+  it('counts up if the error exists by hash', async function () {
     const updateDoc = { _id: Random.id(), hash: Random.id() }
+    let updated = false
     stub(Errors, 'collection', () => ({
-      findOne: () => updateDoc,
-      update: (id, transform) => {
+      findOneAsync: () => updateDoc,
+      updateAsync: (id, transform) => {
         expect(id).to.equal(updateDoc._id)
         expect(transform).to.deep.equal({
           $inc: { count: 1 }
         })
-        done()
+        updated = true
       },
-      insert: () => done(new Error('unexpected'))
+      insertAsync: expect.fail
     }))
-    persistError(updateDoc)
+    await persistError(updateDoc)
+    expect(updated).to.equal(true)
   })
 })

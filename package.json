@@ -55,15 +55,6 @@
     "stylelint-config-sass-guidelines": "^8.0.0",
     "stylelint-config-standard": "^22.0.0"
   },
-  "babel": {
-    "env": {
-      "COVERAGE": {
-        "plugins": [
-          "istanbul"
-        ]
-      }
-    }
-  },
   "eslintConfig": {
     "parser": "@babel/eslint-parser",
     "parserOptions": {

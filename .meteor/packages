@@ -4,17 +4,17 @@
 # 'meteor add' and 'meteor remove' will edit this file for you,
 # but you can also edit it by hand.
 
-meteor-base@1.5.1             # Packages every Meteor app needs to have
-mobile-experience@1.1.1       # Packages for a great mobile UX
-mongo@1.16.10                   # The database Meteor supports right now
-blaze-html-templates@2.0.0        # Compile .html files into Meteor Blaze views
-reactive-var@1.0.12            # Reactive variable for tracker
-tracker@1.3.3                 # Meteor's client-side reactive programming library
+meteor-base@1.5.2             # Packages every Meteor app needs to have
+mobile-experience@1.1.2       # Packages for a great mobile UX
+mongo@2.0.0               # The database Meteor supports right now
+blaze-html-templates        # Compile .html files into Meteor Blaze views
+reactive-var@1.0.13           # Reactive variable for tracker
+tracker@1.3.4                 # Meteor's client-side reactive programming library
 
 # standard-minifier-css@1.5.3   # CSS minifier run for production mode
-standard-minifier-js@2.8.1    # JS minifier run for production mode
-es5-shim@4.8.0                # ECMAScript 5 compatibility for older browsers
-ecmascript@0.16.8              # Enable ECMAScript2015+ syntax in app code
+standard-minifier-js@3.0.0    # JS minifier run for production mode
+es5-shim@4.8.1          # ECMAScript 5 compatibility for older browsers
+ecmascript@0.16.9              # Enable ECMAScript2015+ syntax in app code
 # shell-server@0.5.0            # Server-side component of the `meteor shell` command
 
 
@@ -22,79 +22,78 @@ ecmascript@0.16.8              # Enable ECMAScript2015+ syntax in app code
 # testing
 #========================================
 meteortesting:mocha
-lmieulet:meteor-coverage@3.2.0
-http@2.0.0!
-
-# client
-jkuester:http@2.0.1!
-
-# uncomment on deploy
-# zodern:profile-require
-
-# Base Tools
+lmieulet:meteor-coverage
+# http
+#
+## client
+jkuester:http
+#
+## uncomment on deploy
+## zodern:profile-require
+#
+## Base Tools
 leaonline:corelib
 leaonline:ui
 leaonline:service-registry
 leaonline:theme
-
-# factories
+#
+## factories
 leaonline:collection-factory
 leaonline:method-factory
 leaonline:publication-factory
 leaonline:ratelimit-factory
-
-# Collections
-aldeed:collection2@4.0.0!
-dburles:mongo-collection-instances@0.3.6
-
-# files
-# ostrio:files
-# leaonline:grid-factory
-
-# Methods
+#
+## Collections
+aldeed:collection2
+dburles:mongo-collection-instances
+#
+## files
+ ostrio:files
+ leaonline:grid-factory
+#
+## Methods
 mdg:validated-method
-
-# Accounts
-accounts-base@2.2.11
-accounts-password@2.4.0
+#
+## Accounts
+accounts-password
 leaonline:ddp-login
 leaonline:ddp-login-handler
-service-configuration@1.3.4
-
-# UI
-reactive-dict@1.3.1
-hot-module-replacement@0.5.3
+service-configuration
+#
+## UI
+reactive-dict
+hot-module-replacement
 blaze-hot
-
-fourseven:scss@4.15.0
-seba:minifiers-autoprefixer@2.0.1
-
-aldeed:autoform@7.0.0!
-
+#
+#fourseven:scss
+seba:minifiers-autoprefixer
+#
+aldeed:autoform@8.0.0-rc.4
+#
 ostrio:flow-router-extra
 ostrio:i18n
-
-# Blate/Template
+#
+## Blate/Template
 jkuester:template-states
 jkuester:template-loader
-
-# pub/sub
-ccorcos:subs-cache
-
+#
+## pub/sub
+#ccorcos:subs-cache
+#
 # reporting
-email@2.2.6
+email
+#
+##========================================
+## SECURITY
+##========================================
+audit-argument-checks
+force-ssl
 
-#========================================
-# SECURITY
-#========================================
-audit-argument-checks@1.0.7
-force-ssl@1.1.0
-jquery@3.0.0!
-# zodern:hide-production-sourcemaps # uncomment when stable release is up
-
-#========================================
-# APM
-#========================================
-#leaonline:status
-
-
+## zodern:hide-production-sourcemaps # uncomment when stable release is up
+#
+##========================================
+## APM
+##========================================
+##leaonline:status
+#
+#

@@ -11,7 +11,7 @@ import { checkDocument } from '../../../infrastructure/mixins/checkDocument'
  * @param options.userId
  * @return {*}
  */
-export const continueSession = function continueSession (options = {}) {
+export const continueSession = async (options = {}) => {
   check(options, Match.ObjectIncluding({
     sessionId: String,
     userId: String
@@ -19,7 +19,7 @@ export const continueSession = function continueSession (options = {}) {
 
   const { sessionId, userId } = options
   const SessionCollection = Session.collection()
-  const sessionDoc = SessionCollection.findOne({ _id: sessionId, userId })
+  const sessionDoc = await SessionCollection.findOneAsync({ _id: sessionId, userId })
   checkDocument(sessionDoc, Session)
 
   if (sessionIsComplete(sessionDoc)) {
@@ -34,7 +34,6 @@ export const continueSession = function continueSession (options = {}) {
     })
   }
 
-  return SessionCollection.update(sessionId, {
-    $set: { continuedAt: new Date() }
-  }) && SessionCollection.findOne(sessionId)
+  const updated = await SessionCollection.updateAsync(sessionId, { $set: { continuedAt: new Date() } })
+  return updated && SessionCollection.findOneAsync(sessionId)
 }

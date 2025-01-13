@@ -55,7 +55,7 @@ Response.methods.submit = {
       extractor: extractItemDefinition
     })
 
-    return function (responseDoc) {
+    return async function (responseDoc) {
       const self = this
       const { userId } = self
 
@@ -63,9 +63,9 @@ Response.methods.submit = {
         responseDoc,
         debug: self.debug,
         userId,
-        onError: error => {
+        onError: async error => {
           self.info('failed to score', JSON.stringify(responseDoc))
-          persistError(normalizeError({
+          await persistError(normalizeError({
             error,
             userId,
             method: Response.methods.submit.name
@@ -84,10 +84,9 @@ Response.methods.getMy = {
   numRequests: 50,
   timeInterval: 1000,
   run: onServerExec(function () {
-    return function ({ sessionId }) {
+    return async function ({ sessionId }) {
       const { userId } = this
-
-      return Response.collection().find({ userId, sessionId }).fetch()
+      return Response.collection().find({ userId, sessionId }).fetchAsync()
     }
   })
 }

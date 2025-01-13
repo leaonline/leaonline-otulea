@@ -1,10 +1,10 @@
 export const createGetAllMethod = ({ context, run }) => {
-  const getAllFunction = run || function ({ ids }) {
+  const getAllFunction = run || async function ({ ids }) {
     const query = {}
     if (ids) query._id = { $in: ids }
 
     return {
-      [context.name]: context.collection().find(query).fetch()
+      [context.name]: context.collection().find(query).fetchAsync()
     }
   }
 

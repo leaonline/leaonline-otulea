@@ -5,14 +5,15 @@ import { Feedback } from '../../contexts/feedback/Feedback'
 
 /**
  * Removes a given user plus all her associated sessions, responses and feedbacks.
+ * @arch server
  * @param userId {String}
  * @param calledBy {String}
  * @param debug {Function}
  * @return {{responsesRemoved: Number, sessionsRemoved: Number, userRemoved: Number}}
  */
-export const removeUser = function (userId, calledBy, debug = () => {}) {
+export const removeUser = async function (userId, calledBy, debug = () => {}) {
   debug(removeUser.name, { userId, calledBy })
-  const user = Meteor.users.findOne(userId)
+  const user = await Meteor.users.findOneAsync(userId)
 
   if (!user) {
     throw new Meteor.Error('removeUser.error', 'removeUser.userDoesNotExist', {
@@ -21,10 +22,10 @@ export const removeUser = function (userId, calledBy, debug = () => {}) {
     })
   }
 
-  const responsesRemoved = Response.collection().remove({ userId })
-  const sessionsRemoved = Session.collection().remove({ userId })
-  const feedbackRemoved = Feedback.collection().remove({ userId })
-  const userRemoved = Meteor.users.remove({ _id: userId })
+  const responsesRemoved = await Response.collection().removeAsync({ userId })
+  const sessionsRemoved = await Session.collection().removeAsync({ userId })
+  const feedbackRemoved = await Feedback.collection().removeAsync({ userId })
+  const userRemoved = await Meteor.users.removeAsync({ _id: userId })
 
   return {
     responsesRemoved,

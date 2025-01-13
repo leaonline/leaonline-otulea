@@ -58,14 +58,14 @@ Logos.methods.update = {
       optional: true
     }
   }),
-  run: onServer(function ({ footer }) {
+  run: onServer(async function ({ footer }) {
     const LogoCollection = Logos.collection()
-    const logoDoc = LogoCollection.findOne()
+    const logoDoc = await LogoCollection.findOneAsync()
     if (!logoDoc) {
-      return LogoCollection.insert({ footer })
+      return LogoCollection.insertAsync({ footer })
     }
     else {
-      return LogoCollection.update(logoDoc._id, { $set: { footer } })
+      return LogoCollection.updateAsync(logoDoc._id, { $set: { footer } })
     }
   })
 }
@@ -81,8 +81,9 @@ Logos.methods.get = {
       optional: true
     }
   },
-  run: onServer(function () {
-    return Logos.collection().findOne() || {}
+  run: onServer(async function () {
+    const doc = await Logos.collection().findOneAsync()
+    return doc ?? {}
   }),
   call: onClient(function (cb) {
     Meteor.call(Logos.methods.get.name, cb)

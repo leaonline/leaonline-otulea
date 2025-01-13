@@ -14,7 +14,7 @@ import { checkDocument } from '../../../infrastructure/mixins/checkDocument'
  * @param options.userId {String} id of the user
  * @return {*}
  */
-export const cancelSession = function cancelSession (options = {}) {
+export const cancelSession = async (options = {}) => {
   check(options, Match.ObjectIncluding({
     sessionId: String,
     userId: String
@@ -22,18 +22,18 @@ export const cancelSession = function cancelSession (options = {}) {
 
   const { sessionId, userId } = options
   const SessionCollection = Session.collection()
-  const sessionDoc = SessionCollection.findOne({ _id: sessionId, userId })
+  const sessionDoc = await SessionCollection.findOneAsync({ _id: sessionId, userId })
 
   checkDocument(sessionDoc, Session, { sessionId, userId })
 
   // if we face an empty session that is about to be restarted, we simply
   // delete this session as it holds no value to us
   if (isEmptySession(sessionDoc)) {
-    return SessionCollection.remove(sessionId)
+    return SessionCollection.removeAsync(sessionId)
   }
 
   // otherwise we update the session to indicate it's cancelled by the user
-  return SessionCollection.update(sessionId, {
+  return SessionCollection.updateAsync(sessionId, {
     $set: { cancelledAt: new Date() }
   })
 }

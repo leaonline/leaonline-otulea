@@ -44,7 +44,7 @@ import { notifyUsersAboutError } from '../../../api/notify/notifyUsersAboutError
  * @param options.flagFromDb {boolean=} optional to flag existing feedback docs as fromDB
  * @return {*}
  */
-export const generateFeedback = (options) => {
+export const generateFeedback = async (options) => {
   check(options, {
     sessionDoc: Match.ObjectIncluding({ _id: String }),
     testCycleDoc: Match.ObjectIncluding({ _id: String }),
@@ -57,7 +57,7 @@ export const generateFeedback = (options) => {
   const sessionId = sessionDoc._id
 
   debug('(generateFeedback)', { sessionId, userId })
-  const existingFeedback = Feedback.collection().findOne({ sessionId, userId })
+  const existingFeedback = await Feedback.collection().findOneAsync({ sessionId, userId })
 
   if (existingFeedback) {
     if (flagFromDb) {
@@ -97,7 +97,7 @@ export const generateFeedback = (options) => {
     thresholdsCompetency,
     minCountAlphaLevel,
     thresholdsAlphaLevel
-  } = getThresholds()
+  } = await getThresholds()
 
   // TODO cache to prevent many avoidable iterations
   const sortedThresholdsCompetency = Object
@@ -125,7 +125,7 @@ export const generateFeedback = (options) => {
     })
 
   debug('(generateFeedback)', 'get responses')
-  const responses = getSessionResponses({ sessionId, userId })
+  const responses = await getSessionResponses({ sessionId, userId })
   const competencyIds = new Set()
   const alphaLevelIds = new Set()
 
@@ -139,11 +139,11 @@ export const generateFeedback = (options) => {
   })
 
   debug('(generateFeedback)', 'get competencies')
-  const competencyMap = getCompetencies(Array.from(competencyIds))
+  const competencyMap = await getCompetencies(Array.from(competencyIds))
   competencyMap.forEach(doc => alphaLevelIds.add(doc.level))
 
   debug('(generateFeedback)', 'get AlphaLevels')
-  const alphaLevelMap = getAlphaLevels(Array.from(alphaLevelIds))
+  const alphaLevelMap = await getAlphaLevels(Array.from(alphaLevelIds))
 
   // ///////////////////////////////////////////////////////////////////////////
   // STEP 1B - TRANSFORM INPUT
@@ -160,7 +160,7 @@ export const generateFeedback = (options) => {
   // STEP 2 - GRADE COMPETENCIES
   // ///////////////////////////////////////////////////////////////////////////
   debug('(generateFeedback)', 'start grading competencies')
-  const aggregatedAlphaLevels = gradeCompetenciesAndCountAlphaLevels({
+  const aggregatedAlphaLevels = await gradeCompetenciesAndCountAlphaLevels({
     competencies: aggregatedCompetencies,
     getCompetency: id => competencyMap.get(id),
     getAlphaLevel: id => alphaLevelMap.get(id),
@@ -242,7 +242,7 @@ export const countCompetencies = ({ responses, minCountCompetency }) => {
   return competencies
 }
 
-export const gradeCompetenciesAndCountAlphaLevels = ({ competencies, minCountAlphaLevel, thresholds, getCompetency, getAlphaLevel, sessionDoc = {} }) => {
+export const gradeCompetenciesAndCountAlphaLevels = async ({ competencies, minCountAlphaLevel, thresholds, getCompetency, getAlphaLevel, sessionDoc = {} }) => {
   const alphaLevels = new Map()
   const sessionId = sessionDoc._id
 

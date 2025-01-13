@@ -10,4 +10,4 @@ const hostUrls = Object
 const cspOptions = createCSPOptions(hostUrls)
 
 // Within server side Meter.startup()
-WebApp.connectHandlers.use(helmet(cspOptions))
+WebApp.handlers.use(helmet(cspOptions))

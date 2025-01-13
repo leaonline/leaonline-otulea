@@ -24,7 +24,7 @@ const byAlphaLevelId = a => a.alphaLevelId
  * @param options.feedbackDoc {object}
  * @return {any | void}
  */
-export const addRecord = (options) => {
+export const addRecord = async (options) => {
   check(options, Match.ObjectIncluding({
     userId: String,
     testCycleDoc: Match.ObjectIncluding({
@@ -56,7 +56,7 @@ export const addRecord = (options) => {
 
   // TODO: update the current record if we already have a record doc generated
 
-  const previousRecordData = getPreviousRecord({
+  const previousRecordData = await getPreviousRecord({
     userId: userId,
     dimension: dimension,
     level: level,
@@ -66,8 +66,8 @@ export const addRecord = (options) => {
   // first we need to iterate the competencies / alphalevels
   // and map them to their docs, which we need to assign their info
 
-  const competencyDocsMap = getCompetencies(competencies.map(byCompetencyId))
-  const alphaLevelDocsMap = getAlphaLevels(alphaLevels.map(byAlphaLevelId))
+  const competencyDocsMap = await getCompetencies(competencies.map(byCompetencyId))
+  const alphaLevelDocsMap = await getAlphaLevels(alphaLevels.map(byAlphaLevelId))
 
   // then iterate the entries from the feedback and create a merged version
   // of both documents, containing all relevant data for analysis
@@ -145,11 +145,11 @@ export const addRecord = (options) => {
     alphaLevels: alphaLevelDocs
   }
 
-  return Record.collection().upsert(query, { $set: recordDoc })
+  return Record.collection().upsertAsync(query, { $set: recordDoc })
 }
 
-const getPreviousRecord = query => {
-  const previousRecord = Record.collection().findOne(query, { hint })
+const getPreviousRecord = async query => {
+  const previousRecord = await Record.collection().findOneAsync(query, { hint })
 
   if (!previousRecord) {
     return {

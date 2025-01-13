@@ -2,7 +2,7 @@
 import { Meteor } from 'meteor/meteor'
 import { Response } from '../Response'
 
-if (Meteor.isClient) {
+if (Meteor.isServer) {
   describe(Response.name, function () {
     import './submitResponse.tests'
   })

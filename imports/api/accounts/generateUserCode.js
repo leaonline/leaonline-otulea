@@ -18,13 +18,13 @@ const forbidden = /[0oq17ij5s]+/gi
  * @return {string} the code for the usernames
  */
 
-export const generateUserCode = (length = 5, maxRetries = 500) => {
+export const generateUserCode = async (length = 5, maxRetries = 500) => {
   let count = 0
 
   while (count++ < maxRetries) {
     const code = Random.id(length).toUpperCase()
 
-    if (!forbidden.test(code) && !Accounts.findUserByUsername(code)) {
+    if (!forbidden.test(code) && !await Accounts.findUserByUsername(code)) {
       return code
     }
   }

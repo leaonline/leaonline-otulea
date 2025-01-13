@@ -1,6 +1,6 @@
 export const createGetMethod = ({ context, run }) => {
-  const runFunction = run || function ({ _id }) {
-    return context.collection.findOne(_id)
+  const runFunction = run || async function ({ _id }) {
+    return context.collection.findOneAsync(_id)
   }
 
   return {

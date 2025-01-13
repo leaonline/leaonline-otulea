@@ -133,7 +133,7 @@ Record.methods.getForUsers = {
       hint: { $natural: -1 }
     }
 
-    return function ({ users = [], dimension, skip = [], oldest, newest }) {
+    return async function ({ users = [], dimension, skip = [], oldest, newest }) {
       const query = {
         userId: { $in: users },
         dimension: dimension
@@ -160,7 +160,7 @@ Record.methods.getForUsers = {
         query.completedAt = { $lte: newest }
       }
 
-      return Record.collection().find(query, transform).fetch()
+      return Record.collection().find(query, transform).fetchAsync()
     }
   })
 }

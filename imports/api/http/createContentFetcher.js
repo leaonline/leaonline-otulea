@@ -7,7 +7,7 @@ import { fetchDoc } from './fetchDoc'
  * strategy internally.
  *
  * @param path {String} the oath to a content server get or getAll route.
- * @return {{url: string, cache: Map<String, Object>, fetcher: (function(*): Map<any, any>)}}
+ * @return {{url: string, cache: Map<String, Object>, fetcher: (function(*): Promise<Map<any, any>>)}}
  */
 export const createContentFetcher = ({ path }) => {
   let requested = 0
@@ -17,7 +17,7 @@ export const createContentFetcher = ({ path }) => {
   const api = {
     url: toContentServerURL(path),
     cache: new Map(),
-    fetcher: ids => {
+    fetcher: async ids => {
       const docMap = new Map()
       const toLoad = []
 
@@ -35,7 +35,7 @@ export const createContentFetcher = ({ path }) => {
         return docMap
       }
 
-      const fetchedDocs = fetchDoc(api.url, { ids: toLoad }) || []
+      const fetchedDocs = await fetchDoc(api.url, { ids: toLoad }) || []
       fetchedDocs.forEach(doc => {
         docMap.set(doc._id, doc)
         api.cache.set(doc._id, doc)

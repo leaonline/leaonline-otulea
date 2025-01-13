@@ -63,8 +63,8 @@ Legal.methods.update = {
     terms: Legal.schema.terms,
     contact: Legal.schema.contact
   },
-  run: onServer(function ({ _id, imprint, privacy, terms, contact }) {
-    return Legal.collection().update(_id, { $set: { imprint, privacy, terms, contact } })
+  run: onServer(async function ({ _id, imprint, privacy, terms, contact }) {
+    return Legal.collection().updateAsync(_id, { $set: { imprint, privacy, terms, contact } })
   })
 }
 
@@ -82,8 +82,8 @@ Legal.methods.get = {
       allowedValues: Object.keys(Legal.schema)
     }
   },
-  run: onServer(function ({ name } = {}) {
-    const config = Legal.collection().findOne()
+  run: onServer(async function ({ name } = {}) {
+    const config = await Legal.collection().findOneAsync()
     if (!name) {
       return config
     }

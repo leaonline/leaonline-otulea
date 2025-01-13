@@ -39,8 +39,8 @@ Users.methods.getAll = {
     }
   },
   backend: true,
-  run: function () {
-    const users = Meteor.users.find({}, {
+  run: async function () {
+    const users = await Meteor.users.find({}, {
       fields: {
         services: 0,
         agents: 0
@@ -48,7 +48,7 @@ Users.methods.getAll = {
       hint: {
         $natural: -1
       }
-    }).fetch()
+    }).fetchAsync()
 
     return { users }
   }
@@ -60,7 +60,7 @@ Users.methods.remove = {
     _id: 1
   },
   backend: true,
-  run: function ({ _id }) {
+  run: async function ({ _id }) {
     return removeUser(_id, this.userId, this.debug)
   }
 }
@@ -81,9 +81,9 @@ rateLimitAccounts()
 //  //////////////////////////////////////////////////////////
 //  LOGIN HANDLER FOR BACKEND
 //  //////////////////////////////////////////////////////////
-Meteor.startup(() => {
+Meteor.startup(async () => {
   const { oauth } = Meteor.settings
-  ServiceConfiguration.configurations.upsert(
+  await ServiceConfiguration.configurations.upsertAsync(
     { service: 'lea' },
     {
       $set: {
@@ -98,13 +98,11 @@ Meteor.startup(() => {
     }
   )
 
-  const loginHandler = getOAuthDDPLoginHandler({
+  Accounts.registerLoginHandler(defaultDDPLoginName, {
     identityUrl: oauth.identityUrl,
     httpGet: (url, requestOptions) => HTTP.get(url, requestOptions),
     debug: console.debug
   })
-
-  Accounts.registerLoginHandler(defaultDDPLoginName, loginHandler)
 })
 
 ServiceRegistry.register(Users)

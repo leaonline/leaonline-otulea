@@ -8,11 +8,11 @@ describe(notifyUsersAboutError.name, function () {
   afterEach(function () {
     restoreAll()
   })
-  it('skips an undefined error', function () {
+  it('skips an undefined error', async function () {
     stub(Email, 'send', () => expect.fail())
-    notifyUsersAboutError()
+    await notifyUsersAboutError()
   })
-  it('sends an email with a stringified error', function () {
+  it('sends an email with a stringified error', async function () {
     const err = new Error('foobar')
     err.type = 'testError'
 
@@ -24,6 +24,6 @@ describe(notifyUsersAboutError.name, function () {
       expect(text).to.equal(JSON.stringify(err, null, 2).trim())
     })
 
-    notifyUsersAboutError(err)
+    await notifyUsersAboutError(err)
   })
 })

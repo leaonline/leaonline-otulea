@@ -7,13 +7,13 @@ const { notify, replyTo, from } = Meteor.settings.email
 export const notifyUsersAboutError = error => {
   if (!notify?.length || !error) return
 
-  notify.forEach(address => {
-    Email.send({
+  return Promise.all([notify.map(address => {
+    return Email.sendAsync({
       to: address,
       subject: `${appName} [error]: ${error.message}`,
       replyTo: replyTo,
       from: from,
       text: JSON.stringify(error, null, 2)
     })
-  })
+  })])
 }
