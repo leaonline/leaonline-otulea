@@ -9,7 +9,7 @@ import { TestCycle } from '../../testcycle/TestCycle'
  * @param resolve {boolean=} optional flag to enable resolving ids
  * @return {object[]}
  */
-export const recentCompleted = function ({ users, resolve }) {
+export const recentCompleted = async function ({ users, resolve }) {
   const unique = new Set()
   const query = {
     userId: { $in: users },
@@ -26,9 +26,9 @@ export const recentCompleted = function ({ users, resolve }) {
     hint: { $natural: -1 }
   }
 
-  const docs = Session.collection()
+  const docs = (await Session.collection()
     .find(query, transform)
-    .fetch()
+    .fetchAsync())
     .filter(sessionDoc => {
       if (unique.has(sessionDoc.userId)) {
         return false

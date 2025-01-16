@@ -87,6 +87,7 @@ Meteor.startup(async () => {
     { service: 'lea' },
     {
       $set: {
+        debug: true,
         loginStyle: 'popup',
         clientId: oauth.clientId,
         secret: oauth.secret,
@@ -98,11 +99,16 @@ Meteor.startup(async () => {
     }
   )
 
-  Accounts.registerLoginHandler(defaultDDPLoginName, {
+  Accounts.registerLoginHandler(defaultDDPLoginName, getOAuthDDPLoginHandler({
     identityUrl: oauth.identityUrl,
-    httpGet: (url, requestOptions) => HTTP.get(url, requestOptions),
+    httpGet: async (url, requestOptions) => {
+      console.debug('getOAuthDDPLoginHandler: httpGet', url, requestOptions)
+      const response = await fetch(url, requestOptions)
+      const data = await response.json()
+      return { data, status: response.status }
+    },
     debug: console.debug
-  })
+  }))
 })
 
 ServiceRegistry.register(Users)

@@ -9,16 +9,16 @@ import { notifyUsersAboutError } from '../../../api/notify/notifyUsersAboutError
  * Requires the errorDoc to be normalized!
  *
  * @param normalizedErrorDoc
- * @return {*}
+ * @return {Promise<void>}
  */
 export const persistError = async (normalizedErrorDoc) => {
   // let's see, if the same user created the same error already
   const { hash } = normalizedErrorDoc
   const collection = Errors.collection()
-  const existingError = collection.findOneAsync({ hash })
+  const existingError = await collection.findOneAsync({ hash })
 
   if (existingError) {
-    return collection.updateAsync(existingError._id, {
+    await collection.updateAsync(existingError._id, {
       $inc: { count: 1 }
     })
   }
@@ -29,5 +29,5 @@ export const persistError = async (normalizedErrorDoc) => {
 
   normalizedErrorDoc.count = 1
 
-  return collection.insertAsync(normalizedErrorDoc)
+  await collection.insertAsync(normalizedErrorDoc)
 }

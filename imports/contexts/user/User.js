@@ -98,20 +98,20 @@ Users.methods.generate = {
   run: onServerExec(function () {
     import { generateUserCode } from '../../api/accounts/generateUserCode'
 
-    return function ({ isDemo } = {}) {
-      const usersLength = Meteor.users.find().count()
+    return async function ({ isDemo } = {}) {
+      const usersLength = await Meteor.users.countDocuments({})
       const maxRetries = usersLength > defaultMaxRetries
         ? usersLength
         : defaultMaxRetries
 
-      const code = generateUserCode(codeLength, maxRetries)
-      const userId = Accounts.createUser({ username: code, password: code })
+      const code = await generateUserCode(codeLength, maxRetries)
+      const userId = await Accounts.createUserAsync({ username: code, password: code })
 
       if (isDemo === true) {
-        Meteor.users.update(userId, { $set: { isDemoUser: isDemo } })
+        await Meteor.users.updateAsync(userId, { $set: { isDemoUser: isDemo } })
       }
 
-      return Meteor.users.findOne(userId, { fields: { services: 0 } })
+      return Meteor.users.findOneAsync(userId, { fields: { services: 0 } })
     }
   })
 }

@@ -37,10 +37,10 @@ Legal.schema = {
 
 Legal.helpers = {}
 
-Legal.helpers.init = function () {
-  const configDoc = Legal.collection().findOne()
+Legal.helpers.init = async function () {
+  const configDoc = await Legal.collection().findOneAsync()
   if (!configDoc) {
-    Legal.collection().insert({
+    await Legal.collection().insertAsync({
       imprint: 'Imprint',
       privacy: 'Privacy',
       terms: 'Terms',

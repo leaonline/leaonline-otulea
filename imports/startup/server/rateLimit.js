@@ -20,4 +20,4 @@ Meteor.startup(() => {
       }))
     }
   })
-})
+}, false, false)

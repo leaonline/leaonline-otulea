@@ -8,12 +8,12 @@ let debug = false
  * Returns if the current user has debug mode enabled.
  * Pass a boolean value to optionally set the debug mode.
  *
- * @locus client
+ * @arch client
  * @param value {Boolean|undefined} set true/false to enable/disable debug mode
  * @param debugFn {Function} optional function for debugging messages
  * @return {boolean} true/false whether debug is enabled/disabled
  */
-export const isDebugUser = (value = undefined, debugFn = () => {}) => {
+export const isDebugUser = async (value = undefined, debugFn = () => {}) => {
   debug = !!(Meteor.user()?.debug)
 
   if (typeof value !== 'undefined') {

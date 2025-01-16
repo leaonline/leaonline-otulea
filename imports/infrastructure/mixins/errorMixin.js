@@ -27,7 +27,7 @@ export const errorMixin = options => {
         endpoint: isEndpoint ? name : undefined
       })
 
-      persistError(normalizedError)
+      persistError(normalizedError).catch(console.error)
 
       // finally throw original runtime error
       throw runtimeError
