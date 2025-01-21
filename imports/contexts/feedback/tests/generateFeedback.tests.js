@@ -22,8 +22,8 @@ import {
   restoreCollection
 } from '../../../../tests/mockCollection'
 
-describe(countCompetencies.name, function () {
-  it('correctly counts scored competencies', function () {
+describe(countCompetencies.name, async () => {
+  it('correctly counts scored competencies', async () => {
     const id1 = Random.id()
     const id2 = Random.id()
     const responses = [
@@ -57,8 +57,8 @@ describe(countCompetencies.name, function () {
   })
 })
 
-describe(gradeCompetenciesAndCountAlphaLevels.name, function () {
-  it('correctly grades competencies', function () {
+describe(gradeCompetenciesAndCountAlphaLevels.name, async () => {
+  it('correctly grades competencies', async () => {
     const cId1 = Random.id() // 3/3
     const cId2 = Random.id() // 2/3
     const cId3 = Random.id() // 0/3
@@ -167,7 +167,7 @@ describe(gradeCompetenciesAndCountAlphaLevels.name, function () {
       isGraded: false
     })
   })
-  it('informs if a competency is a dead link', function () {
+  it('informs if a competency is a dead link', async () => {
     let emailSent = false
     const competencyId = Random.id()
     const competencies = new Map()
@@ -179,7 +179,7 @@ describe(gradeCompetenciesAndCountAlphaLevels.name, function () {
       min: 0,
       perc: 1
     })
-    stub(Email, 'send', ({ to, subject, replyTo, from, text }) => {
+    stub(Email, 'sendAsync', async ({ to, subject, replyTo, from, text }) => {
       const errorStr = text.trim()
       const parsedError = JSON.parse(errorStr)
       expect(parsedError.error).to.equal('generateFeedback.error')
@@ -202,7 +202,7 @@ describe(gradeCompetenciesAndCountAlphaLevels.name, function () {
       name: 'bad'
     }]
 
-    gradeCompetenciesAndCountAlphaLevels({
+    await gradeCompetenciesAndCountAlphaLevels({
       competencies,
       thresholds,
       minCountAlphaLevel: 1,
@@ -212,7 +212,7 @@ describe(gradeCompetenciesAndCountAlphaLevels.name, function () {
 
     expect(emailSent).to.equal(true)
   })
-  it('correctly counts alphaLevels', function () {
+  it('correctly counts alphaLevels', async () => {
     const cid1 = Random.id()
     const cid2 = Random.id()
     const aid = Random.id()
@@ -260,7 +260,7 @@ describe(gradeCompetenciesAndCountAlphaLevels.name, function () {
       name: 'bad'
     }]
 
-    const alphaLevels = gradeCompetenciesAndCountAlphaLevels({
+    const alphaLevels = await gradeCompetenciesAndCountAlphaLevels({
       competencies,
       getAlphaLevel,
       getCompetency,
@@ -278,8 +278,8 @@ describe(gradeCompetenciesAndCountAlphaLevels.name, function () {
   })
 })
 
-describe(gradeAlphaLevels.name, function () {
-  it('correctly grades alpha levels', function () {
+describe(gradeAlphaLevels.name, async () => {
+  it('correctly grades alpha levels', async () => {
     const thresholds = [{
       max: 1,
       name: 'top'
@@ -398,14 +398,14 @@ describe(gradeAlphaLevels.name, function () {
   })
 })
 
-describe(generateFeedback.name, function () {
-  before(function () {
+describe(generateFeedback.name, async () => {
+  before(async () => {
     mockCollection(Feedback)
     mockCollection(Session, { attachSchema: false })
     mockCollection(Response, { attachSchema: false })
     mockCollection(TestCycle, { attachSchema: false })
   })
-  after(function () {
+  after(async () => {
     restoreCollection(Feedback)
     restoreCollection(Session)
     restoreCollection(Response)
@@ -424,7 +424,7 @@ describe(generateFeedback.name, function () {
     const sessionDoc = { _id: sessionId }
 
     // session doc does not exist
-    await expectThrow({ 
+    await expectThrow({
       fn: () => generateFeedback({ userId }),
       message: 'Match error: Missing key \'sessionDoc\''
     })
@@ -434,7 +434,7 @@ describe(generateFeedback.name, function () {
         userId,
         testCycleDoc: { _id: Random.id() }
       }),
-      message: 'generateFeedback.sessionNotComplete' 
+      message: 'generateFeedback.sessionNotComplete'
     })
   })
 

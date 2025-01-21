@@ -22,7 +22,7 @@ describe(getSessionDoc.name, function () {
     sessionId = Random.id()
     val = Random.id()
     stubSession = () => stub(Session, 'collection', () => ({
-      findOne: ({ _id, userId }) => {
+      findOneAsync: async ({ _id, userId }) => {
         expect(_id).to.equal(sessionId)
         expect(userId).to.equal(userId)
         return val
@@ -34,18 +34,18 @@ describe(getSessionDoc.name, function () {
     restoreAll()
   })
 
-  it('returns the sessionDoc only for the given user', function () {
+  it('returns the sessionDoc only for the given user', async () => {
     stubSession()
     const data = { sessionId, userId }
-    expect(getSessionDoc(data)).to.equal(val)
+    expect(await getSessionDoc(data)).to.equal(val)
   })
 
   onServerExec(function () {
-    it('runs as method', function () {
+    it('runs as method', async () => {
       stubSession()
       const env = { userId }
       const arg = { sessionId }
-      expect(Session.methods.currentById.run.call(env, arg)).to.equal(val)
+      expect(await Session.methods.currentById.run.call(env, arg)).to.equal(val)
     })
   })
 })

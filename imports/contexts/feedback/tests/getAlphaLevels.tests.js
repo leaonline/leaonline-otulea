@@ -5,12 +5,12 @@ import { Random } from 'meteor/random'
 import { getAlphaLevels } from '../api/getAlphaLevels'
 import { restoreAll, stub } from '../../../../tests/helpers.tests'
 
-describe(getAlphaLevels.name, function () {
-  afterEach(function () {
+describe(getAlphaLevels.name, async () => {
+  afterEach(async () => {
     restoreAll()
   })
 
-  it('fetches docs by given ids and returns them as a map', function () {
+  it('fetches docs by given ids and returns them as a map', async () => {
     const id1 = Random.id()
     const id2 = Random.id()
     const docs = [{
@@ -25,7 +25,7 @@ describe(getAlphaLevels.name, function () {
       return { data: docs }
     })
 
-    const map = getAlphaLevels([id1, id2])
+    const map = await getAlphaLevels([id1, id2])
     expect(map.size).to.equal(2)
     expect(map.get(id1)).to.deep.equal(docs[0])
     expect(map.get(id2)).to.deep.equal(docs[1])

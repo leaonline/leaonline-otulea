@@ -14,7 +14,8 @@ let debug = false
  * @return {boolean} true/false whether debug is enabled/disabled
  */
 export const isDebugUser = async (value = undefined, debugFn = () => {}) => {
-  debug = !!(Meteor.user()?.debug)
+  const user = await Meteor.userAsync()
+  debug = !!(user?.debug)
 
   if (typeof value !== 'undefined') {
     check(value, Boolean)

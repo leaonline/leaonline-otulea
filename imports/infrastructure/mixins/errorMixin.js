@@ -9,7 +9,7 @@ export const errorMixin = options => {
   const isEndpoint = name.includes('routes')
   const runFct = options.run
 
-  options.run = function run (...args) {
+  options.run = async function run (...args) {
     const { userId } = this
     try {
       return runFct.call(this, ...args)
@@ -17,7 +17,7 @@ export const errorMixin = options => {
     catch (runtimeError) {
       console.error(runtimeError)
 
-      const userDoc = userId && Meteor.users.findOne(userId)
+      const userDoc = userId && await Meteor.users.findOneAsync(userId)
       const normalizedError = normalizeError({
         error: runtimeError,
         userId: userId,

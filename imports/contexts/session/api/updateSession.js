@@ -23,7 +23,7 @@ import { Unit } from '../../Unit'
  *  completed: Boolean
  * }}
  */
-export const updateSession = function (options = {}) {
+export const updateSession = async function (options = {}) {
   check(options, Match.ObjectIncluding({
     sessionId: String,
     userId: String
@@ -32,13 +32,13 @@ export const updateSession = function (options = {}) {
   const { sessionId, userId, debug = () => {} } = options
 
   // verify given session
-  const sessionDoc = getSessionDoc({ sessionId, userId })
+  const sessionDoc = await getSessionDoc({ sessionId, userId })
   checkDocument(sessionDoc, Session, { sessionId, userId })
 
   const { unitSet, testCycle, currentUnit } = sessionDoc
 
   // get test cycle doc
-  const testCycleDoc = getDocument(testCycle, TestCycle)
+  const testCycleDoc = await getDocument(testCycle, TestCycle)
   checkDocument(testCycleDoc, TestCycle, {
     testCycle,
     sessionId,
@@ -46,11 +46,11 @@ export const updateSession = function (options = {}) {
   })
 
   // get unitSet doc
-  const unitSetDoc = getDocument(unitSet, UnitSet)
+  const unitSetDoc = await getDocument(unitSet, UnitSet)
   checkDocument(unitSetDoc, UnitSet, { sessionId, unitSet })
 
   // get unit doc
-  const unitDoc = getDocument(currentUnit, Unit)
+  const unitDoc = await getDocument(currentUnit, Unit)
   checkDocument(unitDoc, Unit, { sessionId, currentUnit })
   const progressIncrement = unitDoc.pages?.length
 
@@ -79,7 +79,7 @@ export const updateSession = function (options = {}) {
   // through with the session's associated testCycle
 
   if (isLastUnitSet && isLastUnit) {
-    Session.collection().update(sessionDoc._id, {
+    await Session.collection().updateAsync(sessionDoc._id, {
       $set: {
         currentUnit: null,
         updatedAt: timestamp,
@@ -105,7 +105,7 @@ export const updateSession = function (options = {}) {
 
   if (isLastUnit) {
     const nextUnitSetId = unitSetList.getNext()
-    const nextUnitSetDoc = getDocument(nextUnitSetId, UnitSet)
+    const nextUnitSetDoc = await getDocument(nextUnitSetId, UnitSet)
     checkDocument(nextUnitSetDoc, UnitSet, {
       nextUnitSetId,
       sessionId,
@@ -114,7 +114,7 @@ export const updateSession = function (options = {}) {
 
     const firstUnit = nextUnitSetDoc.units[0]
 
-    Session.collection().update(sessionDoc._id, {
+    await Session.collection().updateAsync(sessionDoc._id, {
       $set: {
         unitSet: nextUnitSetId,
         currentUnit: firstUnit,
@@ -139,7 +139,7 @@ export const updateSession = function (options = {}) {
   // We have neither completed and iterate to the next unit
   const nextUnit = unitList.getNext()
 
-  Session.collection().update(sessionDoc._id, {
+  await Session.collection().updateAsync(sessionDoc._id, {
     $set: {
       currentUnit: nextUnit,
       updatedAt: timestamp

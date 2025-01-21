@@ -28,7 +28,7 @@ export const cancelSession = async (options = {}) => {
 
   // if we face an empty session that is about to be restarted, we simply
   // delete this session as it holds no value to us
-  if (isEmptySession(sessionDoc)) {
+  if (await isEmptySession(sessionDoc)) {
     return SessionCollection.removeAsync(sessionId)
   }
 

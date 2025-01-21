@@ -11,6 +11,7 @@ import { Unit } from '../../Unit'
 import { Session } from '../../session/Session'
 import { Response } from '../Response'
 import { expectThrow, restoreAll, stub } from '../../../../tests/helpers.tests'
+import { asyncTimeout } from '../../../utils/asyncTimeout'
 
 describe(createSubmitResponse.name, function () {
   before(function () {
@@ -19,16 +20,15 @@ describe(createSubmitResponse.name, function () {
     mockCollection(Response)
   })
   after(function () {
-
     restoreCollection(Unit)
     restoreCollection(Session)
     restoreCollection(Response)
   })
   afterEach(async () => {
+    restoreAll()
     await clearCollection(Unit)
     await clearCollection(Session)
     await clearCollection(Response)
-    restoreAll()
   })
   it('throws if the session and unit do not match', async function () {
     const submitResponse = createSubmitResponse({})
@@ -51,19 +51,17 @@ describe(createSubmitResponse.name, function () {
       })
     }
   })
-  it('submits a scored response', function (done) {
+  it('submits a scored response', async () => {
     stub(Session, 'collection', () => ({
-      findOne: () => sessionDoc
+      findOneAsync: async () => sessionDoc
     }))
     stub(Unit, 'collection', () => ({
-      findOne: () => unitDoc
+      findOneAsync: async () => unitDoc
     }))
 
     const userId = Random.id()
     const itemDoc = {}
-    const unitDoc = {
-      _id: Random.id()
-    }
+    const unitDoc = { _id: Random.id() }
     const sessionDoc = {
       _id: Random.id(),
       currentUnit: unitDoc._id
@@ -83,8 +81,9 @@ describe(createSubmitResponse.name, function () {
       scorer: () => scores
     })
 
+    let upsertComplete = false
     stub(Response, 'collection', () => ({
-      upsert: (query, modifier) => {
+      upsertAsync: async (query, modifier) => {
         expect(query).to.deep.equal({
           userId: userId,
           sessionId: sessionDoc._id,
@@ -104,19 +103,19 @@ describe(createSubmitResponse.name, function () {
             failed: undefined
           }
         })
-
-        done()
+        upsertComplete = true
       }
     }))
 
-    submitResponse({ responseDoc, userId })
+    await submitResponse({ responseDoc, userId })
+    expect(upsertComplete).to.equal(true)
   })
-  it('submits a response with failed score', function () {
+  it('submits a response with failed score', async () => {
     stub(Session, 'collection', () => ({
-      findOne: () => sessionDoc
+      findOneAsync: async () => sessionDoc
     }))
     stub(Unit, 'collection', () => ({
-      findOne: () => unitDoc
+      findOneAsync: async () => unitDoc
     }))
 
     const userId = Random.id()
@@ -140,9 +139,8 @@ describe(createSubmitResponse.name, function () {
     let err1Called = false
     let err2Called = false
     let ups1Called = 0
-
     stub(Response, 'collection', () => ({
-      upsert: (query, modifier) => {
+      upsertAsync: async (query, modifier) => {
         expect(query).to.deep.equal({
           userId: userId,
           sessionId: sessionDoc._id,
@@ -168,7 +166,7 @@ describe(createSubmitResponse.name, function () {
     }))
 
     // fail at extractor
-    createSubmitResponse({
+    await createSubmitResponse({
       extractor: () => {
         throw new Error(errorId)
       },
@@ -183,7 +181,7 @@ describe(createSubmitResponse.name, function () {
     })
 
     // fail at scorer
-    createSubmitResponse({
+    await createSubmitResponse({
       extractor: () => itemDoc,
       scorer: () => {
         throw new Error(errorId)
@@ -196,6 +194,8 @@ describe(createSubmitResponse.name, function () {
         err2Called = true
       }
     })
+
+    await asyncTimeout(10)
 
     // ensure branches were covered
     expect(err1Called).to.equal(true)

@@ -62,7 +62,7 @@ leaonline:method-factory@2.0.0
 leaonline:publication-factory@2.0.0
 leaonline:ratelimit-factory@2.0.0
 leaonline:service-registry@2.0.0
-leaonline:theme@1.1.0
+leaonline:theme@2.0.0
 leaonline:ui@2.0.0
 localstorage@1.2.1
 logging@1.3.5

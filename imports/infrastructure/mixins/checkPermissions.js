@@ -12,7 +12,7 @@ export const checkPermissions = function (options) {
     let userId = this.userId
 
     if (!userId) {
-      throw new Meteor.Error('errors.permissionDenied', 'errors.userNotExists', userId)
+      throw new Meteor.Error('errors.permissionDenied', 'errors.userNotExists')
     }
 
     if (backend) {

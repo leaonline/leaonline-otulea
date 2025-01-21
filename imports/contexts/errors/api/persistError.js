@@ -23,11 +23,10 @@ export const persistError = async (normalizedErrorDoc) => {
     })
   }
   else {
+    normalizedErrorDoc.count = 1
+    await collection.insertAsync(normalizedErrorDoc)
+
     // inform only about new errors
     await notifyUsersAboutError(normalizedErrorDoc)
   }
-
-  normalizedErrorDoc.count = 1
-
-  await collection.insertAsync(normalizedErrorDoc)
 }

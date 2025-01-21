@@ -6,11 +6,11 @@ import { stub, restoreAll } from '../../../../tests/helpers.tests'
 import { toContentServerURL } from '../../../api/url/toContentServerURL'
 import { Thresholds } from '../Thresholds'
 
-describe(getThresholds.name, function () {
-  afterEach(function () {
+describe(getThresholds.name, async () => {
+  afterEach(async () => {
     restoreAll()
   })
-  it('calls the external server for all thresholds', function () {
+  it('calls the external server for all thresholds', async () => {
     const expected = [{ foo: Math.random().toString(10) }]
     stub(HTTP, 'get', function (url, options) {
       expect(url).to.equal(toContentServerURL(Thresholds.routes.all.path))
@@ -18,7 +18,7 @@ describe(getThresholds.name, function () {
       return { data: expected }
     })
 
-    const actual = getThresholds()
+    const actual = await getThresholds()
     expect(actual).to.deep.equal(expected)
   })
 })

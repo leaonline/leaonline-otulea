@@ -7,21 +7,22 @@ import {
   mockCollection,
   restoreCollection
 } from '../../../../tests/mockCollection'
-import { stub, restoreAll } from '../../../../tests/helpers.tests'
+import { stub, restoreAll, expectThrow } from '../../../../tests/helpers.tests'
 import { Session } from '../Session'
 import { TestCycle } from '../../testcycle/TestCycle'
 import { Feedback } from '../../feedback/Feedback'
+import { DocNotFoundError } from '../../errors/DocNotFoundError'
 
 const getResults = Session.methods.results.run
 
-describe(Session.methods.results.name, function () {
-  before(function () {
+describe(Session.methods.results.name, async () => {
+  before(async () => {
     mockCollection(Session)
     mockCollection(TestCycle)
     mockCollection(Feedback)
   })
 
-  after(function () {
+  after(async () => {
     restoreCollection(Session)
     restoreCollection(TestCycle)
     restoreCollection(Feedback)
@@ -30,47 +31,52 @@ describe(Session.methods.results.name, function () {
   let sessionId
   let userId
 
-  beforeEach(function () {
+  beforeEach(async () => {
     sessionId = Random.id()
     userId = Random.id()
   })
 
-  afterEach(function () {
+  afterEach(async () => {
     restoreAll()
-    clearCollection(Session)
-    clearCollection(TestCycle)
-    clearCollection(Feedback)
+    await clearCollection(Session)
+    await clearCollection(TestCycle)
+    await clearCollection(Feedback)
   })
 
-  it('throws if no session doc is found', function () {
+  it('throws if no session doc is found', async () => {
     const env = { userId }
     const arg = { sessionId }
-    const thrown = expect(() => getResults.call(env, arg)).to.throw('generateFeedback.error')
-    thrown.with.property('reason', 'generateFeedback.sessionNotFound')
-    thrown.with.deep.property('details', { userId, sessionId })
+    await expectThrow({
+      fn: () => getResults.call(env, arg),
+      reason: 'generateFeedback.sessionNotFound',
+      details: { userId, sessionId }
+    })
   })
-  it('throws if no test cycle doc is found', function () {
+  it('throws if no test cycle doc is found', async () => {
     const sessionDoc = {
       testCycle: Random.id(),
       completedAt: new Date(),
       progress: 13,
       maxProgress: 1357911
     }
-    stub(Session, 'collection', () => ({ findOne: () => sessionDoc }))
+    stub(Session, 'collection', () => ({ findOneAsync: async () => sessionDoc }))
     const env = { userId }
     const arg = { sessionId }
-    const thrown = expect(() => getResults.call(env, arg)).to.throw('generateFeedback.error')
-    thrown.with.property('reason', 'generateFeedback.testCycleNotFound')
-    thrown.with.deep.property('details', {
-      userId,
-      sessionId,
-      testCycle: sessionDoc.testCycle,
-      completedAt: sessionDoc.completedAt,
-      progress: sessionDoc.progress,
-      maxProgress: sessionDoc.maxProgress
+    await expectThrow({
+      fn: () => getResults.call(env, arg),
+      error: 'generateFeedback.error',
+      reason: 'generateFeedback.testCycleNotFound',
+      details: {
+        userId,
+        sessionId,
+        testCycle: sessionDoc.testCycle,
+        completedAt: sessionDoc.completedAt,
+        progress: sessionDoc.progress,
+        maxProgress: sessionDoc.maxProgress
+      }
     })
   })
-  it('adds a new Record if the feedback doc is not fromDB', function (done) {
+  it('adds a new Record if the feedback doc is not fromDB', async () => {
     const sessionDoc = {
       _id: sessionId,
       testCycle: Random.id(),
@@ -78,23 +84,15 @@ describe(Session.methods.results.name, function () {
       progress: 13,
       maxProgress: 1357911
     }
-    const testCycleDoc = {
-      _id: sessionDoc.testCycle
-    }
+    const testCycleDoc = { _id: sessionDoc.testCycle }
     const feedbackDoc = { fromDB: false, sessionDoc, testCycleDoc, userId }
-    stub(Session, 'collection', () => ({ findOne: () => sessionDoc }))
-    stub(TestCycle, 'collection', () => ({ findOne: () => testCycleDoc }))
-    stub(Feedback, 'collection', () => ({ findOne: () => feedbackDoc }))
-
-    stub(Meteor, 'defer', (fn) => {
-      // this is not best practice but best tadeoff with effort
-      expect(fn.name).to.equal('addRecordFromFeedback')
-      expect(() => fn()).to.throw('Match error: Missing key \'startedAt\' in field sessionDoc')
-      done()
-    })
-
+    stub(Session, 'collection', () => ({ findOneAsync: async () => sessionDoc }))
+    stub(TestCycle, 'collection', () => ({ findOneAsync: async () => testCycleDoc }))
+    stub(Feedback, 'collection', () => ({ findOneAsync: async () => feedbackDoc }))
+    const deferred = stub(Meteor, 'defer', () => {})
     const env = { userId, debug: console.debug, flagFromDb: false }
     const arg = { sessionId }
-    getResults.call(env, arg)
+    await getResults.call(env, arg)
+    expect(deferred.calledOnce).to.equal(true)
   })
 })

@@ -20,7 +20,7 @@ describe(removeUser.name, function () {
     mockCollection(Feedback)
   })
   after(async function () {
-    await  restoreCollection(Session)
+    await restoreCollection(Session)
     await restoreCollection(Response)
     await restoreCollection(Feedback)
   })
@@ -32,7 +32,7 @@ describe(removeUser.name, function () {
     clearCollection(Feedback)
   })
 
-  it('throws if the given user is not found',async function () {
+  it('throws if the given user is not found', async function () {
     await expectThrow({
       fn: () => removeUser(),
       message: 'removeUser.userDoesNotExist'
@@ -47,7 +47,7 @@ describe(removeUser.name, function () {
     const responsesRemoved = Math.floor(Math.random() * 100)
     const feedbackRemoved = Math.floor(Math.random() * 100)
     const userRemoved = 1
-    stub(Session, 'collection',  () => ({ removeAsync: async () => sessionsRemoved }))
+    stub(Session, 'collection', () => ({ removeAsync: async () => sessionsRemoved }))
     stub(Response, 'collection', () => ({ removeAsync: async () => responsesRemoved }))
     stub(Feedback, 'collection', () => ({ removeAsync: async () => feedbackRemoved }))
     stub(Meteor.users, 'removeAsync', async () => userRemoved)

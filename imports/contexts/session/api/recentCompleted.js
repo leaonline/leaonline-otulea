@@ -1,5 +1,6 @@
 import { Session } from '../Session'
 import { TestCycle } from '../../testcycle/TestCycle'
+import { mapAsync } from '../../../utils/array/mapAsync'
 
 /**
  * Returns the N recent completed sessions for given users, filters by userId
@@ -39,8 +40,8 @@ export const recentCompleted = async function ({ users, resolve }) {
     })
 
   if (resolve) {
-    return docs.map(sessionDoc => {
-      sessionDoc.testCycle = TestCycle.collection().findOne(sessionDoc.testCycle)
+    return mapAsync(docs, async sessionDoc => {
+      sessionDoc.testCycle = await TestCycle.collection().findOneAsync(sessionDoc.testCycle)
       return sessionDoc
     })
   }

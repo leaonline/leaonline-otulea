@@ -10,7 +10,7 @@ export const createSubmitResponse = ({ extractor, scorer }) =>
 
     // we need to make sure, that this data belongs to the current user's
     // session by checking the unit id against the session's current unit
-    const sessionDoc = sessionId && getSessionDoc({ sessionId, userId })
+    const sessionDoc = sessionId && await getSessionDoc({ sessionId, userId })
 
     if (!sessionDoc || !unitId || !isCurrentUnit({ sessionDoc, unitId })) {
       throw new Meteor.Error('response.submitError', 'response.isNotCurrentUnit', {

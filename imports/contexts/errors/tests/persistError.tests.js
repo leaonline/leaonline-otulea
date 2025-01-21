@@ -19,19 +19,19 @@ describe(persistError.name, function () {
     restoreCollection(Errors)
   })
   beforeEach(function () {
-    stub(Email, 'send', () => {})
+    stub(Email, 'sendAsync', async () => {})
   })
   afterEach(async function () {
     restoreAll()
     await clearCollection(Errors)
   })
-  it('saves the error to the collection', async function () {
+  it('saves the error to the collection', async () => {
     const insertDoc = { hash: Random.id() }
     let inserted = false
     stub(Errors, 'collection', () => ({
-      findOneAsync: () => {},
+      findOneAsync: async () => {},
       updateAsync: expect.fail,
-      insertAsync: doc => {
+      insertAsync: async  doc => {
         expect(doc).to.deep.equal(insertDoc)
         inserted = true
       }
@@ -39,12 +39,12 @@ describe(persistError.name, function () {
     await persistError(insertDoc)
     expect(inserted).to.equal(true)
   })
-  it('counts up if the error exists by hash', async function () {
+  it('counts up if the error exists by hash', async () => {
     const updateDoc = { _id: Random.id(), hash: Random.id() }
     let updated = false
     stub(Errors, 'collection', () => ({
-      findOneAsync: () => updateDoc,
-      updateAsync: (id, transform) => {
+      findOneAsync: async () => updateDoc,
+      updateAsync: async (id, transform) => {
         expect(id).to.equal(updateDoc._id)
         expect(transform).to.deep.equal({
           $inc: { count: 1 }

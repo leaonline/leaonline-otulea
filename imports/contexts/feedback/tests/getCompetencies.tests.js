@@ -5,12 +5,12 @@ import { Random } from 'meteor/random'
 import { stub, restoreAll } from '../../../../tests/helpers.tests'
 import { getCompetencies } from '../api/getCompetencies'
 
-describe(getCompetencies.name, function () {
-  afterEach(function () {
+describe(getCompetencies.name, async () => {
+  afterEach(async () => {
     restoreAll()
   })
 
-  it('fetches competency docs by given ids and returns them as a map', function () {
+  it('fetches competency docs by given ids and returns them as a map', async () => {
     const id1 = Random.id()
     const id2 = Random.id()
     const docs = [{
@@ -25,7 +25,7 @@ describe(getCompetencies.name, function () {
       return { data: docs }
     })
 
-    const map = getCompetencies([id1, id2])
+    const map = await getCompetencies([id1, id2])
     expect(map.size).to.equal(2)
     expect(map.get(id1)).to.deep.equal(docs[0])
     expect(map.get(id2)).to.deep.equal(docs[1])

@@ -82,8 +82,8 @@ describe(addRecord.name, function () {
       await expectThrow({ fn: () => addRecord(input), message })
     }
   })
-  it('creates a new record if none exists for the given user/dimension/level/date',async function () {
-    const alphaLevelId =await  AlphaLevel.collection().insertAsync({
+  it('creates a new record if none exists for the given user/dimension/level/date', async function () {
+    const alphaLevelId = await AlphaLevel.collection().insertAsync({
       shortCode: randomHex(),
       description: randomHex(),
       level: 99
@@ -194,7 +194,7 @@ describe(addRecord.name, function () {
     })
   })
   it('replaces an existing record, if such already exists', async function () {
-    const alphaLevelId =await  AlphaLevel.collection().insertAsync({
+    const alphaLevelId = await AlphaLevel.collection().insertAsync({
       shortCode: randomHex(),
       description: randomHex(),
       level: 99
@@ -260,13 +260,14 @@ describe(addRecord.name, function () {
     const result = await addRecord(data)
     expect(await Record.collection().countDocuments({})).to.equal(1)
 
-    const offset = data.sessionDoc.completedAt.getTime() + 2 * 60 * 60 * 1000
-    data.sessionDoc._id = Random.id(6)
-    data.sessionDoc.startedAt.setTime(offset)
-    data.sessionDoc.completedAt.setTime(offset)
+    const data2 = { ...data }
+    const offset = data2.sessionDoc.completedAt.getTime() + 2 * 60 * 60 * 1000
+    data2.sessionDoc._id = Random.id(6)
+    data2.sessionDoc.startedAt.setTime(offset)
+    data2.sessionDoc.completedAt.setTime(offset)
 
     // same results
-    addRecord(data)
+    await addRecord(data2)
     expect(await Record.collection().countDocuments({})).to.equal(1)
 
     const recordDoc = await Record.collection().findOneAsync()
@@ -313,7 +314,7 @@ describe(addRecord.name, function () {
     })
   })
   it('compares compatencies / alphalevels development with previous days', async function () {
-    const alphaLevelId =await  AlphaLevel.collection().insertAsync({
+    const alphaLevelId = await AlphaLevel.collection().insertAsync({
       shortCode: randomHex(),
       description: randomHex(),
       level: 99
@@ -399,7 +400,7 @@ describe(addRecord.name, function () {
     data.feedbackDoc.competencies[0].perc = 1
     data.feedbackDoc.alphaLevels[0].perc = 1
 
-    addRecord(data)
+    await addRecord(data)
     expect(await Record.collection().countDocuments({})).to.equal(2)
     const record2 = await Record.collection().findOneAsync(insertedId)
     expect(record2.competencies[0].development).to.equal('improved')
@@ -410,7 +411,7 @@ describe(addRecord.name, function () {
     data.feedbackDoc.competencies[0].perc = 0.4
     data.feedbackDoc.alphaLevels[0].perc = 0.4
 
-    addRecord(data)
+    await addRecord(data)
     expect(await Record.collection().countDocuments({})).to.equal(2)
     const record3 = await Record.collection().findOneAsync(insertedId)
     expect(record3.competencies[0].development).to.equal('declined')

@@ -5,30 +5,31 @@ import { clearCollection, mockCollection, restoreCollection } from '../../../../
 import { restoreAll, stub } from '../../../../tests/helpers.tests'
 import { Session } from '../Session'
 import { TestCycle } from '../../testcycle/TestCycle'
+import { mapAsync } from '../../../utils/array/mapAsync'
 
 const recentCompleted = Session.methods.recentCompleted.run
 
-describe(Session.methods.recentCompleted.name, function () {
+describe(Session.methods.recentCompleted.name, async () => {
   let userIds
 
-  before(function () {
+  before(async () => {
     mockCollection(Session)
     mockCollection(TestCycle)
   })
 
-  after(function () {
+  after(async () => {
     restoreCollection(Session)
     restoreCollection(TestCycle)
   })
 
-  beforeEach(function () {
+  beforeEach(async () => {
     userIds = [Random.id(), Random.id()]
   })
 
-  afterEach(function () {
+  afterEach(async () => {
     restoreAll()
-    clearCollection(Session)
-    clearCollection(TestCycle)
+    await clearCollection(Session)
+    await clearCollection(TestCycle)
   })
 
   const createSessionDoc = ({
@@ -46,37 +47,34 @@ describe(Session.methods.recentCompleted.name, function () {
     unitSet: unitSetId
   })
 
-  it('returns the N recent completed sessions for given users', function () {
+  it('returns the N recent completed sessions for given users', async () => {
     // insert a few docs from our target users
-    const insert = ({ completedAt }) => userIds.map(userId => {
-      const insertId = Session
+    const insert = async ({ completedAt }) => mapAsync(userIds, async (userId) => {
+      const insertId = await Session
         .collection()
-        .insert(createSessionDoc({
-          userId,
-          completedAt
-        }))
-      return Session.collection().findOne(insertId)
+        .insertAsync(createSessionDoc({ userId, completedAt }))
+        return await Session.collection().findOneAsync(insertId)
     })
 
-    insert({ completedAt: new Date() })
+    await insert({ completedAt: new Date() })
     // add some random docs from other users
-    Session.collection().insert(createSessionDoc({}))
-    const expected = insert({ completedAt: new Date() })
-    insert({})
-    Session.collection().insert(createSessionDoc({}))
+    await Session.collection().insertAsync(createSessionDoc({}))
+    const expected = await insert({ completedAt: new Date() })
+    await insert({})
+    await Session.collection().insertAsync(createSessionDoc({}))
 
-    const docs = recentCompleted({ users: userIds })
+    const docs = await recentCompleted({ users: userIds })
     expect(docs).to.deep.equal(expected)
 
     const tcDocs = docs.map(doc => ({ _id: doc.testCycle }))
 
     stub(TestCycle, 'collection', () => ({
-      findOne (_id) {
+      findOneAsync: async (_id) => {
         return tcDocs.find(doc => doc._id === _id)
       }
     }))
 
-    const resolved = recentCompleted({ users: userIds, resolve: true })
+    const resolved = await recentCompleted({ users: userIds, resolve: true })
     expect(resolved.map(doc => doc.testCycle)).to.deep.equal(tcDocs)
   })
 })
