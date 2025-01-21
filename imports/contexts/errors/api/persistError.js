@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor'
 import { Errors } from '../Errors'
 import { notifyUsersAboutError } from '../../../api/notify/notifyUsersAboutError'
 

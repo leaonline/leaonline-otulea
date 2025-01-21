@@ -1,7 +1,6 @@
-/* global ServiceConfiguration */
+/* global ServiceConfiguration fetch */
 import { Meteor } from 'meteor/meteor'
 import { Accounts } from 'meteor/accounts-base'
-import { HTTP } from 'meteor/jkuester:http'
 import { Users } from '../../contexts/user/User'
 import { ServiceRegistry } from '../../api/services/ServiceRegistry'
 import { createMethods } from '../../infrastructure/factories/method/createMethods'

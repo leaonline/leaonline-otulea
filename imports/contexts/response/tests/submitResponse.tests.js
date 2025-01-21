@@ -42,11 +42,11 @@ describe(createSubmitResponse.name, function () {
           unitId: Random.id()
         }
       }
-    ];
+    ]
 
     for (const entry of input) {
       await expectThrow({
-        fn: () => submitResponse(input),
+        fn: () => submitResponse(entry),
         message: 'response.isNotCurrentUnit'
       })
     }

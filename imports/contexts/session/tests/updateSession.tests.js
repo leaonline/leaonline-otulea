@@ -242,7 +242,7 @@ describe(Session.methods.next.name, async () => {
 
     const env = { userId }
     const arg = { sessionId }
-    const result =await  updateSession.call(env, arg)
+    const result = await updateSession.call(env, arg)
     expect(result).to.deep.equal({
       nextUnit: nextUnitId,
       nextUnitSet: null,

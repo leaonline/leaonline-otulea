@@ -6,7 +6,6 @@ import { stub, restoreAll, expectThrow } from '../../../../tests/helpers.tests'
 import { Session } from '../Session'
 import { Response } from '../../response/Response'
 import { DocNotFoundError } from '../../errors/DocNotFoundError'
-import { DocumentList } from '../../../api/lists/DocumentList'
 
 const cancelSession = Session.methods.cancel.run
 
@@ -47,7 +46,7 @@ describe(Session.methods.cancel.name, async () => {
     const doc = { _id: sessionId }
     stub(Session, 'collection', () => ({
       findOneAsync: async () => doc,
-      removeAsync: async  id => {
+      removeAsync: async id => {
         expect(id).to.deep.equal(sessionId)
         return 1
       }

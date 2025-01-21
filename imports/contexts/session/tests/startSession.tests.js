@@ -76,7 +76,6 @@ describe(Session.methods.start.name, function () {
       message: DocNotFoundError.reason
     })
 
-
     doc.unitSets = []
     await expectThrow({
       fn: () => startSession.call(env, arg),

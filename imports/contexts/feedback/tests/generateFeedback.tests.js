@@ -418,7 +418,7 @@ describe(generateFeedback.name, async () => {
     await clearCollection(Response)
     await clearCollection(TestCycle)
   })
-  it('throws if session is not done yet',async function () {
+  it('throws if session is not done yet', async function () {
     const sessionId = Random.id()
     const userId = Random.id()
     const sessionDoc = { _id: sessionId }
@@ -533,7 +533,7 @@ describe(generateFeedback.name, async () => {
       ]
     })
 
-    await  ResponseCollection.insertAsync({
+    await ResponseCollection.insertAsync({
       userId,
       sessionId,
       scores: [
@@ -766,7 +766,7 @@ describe(generateFeedback.name, async () => {
       ]
     })
 
-    const feedbackDoc4 =await  generateFeedback({
+    const feedbackDoc4 = await generateFeedback({
       sessionDoc,
       testCycleDoc,
       userId

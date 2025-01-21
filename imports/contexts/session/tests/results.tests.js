@@ -11,7 +11,6 @@ import { stub, restoreAll, expectThrow } from '../../../../tests/helpers.tests'
 import { Session } from '../Session'
 import { TestCycle } from '../../testcycle/TestCycle'
 import { Feedback } from '../../feedback/Feedback'
-import { DocNotFoundError } from '../../errors/DocNotFoundError'
 
 const getResults = Session.methods.results.run
 

@@ -24,7 +24,8 @@ export const createSubmitResponse = ({ extractor, scorer }) =>
       const unitDoc = await Unit.collection().findOneAsync(unitId)
       const itemDoc = extractor({ unitDoc, page, contentId }, debug)
       scores = scorer({ itemDoc, responseDoc })
-    } catch (e) {
+    }
+    catch (e) {
       onError(e)
       failed = true
     }

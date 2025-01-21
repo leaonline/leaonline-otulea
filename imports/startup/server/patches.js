@@ -56,7 +56,7 @@ function notifyUsers ({ notify = [], patchName, result, dryRun }) {
   const allEmails = new Set(defaultNotify.concat(notify))
 
   return Promise.all([allEmails.map(address => {
-    Email.send({
+    return Email.sendAsync({
       to: address,
       subject: subject,
       replyTo: replyTo,

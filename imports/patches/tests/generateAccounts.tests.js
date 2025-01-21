@@ -9,60 +9,56 @@ import { Users } from '../../contexts/user/User'
 mockCollection(Users)
 
 describe(generateAccounts.name, function () {
-  beforeEach(function () {
-    Users.collection().remove()
+  beforeEach(async function () {
+    await Users.collection().removeAsync()
   })
-  it('generates x users by given amount with random codes', function (done) {
+  it('generates x users by given amount with random codes', async function () {
     const comment = Random.id()
-    generateAccounts({
+    const result = await generateAccounts({
       amount: 5,
       dryRun: false,
       isDemo: true,
       comment: comment
-    }, function (result) {
-      const { users, ...rest } = result
-      expect(rest).to.deep.equal({
-        amount: 5,
-        created: 5,
-        dryRun: false,
-        comment: comment,
-        isDemo: true,
-        updated: 5
-      })
-
-      users.forEach(({ userId, code }) => {
-        const userDoc = Meteor.users.findOne({ _id: userId, username: code })
-        expect(userDoc.isDemo).to.equal(true)
-        expect(userDoc.comment).to.equal(comment)
-      })
-
-      done()
     })
+    const { users, ...rest } = result
+    expect(rest).to.deep.equal({
+      amount: 5,
+      created: 5,
+      dryRun: false,
+      comment: comment,
+      isDemo: true,
+      updated: 5
+    })
+
+    expect(users.length).to.equal(5)
+
+    for (const user of users) {
+      const userDoc = await Meteor.users.findOneAsync({ _id: user.userId })
+      expect(userDoc.isDemo).to.equal(true)
+      expect(userDoc.comment).to.equal(comment)
+    }
   })
-  it('does no db writes if dry-run is active', function (done) {
+  it('does no db writes if dry-run is active', async function () {
     const comment = Random.id()
-    generateAccounts({
+    const result = await generateAccounts({
       amount: 5,
       dryRun: true,
       isDemo: false,
       comment: comment
-    }, function (result) {
-      const { users, ...rest } = result
-      expect(rest).to.deep.equal({
-        amount: 5,
-        created: 0,
-        dryRun: true,
-        comment: comment,
-        isDemo: false,
-        updated: 0
-      })
-
-      users.forEach(({ userId, code }) => {
-        const userDoc = Meteor.users.findOne({ _id: userId, username: code })
-        expect(userDoc).to.equal(undefined)
-      })
-
-      done()
     })
+    const { users, ...rest } = result
+    expect(rest).to.deep.equal({
+      amount: 5,
+      created: 0,
+      dryRun: true,
+      comment: comment,
+      isDemo: false,
+      updated: 0
+    })
+
+    for (const user of users) {
+      const userDoc = await Meteor.users.findOneAsync({ _id: user.userId })
+      expect(userDoc).to.equal(undefined)
+    }
   })
 })

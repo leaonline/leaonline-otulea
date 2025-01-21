@@ -8,11 +8,11 @@ export class LocalCacheCollection extends Mongo.Collection {
     this.log = log || (() => {})
   }
 
-  findOne (selector, options) {
+  async findOneAsync (selector, options) {
     const { url, log } = this
     const doc = selector
-      ? super.findOne(selector, options)
-      : super.findOne()
+      ? await super.findOneAsync(selector, options)
+      : await super.findOneAsync()
 
     // we skip early if the doc is already in the collection
     if (doc) {
@@ -26,12 +26,12 @@ export class LocalCacheCollection extends Mongo.Collection {
     const params = { _id: selector._id || selector }
     log('request doc', selector, 'from url', url)
 
-    const document = fetchDoc(url, params)
+    const document = await fetchDoc(url, params)
 
     if (document) {
       // we need to clone the document in order to prevent collection2 from
       // accidentally cleaning things that should not be cleaned
-      const result = this.upsert(document._id, { $set: { ...document } })
+      const result = await this.upsertAsync(document._id, { $set: { ...document } })
       this.log(result)
     }
 

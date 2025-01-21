@@ -53,7 +53,7 @@ describe(Session.methods.recentCompleted.name, async () => {
       const insertId = await Session
         .collection()
         .insertAsync(createSessionDoc({ userId, completedAt }))
-        return await Session.collection().findOneAsync(insertId)
+      return await Session.collection().findOneAsync(insertId)
     })
 
     await insert({ completedAt: new Date() })

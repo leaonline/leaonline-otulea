@@ -31,7 +31,7 @@ describe(persistError.name, function () {
     stub(Errors, 'collection', () => ({
       findOneAsync: async () => {},
       updateAsync: expect.fail,
-      insertAsync: async  doc => {
+      insertAsync: async doc => {
         expect(doc).to.deep.equal(insertDoc)
         inserted = true
       }
