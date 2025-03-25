@@ -11,7 +11,7 @@ const defaultMaxRetries = settings.code.maxRetries
 export const generateAccounts = async ({ amount, dryRun, isDemo = false, comment, debug = () => {} }) => {
   debug('[generateAccounts]: run', { dryRun, amount, isDemo, comment })
 
-  let usersLength = Meteor.users.estimatedDocumentCount()
+  let usersLength = await Meteor.users.estimatedDocumentCount()
   let count = 0
 
   const output = {

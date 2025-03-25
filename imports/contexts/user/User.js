@@ -125,14 +125,14 @@ Users.methods.generateCode = {
   run: onServerExec(function () {
     import { generateUserCode } from '../../api/accounts/generateUserCode'
 
-    return function () {
+    return async function () {
       const { userId } = this
 
       if (userId) {
         throw new Meteor.Error('generateCode.error', 'generateCode.alreadyLoggedIn', { userId })
       }
 
-      const usersLength = Meteor.users.find().count()
+      const usersLength = await Meteor.users.estimatedDocumentCount()
       const maxRetries = usersLength > defaultMaxRetries
         ? usersLength
         : defaultMaxRetries
@@ -158,11 +158,11 @@ Users.methods.register = {
   isPublic: true,
   numRequests: 1,
   timeInterval: 1000,
-  run: onServer(function ({ code, isDemoUser }) {
-    const userId = Accounts.createUser({ username: code, password: code })
+  run: onServer(async function ({ code, isDemoUser }) {
+    const userId = await Accounts.createUser({ username: code, password: code })
 
     if (isDemoUser === true) {
-      Meteor.users.update(userId, { $set: { isDemoUser } })
+      await Meteor.users.updateAsync(userId, { $set: { isDemoUser } })
     }
 
     return userId
@@ -176,9 +176,9 @@ Users.methods.isDebug = {
   },
   numRequests: 1,
   timeInterval: 1000,
-  run: onServer(function ({ value }) {
+  run: onServer(async function ({ value }) {
     const { userId } = this
-    return Meteor.users.update(userId, {
+    return Meteor.users.updateAsync(userId, {
       $set: { debug: value }
     })
   })
@@ -192,8 +192,8 @@ Users.methods.exist = {
   schema: {
     code: String
   },
-  run: onServer(function ({ code }) {
-    return Meteor.users.findOne({ username: code })
+  run: onServer(async function ({ code }) {
+    return Meteor.users.findOneAsync({ username: code })
   })
 }
 
@@ -225,7 +225,7 @@ Users.methods.loggedIn = {
         viewPortHeight
       }
       const updatedAt = new Date()
-      return Meteor.users.update(userId, {
+      return Meteor.users.updateAsync(userId, {
         $set: { updatedAt },
         $addToSet: { agents: updateDoc }
       })

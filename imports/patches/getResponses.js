@@ -17,7 +17,7 @@ const fields = {
   responses: 1
 }
 
-export const getResponses = ({ dryRun }) => {
+export const getResponses = async ({ dryRun }) => {
   const rows = [
     Object.keys(fields).join(';')
   ]

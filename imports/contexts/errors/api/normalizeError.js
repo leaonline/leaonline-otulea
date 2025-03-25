@@ -3,6 +3,19 @@ import { EJSON } from 'meteor/ejson'
 
 const { maxStackSize } = Meteor.settings.public.error
 
+/**
+ * Harmonizes different error types (Meteor.Error, Error etc.) for saving to the DB
+ * @param error
+ * @param browser
+ * @param userId
+ * @param code
+ * @param template
+ * @param method
+ * @param publication
+ * @param endpoint
+ * @param isSystem
+ * @return {{stack: (string|string), name, details: (*), type: *, message}|{stack: (string|string), name, details: (*), type: string, message}}
+ */
 export const normalizeError = ({ error, browser, userId, code, template, method, publication, endpoint, isSystem }) => {
   import { simpleHash } from '../../../utils/simpleHash'
 

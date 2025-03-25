@@ -66,14 +66,14 @@ Videos.methods.update = {
       optional: true
     }
   }),
-  run: onServer(function (updateDoc) {
+  run: onServer(async function (updateDoc) {
     const LogoCollection = Videos.collection()
-    const logoDoc = LogoCollection.findOne()
+    const logoDoc = await LogoCollection.findOneAsync()
     if (!logoDoc) {
-      return LogoCollection.insert(updateDoc)
+      return LogoCollection.insertAsync(updateDoc)
     }
     else {
-      return LogoCollection.update(logoDoc._id, { $set: updateDoc })
+      return LogoCollection.updateAsync(logoDoc._id, { $set: updateDoc })
     }
   })
 }
@@ -84,8 +84,8 @@ Videos.methods.get = {
   numRequests: 1,
   timeInterval: 250,
   schema: {},
-  run: onServer(function () {
-    return Videos.collection().findOne()
+  run: onServer(async function () {
+    return Videos.collection().findOneAsync()
   }),
   call: onClient(function (cb) {
     Meteor.call(Videos.methods.get.name, cb)

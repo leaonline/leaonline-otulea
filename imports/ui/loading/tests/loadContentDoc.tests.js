@@ -28,17 +28,19 @@ describe(loadContentDoc.name, function () {
   })
   it('throws an error if the request targets a faulty _id', async function () {
     const docId = Random.id()
-    const e = await expectThrow(function () {
-      return loadContentDoc(RequestedDocsContext, docId)
+    await expectThrow({
+      fn: function () {
+        return loadContentDoc(RequestedDocsContext, docId)
+      },
+      message: `failed [404] Invalid request id ${docId}`
     })
-
-    expect(e.message).to.deep.equal(`failed [404] Invalid request id ${docId}`)
   })
   it('throws if the response is not a document', async function () {
-    const e = await expectThrow(function () {
-      return loadContentDoc(RequestedDocsContext, 'plain')
+    await expectThrow({
+      fn: function () {
+        return loadContentDoc(RequestedDocsContext, 'plain')
+      },
+      message: `Expected document for GET ${toContentServerURL(RequestedDocsContext.routes.byId.path)}`
     })
-
-    expect(e.message).to.equal(`Expected document for GET ${toContentServerURL(RequestedDocsContext.routes.byId.path)}`)
   })
 })

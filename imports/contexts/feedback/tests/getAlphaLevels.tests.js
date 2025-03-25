@@ -20,7 +20,7 @@ describe(getAlphaLevels.name, async () => {
       _id: id2,
       title: Random.id()
     }]
-    stub(HTTP, 'get', (url, requestOptions) => {
+    stub(HTTP, 'get', async (url, requestOptions) => {
       expect(requestOptions.params.ids).to.deep.equal([id1, id2])
       return { data: docs }
     })

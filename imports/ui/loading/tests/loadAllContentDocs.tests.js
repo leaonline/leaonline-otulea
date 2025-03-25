@@ -9,18 +9,20 @@ describe(loadAllContentDocs.name, function () {
     RequestedDocsContext.collection().remove({})
   })
   it('throws on error-responses', async function () {
-    const e = await expectThrow(function () {
-      return loadAllContentDocs(RequestedDocsContext, { createError: true })
+    await expectThrow({
+      fn: function () {
+        return loadAllContentDocs(RequestedDocsContext, { createError: true })
+      },
+      message: 'failed [404] Invalid request / createError'
     })
-
-    expect(e.message).to.equal('failed [404] Invalid request / createError')
   })
   it('throws if docs contain no _id value', async function () {
-    const e = await expectThrow(function () {
-      return loadAllContentDocs(RequestedDocsContext, { noId: true })
+    await expectThrow({
+      fn: function () {
+        return loadAllContentDocs(RequestedDocsContext, { noId: true })
+      },
+      message: 'Expected doc with _id to upsert'
     })
-
-    expect(e.message).to.equal('Expected doc with _id to upsert')
   })
   it('loads all docs by given context', async function () {
     const docs = await loadAllContentDocs(RequestedDocsContext, {})

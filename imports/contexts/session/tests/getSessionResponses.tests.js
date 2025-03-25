@@ -32,7 +32,7 @@ describe(getSessionResponses.name, function () {
     clearCollection(Response)
   })
 
-  it('returns all responses to a session, mapped to their scores-entries', function () {
+  it('returns all responses to a session, mapped to their scores-entries', async () => {
     const docs = [
       { scores: Random.id() },
       { scores: Random.id() },
@@ -40,15 +40,15 @@ describe(getSessionResponses.name, function () {
       { scores: Random.id() }
     ]
 
-    const expected = Object.values(docs).map(doc => doc.scores)
+    const expected = docs.map(doc => doc.scores)
 
     stub(Response, 'collection', () => ({
       find (query) {
         expect(query).to.deep.equal({ sessionId, userId })
-        return docs
+        return { fetchAsync: async () => docs }
       }
     }))
 
-    expect(getSessionResponses({ sessionId, userId })).to.deep.equal(expected)
+    expect(await getSessionResponses({ sessionId, userId })).to.deep.equal(expected)
   })
 })

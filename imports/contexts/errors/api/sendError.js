@@ -4,6 +4,7 @@
 
 /**
  * Normalizes an error and sends it to the server for saving.
+ * @locus client
  * @param error
  * @param isResponse
  * @param userId

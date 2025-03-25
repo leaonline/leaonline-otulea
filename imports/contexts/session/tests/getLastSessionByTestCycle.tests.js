@@ -31,7 +31,7 @@ describe(Session.methods.byTestCycle.name, function () {
 
   it('returns a doc if the query matches', function (done) {
     stub(Session, 'collection', () => ({
-      findOne (query) {
+      findOneAsync: async (query) => {
         expect(query).to.deep.equal({
           userId: userId,
           testCycle: testCycleId,

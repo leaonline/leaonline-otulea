@@ -87,7 +87,7 @@
   },
   "patches": {
     "alphaUsers": {
-      "active": true,
+      "active": false,
       "dryRun": false,
       "includeAlphaLevels": false,
       "includeCompetencies": true

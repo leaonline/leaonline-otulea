@@ -1,9 +1,6 @@
 import { Meteor } from 'meteor/meteor'
 import { normalizeError } from '../../errors/api/normalizeError'
-
-const asyncTimeout = ms => new Promise(resolve => {
-  setTimeout(() => resolve(), ms)
-})
+import { asyncTimeout } from '../../../utils/asyncTimeout'
 
 const getInspect = (results, debug) => async (name, fn) => {
   const collector = (data) => {

@@ -120,7 +120,7 @@ describe(removeDeadAccounts.name, function () {
       }
     }))
     stub(Response, 'collection', () => ({
-      remove () {
+      removeAsync: async () => {
         return 1
       }
     }))

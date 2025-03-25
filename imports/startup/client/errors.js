@@ -17,12 +17,12 @@ const parseAndSendError = ({ error }) => {
 
 // to log internal blaze errors we setup this exception handler
 // and transform their internal error into something we can use
-if (Blaze.setExceptionHandler) {
-  console.debug('[Blaze]: set exception handler')
-  Blaze.setExceptionHandler(function (message, blazeRuntimeError) {
-    blazeRuntimeError.details = Object.assign({}, blazeRuntimeError.details, { blazeMessage: message })
-    parseAndSendError({ error: blazeRuntimeError })
-  })
+Blaze._reportException = function (e, msg) {
+  if (Blaze._throwNextException) {
+    Blaze._throwNextException = false;
+    throw e;
+  }
+  console.error(msg, e)
 }
 
 // we also want to log any error that occurs on the window level

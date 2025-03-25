@@ -192,8 +192,8 @@ export const generateFeedback = async (options) => {
     alphaLevels: Array.from(aggregatedAlphaLevels.values())
   }
 
-  const docId = Feedback.collection().insert(feedbackDoc)
-  return Feedback.collection().findOne(docId)
+  const docId = await Feedback.collection().insertAsync(feedbackDoc)
+  return Feedback.collection().findOneAsync(docId)
 }
 
 // ///////////////////////////////////////////////////////////////////////////
