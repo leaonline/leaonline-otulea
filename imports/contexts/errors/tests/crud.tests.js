@@ -37,7 +37,7 @@ describe('crud', function () {
     })
   })
   describe(getAllErrors.name, function () {
-    it('returns the query result if not array is passed',async function () {
+    it('returns the query result if not array is passed', async function () {
       stub(Errors, 'collection', () => ({
         find: query => {
           expect(query).to.deep.equal({})

@@ -1,5 +1,5 @@
 import { Blaze } from 'meteor/blaze'
-
+import { Meteor } from 'meteor/meteor'
 // if we use the autoload functionality we don't need to explicitly load basic
 // and generic (stateless) templates, since they are loaded at runtime using
 // dynamic imports.
@@ -24,6 +24,7 @@ Blaze.TemplateInstance.prototype.initDependencies =
 
     if (!autoLoadEnabled) {
       Components.autoLoad()
+      Components.contentPath(Meteor.settings.public.hosts.content.base)
       autoLoadEnabled = true
     }
 

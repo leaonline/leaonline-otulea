@@ -11,10 +11,10 @@ import { dataTarget } from '../../../utils/dataTarget'
 import { getUnitSetForDimensionAndLevel } from '../../../contexts/unitSet/api/getUnitSetForDimensionAndLevel'
 import { showStoryBeforeUnit } from '../../../contexts/unitSet/api/showStoryBeforeUnit'
 import { loadContentDoc } from '../../loading/loadContentDoc'
+import { fatal } from '../../components/fatal/fatal'
 import '../../components/container/container'
 import './overview.scss'
 import './overview.html'
-import { fatal } from '../../components/fatal/fatal'
 
 Template.overview.onDestroyed(function () {
   const instance = this
@@ -66,7 +66,6 @@ Template.overview.onCreated(function () {
     if (!instance.state.get('contentDocsLoadComplete')) {
       return
     }
-
     const data = Template.currentData()
     const { d } = data.queryParams
     const { l } = data.queryParams
@@ -178,13 +177,12 @@ Template.overview.onCreated(function () {
 
   loadContentDocuments()
     .catch(e => {
-      fatal({
-        error: {
-          message: 'content.notAvailable',
-          original: e.message
-        }
-      })
-
+      const error = {
+        message: 'content.notAvailable',
+        original: e.message
+      }
+      fatal({ error })
+      instance.state.set({ error })
       instance.api.sendError({ error: e })
     })
 })
@@ -279,6 +277,9 @@ Template.overview.helpers({
   },
   starting () {
     return Template.getState('starting')
+  },
+  error () {
+    return Template.getState('error')
   }
 })
 

@@ -1,8 +1,8 @@
 <template name="overview">
     <div class="lea-overview-container">
-
+      {{#unless error}}
         {{!--
-            the defaul container lists all dimensions that have been found when
+            The default container lists all dimensions that have been found when
             iterating all unit sets that are associated with this application
         --}}
 
@@ -207,5 +207,16 @@
                 {{/container}}
             {{/if}}
         {{/with}}
+      {{else}}
+        {{#container class="overview-dimensions-container my-4"}}
+          {{#if loadComplete}}
+          <div class="card">
+            <div class="card-body">
+              {{> textGroup text=(i18n error.message) type="danger"}}
+            </div>
+          </div>
+          {{/if}}
+        {{/container}}
+      {{/unless}}
     </div>
 </template>

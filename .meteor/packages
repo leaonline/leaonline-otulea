@@ -16,7 +16,7 @@ standard-minifier-js@3.0.0    # JS minifier run for production mode
 es5-shim@4.8.1          # ECMAScript 5 compatibility for older browsers
 ecmascript@0.16.9              # Enable ECMAScript2015+ syntax in app code
 # shell-server@0.5.0            # Server-side component of the `meteor shell` command
-blaze@3.0.1
+blaze@3.0.2
 
 #========================================
 # testing
@@ -71,7 +71,7 @@ fourseven:scss@4.17.0-rc.0
 #
 aldeed:autoform@8.0.0
 #
-ostrio:flow-router-extra
+ostrio:flow-router-extra@3.12.0
 ostrio:i18n
 #
 ## Blate/Template

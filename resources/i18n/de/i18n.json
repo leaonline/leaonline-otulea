@@ -1,4 +1,7 @@
 {
+  "content": {
+    "notAvailable": "Inhalt sind zur Zeit nicht verfügbar. Bitte versuchen Sie es in Kürze erneut."
+  },
   "actions": {
     "print": "Ausdrucken",
     "close": "Schließen",

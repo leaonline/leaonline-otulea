@@ -19,8 +19,8 @@ const parseAndSendError = ({ error }) => {
 // and transform their internal error into something we can use
 Blaze._reportException = function (e, msg) {
   if (Blaze._throwNextException) {
-    Blaze._throwNextException = false;
-    throw e;
+    Blaze._throwNextException = false
+    throw e
   }
   console.error(msg, e)
 }

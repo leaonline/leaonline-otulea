@@ -127,3 +127,4 @@ dist
 
 # private font
 SemikolonPlus*
+.coverage
