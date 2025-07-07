@@ -40,6 +40,25 @@
                                 {{/routeButton}}
                             {{/if}}
 
+                            {{!-- DEV Users --}}
+                            {{#unless isEnv "production"}}
+                              {{#if loadComplete}}
+                                {{#routeButton
+                                    tts=false
+                                    sm=true
+                                    type="secondary"
+                                    outline=true
+                                    border=true
+                                    group=true
+                                    href=(route "internal")
+                                    class="logout-button mb-2 no-wrap"}}
+                                  <span class="lea-text-sm">{{this.username}}</span>
+                                  <span class="lea-text-sm">{{i18n "routes.internal"}}</span>
+                                  <i class="fa fas fa-fw fa-user"></i>
+                                {{/routeButton}}
+                              {{/if}}
+                            {{/unless}}
+
                             {{!-- LOGOUT BUTTON --}}
                             {{#with currentUser}}
                                 {{#if loadComplete}}

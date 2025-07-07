@@ -1,5 +1,6 @@
 import { createTrigger } from './triggers'
 import { loggedIn, loggedOut } from '../../utils/accountUtils'
+import { Env } from '../../infrastructure/env/Env'
 
 export const Routes = {}
 
@@ -308,3 +309,19 @@ Routes.diagnostics = {
     }
   }
 }
+
+Env.on(['dev', 'staging'], () => {
+  Routes.internal = {
+    path: () => {
+      return `${settings().internal}`
+    },
+    label: 'pages.internal.title',
+    triggersEnter: () => [],
+    async load () {
+      return import('../pages/internal/internal')
+    },
+    target: null,
+    template: 'internal',
+    data: {}
+  }
+})

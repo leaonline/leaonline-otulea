@@ -87,7 +87,7 @@ Meteor.startup(async () => {
     {
       $set: {
         debug: true,
-        loginStyle: 'popup',
+        loginStyle: 'redirect',
         clientId: oauth.clientId,
         secret: oauth.secret,
         dialogUrl: oauth.dialogUrl,

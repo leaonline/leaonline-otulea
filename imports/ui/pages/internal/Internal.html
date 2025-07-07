@@ -1,0 +1,37 @@
+<template name="internal">
+  <div class="container">
+    {{#onComplete complete=dependenciesComplete}}
+      {{#unless currentUser}}
+        <h1>Login for Internal</h1>
+        {{> login}}
+      {{else}}
+        <div class="">
+          <div class="d-flex align-items-baseline">
+            <select class="form-control" id="typeSelect">
+              <option value="unitSet">Unit-Set</option>
+              <option value="unit">Unit</option>
+            </select>
+            <input type="text" placeholder="_id or shortCode" class="form-control me-2" id="unitInput" />
+            <button class="ms-1 btn btn-primary mb-2 no-wrap" id="unitSearchButton">
+              Run Unit
+            </button>
+          </div>
+        </div>
+
+        {{#if unitSetDoc}}
+          <div class="d-flex">
+            {{#each unit in unitDocs}}
+              <button class="unit-btn btn btn-sm btn-{{#unless currentUnit unit}}outline-{{/unless}}secondary" data-index="{{@index}}">
+                {{unit.shortCode}}
+              </button>
+            {{/each}}
+          </div>
+        {{/if}}
+
+        {{#if unitDoc}}
+          {{> taskPageRenderer pageContentData}}
+        {{/if}}
+      {{/unless}}
+    {{/onComplete}}
+  </div>
+</template>

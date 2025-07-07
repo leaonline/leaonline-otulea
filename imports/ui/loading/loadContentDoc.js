@@ -10,7 +10,7 @@ import { asyncHTTP } from './asyncHTTP'
  * @return {Promise<Object>} A promise resoling to an object or void
  */
 
-export const loadContentDoc = async (context, docId, debug = () => {}) => {
+export const loadContentDoc = async (context, docId, debug = () => {}, { isShortCode = false } = {}) => {
   const collection = context.collection()
   const cursor = collection.find(docId)
 
@@ -18,7 +18,9 @@ export const loadContentDoc = async (context, docId, debug = () => {}) => {
     return cursor.fetch()[0]
   }
 
-  const route = context.routes.byId
+  const route = isShortCode
+    ? context.routes.byCode
+    : context.routes.byId
   const url = toContentServerURL(route.path)
 
   const method = route.method.toUpperCase()

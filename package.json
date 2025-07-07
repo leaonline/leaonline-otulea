@@ -71,5 +71,12 @@
       ],
       "import/no-duplicates": 0
     }
+  },
+  "babel":{
+    "env": {
+      "COVERAGE": {
+        "plugins": ["istanbul"]
+      }
+    }
   }
 }

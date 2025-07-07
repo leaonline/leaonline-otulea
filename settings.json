@@ -1,5 +1,6 @@
 {
   "public": {
+    "env": "dev",
     "defaultLocale": "de",
     "issueMail": "mail@example.com",
     "status": "beta",
@@ -41,8 +42,8 @@
     }
   },
   "oauth": {
-    "clientId": "abcdefghijklmnop",
-    "secret": "abcdefghijklmnopabcdefghijklmnop",
+    "clientId": "Lb5soRv7RH2g8inRc",
+    "secret": "Y4yNeHM3bniSogeWacRcYZ3S5yz3TCuW",
     "dialogUrl": "http://localhost:9090/oauth/authorize",
     "accessTokenUrl": "http://localhost:9090/oauth/token",
     "authorizeUrl": "http://localhost:9090/oauth/authorize",
