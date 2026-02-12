@@ -140,7 +140,7 @@ jobs:
       - name: Setup meteor
         uses: meteorengineer/setup-meteor@v1
         with:
-          meteor-release: '2.12'
+          meteor-release: '3.4'
 
       - name: Install NPM Dependencies
         run: meteor npm ci
