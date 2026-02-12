@@ -15,14 +15,15 @@ UITests.withRenderedTemplate = (template, data) => {
       Blaze.renderWithData(ourTemplate, data, el)
       Tracker.flush()
       resolve(el)
-    } catch (e) {
+    }
+    catch (e) {
       reject(e)
-    } finally {
+    }
+    finally {
       document.body.removeChild(el)
     }
   })
 }
-
 
 UITests.preRender = () => Template.registerHelper('_', key => key)
 

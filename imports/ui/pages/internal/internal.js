@@ -26,7 +26,7 @@ Template.internal.onCreated(function () {
     contexts: [Unit, UnitSet],
     tts: true,
     translations: {
-      //de: () => import('./i18n/de')
+      // de: () => import('./i18n/de')
     },
     onComplete: () => {
       instance.onItemInput = createItemInput({
@@ -81,9 +81,9 @@ Template.internal.helpers({
     const unitDoc = instance.state.get('unitDoc')
     const currentPageCount = instance.state.get('currentPageCount')
 
-    let onInput = () => {}
-    let onLoad = () => {}
-    let onNewPage = instance.onNewPage
+    const onInput = () => {}
+    const onLoad = () => {}
+    const onNewPage = instance.onNewPage
 
     return {
       isPreview: true,
@@ -117,7 +117,6 @@ Template.internal.events({
         break
       default:
         console.warn('Unknown type', type)
-        return
     }
   },
   'click .unit-btn' (event, instance) {
@@ -132,7 +131,7 @@ Template.internal.events({
   }
 })
 
-async function loadUnitSet ({ code, isShortCode, instance}) {
+async function loadUnitSet ({ code, isShortCode, instance }) {
   console.debug('fetch unitSet', code, isShortCode)
   const unitSetDoc = await loadContentDoc(UnitSet, code, console.debug, { isShortCode })
   const unitDocs = []
@@ -143,7 +142,7 @@ async function loadUnitSet ({ code, isShortCode, instance}) {
   }
   instance.state.set({ unitSetDoc, unitDocs })
 }
-async function loadUnit ({ code, isShortCode, instance}) {
+async function loadUnit ({ code, isShortCode, instance }) {
   console.debug('fetch unit', code, isShortCode)
   const unitDoc = await loadContentDoc(Unit, code, console.debug, { isShortCode })
   instance.state.set({ unitDoc, currentPageCount: 0 })

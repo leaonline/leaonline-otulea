@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor'
 import { Videos } from '../../contexts/Videos/Videos'
 import { ServiceRegistry } from '../../api/services/ServiceRegistry'
 import { createCollection } from '../../infrastructure/factories/collection/createCollection'

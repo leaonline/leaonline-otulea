@@ -8,7 +8,7 @@ import { Env } from '../../infrastructure/env/Env'
 export const RouteHelpers = {}
 
 RouteHelpers.route = (key, ...optionalArgs) => resolveRoute(key, ...optionalArgs)
-RouteHelpers.routeDef =(key) => Routes[key]
+RouteHelpers.routeDef = (key) => Routes[key]
 RouteHelpers.backRoute = () => backRoute()
 RouteHelpers.referrer = () => {
   const location = Router.location()

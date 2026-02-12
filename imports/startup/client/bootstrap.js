@@ -3,7 +3,6 @@ import { Tracker } from 'meteor/tracker'
 import { initFullTheme } from '../../ui/layout/theme/initFullTheme'
 import './minimal.scss'
 
-
 Meteor.startup(() => {
   setTimeout(async () => {
     const popper = (await import('@popperjs/core')).default

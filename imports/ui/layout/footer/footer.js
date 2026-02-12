@@ -2,7 +2,6 @@ import { Template } from 'meteor/templating'
 import { Legal } from '../../../contexts/legal/Legal'
 import { Logos } from '../../../contexts/logos/Logos'
 import { createIssuesLink } from './createIssuesLink'
-import './footer.scss'
 import './footer.html'
 
 const legalRoutes = Object.keys(Legal.schema).map(key => {

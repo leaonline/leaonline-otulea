@@ -1,8 +1,8 @@
+import { Meteor } from 'meteor/meteor'
 import { Template } from 'meteor/templating'
 import { EJSON } from 'meteor/ejson'
 import { Schema } from '../../../api/schema/Schema'
 import { loggedIn } from '../../../utils/accountUtils'
-import { Router } from '../../routing/Router'
 import './login.html'
 
 const loginSchema = Schema.create({
@@ -11,8 +11,8 @@ const loginSchema = Schema.create({
     max: 32,
     label: 'contexts.users.username',
     autoform: {
-      autocomplete: 'username',
-    },
+      autocomplete: 'username'
+    }
   },
   password: {
     type: String,
@@ -20,14 +20,14 @@ const loginSchema = Schema.create({
     max: 128,
     autoform: {
       type: 'password',
-      autocomplete: 'current-password',
-    },
-  },
+      autocomplete: 'current-password'
+    }
+  }
 })
 
 const states = {
   login: 'login',
-  loggedIn: 'loggedIn',
+  loggedIn: 'loggedIn'
 }
 
 Template.login.onCreated(function () {
@@ -43,29 +43,29 @@ Template.login.onCreated(function () {
 })
 
 Template.login.helpers({
-  loginError() {
+  loginError () {
     return Template.getState('loginError')
   },
-  view(name) {
+  view (name) {
     return Template.getState('view') === name
   },
-  loggedIn() {
+  loggedIn () {
     const instance = Template.instance()
     return (
       instance.state.get('view') === states.loggedIn &&
       !instance.state.get('loggingIn')
     )
   },
-  loggingIn() {
+  loggingIn () {
     return Template.getState('loggingIn')
   },
-  loginSchema() {
+  loginSchema () {
     return loginSchema
-  },
+  }
 })
 
 Template.login.events({
-  'click .login-button'(event, templateInstance) {
+  'click .login-button' (event, templateInstance) {
     event.preventDefault()
 
     templateInstance.state.set('loggingIn', true)
@@ -76,20 +76,21 @@ Template.login.events({
         return templateInstance.state.set('loginError', {
           name: code,
           reason: err.reason,
-          details: EJSON.stringify(err.details?.data),
+          details: EJSON.stringify(err.details?.data)
         })
       }
     }
 
     try {
       Meteor.loginWithLea(cb)
-    } catch (e) {
+    }
+    catch (e) {
       templateInstance.state.set('loggingIn', false)
       return templateInstance.state.set('loginError', {
         name: e.error ?? e.name,
         reason: e.reason ?? e.message,
-        details: EJSON.stringify(e.details?.data),
+        details: EJSON.stringify(e.details?.data)
       })
     }
-  },
+  }
 })
