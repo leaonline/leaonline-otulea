@@ -1,5 +1,5 @@
 import { ServiceRegistry } from '../services/ServiceRegistry'
-import SimpleSchema from 'simpl-schema'
+import SimpleSchema from 'meteor/aldeed:simple-schema'
 import { isomorph } from '../../utils/archUtils'
 
 const schemaOptions = Object.keys(ServiceRegistry.schemaOptions)

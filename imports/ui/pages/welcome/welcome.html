@@ -137,7 +137,7 @@
                             {{#with randomCode}}
                                 <div class="col col-md-8 col-lg-6 mx-auto d-flex">
                                     {{> soundbutton text=this.tts lg=true outline=true}}
-                                    {{> text src=this.text class="lea-text-xl ml-3 flex-fill d-flex" tokenClass="flex-fill text-center"}}
+                                    {{> text src=this.text class="lea-text-xl ms-3 flex-fill d-flex" tokenClass="flex-fill text-center"}}
                                 </div>
                             {{else}}
                                 {{> loading }}
@@ -153,7 +153,7 @@
                                 {{> soundbutton text=loginTTS lg=true outline=true disabled=true class="active"}}
                             {{/with}}
                             <div class="input-group input-group-lg mx-auto">
-                                <input type="text" data-index="0" maxlength="1" class="login-field text-uppercase form-control text-center mr-md-2" autofocus/>
+                                <input type="text" data-index="0" maxlength="1" class="login-field text-uppercase form-control text-center me-md-2" autofocus/>
                                 {{#each index in inputFieldIndices}}
                                     <input type="text" data-index="{{index}}" maxlength="1" class="login-field text-uppercase form-control text-center mx-md-2"/>
                                 {{/each}}

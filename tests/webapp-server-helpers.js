@@ -38,79 +38,64 @@ const _singleDocCollection = new Mongo.Collection(null)
 RequestedDocsContext.collection = () => _singleDocCollection
 
 if (Meteor.isServer) {
-  WebApp.connectHandlers.use(urls.path200, function (req, res, next) {
+  WebApp.handlers.get(urls.path200, function (req, res, next) {
     next()
   })
 
-  WebApp.connectHandlers.use(urls.path400, function (req, res) {
-    res.writeHead(400)
-    res.end('not found')
+  WebApp.handlers.get(urls.path400, function (req, res) {
+    res.status(400)
+    res.send('not found')
   })
 
-  WebApp.connectHandlers.use(RequestedDocsContext.routes.byId.path, function (req, res) {
+  WebApp.handlers.get(RequestedDocsContext.routes.byId.path, function (req, res) {
     const { _id } = req.query
 
     if (_id === 'plain') {
-      res.writeHead(200, { 'Content-Type': 'application/json; charset=UTF-8' })
-      res.end(EJSON.stringify(new Date()))
+      res.status(200).set({ 'Content-Type': 'application/json; charset=UTF-8' }).send(EJSON.stringify(new Date()))
       return
     }
 
     if (_id !== RequestedDocsContext.doc._id) {
-      res.writeHead(404)
-      res.end(`Invalid request id ${_id}`)
+      res.status(404).send(`Invalid request id ${_id}`)
       return
     }
 
-    res.writeHead(200, {
-      'Content-Type': 'application/json; charset=UTF-8'
-    })
-
     const { doc } = RequestedDocsContext
-    res.end(EJSON.stringify(doc))
+    res.status(200).set({ 'Content-Type': 'application/json; charset=UTF-8' }).send(EJSON.stringify(doc))
   })
 
-  WebApp.connectHandlers.use(RequestedDocsContext.routes.all.path, function (req, res) {
+  WebApp.handlers.get(RequestedDocsContext.routes.all.path, function (req, res) {
     const { noId, noDocs, noArray, empty, createError } = req.query
 
     if (noId) {
       const doc = { ...RequestedDocsContext.doc }
       delete doc._id
 
-      res.writeHead(200, { 'Content-Type': 'application/json; charset=UTF-8' })
-      res.end(EJSON.stringify([doc]))
+      res.status(200).set({ 'Content-Type': 'application/json; charset=UTF-8' }).send(EJSON.stringify([doc]))
       return
     }
 
     if (noDocs) {
-      res.writeHead(200, { 'Content-Type': 'application/json; charset=UTF-8' })
-      res.end(EJSON.stringify([]))
+      res.set(200).set({ 'Content-Type': 'application/json; charset=UTF-8' }).send(EJSON.stringify([]))
       return
     }
 
     if (noArray) {
-      res.writeHead(200, { 'Content-Type': 'application/json; charset=UTF-8' })
-      res.end(EJSON.stringify(RequestedDocsContext.doc))
+      res.status(200).set({ 'Content-Type': 'application/json; charset=UTF-8' }).send(EJSON.stringify(RequestedDocsContext.doc))
       return
     }
 
     if (empty) {
-      res.writeHead(200, { 'Content-Type': 'application/json; charset=UTF-8' })
-      res.end(EJSON.stringify([]))
+      res.status(200).set({ 'Content-Type': 'application/json; charset=UTF-8' }).send(EJSON.stringify([]))
       return
     }
 
     if (createError) {
-      res.writeHead(404)
-      res.end('Invalid request / createError')
+      res.status(404).send('Invalid request / createError')
       return
     }
 
-    res.writeHead(200, {
-      'Content-Type': 'application/json; charset=UTF-8'
-    })
-
     const { doc } = RequestedDocsContext
-    res.end(EJSON.stringify([doc]))
+    res.status(200).set({ 'Content-Type': 'application/json; charset=UTF-8' }).send(EJSON.stringify([doc]))
   })
 }

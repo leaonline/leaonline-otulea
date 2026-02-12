@@ -9,29 +9,26 @@
     "lint:code-fix": "standardx --fix -v | snazzy",
     "lint:style": "stylelint \"**/*.scss\"",
     "lint:style-fix": "stylelint --fix \"**/*.scss\"",
-    "lint:markdown": "markdownlint \"**/*.md\" --config ./.markdownlint.json",
-    "lint:markdown-fix": "markdownlint --fix \"**/*.md\" --config ./.markdownlint.json",
     "build:notes-tree": "markdown-notes-tree && npm run lint:markdown-fix",
     "visualize": "meteor --production --extra-packages bundle-visualizer,dynamic-import --settings=settings.json"
   },
   "dependencies": {
-    "@babel/runtime": "^7.26.0",
+    "@babel/runtime": "^7.28.6",
     "@fortawesome/fontawesome-free": "^5.15.4",
-    "bcrypt": "^5.1.1",
-    "bootstrap": "^4.6.2",
-    "debug": "^4.4.0",
+    "@popperjs/core": "^2.11.8",
+    "bcrypt": "^6.0.0",
+    "bootstrap": "^5.3.8",
+    "debug": "^4.4.3",
     "detect-os": "^1.2.1",
     "easy-speech": "^2.4.0",
-    "helmet": "^4.6.0",
-    "jquery": "^3.7.1",
+    "helmet": "^8.1.0",
+    "jquery": "^4.0.0",
     "lozad": "^1.16.0",
-    "marked": "^5.1.2",
-    "meteor-node-stubs": "^1.2.12",
-    "popper.js": "^1.16.1",
+    "marked": "^17.0.1",
+    "meteor-node-stubs": "^1.2.25",
     "print-js": "^1.6.0",
     "showdown": "^2.1.0",
-    "simpl-schema": "^1.13.1",
-    "ua-parser-js": "0.7.28"
+    "ua-parser-js": "^2.0.9"
   },
   "meteor": {
     "mainModule": {
@@ -41,19 +38,18 @@
     "testModule": "tests/main.js"
   },
   "devDependencies": {
-    "@babel/core": "^7.26.0",
-    "@babel/eslint-parser": "^7.26.5",
-    "babel-plugin-istanbul": "^6.1.1",
-    "chai": "^4.5.0",
-    "eslint-plugin-security": "^1.7.1",
-    "markdownlint-cli": "^0.31.1",
-    "puppeteer": "19.3.0",
-    "sinon": "^11.1.2",
+    "@babel/core": "^7.29.0",
+    "@babel/eslint-parser": "^7.28.6",
+    "babel-plugin-istanbul": "^7.0.1",
+    "chai": "^6.2.2",
+    "eslint-plugin-security": "^3.0.1",
+    "puppeteer": "^24.37.2",
+    "sinon": "^21.0.1",
     "snazzy": "^9.0.0",
     "standardx": "^7.0.0",
-    "stylelint": "^13.13.1",
-    "stylelint-config-sass-guidelines": "^8.0.0",
-    "stylelint-config-standard": "^22.0.0"
+    "stylelint": "^17.2.0",
+    "stylelint-config-sass-guidelines": "^13.0.0",
+    "stylelint-config-standard": "^40.0.0"
   },
   "eslintConfig": {
     "parser": "@babel/eslint-parser",
@@ -72,10 +68,12 @@
       "import/no-duplicates": 0
     }
   },
-  "babel":{
+  "babel": {
     "env": {
       "COVERAGE": {
-        "plugins": ["istanbul"]
+        "plugins": [
+          "istanbul"
+        ]
       }
     }
   }

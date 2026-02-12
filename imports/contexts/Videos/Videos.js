@@ -8,6 +8,14 @@ export const Videos = {
   isConfigDoc: true
 }
 
+Videos.init = onServer(async () => {
+  const VideosCollection = Videos.collection()
+  if (!(await VideosCollection.findOneAsync())) {
+    await VideosCollection.insertAsync({})
+  }
+  return VideosCollection.findOneAsync({})
+})
+
 Videos.schema = {
   welcome: {
     type: String,

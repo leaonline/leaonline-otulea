@@ -3,9 +3,10 @@ import { Tracker } from 'meteor/tracker'
 import { initFullTheme } from '../../ui/layout/theme/initFullTheme'
 import './minimal.scss'
 
+
 Meteor.startup(() => {
   setTimeout(async () => {
-    const popper = (await import('popper.js')).default
+    const popper = (await import('@popperjs/core')).default
     global.Popper = global.Popper || popper
   }, 1000)
 

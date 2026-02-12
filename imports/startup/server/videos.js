@@ -19,3 +19,7 @@ createPublications(publications)
 rateLimitPublications(publications)
 
 ServiceRegistry.register(Videos)
+
+Meteor.startup(async () => {
+  await Videos.init()
+})
