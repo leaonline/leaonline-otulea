@@ -108,7 +108,7 @@ jobs:
       # CACHING
       - name: Install Meteor
         id: cache-meteor-install
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/.meteor
           key: v3-meteor-${{ hashFiles('.meteor/versions') }}
@@ -117,7 +117,7 @@ jobs:
 
       - name: Cache NPM dependencies
         id: cache-meteor-npm
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/.npm
           key: v3-npm-${{ hashFiles('package-lock.json') }}
@@ -126,7 +126,7 @@ jobs:
 
       - name: Cache Meteor build
         id: cache-meteor-build
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: |
             .meteor/local/resolver-result-cache.json
@@ -149,7 +149,7 @@ jobs:
         run: sh ./test.sh -c -o # run -o once with -c coverage
 
       - name: Upload coverage
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: coverage-folder
           path: .coverage/
@@ -163,14 +163,14 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Download coverage
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: coverage-folder
           path: .coverage/
 
 
       - name: Coverage Report
-        uses: VeryGoodOpenSource/very_good_coverage@v1.1.1
+        uses: VeryGoodOpenSource/very_good_coverage@v3
         with:
           path: ".coverage/lcov.info"
           min_coverage: 65 # TODO increase to 95!
