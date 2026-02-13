@@ -23,7 +23,6 @@
     "easy-speech": "^2.4.0",
     "helmet": "^8.1.0",
     "jquery": "^4.0.0",
-    "lozad": "^1.16.0",
     "marked": "^17.0.1",
     "meteor-node-stubs": "^1.2.25",
     "print-js": "^1.6.0",
