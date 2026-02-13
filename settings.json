@@ -3,7 +3,7 @@
     "env": "dev",
     "defaultLocale": "de",
     "issueMail": "mail@example.com",
-    "status": "beta",
+    "status": "production",
     "accounts": {
       "code": {
         "length": 5

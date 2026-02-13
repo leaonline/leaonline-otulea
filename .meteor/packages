@@ -45,9 +45,8 @@ leaonline:publication-factory
 leaonline:ratelimit-factory
 
 ## Collections
-aldeed:collection2
-aldeed:simple-schema
-dburles:mongo-collection-instances
+aldeed:collection2@4.1.5
+aldeed:simple-schema@2.0.0
 
 ## files
 ostrio:files

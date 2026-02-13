@@ -40,7 +40,7 @@ describe(initClientContext.name, function () {
     expect(build).to.equal(ctx)
 
     expect(ctx.collection()).to.be.instanceOf(Mongo.Collection)
-    const collection = Mongo.Collection.get(ctx.name)
+    const collection = Mongo.getCollection(ctx.name)
     expect(ctx.collection()).to.equal(collection)
 
     // skip second creation

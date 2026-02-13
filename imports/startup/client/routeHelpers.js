@@ -7,6 +7,7 @@ import { Env } from '../../infrastructure/env/Env'
 
 export const RouteHelpers = {}
 
+RouteHelpers.fullUrl = (path) => Meteor.absoluteUrl(path)
 RouteHelpers.route = (key, ...optionalArgs) => resolveRoute(key, ...optionalArgs)
 RouteHelpers.routeDef = (key) => Routes[key]
 RouteHelpers.backRoute = () => backRoute()
