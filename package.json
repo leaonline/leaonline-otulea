@@ -44,6 +44,7 @@
     "chai": "^6.2.2",
     "eslint-plugin-security": "^3.0.1",
     "puppeteer": "^24.37.2",
+    "simpl-schema": "^1.13.1",
     "sinon": "^21.0.1",
     "snazzy": "^9.0.0",
     "standardx": "^7.0.0",

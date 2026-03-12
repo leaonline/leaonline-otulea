@@ -5,18 +5,30 @@
         <h1>Login for Internal</h1>
         {{> login}}
       {{else}}
+        <h1>{{i18n "internal.title"}}</h1>
         <div class="">
           <div class="d-flex align-items-baseline">
             <select class="form-control" id="typeSelect">
-              <option value="unitSet">Unit-Set</option>
+              <option value="unitSet" selected>Unit-Set</option>
               <option value="unit">Unit</option>
+              <option value="testCycle">Test-Cycle</option>
             </select>
-            <input type="text" placeholder="_id or shortCode" class="form-control me-2" id="unitInput" />
+            <select class="form-control" id="fieldSelect">
+              <option value="code" selected>Short-Code (lea id)</option>
+              <option value="_id">Document _id</option>
+            </select>
+            <input type="text" placeholder="{{i18n "internal.enterValue"}}" class="form-control me-2" id="unitInput" />
             <button class="ms-1 ml-1 btn btn-primary mb-2 no-wrap" id="unitSearchButton">
-              Run Unit
+              {{i18n "internal.load"}}
             </button>
           </div>
         </div>
+
+        {{#if error}}
+          <div class="alert alert-danger">
+            {{error.message}}
+          </div>
+        {{/if}}
 
         {{#if unitSetDoc}}
           <div class="d-flex">

@@ -1,14 +1,16 @@
 import { Unit } from '../../../contexts/Unit'
 import { Template } from 'meteor/templating'
+import { UnitSet } from '../../../contexts/unitSet/UnitSet'
 import { loadContentDoc } from '../../loading/loadContentDoc'
 import { initTaskRenderers } from '../../renderers/initTaskRenderers'
 import { createItemInput } from '../unit/item/createItemInput'
 import { createItemLoad } from '../unit/item/createItemLoad'
+import { dataTarget } from '../../../utils/dataTarget'
+import { errorToObject } from '../../../utils/object/errorToObject'
 import { ResponseCache } from '../unit/cache/ResponseCache'
+import internalLang from './i18n/lang'
 import './Internal.html'
 import '../login/login'
-import { UnitSet } from '../../../contexts/unitSet/UnitSet'
-import { dataTarget } from '../../../utils/dataTarget'
 
 const shortCodeRegex = /[a-zA-Z]{2}_\d\d\d\d_.*/
 const renderersLoaded = initTaskRenderers()
@@ -17,6 +19,7 @@ const responseCache = ResponseCache.create({
   setItem () {},
   removeItem () {}
 })
+
 Template.internal.onCreated(function () {
   const instance = this
   instance.state.setDefault('currentPageCount', 0)
@@ -25,9 +28,7 @@ Template.internal.onCreated(function () {
     language: true,
     contexts: [Unit, UnitSet],
     tts: true,
-    translations: {
-      // de: () => import('./i18n/de')
-    },
+    translations: internalLang,
     onComplete: () => {
       instance.onItemInput = createItemInput({
         cache: responseCache,
@@ -97,17 +98,22 @@ Template.internal.helpers({
       onLoadError: err => console.error(err),
       onLoadComplete: () => console.warn('item renderer load complete')
     }
+  },
+  error () {
+    return Template.getState('error')
   }
 })
 
 Template.internal.events({
   'click #unitSearchButton': async function (event, instance) {
     event.preventDefault()
-
+    debugger
     const type = instance.$('#typeSelect').val().trim()
+    const field = instance.$('#fieldSelect').val().trim()
     const code = instance.$('#unitInput').val().trim()
-    const isShortCode = shortCodeRegex.test(code)
+    if (!code) return
 
+    const isShortCode = field === 'code'
     switch (type) {
       case 'unitSet':
         await loadUnitSet({ code, isShortCode, instance })
@@ -116,36 +122,46 @@ Template.internal.events({
         await loadUnit({ code, isShortCode, instance })
         break
       default:
-        console.warn('Unknown type', type)
+        instance.state.set({ error: { message: `Invalid type selected: ${type}` } })
     }
   },
   'click .unit-btn' (event, instance) {
     event.preventDefault()
     instance.state.set('unitDoc', null)
     const index = dataTarget(event, 'index')
-    console.debug(index)
     const units = instance.state.get('unitDocs')
     const unitDoc = units[index]
-    console.debug('unitDoc', unitDoc.shortCode)
     setTimeout(() => instance.state.set({ unitDoc }), 300)
   }
 })
 
 async function loadUnitSet ({ code, isShortCode, instance }) {
   console.debug('fetch unitSet', code, isShortCode)
-  const unitSetDoc = await loadContentDoc(UnitSet, code, console.debug, { isShortCode })
-  const unitDocs = []
-  console.debug('fetch units for unitSet', unitSetDoc._id, unitSetDoc.units.length)
-  for (const unitId of unitSetDoc.units) {
-    const unitDoc = await loadContentDoc(Unit, unitId, console.debug, { isShortCode })
-    unitDocs.push(unitDoc)
+  try {
+    const unitSetDoc = await loadContentDoc(UnitSet, code, console.debug, { isShortCode })
+    const unitDocs = []
+    console.debug('fetch units for unitSet', unitSetDoc._id, unitSetDoc.units.length)
+    for (const unitId of unitSetDoc.units) {
+      const unitDoc = await loadContentDoc(Unit, unitId, console.debug, { isShortCode: false })
+      unitDocs.push(unitDoc)
+    }
+    instance.state.set({ unitSetDoc, unitDocs, error: null })
   }
-  instance.state.set({ unitSetDoc, unitDocs })
+  catch (e) {
+    console.error('Error loading unitSet', e)
+    instance.state.set({ unitSetDoc: null, unitDocs: [], error: errorToObject(e) })
+  }
 }
 async function loadUnit ({ code, isShortCode, instance }) {
   console.debug('fetch unit', code, isShortCode)
-  const unitDoc = await loadContentDoc(Unit, code, console.debug, { isShortCode })
-  instance.state.set({ unitDoc, currentPageCount: 0 })
+  try {
+    const unitDoc = await loadContentDoc(Unit, code, console.debug, { isShortCode })
+    instance.state.set({ unitDoc, currentPageCount: 0, error: null })
+  }
+  catch (e) {
+    console.error('Error loading unit', e)
+    instance.state.set({ unitDoc: null, error: errorToObject(e) })
+  }
 }
 
 function onPageNavUpdate ({ action, newPage, templateInstance, onComplete }) {
