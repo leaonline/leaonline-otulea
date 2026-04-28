@@ -59,6 +59,7 @@ leaonline:corelib@2.0.1
 leaonline:ddp-login@3.0.1
 leaonline:ddp-login-handler@3.0.2
 leaonline:grid-factory@1.6.0
+leaonline:jwt@0.0.1
 leaonline:method-factory@2.0.0
 leaonline:oauth-lea@3.0.1
 leaonline:publication-factory@2.0.0

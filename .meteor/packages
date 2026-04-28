@@ -23,15 +23,12 @@ blaze@3.0.2
 #========================================
 meteortesting:mocha@3.2.0
 lmieulet:meteor-coverage@5.0.0
-
+leaonline:jwt
 # http
 #
 ## client
 jkuester:http
-#
-## uncomment on deploy
-## zodern:profile-require
-#
+
 ## Base Tools
 leaonline:corelib
 leaonline:ui
