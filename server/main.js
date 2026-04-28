@@ -19,5 +19,6 @@ import '../imports/startup/server/Session'
 import '../imports/startup/server/Record'
 import '../imports/startup/server/diagnostics'
 import '../imports/startup/server/rateLimit'
+import '../imports/startup/server/syncContent'
 // apply patches at the very last stage
 import '../imports/startup/server/patches'
