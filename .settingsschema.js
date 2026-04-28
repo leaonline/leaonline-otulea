@@ -101,6 +101,19 @@ module.exports = function (SimpleSchema, settings) {
       secret: String,
       url: String
     }),
+    remotes: schema({
+      content: schema({
+        "url": String,
+        "jwt": schema({
+          "key": String,
+          "sub": String
+        }),
+        "sync": {
+          type: Object,
+          blackbox: true
+        }
+      })
+    }),
     patches: schema({
       alphaUsers: schema({
         active: Boolean,

@@ -71,7 +71,7 @@ Template.story.helpers({
     const color = intsance.state.get('color')
 
     return {
-      isPreview: true,
+      isStory: true,
       currentPageCount: -1,
       sessionId: sessionDoc._id,
       doc: unitSetDoc,

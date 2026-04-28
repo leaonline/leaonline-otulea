@@ -6,29 +6,32 @@ import { simpleHash } from '../../../../utils/simpleHash'
  * Keeps responses in a storage (Storage API).
  */
 export class ResponseCache {
-  static create (storage) {
-    return new ResponseCache(storage)
+  static create (storage, options) {
+    return new ResponseCache(storage, options)
   }
 
-  constructor (storage) {
+  constructor (storage, options = {}) {
     this.storage = storage
+    this.getKey = options.getKey || getKey
+    this.encode = options.encode || encB64
+    this.decode = options.decode || decB64
   }
 
   save (responseData) {
-    const key = getKey(responseData)
+    const key = this.getKey(responseData)
     const value = EJSON.stringify(responseData)
-    const b64Value = btoa(value)
+    const b64Value = this.encode(value)
     this.storage.setItem(key, b64Value)
   }
 
   load (responseData) {
-    const key = getKey(responseData)
+    const key = this.getKey(responseData)
     const value = this.storage.getItem(key)
-    return value && EJSON.parse(atob(value))
+    return value && EJSON.parse(this.decode(value))
   }
 
   clear (responseData) {
-    const key = getKey(responseData)
+    const key = this.getKey(responseData)
     // no need to clear items that do not exist
     if (!this.storage.getItem(key)) {
       return true
@@ -49,6 +52,9 @@ export class ResponseCache {
     })
   }
 }
+
+const encB64 = x => btoa(x)
+const decB64 = y => atob(y)
 
 function getKey ({ sessionId, unitId, page, contentId }) {
   const hash = simpleHash(`${sessionId}-${unitId}-${page}-${contentId}`)

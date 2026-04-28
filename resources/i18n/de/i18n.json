@@ -32,6 +32,9 @@
     "description": "Beschreibung",
     "logo": "Lea Logo"
   },
+  "task": {
+    "submit": "Überprüfen"
+  },
   "pages": {},
   "users": {
     "title": "User / TN"

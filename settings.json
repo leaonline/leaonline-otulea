@@ -86,6 +86,25 @@
     "secret": "lea.online.secret",
     "url": "http://localhost:7070/collect"
   },
+  "remotes": {
+    "content": {
+      "url": "localhost:3030",
+      "jwt": {
+        "key": "0123456789001234567890",
+        "sub": "app-backend-01234567890"
+      },
+      "sync": {
+        "field": true,
+        "unit": true,
+        "unitSet": true,
+        "dimension": true,
+        "level": true,
+        "testCycle": true,
+        "competency": true,
+        "competencyCategory": true
+      }
+    }
+},
   "patches": {
     "alphaUsers": {
       "active": false,

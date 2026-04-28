@@ -190,13 +190,13 @@ Template.unit.helpers({
 
     return {
       isPreview: false,
-      currentPageCount: currentPageCount,
+      currentPageCount,
       sessionId: sessionDoc._id,
       doc: unitDoc,
-      color: color,
-      onInput: onInput,
-      onLoad: onLoad,
-      onNewPage: onNewPage,
+      color,
+      onInput,
+      onLoad,
+      onNewPage,
       onLoadError: err => console.error(err),
       onLoadComplete: () => console.warn('item renderer load complete')
     }
