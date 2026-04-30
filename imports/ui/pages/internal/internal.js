@@ -34,6 +34,9 @@ Template.internal.onCreated(function () {
       },
       removeItem (key) {
         delete this.data[key]
+      },
+      getAll () {
+        return { ...this.data }
       }
     }
 
@@ -65,6 +68,7 @@ Template.internal.onCreated(function () {
           createIfMissing: true
         })
         instance.onNewPage = ({ action, newPage }, onComplete) => {
+          Object.keys(storage.getAll()).forEach(key => storage.removeItem(key))
           onPageNavUpdate({
             action,
             newPage,
@@ -80,12 +84,13 @@ Template.internal.onCreated(function () {
       }
     })
 
-    instance.onNewPage = () => {
-      instance.state.set('currentPageCount', instance.state.get('currentPageCount') + 1)
-    }
-
     instance.onEvaluate = () => {
-      const allResponses = Object.entries(storage.data).map(value => {
+      const currentPage = instance.state.get('currentPageCount')
+      const allResponses = Object.entries(storage.data).filter(entry => {
+        // filter out entries from other pages
+        const [_sessionId, _unitId, page] = entry[0].split('-')
+        return page == currentPage
+      }).map(value => {
         const [sessionId, unitId, page, itemId] = value[0].split('-')
         const data = { sessionId, unitId, page, itemId, ...EJSON.parse(value[1]) }
         const itemDefinitions = Unit.getContentElement({
