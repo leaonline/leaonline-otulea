@@ -128,7 +128,6 @@ ContentServer.sync = async ({ name, debug } = {}) => {
   stats.removed = await collection.removeAsync({ _id: { $nin: allIds } })
   log(JSON.stringify(stats))
 
-
   await onSyncEnd(stats)
 
   return stats

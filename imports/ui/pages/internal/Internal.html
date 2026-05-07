@@ -30,8 +30,14 @@
           </div>
         {{/if}}
 
+        {{!- if unit set is loaded, we need to show the story and the available units --}}
         {{#if unitSetDoc}}
-          <div class="d-flex">
+          <div class="grid">
+            {{#if unitSetDoc.story}}
+              <button class="story-btn btn btn-sm btn-{{#unless story}}outline-{{/unless}}secondary">
+                {{i18n "unitSet.story"}}
+              </button>
+            {{/if}}
             {{#each unit in unitDocs}}
               <button class="unit-btn btn btn-sm btn-{{#unless currentUnit unit}}outline-{{/unless}}secondary" data-index="{{@index}}">
                 {{unit.shortCode}}
@@ -40,8 +46,22 @@
           </div>
         {{/if}}
 
+        {{#if story}}
+          {{#container class="lea-unit-content-container"}}
+            {{> taskPageRenderer storyData}}
+
+            <div class="card-body">
+              {{> actionButton type=currentType tts="actions.forward" btnClass="forward-btn"
+                  type="primary" class="lea-story-finish-group" block=true
+                  icon="arrow-right" iconPos="right" label=(i18n "common.forward") }}
+            </div>
+          {{/container}}
+        {{/if}}
+
         {{#if unitDoc}}
-          {{> taskPageRenderer pageContentData}}
+          {{#container class="lea-unit-content-container"}}
+            {{> taskPageRenderer pageContentData}}
+          {{/container}}
         {{/if}}
       {{/unless}}
     {{/onComplete}}

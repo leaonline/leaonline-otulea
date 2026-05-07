@@ -33,7 +33,8 @@
     "logo": "Lea Logo"
   },
   "task": {
-    "submit": "Überprüfen"
+    "submit": "Überprüfen",
+    "explanation": "Erklärung"
   },
   "pages": {},
   "users": {

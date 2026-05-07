@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor'
-import { ContentServer} from '../../api/remotes/content/ContentServer'
+import { ContentServer } from '../../api/remotes/content/ContentServer'
 import { createLog } from '../../utils/createLog'
 
 Meteor.startup(async () => {
@@ -30,7 +30,8 @@ Meteor.startup(async () => {
     for (const ctx of contexts) {
       try {
         await ContentServer.sync(ctx)
-      } catch (e) {
+      }
+      catch (e) {
         log('sync failed for', ctx.name)
         console.error(e)
       }

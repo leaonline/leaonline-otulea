@@ -20,4 +20,3 @@ createPublications(publications)
 rateLimitPublications(publications)
 
 ServiceRegistry.register(Feedback)
-
