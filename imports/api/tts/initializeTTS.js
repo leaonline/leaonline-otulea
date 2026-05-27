@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor'
+import { SHA256 } from 'meteor/sha'
 import { sendError } from '../../contexts/errors/api/sendError'
 import { fatal } from '../../ui/components/fatal/fatal'
 
 export const initializeTTS = async () => {
   const { TTSEngine } = await import('../../api/tts/TTSEngine')
-  const mode = TTSEngine.modes.browser
+  const mode = TTSEngine.modes.server
 
   console.debug('[initializeTTS]: configure TTS in mode', mode)
   return await new Promise((resolve) => {
@@ -43,22 +44,22 @@ export const initializeTTS = async () => {
 
 function externalServerTTSLoader (requestText, callback) {
   // TODO uncomment when ServerTTS is available
-  // const url = Meteor.settings.public.tts.url
-  // const options = {
-  //   params: { text: requestText },
-  //   headers: {
-  //     Accept: 'application/json, text/plain, */*',
-  //     'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-  //   }
-  // }
-  //
-  // HTTP.post(url, options, (err, res) => {
-  //   if (err) {
-  //     sendError({ error: err })
-  //     return callback(err)
-  //   }
-  //
-  //   callback(undefined, res?.data?.url)
-  // })
-  throw new Error('not implemented')
+  const url = 'http://localhost:3030/speech' // Meteor.settings.public.tts.url
+  const hash = '85bde9708cfe0c44b3ccf1950f0618341704948583d213d5ef27eaad37474d7d' // SHA256(requestText)
+  const options = {
+    params: { hash },
+    headers: {
+      Accept: '*/*',
+      'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+    }
+  }
+
+  HTTP.get(url, options, (err, res) => {
+    if (err) {
+      sendError({ error: err })
+      return callback(err)
+    }
+
+    callback(undefined, res?.data)
+  })
 }
