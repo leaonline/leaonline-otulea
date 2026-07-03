@@ -49,7 +49,17 @@ Unit.methods.getAll = createGetAllMethod({
 
 Unit.methods.get = createGetMethod({
   context: Unit,
-  backendOnly: false
+  backendOnly: false,
+  schema: {
+    _id: {
+      type: String,
+      optional: true
+    },
+    shortCode: {
+      type: String,
+      optional: true
+    }
+  }
 })
 
 export { Unit }

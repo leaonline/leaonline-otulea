@@ -10,12 +10,22 @@ UnitSet.isLocalCollection = true
 UnitSet.methods = UnitSet.methods ?? {}
 UnitSet.methods.getAll = createGetAllMethod({
   context: UnitSet,
-  backendOnly: false
+  backendOnly: false,
 })
 
 UnitSet.methods.get = createGetMethod({
   context: UnitSet,
-  backendOnly: false
+  backendOnly: false,
+  schema: {
+    _id: {
+      type: String,
+      optional: true
+    },
+    shortCode: {
+      type: String,
+      optional: true
+    }
+  }
 })
 
 export { UnitSet }

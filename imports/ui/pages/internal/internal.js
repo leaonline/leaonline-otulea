@@ -246,11 +246,12 @@ Template.internal.events({
 async function loadUnitSet ({ code, isShortCode, instance }) {
   console.debug('fetch unitSet', code, isShortCode)
   try {
-    const unitSetDoc = await loadContentDoc(UnitSet, code, console.debug, { isShortCode })
+    const unitSetDoc = await loadContentDoc({ context: UnitSet, query: isShortCode ? { shortCode: code } : { _id: code } })
     const unitDocs = []
     console.debug('fetch units for unitSet', unitSetDoc?._id, unitSetDoc?.units?.length)
+    if (!unitSetDoc) throw new Meteor.Error('404', 'errors.docNocFound')
     for (const unitId of unitSetDoc.units) {
-      const unitDoc = await loadContentDoc(Unit, unitId, console.debug, { isShortCode: false })
+      const unitDoc = await loadContentDoc({ context: Unit, query: { _id: unitId } })
       unitDocs.push(unitDoc)
     }
     setQueryParam(createUrlQuery({ code, isShortCode, type: 'unitSet' }))
@@ -265,7 +266,7 @@ async function loadUnitSet ({ code, isShortCode, instance }) {
 async function loadUnit ({ code, isShortCode, instance }) {
   console.debug('fetch unit', code, isShortCode)
   try {
-    const unitDoc = await loadContentDoc(Unit, code, console.debug, { isShortCode })
+    const unitDoc = await loadContentDoc({ context: Unit, query:  isShortCode ? { shortCode: code } : { _id: code } })
     instance.state.set({ unitDoc, currentPageCount: 0, error: null })
     setQueryParam(createUrlQuery({ code, isShortCode, type: 'unit' }))
   }

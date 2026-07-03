@@ -1,15 +1,16 @@
 import { onServer } from '../../utils/archUtils'
 import { getCollection } from '../../infrastructure/collections/getCollection'
 
-export const createGetMethod = ({ context, run, backendOnly = true }) => {
+export const createGetMethod = ({ context, schema, run, backendOnly = true }) => {
   return {
     name: `${context.name}.methods.get`,
     backend: backendOnly,
     schema: {
-      _id: String
+      _id: String,
+      ...schema
     },
-    run: onServer(run || async function ({ _id }) {
-      return getCollection(context.name).findOneAsync({ _id })
+    run: onServer(run || async function (query) {
+      return getCollection(context.name).findOneAsync(query)
     })
   }
 }
