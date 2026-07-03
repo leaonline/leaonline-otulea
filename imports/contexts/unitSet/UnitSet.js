@@ -1,7 +1,21 @@
 import { UnitSet } from 'meteor/leaonline:corelib/contexts/UnitSet'
+import { createGetAllMethod } from '../../api/services/createGetAllMethod'
+import { createGetMethod } from '../../api/services/createGetMethod'
 
-// This app is stateless with the UnitSet content, which is why we define it
-// only as local collection. The docs will get deleted after caches are emptied.
+UnitSet.sync = {
+  query: { isLegacy: true }
+}
 UnitSet.isLocalCollection = true
+
+UnitSet.methods = UnitSet.methods ?? {}
+UnitSet.methods.getAll = createGetAllMethod({
+  context: UnitSet,
+  backendOnly: false
+})
+
+UnitSet.methods.get = createGetMethod({
+  context: UnitSet,
+  backendOnly: false
+})
 
 export { UnitSet }

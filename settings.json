@@ -93,7 +93,7 @@
       "url": "localhost:3030",
       "jwt": {
         "key": "0123456789001234567890",
-        "sub": "app-backend-01234567890"
+        "sub": "otulea-01234567890"
       },
       "sync": {
         "field": true,
@@ -102,7 +102,9 @@
         "dimension": true,
         "level": true,
         "testCycle": true,
+        "thresholds": true,
         "competency": true,
+        "alphaLevel": true,
         "competencyCategory": true
       }
     }

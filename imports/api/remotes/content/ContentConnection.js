@@ -66,7 +66,7 @@ ContentConnection.isConnected = function isConnected () {
  * @param log
  * @return {Promise}
  */
-ContentConnection.get = function get ({ name, ids = [], log }) {
+ContentConnection.get = function get ({ name, query, ids = [], log }) {
   return new Promise((resolve) => {
     const methodName = ids.length > 0
       ? `${name}.methods.get`
@@ -110,7 +110,8 @@ const getToken = createJWTFactory({
   url: url.substring(0, url.length - 1),
   key: content.jwt.key,
   sub: content.jwt.sub,
-  expires: content.jwt.expires
+  expires: content.jwt.expires,
+  debug: Meteor.isDevelopment ? console.debug : undefined
 })
 
 export { ContentConnection }

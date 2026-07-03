@@ -3,7 +3,7 @@ import { ContentServer } from '../../api/remotes/content/ContentServer'
 import { createLog } from '../../utils/createLog'
 
 Meteor.startup(async () => {
-  const { sync, remap } = Meteor.settings.remotes.content
+  const { sync } = Meteor.settings.remotes.content
   const log = createLog({ name: 'syncContent' })
   ContentServer.setLogger(log)
   await ContentServer.init()
@@ -19,7 +19,7 @@ Meteor.startup(async () => {
   // which is worse (unless we implement full offline support
   // for the mobile clients).
   if (!ContentServer.canSync()) {
-    return
+    return log('skip sync content after timeout')
   }
 
   // contexts to sync are only queued,

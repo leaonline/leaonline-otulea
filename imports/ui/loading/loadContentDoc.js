@@ -1,48 +1,48 @@
-import { toContentServerURL } from '../../api/url/toContentServerURL'
-import { isPlainObject } from '../../utils/object/isPlainObject'
-import { asyncHTTP } from './asyncHTTP'
+import { EJSON } from 'meteor/ejson'
+import { getLocalCollection } from '../../infrastructure/collections/getLocalCollection'
+import { callMethod } from '../../infrastructure/methods/callMethod'
 
 /**
  * Loads a single document from the content-server
- * @param context {Object} The context related to the document.
- * @param value {String} The _id or shortCode value of the document
- * @param debug {Function?} optional debug logger
+ * @param context {object} The context related to the document.
+ * @param query {string|object} The _id or query object for the document
+ * @param debug {function?} optional debug logger
  * @return {Promise<Object>} A promise resoling to an object or void
  */
 
-export const loadContentDoc = async (context, value, debug = () => {}, { isShortCode = false } = {}) => {
-  const collection = context.collection()
-  const cursor = collection.find(value)
-
-  if (cursor.count() > 0) {
-    return cursor.fetch()[0]
+export const loadContentDoc = async ({ context, collection, name, unlessExists, query, debug = () => {}, throwIfNotFound = false }) => {
+  debug('loadAllContentDocs (call)')
+  if (!context) {
+    throw new Error('Context is expected')
   }
 
-  const route = isShortCode
-    ? context.routes.byCode
-    : context.routes.byId
-  const url = toContentServerURL(route.path)
-
-  const method = route.method.toUpperCase()
-  const requestOptions = {}
-  requestOptions.params = isShortCode
-    ? { shortCode: value }
-    : { _id: value }
-  requestOptions.headers = {
-    mode: 'cors',
-    cache: 'no-store'
+  const localCollection = collection ?? getLocalCollection(context.name)
+  if (!localCollection) {
+    throw new Error(`Expected collection for ctx ${context.name}`)
   }
 
-  debug('load', method, url, value)
-
-  const response = await asyncHTTP(method, url, requestOptions)
-  const document = response.data
-
-  if (!isPlainObject(document)) {
-    throw new Error(`Expected document for ${method} ${url}`)
+  const existingDoc = localCollection.findOne(query)
+  if (unlessExists && existingDoc) {
+    return existingDoc
   }
 
-  debug('received', document._id)
-  collection.upsert({ _id: value }, { $set: document })
-  return collection.findOne(value)
+  const methodName = name ?? context.methods.get
+  if (!methodName) {
+    throw new Error(`Expected method name for ctx ${context.name}`)
+  }
+
+  const document = await callMethod({
+    name: name ?? context.methods.get,
+    args: query
+  })
+
+  if (!document && throwIfNotFound) {
+    throw new Error(`Expected document for ctx ${context.name} and query ${query ? EJSON.stringify(query) : undefined}`)
+  }
+
+  if (document) {
+    localCollection.upsert({ _id: document._id }, { $set: { ...document } })
+  }
+
+  return document
 }

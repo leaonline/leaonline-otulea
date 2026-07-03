@@ -39,22 +39,27 @@ Template.overview.onCreated(function () {
 
   const { loadAllContentDocs, callMethod, debug } = instance.api
   const loadContentDocuments = async () => {
-    const allTestCycles = await loadAllContentDocs(TestCycle, { isLegacy: true }, debug)
+    const { testCycle } = await loadAllContentDocs({
+      context: TestCycle
+    })
 
-    if (!allTestCycles?.length) {
+    if (!testCycle?.length) {
       throw new Error('content.notAvailable')
     }
 
     const dimensions = new Set()
     const levels = new Set()
 
-    allTestCycles.forEach(tstCycleDoc => {
+    testCycle.forEach(tstCycleDoc => {
       dimensions.add(tstCycleDoc.dimension)
       levels.add(tstCycleDoc.level)
     })
 
-    await loadAllContentDocs(Dimension, { ids: Array.from(dimensions) }, debug)
-    await loadAllContentDocs(Level, { ids: Array.from(levels) }, debug)
+    const dimensionIds = Array.from(dimensions)
+    await loadAllContentDocs({ context: Dimension, ids: dimensionIds, debug, params: { ids: dimensionIds } })
+
+    const levelIds = Array.from(levels)
+    await loadAllContentDocs({ context: Level, ids: levelIds, debug, params: { ids: levelIds } })
 
     instance.state.set({
       contentDocsLoadComplete: true,
@@ -381,21 +386,16 @@ function launch ({ templateInstance, name, args, isFreshStart }) {
       const { next, story } = templateInstance.data
 
       setTimeout(async () => {
+        debugger
         // a new session can either begin with a story (no items included) or
         // go to the fist unit, which is decided here but routed externally
         const sessionId = sessionDoc._id
         const unitId = sessionDoc.currentUnit
-        let unitSetDoc = UnitSet.collection().findOne(sessionDoc.unitSet)
-
-        // if the unit set doc does not exist at this point we need to fetch it
-        if (!unitSetDoc) {
-          debug('UnitSet not found, attempt to fetch it')
-          unitSetDoc = await loadContentDoc(UnitSet, sessionDoc.unitSet)
-        }
-
+        const unitSetDoc = await loadContentDoc({ context: UnitSet, query: { _id: sessionDoc.unitSet }, unlessExists: true, throwIfNotFound: true })
+        const unitSetId = unitSetDoc._id
         const shouldShowStory = isFreshStart && showStoryBeforeUnit(unitId, unitSetDoc)
         const onCompleteHandler = shouldShowStory
-          ? () => story({ sessionId, unitId, unitSetId: unitSetDoc._id })
+          ? () => story({ sessionId, unitId, unitSetId })
           : () => next({ sessionId, unitId })
 
         fadeOut('.lea-overview-container', () => {

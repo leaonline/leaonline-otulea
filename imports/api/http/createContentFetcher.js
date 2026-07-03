@@ -1,23 +1,29 @@
-import { toContentServerURL } from '../url/toContentServerURL'
-import { fetchDoc } from './fetchDoc'
+import { getCollection } from '../../infrastructure/collections/getCollection'
 
 /**
  * Creates a self-contained object with a fetcher method, that not only
  * fetches docs from content server routes but also implements a caching
  * strategy internally.
  *
- * @param path {String} the oath to a content server get or getAll route.
+ * @param context {object} the content ctx to fetch from
+ * @param context.name {string} the name of the context to get the collection
  * @return {{url: string, cache: Map<String, Object>, fetcher: (function(*): Promise<Map<any, any>>)}}
  */
-export const createContentFetcher = ({ path }) => {
+export const createContentFetcher = ({ context }) => {
   let requested = 0
   let loaded = 0
   let cached = 0
 
   const api = {
-    url: toContentServerURL(path),
     cache: new Map(),
     fetcher: async ids => {
+      const collection = context.collection
+        ? context.collection()
+        : getCollection(context.name)
+      if (!collection) {
+        throw new Error(`Collection for ${context.name} not found`)
+      }
+
       const docMap = new Map()
       const toLoad = []
 
@@ -35,7 +41,7 @@ export const createContentFetcher = ({ path }) => {
         return docMap
       }
 
-      const fetchedDocs = await fetchDoc(api.url, { ids: toLoad }) || []
+      const fetchedDocs = await collection.find({ _id: { $in: toLoad } }).fetchAsync()
       fetchedDocs.forEach(doc => {
         docMap.set(doc._id, doc)
         api.cache.set(doc._id, doc)

@@ -9,12 +9,14 @@ import { sessionIsComplete } from '../../../contexts/session/utils/sessionIsComp
 import { AlphaLevel } from '../../../contexts/AlphaLevel'
 import { Response } from '../../../contexts/response/Response'
 import { Unit } from '../../../contexts/Unit'
-import { truncatePercent } from './helpers/truncatePercent'
 import { translate } from '../../../api/i18n/translate'
 import '../../components/container/container'
 import '../../layout/navbar/navbar'
 import './complete.scss'
 import './complete.html'
+import { loadData } from './helpers/loadData'
+import { loadSessionData } from './helpers/loadSessionData'
+import { loadResponses } from './helpers/loadResponses'
 
 const states = {
   showResults: 'showResults',
@@ -24,7 +26,7 @@ const states = {
 
 const stateValues = Object.values(states)
 
-Template.complete.onCreated(function () {
+Template.complete.onCreated(async function () {
   const instance = this
   const { sessionId } = instance.data.params
   const { api } = instance.initDependencies({
@@ -41,173 +43,38 @@ Template.complete.onCreated(function () {
     }
   })
 
-  const { queryParam, callMethod, loadAllContentDocs, info, debug, hasProperty } = api
+  const { queryParam, debug, hasProperty } = api
   const onFailed = e => {
+    console.error(e)
     instance.state.set({
       competenciesLoaded: true,
       sessionLoaded: true,
       failed: e
-        ? { error: e.error, reason: e.reason || e.message }
+        ? { error: e.error ?? 'error.default', reason: e.reason || e.message }
         : true
     })
   }
 
-  loadAllContentDocs(Thresholds, undefined, debug)
-    .catch(e => onFailed(e))
-    .then(() => {
-      const thresholdDoc = Thresholds.collection().findOne()
-      instance.state.set(thresholdDoc)
+  try {
+    const data = await loadData({ sessionId, debug })
+    instance.state.set(data)
+  }
+  catch (e) {
+    onFailed(e)
+  }
 
-      // TODO refactor into own method
-      callMethod({
-        name: Session.methods.results,
-        args: { sessionId },
-        failure: err => onFailed(err),
-        success: results => {
-          if (!results) {
-            return onFailed(new Meteor.Error('test 1')) // TODO fallback with a message "we can't eval right now..."
-          }
-
-          const { competencies, alphaLevels } = results
-
-          // GET request to content server to fetch competency documents
-          // which are required to display the related texts
-          const competencyIds = competencies.map(c => c.competencyId)
-
-          // by default this is true, but it will be set to false, once
-          // we have at least one graded competency
-          let noScoredCompetencies = true
-
-          loadAllContentDocs(Competency, { ids: competencyIds })
-            .catch(error => onFailed(error))
-            .then(competencyDocs => {
-              if (competencyDocs.length === 0) {
-                instance.state.set('competenciesLoaded', true)
-                return onFailed(new Meteor.Error('test 2'))
-              }
-
-              console.debug({ competencyIds, competencies })
-              const CompetencyCollection = Competency.collection()
-              const aggregatedResults = competencies
-                .map(resultDoc => {
-                  const { competencyId } = resultDoc
-                  const competencyDoc = CompetencyCollection.findOne(competencyId)
-
-                  if (noScoredCompetencies && resultDoc.gradeIndex > -1) {
-                    noScoredCompetencies = false
-                  }
-
-                  if (!competencyDoc) {
-                    return console.warn('Found no competency doc for _id', competencyId)
-                  }
-
-                  resultDoc.shortCode = competencyDoc.shortCode
-                  resultDoc.description = competencyDoc.descriptionSimple
-                  resultDoc.gradeLabel = `thresholds.${resultDoc.gradeName}`
-
-                  const percentValue = Number(resultDoc.perc ?? 0) * 100
-                  resultDoc.perc = truncatePercent(percentValue)
-
-                  console.debug({ resultDoc })
-                  return resultDoc
-                })
-                .sort((a, b) => a.shortCode.localeCompare(b.shortCode))
-
-              debug({ aggregatedResults })
-              instance.state.set({
-                aggregatedResults,
-                noScoredCompetencies,
-                competenciesLoaded: true
-              })
-            })
-
-          const alphaLevelIds = alphaLevels.map(c => c.alphaLevelId)
-
-          let noScoredAlphas = true
-
-          loadAllContentDocs(AlphaLevel, { ids: alphaLevelIds })
-            .catch(error => onFailed(error))
-            .then(alphaLevelDocs => {
-              if (alphaLevelDocs.length === 0) {
-                instance.state.set('alphaLevelsLoaded', true)
-                return onFailed(new Meteor.Error('test 3'))
-              }
-
-              const AlphaLevelCollection = AlphaLevel.collection()
-              const aggregatedAlphaLevels = alphaLevels.map(alpha => {
-                const { alphaLevelId } = alpha
-                const alphaLevelDoc = AlphaLevelCollection.findOne(alphaLevelId)
-
-                if (noScoredAlphas && alpha.gradeIndex > -1) {
-                  noScoredAlphas = false
-                }
-
-                if (!alphaLevelDoc) {
-                  return console.warn('Found no alphaLevel doc for _id', alphaLevelId)
-                }
-
-                const dimension = Dimension.collection().findOne(alphaLevelDoc.dimension)
-                alpha.dimension = dimension && `${dimension.title} ${alphaLevelDoc.level}`
-                alpha.level = alphaLevelDoc.level
-                alpha.shortCode = alphaLevelDoc.shortCode
-                alpha.description = alphaLevelDoc.description
-                alpha.gradeLabel = `thresholds.${alpha.gradeName}`
-
-                const percentValue = Number(alpha.perc ?? 0) * 100
-                alpha.perc = truncatePercent(percentValue)
-
-                return alpha
-              })
-                .sort((a, b) => a.shortCode.localeCompare(b.shortCode))
-
-              debug({ aggregatedAlphaLevels })
-              instance.state.set({
-                noScoredAlphas,
-                alphaLevels: aggregatedAlphaLevels,
-                alphaLevelsLoaded: true
-              })
-            })
-        }
-      })
-    })
-
-  // we use the session loader to simply the loading of the session dependencies
-  // such as Dimension, Level, UnitSet, Colors, Unit etc.
-  const sessionLoader = createSessionLoader({ info })
-  sessionLoader({ sessionId })
-    .catch(err => onFailed(err))
-    .then(sessionData => {
-      debug(sessionData)
-
-      if (!sessionData) {
-        return console.warn('no session data!')
-      }
-      else {
-        console.debug('session data loaded')
-      }
-
-      const { sessionDoc, unitSetDoc, dimensionDoc, levelDoc, color } = sessionData
-      // first we check for all docs, even one left-out doc is not acceptable
-      if (!sessionDoc || !unitSetDoc || !dimensionDoc || !levelDoc) {
-        return // we can safely skip since this information is not viable
-      }
-
-      // if we encounter a sessionDoc that is not completed, we just
-      // skip any further attempts to load and immediately exit
-      if (!sessionIsComplete(sessionDoc)) {
-        return instance.data.exit({ sessionId })
-      }
-
-      // otherwise we're good and can continue with the current session
-      instance.state.set({
-        sessionDoc,
-        dimensionDoc,
-        levelDoc,
-        unitSetDoc,
-        color,
-        sessionLoaded: true
-      })
-    })
+  try {
+    const sessionData = await loadSessionData({ debug, sessionId })
+    if (sessionData.action === 'next') {
+      instance.data.exit({ sessionId })
+    }
+    else {
+      instance.state.set(sessionData)
+    }
+  }
+  catch (e) {
+    onFailed(e)
+  }
 
   // basic routes / state handling
   instance.autorun(() => {
@@ -231,33 +98,11 @@ Template.complete.onCreated(function () {
       return
     }
 
-    callMethod({
-      name: Response.methods.getMy,
-      args: { sessionId },
-      prepare: () => instance.state.set('callingResponses', true),
-      failure (err) {
-        console.error(err)
-      },
-      success (responses) {
-        debug({ responses })
-
-        const unitIds = new Set()
-        responses.forEach(doc => unitIds.add(doc.unitId))
-
-        const ids = Array.from(unitIds)
-        loadAllContentDocs(Unit, { ids }, debug)
-          .catch(e => console.error(e))
-          .then(() => {
-            const mapped = responses.map(doc => {
-              doc.unit = Unit.collection().findOne(doc.unitId) || { shortCode: '?' }
-              return doc
-            })
-
-            responses.sort((a, b) => a.unit.shortCode.localeCompare(b.unit.shortCode))
-            instance.state.set({ responses: mapped })
-          })
-      }
-    })
+    instance.state.set('callingResponses', true)
+    loadResponses({ sessionId, debug })
+      .then(responses => instance.state.set({ responses }))
+      .catch(onFailed)
+      .finally(() => instance.state.set('callingResponses', false))
   })
 })
 

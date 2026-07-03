@@ -60,7 +60,7 @@
             {{#unless currentUser}}
                 {{#container class="welcome-intro-container my-5"}}
                     <div class="card">
-                        <div class="card-body">
+                        <div class="card-body bg-white ">
                             {{#onComplete complete=dependenciesComplete}}
                                 {{> textGroup text=(i18n "pages.welcome.introduction")}}
                             {{/onComplete}}
@@ -71,17 +71,17 @@
                             (or login newCode)}}d-unavailable{{/if}}">
                         {{#onComplete complete=dependenciesComplete}}
                             <div class="col">
-                                {{#if login}}
-                                    {{> actionButton class="w-100" block=true outline=true tts="common.yes" label=(i18n "common.yes") btnClass="lea-welcome-yes active" sndBtnClass="border-0" }}
+                                {{#if newCode}}
+                                    {{> actionButton class="w-100" block=true outline=true tts="pages.welcome.no" label=(i18n "pages.welcome.no") btnClass="lea-welcome-no active" sndBtnClass="border-0" }}
                                 {{else}}
-                                    {{> actionButton class="w-100" block=true outline=true tts="common.yes" label=(i18n "common.yes") btnClass="lea-welcome-yes" sndBtnClass="border-0"  }}
+                                    {{> actionButton class="w-100" block=true outline=true tts="pages.welcome.no" label=(i18n "pages.welcome.no") btnClass="lea-welcome-no" sndBtnClass="border-0" }}
                                 {{/if}}
                             </div>
                             <div class="col">
-                                {{#if newCode}}
-                                    {{> actionButton class="w-100" block=true outline=true tts="common.no" label=(i18n "common.no") btnClass="lea-welcome-no active" sndBtnClass="border-0" }}
+                                {{#if login}}
+                                    {{> actionButton class="w-100" block=true outline=true tts="pages.welcome.yes" label=(i18n "pages.welcome.yes") btnClass="lea-welcome-yes active" sndBtnClass="border-0" }}
                                 {{else}}
-                                    {{> actionButton class="w-100" block=true outline=true tts="common.no" label=(i18n "common.no") btnClass="lea-welcome-no" sndBtnClass="border-0" }}
+                                    {{> actionButton class="w-100" block=true outline=true tts="pages.welcome.yes" label=(i18n "pages.welcome.yes") btnClass="lea-welcome-yes" sndBtnClass="border-0"  }}
                                 {{/if}}
                             </div>
                         {{/onComplete}}
@@ -92,8 +92,8 @@
 
         {{#if loggedIn}}
             {{#container class="my-3"}}
-                <div class="card">
-                    <div class="card-body">
+                <div class="card bg-white ">
+                    <div class="card-body ">
                         {{#onComplete complete=dependenciesComplete}}
                             {{> textGroup text=(i18n "pages.welcome.loggedIn")}}
                         {{/onComplete}}
@@ -117,7 +117,7 @@
 
         {{#if loginRequired}}
             {{#container}}
-                <div class="card">
+                <div class="card bg-white ">
                     {{#if login}}
                         <div class="card-body">
                             {{#textGroup text=(i18n "pages.welcome.enterCode")

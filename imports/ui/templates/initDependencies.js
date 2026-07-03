@@ -28,15 +28,15 @@ Blaze.TemplateInstance.prototype.initDependencies =
       autoLoadEnabled = true
     }
 
-    import { Router } from '../../ui/routing/Router'
+    import { Router } from '../routing/Router'
     import { fatal } from '../components/fatal/fatal'
     import { initLanguage } from '../../api/i18n/initLanguage'
     import { initializeTTS } from '../../api/tts/initializeTTS'
     import { initClientContext } from '../../api/context/initClientContext'
-    import { loadOnce } from '../../ui/loading/loadOnce'
+    import { loadOnce } from '../loading/loadOnce'
     import { createLog } from '../../utils/createInfoLog'
-    import { loadAllContentDocs } from '../../ui/loading/loadAllContentDocs'
-    import { loadContentDoc } from '../../ui/loading/loadContentDoc'
+    import { loadAllContentDocs } from '../loading/loadAllContentDocs'
+    import { loadContentDoc } from '../loading/loadContentDoc'
     import { fadeOut, fadeIn } from '../../utils/animationUtils'
     import { hasProperty } from '../../utils/object/hasProperty'
     import { isDebugUser } from '../../api/accounts/isDebugUser'

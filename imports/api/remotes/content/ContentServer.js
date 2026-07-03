@@ -70,7 +70,7 @@ ContentServer.init = async () => {
  *   not exist or if this function is invoked within a method or pub
  * @return {Promise<{name: *, created: number, updated: number, removed: number}>}
  */
-ContentServer.sync = async ({ name, debug } = {}) => {
+ContentServer.sync = async ({ name, sync, debug } = {}) => {
   log('sync', name)
   ensureNotInMethodOrPub()
   ensureConnected()
@@ -85,7 +85,8 @@ ContentServer.sync = async ({ name, debug } = {}) => {
     skipped: 0
   }
 
-  const result = await ContentConnection.get({ name, log })
+  const query = sync?.query ?? {}
+  const result = await ContentConnection.get({ name, query, log })
   const allDocs = result && result[name]
 
   // if there is nothing to get, skip here
@@ -99,10 +100,6 @@ ContentServer.sync = async ({ name, debug } = {}) => {
 
   for (let index = 0; index < allDocs.length; index++) {
     const doc = allDocs[index]
-    if (doc.isLegacy) {
-      stats.skipped++
-      continue
-    }
 
     const { _id: docId } = doc
     allIds[index] = docId

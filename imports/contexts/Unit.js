@@ -1,5 +1,10 @@
 import { Unit } from 'meteor/leaonline:corelib/contexts/Unit'
+import { createGetAllMethod } from '../api/services/createGetAllMethod'
+import { createGetMethod } from '../api/services/createGetMethod'
 
+Unit.sync = {
+  query: { isLegacy: true }
+}
 Unit.isLocalCollection = true
 
 /**
@@ -35,5 +40,16 @@ Unit.getContentElement = ({ unit, page, contentId }) => {
 
   return null
 }
+
+Unit.methods = Unit.methods ?? {}
+Unit.methods.getAll = createGetAllMethod({
+  context: Unit,
+  backendOnly: false
+})
+
+Unit.methods.get = createGetMethod({
+  context: Unit,
+  backendOnly: false
+})
 
 export { Unit }

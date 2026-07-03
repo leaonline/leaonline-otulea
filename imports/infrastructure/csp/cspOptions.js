@@ -76,7 +76,7 @@ export function createCSPOptions (externalHostUrls = []) {
         // Configure to your needs.
         imgSrc: [self, data, 'blob:'].concat(externalHostUrls),
         manifestSrc: [self],
-        mediaSrc:  [self, data, 'blob:'].concat(externalHostUrls),
+        mediaSrc: [self, data, 'blob:'].concat(externalHostUrls),
         objectSrc: [self],
         // these are just examples, configure to your needs, see
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/sandbox
