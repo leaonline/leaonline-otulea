@@ -10,8 +10,8 @@ TestCycle.isLocalCollection = true
 TestCycle.methods = TestCycle.methods ?? {}
 TestCycle.methods.getAll = createGetAllMethod({
   context: TestCycle,
-  backendOnly: false
-//  defaultQuery: { isLegacy: true }
+  backendOnly: false,
+  defaultQuery: { isLegacy: true }
 })
 
 TestCycle.methods.get = createGetMethod({
