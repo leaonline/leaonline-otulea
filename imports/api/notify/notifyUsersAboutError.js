@@ -1,11 +1,15 @@
 import { Meteor } from 'meteor/meteor'
 import { Email } from 'meteor/email'
 
-const appName = Meteor.settings.public.app.name
-const { notify, replyTo, from } = Meteor.settings.email
 
 export const notifyUsersAboutError = error => {
-  if (!notify?.length || !error) return
+  if (!Meteor.isServer) {
+    return Promise.resolve(console.error('Expected server env'))
+  }
+
+  const appName = Meteor.settings.public.app.name
+  const { notify, replyTo, from } = Meteor.settings.email
+  if (!notify?.length || !error) return Promise.resolve()
 
   return Promise.all([notify.map(address => {
     return Email.sendAsync({

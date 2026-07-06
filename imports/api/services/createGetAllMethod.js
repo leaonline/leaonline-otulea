@@ -10,7 +10,7 @@ import { onServerExec } from '../../utils/archUtils'
  * @param defaultQuery {object=}
  * @return {{schema: {'dependencies.$': (function(String, String)), 'ids.$': (function(String, String)), ids: {optional: boolean, type: ArrayConstructor}, dependencies: {optional: boolean, type: ArrayConstructor}}, name: string, backend: boolean, run: *}}
  */
-export const createGetAllMethod = ({ context, run, defaultQuery, backendOnly = true }) => {
+export const createGetAllMethod = ({ context, run, defaultQuery, backendOnly = true, ...addtionalMixins }) => {
   const { name } = context
   return {
     name: `${name}.methods.getAll`,
@@ -55,6 +55,7 @@ export const createGetAllMethod = ({ context, run, defaultQuery, backendOnly = t
 
         return output
       }
-    })
+    }),
+    ...addtionalMixins
   }
 }

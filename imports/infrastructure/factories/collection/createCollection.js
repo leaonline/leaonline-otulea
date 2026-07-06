@@ -20,7 +20,7 @@ export const createCollection = (context, debug = console.debug) => {
 
   if (isLocal) {
     const local = new Mongo.Collection(null)
-    local.name = name
+    local._name = name
     LocalCollections.add(name, local)
     options.collection = local
   }

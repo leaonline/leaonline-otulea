@@ -1,4 +1,4 @@
-import { getCollection } from '../../infrastructure/collections/getCollection'
+import { noop } from '../../utils/noop'
 
 /**
  * Creates a self-contained object with a fetcher method, that not only
@@ -7,9 +7,10 @@ import { getCollection } from '../../infrastructure/collections/getCollection'
  *
  * @param context {object} the content ctx to fetch from
  * @param context.name {string} the name of the context to get the collection
+ * @param debug {function=} optional debug function
  * @return {{url: string, cache: Map<String, Object>, fetcher: (function(*): Promise<Map<any, any>>)}}
  */
-export const createContentFetcher = ({ context }) => {
+export const createContentFetcher = ({ context, debug = noop }) => {
   let requested = 0
   let loaded = 0
   let cached = 0
@@ -17,9 +18,8 @@ export const createContentFetcher = ({ context }) => {
   const api = {
     cache: new Map(),
     fetcher: async ids => {
-      const collection = context.collection
-        ? context.collection()
-        : getCollection(context.name)
+      const collection = context.collection()
+
       if (!collection) {
         throw new Error(`Collection for ${context.name} not found`)
       }
@@ -37,7 +37,7 @@ export const createContentFetcher = ({ context }) => {
       })
 
       if (docMap.size === ids.length) {
-        console.debug('[fetcher]: skipped request completely')
+        debug(`[fetcher][${context.name}]: skipped request completely`)
         return docMap
       }
 
@@ -50,7 +50,7 @@ export const createContentFetcher = ({ context }) => {
       requested = ids.length
       loaded = toLoad.length
       cached = fetchedDocs.length
-      console.debug('[fetcher]:', { requested, loaded, cached, size: api.cache.size })
+      debug(`[fetcher][${context.name}]:`, { requested, loaded, cached, size: api.cache.size })
 
       return docMap
     }

@@ -1,13 +1,16 @@
 /* eslint-env mocha */
-import { HTTP } from 'meteor/jkuester:http'
 import { expect } from 'chai'
 import { Random } from 'meteor/random'
-import { stub, restoreAll } from '../../../../tests/helpers.tests'
 import { getCompetencies } from '../api/getCompetencies'
+import { mockCollection, restoreCollection } from '../../../../tests/mockCollection'
+import { Competency } from '../../Competency'
 
 describe(getCompetencies.name, async () => {
-  afterEach(async () => {
-    restoreAll()
+  before(() => {
+    mockCollection(Competency, { attachSchema: false })
+  })
+  after(() => {
+    restoreCollection(Competency)
   })
 
   it('fetches competency docs by given ids and returns them as a map', async () => {
@@ -20,10 +23,10 @@ describe(getCompetencies.name, async () => {
       _id: id2,
       title: Random.id()
     }]
-    stub(HTTP, 'get', (url, requestOptions) => {
-      expect(requestOptions.params.ids).to.deep.equal([id1, id2])
-      return { data: docs }
-    })
+
+    for (const doc of docs) {
+      await Competency.collection().insertAsync(doc)
+    }
 
     const map = await getCompetencies([id1, id2])
     expect(map.size).to.equal(2)

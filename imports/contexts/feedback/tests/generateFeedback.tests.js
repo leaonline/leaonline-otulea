@@ -3,7 +3,6 @@ import { Random } from 'meteor/random'
 import { Email } from 'meteor/email'
 import { expect } from 'chai'
 import { Session } from '../../session/Session'
-import { HTTP } from 'meteor/jkuester:http'
 import { Feedback } from '../Feedback'
 import { Thresholds } from '../../thresholds/Thresholds'
 import { AlphaLevel } from '../../AlphaLevel'
@@ -22,6 +21,7 @@ import {
   restoreCollection
 } from '../../../../tests/mockCollection'
 
+
 describe(countCompetencies.name, async () => {
   it('correctly counts scored competencies', async () => {
     const id1 = Random.id()
@@ -35,7 +35,7 @@ describe(countCompetencies.name, async () => {
     ]
 
     const minCountCompetency = 3
-    const competencies = countCompetencies({ responses, minCountCompetency })
+    const competencies = await countCompetencies({ responses, minCountCompetency })
 
     expect(competencies.get(id1)).to.deep.equal({
       competencyId: id1,
@@ -112,7 +112,7 @@ describe(gradeCompetenciesAndCountAlphaLevels.name, async () => {
       name: 'bad'
     }]
 
-    gradeCompetenciesAndCountAlphaLevels({
+    await gradeCompetenciesAndCountAlphaLevels({
       competencies,
       thresholds,
       minCountAlphaLevel: 1,
@@ -400,16 +400,22 @@ describe(gradeAlphaLevels.name, async () => {
 
 describe(generateFeedback.name, async () => {
   before(async () => {
-    mockCollection(Feedback)
+    mockCollection(Feedback, { attachSchema: false })
     mockCollection(Session, { attachSchema: false })
     mockCollection(Response, { attachSchema: false })
     mockCollection(TestCycle, { attachSchema: false })
+    mockCollection(Thresholds, { attachSchema: false })
+    mockCollection(AlphaLevel, { attachSchema: false })
+    mockCollection(Competency, { attachSchema: false })
   })
   after(async () => {
     restoreCollection(Feedback)
     restoreCollection(Session)
     restoreCollection(Response)
     restoreCollection(TestCycle)
+    restoreCollection(Thresholds)
+    restoreCollection(AlphaLevel)
+    restoreCollection(Competency)
   })
   afterEach(async function () {
     restoreAll()
@@ -417,6 +423,9 @@ describe(generateFeedback.name, async () => {
     await clearCollection(Session)
     await clearCollection(Response)
     await clearCollection(TestCycle)
+    await clearCollection(Thresholds)
+    await clearCollection(AlphaLevel)
+    await clearCollection(Competency)
   })
   it('throws if session is not done yet', async function () {
     const sessionId = Random.id()
@@ -439,20 +448,23 @@ describe(generateFeedback.name, async () => {
   })
 
   it('returns a cached feedback, if one exists', async function () {
-    const doc = { _id: Random.id() }
     const userId = Random.id()
-    stub(Feedback, 'collection', () => ({
-      findOneAsync () {
-        return doc
-      }
-    }))
+    const sessionId = Random.id()
+    const doc = { _id: Random.id(), sessionId, userId }
+    await Feedback.collection().insertAsync(doc)
 
     const existing = await generateFeedback({
-      sessionDoc: { _id: Random.id(), completedAt: new Date() },
+      sessionDoc: { _id: sessionId, completedAt: new Date() },
       userId,
-      testCycleDoc: { _id: Random.id() }
+      testCycleDoc: { _id: Random.id() },
+      flagFromDb: true,
     })
-    expect(existing).to.deep.equal(doc)
+    expect(existing).to.deep.equal({
+      _id: doc._id,
+      sessionId,
+      userId,
+      fromDB: true
+    })
   })
 
   it('correctly grades a session', async function () {
@@ -503,21 +515,13 @@ describe(generateFeedback.name, async () => {
     const cDoc3 = { _id: cid3, level: aid }
 
     // stubbing fetch to content server
-    stub(HTTP, 'get', async (url, params) => {
-      if (url.includes(Thresholds.routes.all.path)) {
-        return { data: thresholds }
-      }
 
-      if (url.includes(AlphaLevel.routes.all.path)) {
-        return { data: [aDoc] }
-      }
+    await Thresholds.collection().insertAsync(thresholds)
+    await AlphaLevel.collection().insertAsync(aDoc)
 
-      if (url.includes(Competency.routes.all.path)) {
-        return { data: [cDoc1, cDoc2, cDoc3] }
-      }
-
-      throw new Error(url)
-    })
+    for (const cDoc of [cDoc1, cDoc2, cDoc3]) {
+      await Competency.collection().insertAsync(cDoc)
+    }
 
     // /////////////////////////////////////////////////////////////////////////
     // CASE 1 - All perfect and graded
@@ -561,7 +565,8 @@ describe(generateFeedback.name, async () => {
         gradeName: 'good',
         isGraded: true,
         perc: 1,
-        scored: 2
+        scored: 2,
+        min: 2,
       }],
       competencies: [{
         competencyId: cid1,
@@ -571,7 +576,8 @@ describe(generateFeedback.name, async () => {
         isGraded: true,
         perc: 1,
         scored: 6,
-        undef: 0
+        undef: 0,
+        min: 2,
       }, {
         competencyId: cid2,
         count: 2,
@@ -580,7 +586,8 @@ describe(generateFeedback.name, async () => {
         isGraded: true,
         perc: 1,
         scored: 2,
-        undef: 0
+        undef: 0,
+        min: 2,
       }]
     })
 
@@ -632,7 +639,8 @@ describe(generateFeedback.name, async () => {
         gradeName: 'bad',
         isGraded: true,
         perc: 0,
-        scored: 0
+        scored: 0,
+        min: 2,
       }],
       competencies: [{
         competencyId: cid1,
@@ -642,7 +650,8 @@ describe(generateFeedback.name, async () => {
         isGraded: true,
         perc: 0,
         scored: 0,
-        undef: 0
+        undef: 0,
+        min: 2,
       }, {
         competencyId: cid2,
         count: 2,
@@ -651,7 +660,8 @@ describe(generateFeedback.name, async () => {
         isGraded: true,
         perc: 0,
         scored: 0,
-        undef: 0
+        undef: 0,
+        min: 2,
       }]
     })
     // /////////////////////////////////////////////////////////////////////////
@@ -703,7 +713,8 @@ describe(generateFeedback.name, async () => {
         gradeName: 'good',
         isGraded: true,
         perc: 1,
-        scored: 2
+        scored: 2,
+        min: 2,
       }],
       competencies: [{
         competencyId: cid1,
@@ -713,7 +724,8 @@ describe(generateFeedback.name, async () => {
         isGraded: true,
         perc: 1,
         scored: 6,
-        undef: 0
+        undef: 0,
+        min: 2,
       }, {
         competencyId: cid2,
         count: 2,
@@ -722,7 +734,8 @@ describe(generateFeedback.name, async () => {
         isGraded: true,
         perc: 1,
         scored: 2,
-        undef: 0
+        undef: 0,
+        min: 2,
       }, {
         competencyId: cid3,
         count: 1,
@@ -733,7 +746,8 @@ describe(generateFeedback.name, async () => {
         isGraded: false,
         perc: 1,
         scored: 1,
-        undef: 0
+        undef: 0,
+        min: 2,
       }]
     })
 
@@ -786,7 +800,8 @@ describe(generateFeedback.name, async () => {
         gradeName: 'bad',
         isGraded: true,
         perc: 0.5,
-        scored: 1
+        scored: 1,
+        min: 2,
       }],
       competencies: [{
         competencyId: cid1,
@@ -796,7 +811,8 @@ describe(generateFeedback.name, async () => {
         isGraded: true,
         perc: 1,
         scored: 6,
-        undef: 0
+        undef: 0,
+        min: 2,
       }, {
         competencyId: cid2,
         count: 2,
@@ -805,7 +821,8 @@ describe(generateFeedback.name, async () => {
         isGraded: true,
         perc: 0,
         scored: 0,
-        undef: 0
+        undef: 0,
+        min: 2,
       }, {
         competencyId: cid3,
         count: 1,
@@ -814,7 +831,8 @@ describe(generateFeedback.name, async () => {
         isGraded: false,
         perc: 1,
         scored: 1,
-        undef: 0
+        undef: 0,
+        min: 2,
       }]
     })
     // /////////////////////////////////////////////////////////////////////////
@@ -866,7 +884,8 @@ describe(generateFeedback.name, async () => {
         gradeName: 'good',
         isGraded: true,
         perc: (1 + (5 / 6)) / 2,
-        scored: 1 + (5 / 6)
+        scored: 1 + (5 / 6),
+        min: 2,
       }],
       competencies: [{
         competencyId: cid1,
@@ -876,7 +895,8 @@ describe(generateFeedback.name, async () => {
         isGraded: true,
         perc: 5 / 6,
         scored: 5,
-        undef: 0
+        undef: 0,
+        min: 2,
       }, {
         competencyId: cid2,
         count: 2,
@@ -885,7 +905,8 @@ describe(generateFeedback.name, async () => {
         isGraded: true,
         perc: 1,
         scored: 2,
-        undef: 0
+        undef: 0,
+        min: 2,
       }, {
         competencyId: cid3,
         count: 1,
@@ -894,7 +915,8 @@ describe(generateFeedback.name, async () => {
         isGraded: false,
         perc: 1,
         scored: 1,
-        undef: 0
+        undef: 0,
+        min: 2,
       }]
     })
   })

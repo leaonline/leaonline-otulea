@@ -1,22 +1,23 @@
 /* eslint-env mocha */
+import { Random } from 'meteor/random'
 import { expect } from 'chai'
-import { HTTP } from 'meteor/jkuester:http'
 import { getThresholds } from '../api/getThresholds'
-import { stub, restoreAll } from '../../../../tests/helpers.tests'
-import { toContentServerURL } from '../../../api/url/toContentServerURL'
 import { Thresholds } from '../Thresholds'
+import { clearCollection, mockCollection, restoreCollection } from '../../../../tests/mockCollection'
 
 describe(getThresholds.name, async () => {
+  before(() => {
+    mockCollection(Thresholds, { attachSchema: false })
+  })
   afterEach(async () => {
-    restoreAll()
+    await clearCollection(Thresholds)
+  })
+  after(() => {
+    restoreCollection(Thresholds)
   })
   it('calls the external server for all thresholds', async () => {
-    const expected = [{ foo: Math.random().toString(10) }]
-    stub(HTTP, 'get', function (url, options) {
-      expect(url).to.equal(toContentServerURL(Thresholds.routes.all.path))
-      expect(options.params).to.deep.equal({})
-      return { data: expected }
-    })
+    const expected = { _id: Random.id(), foo: Math.random().toString(10) }
+    await Thresholds.collection().insertAsync(expected)
 
     const actual = await getThresholds()
     expect(actual).to.deep.equal(expected)
