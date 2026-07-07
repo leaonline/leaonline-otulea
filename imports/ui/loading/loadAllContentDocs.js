@@ -57,7 +57,7 @@ export const loadAllContentDocs = async ({ context, collection, ids, name, param
 
   for (const [name, documents = []] of Object.entries(allDocuments)) {
     // skip further processing if no documents have been received
-    debug(methodName, `received ${documents.length} doc(s) for ${name}`)
+    debug(methodName, `received ${documents.length} doc(s) for ${name}`, documents)
     for (const doc of documents) {
       if (!doc?._id) {
         throw new Error('Expected doc with _id to upsert')

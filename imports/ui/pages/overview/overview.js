@@ -224,7 +224,8 @@ Template.overview.helpers({
     if (dimensionFilter && dimensionFilter.length > 0) {
       query._id = { $in: dimensionFilter }
     }
-    return Dimension.collection().find(query)
+
+    return Dimension.collection().find(query, { sort: { shortNum: 1 }})
   },
   colorTypeName ({ colorType }) {
     return ColorType.byIndex(colorType)?.type
@@ -247,7 +248,7 @@ Template.overview.helpers({
       query._id = { $in: levelFilter }
     }
 
-    return Level.collection().find(query)
+    return Level.collection().find(query, { sort: { level: 1 }})
   },
   levelSelected () {
     return Template.getState('level')

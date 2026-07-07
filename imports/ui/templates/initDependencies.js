@@ -1,5 +1,6 @@
 import { Blaze } from 'meteor/blaze'
 import { Meteor } from 'meteor/meteor'
+import { noop } from "../../utils/noop";
 // if we use the autoload functionality we don't need to explicitly load basic
 // and generic (stateless) templates, since they are loaded at runtime using
 // dynamic imports.
@@ -59,7 +60,7 @@ Blaze.TemplateInstance.prototype.initDependencies =
     const logDebug = createLog({
       name: instance.view.name,
       type: 'debug',
-      devOnly: false
+      devOnly: true
     })
 
     const errorHandler = onError || createLog({
@@ -67,7 +68,10 @@ Blaze.TemplateInstance.prototype.initDependencies =
       type: 'error',
       devOnly: false
     })
+
     logDebug('initialize', { language, tts, contexts })
+
+    const debugFn = Meteor.isDevelopment || Meteor.user()?.debug ? logDebug : noop
 
     Object.assign(instance.api, {
       queryParam: value => Router.queryParam(value),
@@ -76,11 +80,7 @@ Blaze.TemplateInstance.prototype.initDependencies =
       loadContentDoc,
       hasProperty,
       isDebugUser,
-      debug: (...args) => {
-        if (isDebugUser()) {
-          logDebug(...args)
-        }
-      },
+      debug: debugFn,
       fadeOut: function (target, callback) {
         return fadeOut(target, instance, callback)
       },
