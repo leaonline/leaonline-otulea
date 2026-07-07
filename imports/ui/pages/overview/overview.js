@@ -387,7 +387,6 @@ function launch ({ templateInstance, name, args, isFreshStart }) {
       const { next, story } = templateInstance.data
 
       setTimeout(async () => {
-        debugger
         // a new session can either begin with a story (no items included) or
         // go to the fist unit, which is decided here but routed externally
         const sessionId = sessionDoc._id

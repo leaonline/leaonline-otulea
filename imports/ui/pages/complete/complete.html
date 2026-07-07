@@ -9,7 +9,7 @@
 
         {{#if showThanks}}
             {{#container class="d-print-none"}}
-                <div class="card my-4">
+                <div class=" card bg-white my-4">
                     <div class="card-body">
                         {{#onComplete complete=loadComplete}}
                             {{> textGroup text=(i18n "pages.complete.thankYou") type=currentType}}
@@ -22,7 +22,7 @@
         {{#unless feedbackComplete}}
             {{#onComplete complete=loadComplete}}
                 {{#container class="d-print-none"}}
-                    <div class="card my-4 border border-primary">
+                    <div class=" card bg-white my-4 border border-primary">
                         <div class="card-body">
                             {{> textGroup text=(i18n "pages.complete.loading") type=currentType}}
                         </div>
@@ -34,7 +34,7 @@
         {{!-- we display a failed state container to indicate to get feedback at a later point --}}
         {{#with failed}}
             {{#container}}
-                <div class="card my-4">
+                <div class=" card bg-white my-4">
                     <div class="card-body">
                         {{#onComplete complete=loadComplete}}
                             {{> textGroup text=(i18n "pages.complete.failed") type=currentType}}
@@ -78,11 +78,9 @@
             {{! ALPHA LEVELS }}
             {{! ============================================================ }}
                 {{#container}}
-                    <div class="card my-4">
-                        <div class="card-header">
-                            <h5 class="card-title">
-                                {{> textGroup text=(i18n "pages.complete.alphaLevels") type=currentType}}
-                            </h5>
+                    <div class="card bg-white my-4">
+                        <div class="card-body">
+                            {{> textGroup text=(i18n "pages.complete.alphaLevels") type=currentType}}
                             {{#if isDebugUser}}
                                 <span>
                                 {{i18n "thresholds.min"}}: {{minCountAlphaLevel}}
@@ -180,11 +178,9 @@
                 {{! COMPETENCIES }}
                 {{! ============================================================ }}
                 {{#container}}
-                    <div class="card my-4">
-                        <div class="card-header d-flex justify-content-between">
-                            <h5 class="card-title align-baseline">
-                                {{> textGroup text=(i18n "pages.complete.competencies") type=currentType}}
-                            </h5>
+                    <div class=" card bg-white my-4">
+                        <div class="card-body d-flex justify-content-between align-items-baseline">
+                            {{> textGroup text=(i18n "pages.complete.competencies") type=currentType}}
                             {{#if isDebugUser}}
                                 <span>
                                     {{i18n "thresholds.min"}}:
@@ -300,13 +296,11 @@
 
             {{#if isDebugUser}}
                 {{#container}}
-                    <div class="card my-4">
-                        <div class="card-header">
-                            <h5 class="card-title">
+                    <div class="card bg-white my-4">
+                        <div class="card-body bg-white">
                                 {{#onComplete complete=loadComplete}}
                                     {{i18n "pages.complete.responses"}}
                                 {{/onComplete}}
-                            </h5>
                         </div>
                         <div class="table-responsive">
                             <table class="table table-hover">
@@ -351,23 +345,20 @@
 
             {{#container class="d-print-none"}}
                 {{#onComplete complete=loadComplete}}
-                <div class="card lea-complete-showprint-container ">
-                    <div class="card-body lea-text-bold">
+                <div class="card bg-white lea-complete-showprint-container ">
+                    <div class="card-body lea-text-bold d-flex justify-content-between">
                         {{> textGroup text=(i18n "pages.complete.youCanPrint") type=currentType}}
-                    </div>
-                    <div class="card-body">
-                        {{#textGroup groupClass="w-100" text=(i18n "pages.complete.printResults") type=currentType}}
                             {{> actionButton
                                     tts="actions.print"
                                     type=currentType
                                     outline=true
+                                    label=(i18n "actions.print")
                                     class="ms-auto ml-auto print-simple"
                                     icon="print"}}
-                        {{/textGroup}}
                     </div>
                 </div>
 
-                <div class="card-body">
+                <div class="card-body mt-4">
                     {{> actionButton tts="common.forward" label=(i18n "common.forward") block=true btnClass="lea-showresults-forward-button" class="ms-auto ml-auto" type=currentType}}
                 </div>
                 {{/onComplete}}
@@ -377,7 +368,7 @@
         {{#if showDecision}}
             {{#onComplete complete=loadComplete}}
             {{#container class="d-print-none"}}
-                <div class="card lea-complete-showprint-container">
+                <div class=" card bg-white lea-complete-showprint-container">
                     <div class="card-body">
                         {{#with currentType}}
                             {{> textGroup text=(i18n "pages.complete.continueOrEnd") type=this }}
@@ -385,12 +376,12 @@
                     </div>
                 </div>
 
-                <div class="card-body d-flex justify-content-between">
+                <div class="card-body mt-4 d-flex justify-content-between">
                     {{> actionButton tts="common.back" label=(i18n "common.back") type=currentType
                             btnClass="lea-showdecision-back-button" outline=true}}
-                    {{> actionButton tts="common.end" label=(i18n "common.end") type=currentType
+                    {{> actionButton tts="common.end" label=(i18n "common.logout") type=currentType
                             btnClass="lea-end-button" outline=true}}
-                    {{> actionButton tts="actions.continue" label=(i18n "actions.continue") type=currentType
+                    {{> actionButton tts="actions.continue" label=(i18n "pages.complete.continue") type=currentType
                             btnClass="lea-continue-button"}}
                 </div>
             {{/container}}
