@@ -1,4 +1,5 @@
 import { onServerExec } from '../../utils/archUtils'
+import {createLog} from "../../utils/createLog";
 
 /**
  * Creates a method to get all documents from a collection.
@@ -10,10 +11,13 @@ import { onServerExec } from '../../utils/archUtils'
  * @param defaultQuery {object=}
  * @return {{schema: {'dependencies.$': (function(String, String)), 'ids.$': (function(String, String)), ids: {optional: boolean, type: ArrayConstructor}, dependencies: {optional: boolean, type: ArrayConstructor}}, name: string, backend: boolean, run: *}}
  */
-export const createGetAllMethod = ({ context, run, defaultQuery, backendOnly = true, ...addtionalMixins }) => {
+export const createGetAllMethod = ({ context, run, defaultQuery, backendOnly = true, debug, ...addtionalMixins }) => {
   const { name } = context
+    const methodName = `${name}.methods.getAll`
+    const prefix = `[${name}][${methodName}]:`
+    const _debug = debug ?? createLog({ name: context.name, level: 'debug' })
   return {
-    name: `${name}.methods.getAll`,
+    name: methodName,
     backend: backendOnly,
     schema: {
       ids: {
@@ -36,6 +40,7 @@ export const createGetAllMethod = ({ context, run, defaultQuery, backendOnly = t
       import { getCollection } from '../../infrastructure/collections/getCollection'
 
       return run ?? async function ({ ids, dependencies = [] }) {
+          _debug(prefix, ids, dependencies && JSON.stringify(dependencies))
         // return value
         const output = {}
 
@@ -44,6 +49,7 @@ export const createGetAllMethod = ({ context, run, defaultQuery, backendOnly = t
         const query = defaultQuery ?? Object.create(null)
         if (ids) query._id = { $in: ids }
         output[name] = await collection.find(query).fetchAsync()
+          _debug(prefix, name, output[name]?.length, 'documents')
 
         // dependencies
         for (const dep of dependencies) {
@@ -51,6 +57,7 @@ export const createGetAllMethod = ({ context, run, defaultQuery, backendOnly = t
           const depCollection = getCollection(depName)
           const depQuery = dep.query ?? Object.create(null)
           output[depName] = await depCollection.find(depQuery).fetchAsync()
+            _debug(prefix, depName, output[depName]?.length, 'documents')
         }
 
         return output
