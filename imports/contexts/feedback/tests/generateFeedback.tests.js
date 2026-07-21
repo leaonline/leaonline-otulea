@@ -21,7 +21,6 @@ import {
   restoreCollection
 } from '../../../../tests/mockCollection'
 
-
 describe(countCompetencies.name, async () => {
   it('correctly counts scored competencies', async () => {
     const id1 = Random.id()
@@ -457,7 +456,7 @@ describe(generateFeedback.name, async () => {
       sessionDoc: { _id: sessionId, completedAt: new Date() },
       userId,
       testCycleDoc: { _id: Random.id() },
-      flagFromDb: true,
+      flagFromDb: true
     })
     expect(existing).to.deep.equal({
       _id: doc._id,
@@ -566,7 +565,7 @@ describe(generateFeedback.name, async () => {
         isGraded: true,
         perc: 1,
         scored: 2,
-        min: 2,
+        min: 2
       }],
       competencies: [{
         competencyId: cid1,
@@ -577,7 +576,7 @@ describe(generateFeedback.name, async () => {
         perc: 1,
         scored: 6,
         undef: 0,
-        min: 2,
+        min: 2
       }, {
         competencyId: cid2,
         count: 2,
@@ -587,7 +586,7 @@ describe(generateFeedback.name, async () => {
         perc: 1,
         scored: 2,
         undef: 0,
-        min: 2,
+        min: 2
       }]
     })
 
@@ -640,7 +639,7 @@ describe(generateFeedback.name, async () => {
         isGraded: true,
         perc: 0,
         scored: 0,
-        min: 2,
+        min: 2
       }],
       competencies: [{
         competencyId: cid1,
@@ -651,7 +650,7 @@ describe(generateFeedback.name, async () => {
         perc: 0,
         scored: 0,
         undef: 0,
-        min: 2,
+        min: 2
       }, {
         competencyId: cid2,
         count: 2,
@@ -661,7 +660,7 @@ describe(generateFeedback.name, async () => {
         perc: 0,
         scored: 0,
         undef: 0,
-        min: 2,
+        min: 2
       }]
     })
     // /////////////////////////////////////////////////////////////////////////
@@ -714,7 +713,7 @@ describe(generateFeedback.name, async () => {
         isGraded: true,
         perc: 1,
         scored: 2,
-        min: 2,
+        min: 2
       }],
       competencies: [{
         competencyId: cid1,
@@ -725,7 +724,7 @@ describe(generateFeedback.name, async () => {
         perc: 1,
         scored: 6,
         undef: 0,
-        min: 2,
+        min: 2
       }, {
         competencyId: cid2,
         count: 2,
@@ -735,7 +734,7 @@ describe(generateFeedback.name, async () => {
         perc: 1,
         scored: 2,
         undef: 0,
-        min: 2,
+        min: 2
       }, {
         competencyId: cid3,
         count: 1,
@@ -747,7 +746,7 @@ describe(generateFeedback.name, async () => {
         perc: 1,
         scored: 1,
         undef: 0,
-        min: 2,
+        min: 2
       }]
     })
 
@@ -801,7 +800,7 @@ describe(generateFeedback.name, async () => {
         isGraded: true,
         perc: 0.5,
         scored: 1,
-        min: 2,
+        min: 2
       }],
       competencies: [{
         competencyId: cid1,
@@ -812,7 +811,7 @@ describe(generateFeedback.name, async () => {
         perc: 1,
         scored: 6,
         undef: 0,
-        min: 2,
+        min: 2
       }, {
         competencyId: cid2,
         count: 2,
@@ -822,7 +821,7 @@ describe(generateFeedback.name, async () => {
         perc: 0,
         scored: 0,
         undef: 0,
-        min: 2,
+        min: 2
       }, {
         competencyId: cid3,
         count: 1,
@@ -832,7 +831,7 @@ describe(generateFeedback.name, async () => {
         perc: 1,
         scored: 1,
         undef: 0,
-        min: 2,
+        min: 2
       }]
     })
     // /////////////////////////////////////////////////////////////////////////
@@ -885,7 +884,7 @@ describe(generateFeedback.name, async () => {
         isGraded: true,
         perc: (1 + (5 / 6)) / 2,
         scored: 1 + (5 / 6),
-        min: 2,
+        min: 2
       }],
       competencies: [{
         competencyId: cid1,
@@ -896,7 +895,7 @@ describe(generateFeedback.name, async () => {
         perc: 5 / 6,
         scored: 5,
         undef: 0,
-        min: 2,
+        min: 2
       }, {
         competencyId: cid2,
         count: 2,
@@ -906,7 +905,7 @@ describe(generateFeedback.name, async () => {
         perc: 1,
         scored: 2,
         undef: 0,
-        min: 2,
+        min: 2
       }, {
         competencyId: cid3,
         count: 1,
@@ -916,7 +915,7 @@ describe(generateFeedback.name, async () => {
         perc: 1,
         scored: 1,
         undef: 0,
-        min: 2,
+        min: 2
       }]
     })
   })

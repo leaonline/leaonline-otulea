@@ -1,6 +1,6 @@
 import { Blaze } from 'meteor/blaze'
 import { Meteor } from 'meteor/meteor'
-import { noop } from "../../utils/noop";
+import { noop } from '../../utils/noop'
 // if we use the autoload functionality we don't need to explicitly load basic
 // and generic (stateless) templates, since they are loaded at runtime using
 // dynamic imports.
@@ -53,14 +53,14 @@ Blaze.TemplateInstance.prototype.initDependencies =
     instance.api = {}
     instance.api.info = createLog({
       name: instance.view.name,
-      devOnly: true,
+      devOnly: !Meteor.user()?.debug,
       type: 'info'
     })
 
     const logDebug = createLog({
       name: instance.view.name,
       type: 'debug',
-      devOnly: true
+      devOnly: !Meteor.user()?.debug
     })
 
     const errorHandler = onError || createLog({
@@ -110,7 +110,8 @@ Blaze.TemplateInstance.prototype.initDependencies =
     if (tts) {
       allComplete.push(loadOnce(initializeTTS, {
         onError: errorHandler,
-        name: 'tts'
+        name: 'tts',
+        debug: debugFn
       }))
     }
 

@@ -11,7 +11,7 @@ import { callMethod } from '../../infrastructure/methods/callMethod'
  */
 
 export const loadContentDoc = async ({ context, collection, name, unlessExists, query, debug = () => {}, throwIfNotFound = false }) => {
-  debug('loadAllContentDocs (call)')
+  debug('loadContentDoc', context.name, JSON.stringify(query, null, 0))
   if (!context) {
     throw new Error('Context is expected')
   }

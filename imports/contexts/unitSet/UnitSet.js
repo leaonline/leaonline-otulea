@@ -10,7 +10,7 @@ UnitSet.isLocalCollection = true
 UnitSet.methods = UnitSet.methods ?? {}
 UnitSet.methods.getAll = createGetAllMethod({
   context: UnitSet,
-  backendOnly: false,
+  backendOnly: false
 })
 
 UnitSet.methods.get = createGetMethod({

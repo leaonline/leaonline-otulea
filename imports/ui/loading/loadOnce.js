@@ -20,7 +20,7 @@ export const loadOnce = function (asyncInitFunc, { onError, debug = () => {}, na
   const initialized = new ReactiveVar(false)
   cache.set(asyncInitFunc, initialized)
 
-  asyncInitFunc()
+  asyncInitFunc(debug)
     .catch(e => {
       debug('[loadOnce]: failed with error:')
       debug(e)

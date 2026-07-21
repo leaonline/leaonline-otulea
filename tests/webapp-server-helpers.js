@@ -17,7 +17,7 @@ RequestedDocsContext.methods.get = createGetMethod({
     test: String
   },
   backendOnly: false,
-  isPublic: true,
+  isPublic: true
 })
 
 RequestedDocsContext.methods.getAll = createGetAllMethod({
@@ -26,7 +26,7 @@ RequestedDocsContext.methods.getAll = createGetAllMethod({
     test: String
   },
   backendOnly: false,
-  isPublic: true,
+  isPublic: true
 })
 
 const _singleDocCollection = new Mongo.Collection(null)

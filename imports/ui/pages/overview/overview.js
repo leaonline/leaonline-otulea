@@ -15,6 +15,7 @@ import { fatal } from '../../components/fatal/fatal'
 import '../../components/container/container'
 import './overview.scss'
 import './overview.html'
+import { sendError } from '../../../contexts/errors/api/sendError'
 
 Template.overview.onDestroyed(function () {
   const instance = this
@@ -225,7 +226,7 @@ Template.overview.helpers({
       query._id = { $in: dimensionFilter }
     }
 
-    return Dimension.collection().find(query, { sort: { shortNum: 1 }})
+    return Dimension.collection().find(query, { sort: { shortNum: 1 } })
   },
   colorTypeName ({ colorType }) {
     return ColorType.byIndex(colorType)?.type
@@ -248,7 +249,7 @@ Template.overview.helpers({
       query._id = { $in: levelFilter }
     }
 
-    return Level.collection().find(query, { sort: { level: 1 }})
+    return Level.collection().find(query, { sort: { level: 1 } })
   },
   levelSelected () {
     return Template.getState('level')
@@ -379,6 +380,10 @@ function launch ({ templateInstance, name, args, isFreshStart }) {
       // intended to launch a new session, we try to restart the session
       if (er?.details === 'session.sessionExists') {
         restartSession(templateInstance)
+      }
+      else {
+        fatal({ error: er })
+        sendError({ error: er })
       }
     },
     success: sessionDoc => {

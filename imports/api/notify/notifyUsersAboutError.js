@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor'
 import { Email } from 'meteor/email'
 
-
 export const notifyUsersAboutError = error => {
   if (!Meteor.isServer) {
     return Promise.resolve(console.error('Expected server env'))

@@ -266,7 +266,7 @@ async function loadUnitSet ({ code, isShortCode, instance }) {
 async function loadUnit ({ code, isShortCode, instance }) {
   console.debug('fetch unit', code, isShortCode)
   try {
-    const unitDoc = await loadContentDoc({ context: Unit, query:  isShortCode ? { shortCode: code } : { _id: code } })
+    const unitDoc = await loadContentDoc({ context: Unit, query: isShortCode ? { shortCode: code } : { _id: code } })
     instance.state.set({ unitDoc, currentPageCount: 0, error: null })
     setQueryParam(createUrlQuery({ code, isShortCode, type: 'unit' }))
   }
