@@ -27,7 +27,8 @@ module.exports = function (SimpleSchema, settings) {
         logLevel: String
       }),
       tts: schema({
-        url: String
+        url: String,
+        maxRetries: Number
       }),
       hosts: schema({
         content: schema({

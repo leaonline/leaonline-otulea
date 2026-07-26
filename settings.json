@@ -22,7 +22,8 @@
       "logLevel": "info"
     },
     "tts": {
-      "url": "http://localhost:3030/tts"
+      "maxRetries": -1,
+      "url": "http://localhost:3030/speech"
     },
     "hosts": {
       "content": {
