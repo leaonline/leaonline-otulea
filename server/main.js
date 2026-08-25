@@ -1,4 +1,5 @@
 import '../imports/startup/server/logging'
+import '../imports/startup/server/monitoring'
 import '../imports/startup/server/collection2'
 import '../imports/startup/server/settings'
 import '../imports/startup/server/csp'
