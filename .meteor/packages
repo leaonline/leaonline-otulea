@@ -5,7 +5,7 @@
 # but you can also edit it by hand.
 
 meteor-base@1.5.2             # Packages every Meteor app needs to have
-mobile-experience@1.1.2       # Packages for a great mobile UX
+# mobile-experience@1.1.2       # Packages for a great mobile UX
 mongo@2.2.0               # The database Meteor supports right now
 blaze-html-templates        # Compile .html files into Meteor Blaze views
 reactive-var@1.0.13           # Reactive variable for tracker
@@ -16,20 +16,10 @@ standard-minifier-js@3.2.0    # JS minifier run for production mode
 es5-shim@4.8.1          # ECMAScript 5 compatibility for older browsers
 ecmascript@0.17.0              # Enable ECMAScript2015+ syntax in app code
 # shell-server@0.5.0            # Server-side component of the `meteor shell` command
-blaze@3.0.2
 
-#========================================
-# testing
-#========================================
-meteortesting:mocha@3.2.0
-lmieulet:meteor-coverage@5.0.0
-leaonline:jwt
-# http
-#
-## client
-jkuester:http
-
-## Base Tools
+##========================================
+## BASE / CORE
+##========================================
 leaonline:corelib
 leaonline:ui
 leaonline:service-registry
@@ -52,14 +42,22 @@ leaonline:grid-factory
 ## Methods
 mdg:validated-method
 
-## Accounts
+## HTTP
+jkuester:http
+
+##========================================
+## ACCOUNTS
+##========================================
 accounts-password@3.2.2
 leaonline:accounts-lea@2.0.0
 leaonline:ddp-login
 leaonline:ddp-login-handler
 service-configuration@1.3.5
+leaonline:jwt
 
+##========================================
 ## UI
+##========================================
 reactive-dict@1.3.2
 hot-module-replacement@0.5.4
 blaze-hot
@@ -69,7 +67,7 @@ fourseven:scss@4.17.0-rc.1
 
 aldeed:autoform@8.0.0
 
-ostrio:flow-router-extra@3.12.0
+ostrio:flow-router-extra
 ostrio:i18n
 
 ## Blate/Template
@@ -89,4 +87,10 @@ email@3.1.2
 ##========================================
 ## APM
 ##========================================
-##leaonline:status
+leaonline:uptime
+
+#========================================
+# testing
+#========================================
+meteortesting:mocha@3.3.0
+lmieulet:meteor-coverage@5.0.0
