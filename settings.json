@@ -110,6 +110,9 @@
       }
     }
   },
+  "uptime": {
+    "path": "/health"
+  },
   "patches": {
     "alphaUsers": {
       "active": false,

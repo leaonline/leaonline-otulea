@@ -115,6 +115,9 @@ module.exports = function (SimpleSchema, settings) {
         }
       })
     }),
+    uptime: schema({
+      path: String
+    }),
     patches: schema({
       alphaUsers: schema({
         active: Boolean,

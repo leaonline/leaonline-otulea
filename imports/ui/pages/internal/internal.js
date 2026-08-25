@@ -109,11 +109,12 @@ Template.internal.onCreated(function () {
   // check query params for unit or unitSet
   const query = instance.data.queryParams ?? {}
   const { _id, shortCode, type, page } = query
+  const from = 'remote'
   if (type === 'unitSet' && (shortCode || _id)) {
-    loadUnitSet({ code: shortCode || _id, isShortCode: !!shortCode, instance }).catch(console.error)
+    loadUnitSet({ from, code: shortCode || _id, isShortCode: !!shortCode, instance }).catch(console.error)
   }
   else if (type === 'unit' && (shortCode || _id)) {
-    loadUnit({ code: shortCode || _id, isShortCode: !!shortCode, instance }).catch(console.error)
+    loadUnit({ from, code: shortCode || _id, isShortCode: !!shortCode, instance }).catch(console.error)
   }
   if (typeof page !== 'undefined') {
     instance.state.set('currentPageCount', Number(page))
@@ -203,18 +204,20 @@ Template.internal.helpers({
 Template.internal.events({
   'click #unitSearchButton': async function (event, instance) {
     event.preventDefault()
-    const type = instance.$('#typeSelect').val().trim()
-    const field = instance.$('#fieldSelect').val().trim()
     const code = instance.$('#unitInput').val().trim()
     if (!code) return
+
+    const type = instance.$('#typeSelect').val().trim()
+    const field = instance.$('#fieldSelect').val().trim()
+    const from = instance.$('#targetSelect').val().trim()
 
     const isShortCode = field === 'code'
     switch (type) {
       case 'unitSet':
-        await loadUnitSet({ code, isShortCode, instance })
+        await loadUnitSet({ code, isShortCode, from, instance })
         break
       case 'unit':
-        await loadUnit({ code, isShortCode, instance })
+        await loadUnit({ code, isShortCode, from, instance })
         break
       default:
         instance.state.set({ error: { message: `Invalid type selected: ${type}` } })
@@ -243,34 +246,44 @@ Template.internal.events({
   }
 })
 
-async function loadUnitSet ({ code, isShortCode, instance }) {
+async function loadUnitSet ({ code, isShortCode, from, instance }) {
   console.debug('fetch unitSet', code, isShortCode)
+  const throwIfNotFound = true
   try {
-    const unitSetDoc = await loadContentDoc({ context: UnitSet, query: isShortCode ? { shortCode: code } : { _id: code } })
+    const unitSetDoc = await loadContentDoc({
+      context: UnitSet,
+      from,
+      throwIfNotFound,
+      query: isShortCode ? { shortCode: code } : { _id: code }
+    })
     const unitDocs = []
     console.debug('fetch units for unitSet', unitSetDoc?._id, unitSetDoc?.units?.length)
     if (!unitSetDoc) throw new Meteor.Error('404', 'errors.docNocFound')
     for (const unitId of unitSetDoc.units) {
-      const unitDoc = await loadContentDoc({ context: Unit, query: { _id: unitId } })
+      const unitDoc = await loadContentDoc({ context: Unit, from, throwIfNotFound, query: { _id: unitId } })
       unitDocs.push(unitDoc)
     }
     setQueryParam(createUrlQuery({ code, isShortCode, type: 'unitSet' }))
     instance.state.set({ unitSetDoc, unitDocs, error: null })
-  }
-  catch (e) {
+  } catch (e) {
     console.error('Error loading unitSet', e)
     instance.state.set({ unitSetDoc: null, unitDocs: [], error: errorToObject(e) })
   }
 }
 
-async function loadUnit ({ code, isShortCode, instance }) {
+async function loadUnit ({ code, isShortCode, from, instance }) {
   console.debug('fetch unit', code, isShortCode)
+  const throwIfNotFound = true
   try {
-    const unitDoc = await loadContentDoc({ context: Unit, query: isShortCode ? { shortCode: code } : { _id: code } })
+    const unitDoc = await loadContentDoc({
+      context: Unit,
+      from,
+      throwIfNotFound,
+      query: isShortCode ? { shortCode: code } : { _id: code }
+    })
     instance.state.set({ unitDoc, currentPageCount: 0, error: null })
     setQueryParam(createUrlQuery({ code, isShortCode, type: 'unit' }))
-  }
-  catch (e) {
+  } catch (e) {
     console.error('Error loading unit', e)
     instance.state.set({ unitDoc: null, error: errorToObject(e) })
   }

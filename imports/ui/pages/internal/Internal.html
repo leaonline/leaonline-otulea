@@ -17,6 +17,10 @@
               <option value="code" selected>Short-Code (lea id)</option>
               <option value="_id">Document _id</option>
             </select>
+              <select class="form-control" id="targetSelect">
+                  <option value="remote" selected>load from Backend (live)</option>
+                  <option value="current">load from Lab (synced)</option>
+              </select>
             <input type="text" placeholder="{{i18n "internal.enterValue"}}" class="form-control me-2" id="unitInput" />
             <button class="ms-1 ml-1 btn btn-primary mb-2 no-wrap" id="unitSearchButton">
               {{i18n "internal.load"}}
