@@ -25,5 +25,6 @@ import '../imports/startup/server/rateLimit'
 // SYNC
 import '../imports/startup/server/syncContent'
 
-// apply patches at the very last stage
+// apply patches and queries at the very last stage
 import '../imports/startup/server/patches'
+import '../imports/startup/server/queries'
