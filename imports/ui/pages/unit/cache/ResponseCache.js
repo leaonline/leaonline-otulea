@@ -22,6 +22,7 @@ export class ResponseCache {
     const value = EJSON.stringify(responseData)
     const b64Value = this.encode(value)
     this.storage.setItem(key, b64Value)
+    return { key, value: b64Value }
   }
 
   load (responseData) {

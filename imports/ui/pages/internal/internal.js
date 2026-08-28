@@ -144,7 +144,7 @@ Template.internal.onCreated(function () {
 
 Template.internal.helpers({
   dependenciesComplete () {
-    return Template.getState('dependenciesComplete') && renderersLoaded.get()
+    return Template.getState('dependenciesComplete') && renderersLoaded.get() && !Template.getState('loading')
   },
   unitDoc () {
     return Template.getState('unitDoc')
@@ -267,7 +267,11 @@ async function loadUnitSet ({ code, isShortCode, from, instance }) {
     instance.state.set({ unitSetDoc, unitDocs, error: null })
   } catch (e) {
     console.error('Error loading unitSet', e)
-    instance.state.set({ unitSetDoc: null, unitDocs: [], error: errorToObject(e) })
+      const errorObj = errorToObject(e)
+      if (errorObj.message.includes('units is not iterable')) {
+          errorObj.message = 'UnitSet contains no units'
+      }
+    instance.state.set({ unitSetDoc: null, unitDocs: [], error: errorObj })
   }
 }
 
@@ -290,8 +294,12 @@ async function loadUnit ({ code, isShortCode, from, instance }) {
 }
 
 function onPageNavUpdate ({ action, newPage, templateInstance, onComplete }) {
+  templateInstance.state.set({ loading: true })
   templateInstance.state.set(newPage)
-  onComplete()
+  setTimeout(() => {
+      templateInstance.state.set({ loading: false })
+      onComplete()
+  }, 300)
 }
 
 const createUrlQuery = ({ code, isShortCode, type }) => {

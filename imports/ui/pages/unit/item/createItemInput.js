@@ -8,8 +8,8 @@ import { noop } from '../../../../utils/noop'
  */
 export const createItemInput = ({ cache, debug = noop }) => {
   return ({ userId, sessionId, unitId, page, type, contentId, responses }) => {
-    debug('cache item data', { userId, sessionId, unitId, page, type, contentId, responses })
-    return cache.save({
+    debug('cache item data from', { userId, sessionId, unitId, page, type, contentId, responses })
+    const {key, value} = cache.save({
       userId,
       sessionId,
       unitId,
@@ -18,5 +18,7 @@ export const createItemInput = ({ cache, debug = noop }) => {
       contentId,
       responses
     })
+    debug('cache item data => as', key, value)
+    return { key, value }
   }
 }
