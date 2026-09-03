@@ -9,8 +9,6 @@
     "lint:code-fix": "npx @biomejs/biome lint --write ./",
     "format:code": "npx @biomejs/biome format ./",
     "format:code-fix": "npx @biomejs/biome format --write ./",
-    "lint:style": "stylelint \"**/*.scss\"",
-    "lint:style-fix": "stylelint --fix \"**/*.scss\"",
     "build:notes-tree": "markdown-notes-tree && npm run lint:markdown-fix",
     "visualize": "meteor --production --extra-packages bundle-visualizer,dynamic-import --settings=settings.json"
   },
@@ -29,7 +27,6 @@
     "meteor-node-stubs": "^1.2.25",
     "print-js": "^1.6.0",
     "showdown": "^2.1.0",
-    "stylelint-config-standard-scss": "^17.0.0",
     "ua-parser-js": "^2.0.9"
   },
   "meteor": {
