@@ -3,7 +3,11 @@ import { Random } from 'meteor/random'
 import { expect } from 'chai'
 import { getThresholds } from '../api/getThresholds'
 import { Thresholds } from '../Thresholds'
-import { clearCollection, mockCollection, restoreCollection } from '../../../../tests/mockCollection'
+import {
+  clearCollection,
+  mockCollection,
+  restoreCollection,
+} from '../../../../tests/mockCollection'
 
 describe(getThresholds.name, async () => {
   before(() => {

@@ -5,7 +5,7 @@ import { UnitSet } from '../../unitSet/UnitSet'
 import {
   clearCollection,
   mockCollection,
-  restoreCollection
+  restoreCollection,
 } from '../../../../tests/mockCollection'
 import { Session } from '../Session'
 import { TestCycle } from '../../testcycle/TestCycle'
@@ -49,7 +49,7 @@ describe(Session.methods.continue.name, async () => {
     const arg = { sessionId }
     await expectThrow({
       fn: () => continueSession.call(env, arg),
-      message: DocNotFoundError.reason
+      message: DocNotFoundError.reason,
     })
   })
 
@@ -62,7 +62,7 @@ describe(Session.methods.continue.name, async () => {
 
     await expectThrow({
       fn: () => continueSession.call(env, arg),
-      message: 'session.isComplete'
+      message: 'session.isComplete',
     })
   })
   it('throws if the session is already cancelled', async () => {
@@ -73,7 +73,7 @@ describe(Session.methods.continue.name, async () => {
     const arg = { sessionId }
     await expectThrow({
       fn: () => continueSession.call(env, arg),
-      message: 'session.isCancelled'
+      message: 'session.isCancelled',
     })
   })
   it('updates the session accordingly and returns the doc', async () => {
@@ -84,7 +84,7 @@ describe(Session.methods.continue.name, async () => {
         expect(id).to.equal(sessionId)
         expect(modifier.$set.continuedAt instanceof Date).to.equal(true)
         return 1
-      }
+      },
     }))
 
     const env = { userId }

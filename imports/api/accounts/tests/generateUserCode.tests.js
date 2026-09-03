@@ -2,7 +2,7 @@
 import { expect } from 'chai'
 import { generateUserCode } from '../generateUserCode'
 
-describe(generateUserCode.name, function () {
+describe(generateUserCode.name, () => {
   it('generates a random code of given length', async function () {
     this.timeout(5000)
     for (let i = 0; i < 1000; i++) {
@@ -10,13 +10,12 @@ describe(generateUserCode.name, function () {
       expect(code.length).to.equal(5)
     }
   })
-  it('throws an error if no code has been generated in given retries', async function () {
+  it('throws an error if no code has been generated in given retries', async () => {
     let thrown = false
     for (let i = 0; i < 1000; i++) {
       try {
         await generateUserCode(128, 1)
-      }
-      catch (e) {
+      } catch (e) {
         expect(e.reason).to.equal('generateUserCode.maxTriesExceeded')
         thrown = true
       }

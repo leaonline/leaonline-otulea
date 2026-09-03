@@ -2,8 +2,8 @@
 import { Record } from '../Record'
 import { onServerExec } from '../../../utils/archUtils'
 
-onServerExec(function () {
-  describe(Record.name, function () {
-    import './addRecord.tests'
+onServerExec(() => {
+  describe(Record.name, () => {
+    require('./addRecord.tests')
   })
 })

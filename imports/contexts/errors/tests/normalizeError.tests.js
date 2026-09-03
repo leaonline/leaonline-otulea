@@ -6,11 +6,11 @@ import { normalizeError } from '../api/normalizeError'
 import { Schema } from '../../../api/schema/Schema'
 import { Errors } from '../Errors'
 
-const isHex = str => (/^[a-f0-9]*$/g).test(str)
+const isHex = (str) => /^[a-f0-9]*$/g.test(str)
 const errorSchema = Schema.create(Errors.schema)
 
-describe(normalizeError.name, function () {
-  it('transforms a meteor error correctly', function () {
+describe(normalizeError.name, () => {
+  it('transforms a meteor error correctly', () => {
     const name = Random.id()
     const reason = Random.id()
     const details = { foo: Random.id() }
@@ -28,7 +28,7 @@ describe(normalizeError.name, function () {
     expect(isHex(normalized.hash)).to.equal(true)
     expect(errorSchema.validate(normalized)).to.equal(undefined)
   })
-  it('transforms a native error correctly', function () {
+  it('transforms a native error correctly', () => {
     const reason = Random.id()
     const error = new Error(reason)
     error.details = { foo: Random.id() }
@@ -47,7 +47,7 @@ describe(normalizeError.name, function () {
     expect(errorSchema.validate(normalized)).to.equal(undefined)
   })
 
-  it('adds additional info', function () {
+  it('adds additional info', () => {
     const def = {
       error: new Error(),
       browser: { foo: Random.id() },
@@ -56,10 +56,12 @@ describe(normalizeError.name, function () {
       method: Random.id(),
       publication: Random.id(),
       endpoint: Random.id(),
-      isSystem: true
+      isSystem: true,
     }
     const normalized = normalizeError(def)
-    expect(normalized.browser).to.equal(Meteor.isClient ? JSON.stringify(def.browser) : undefined)
+    expect(normalized.browser).to.equal(
+      Meteor.isClient ? JSON.stringify(def.browser) : undefined,
+    )
     expect(normalized.createdBy).to.equal(def.userId)
     expect(normalized.template).to.equal(def.template)
     expect(normalized.method).to.equal(def.method)

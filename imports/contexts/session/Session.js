@@ -20,11 +20,10 @@ export const Session = {
   label: 'session.title',
   icon: 'project-diagram',
   methods: {},
-  publications: {}
+  publications: {},
 }
 
 Session.schema = {
-
   /**
    * The user who this session belongs to.
    */
@@ -42,7 +41,7 @@ Session.schema = {
    */
   completedAt: {
     type: Date,
-    optional: true
+    optional: true,
   },
 
   /**
@@ -50,7 +49,7 @@ Session.schema = {
    */
   updatedAt: {
     type: Date,
-    optional: true
+    optional: true,
   },
 
   /**
@@ -58,7 +57,7 @@ Session.schema = {
    */
   cancelledAt: {
     type: Date,
-    optional: true
+    optional: true,
   },
 
   /**
@@ -66,7 +65,7 @@ Session.schema = {
    */
   continuedAt: {
     type: Date,
-    optional: true
+    optional: true,
   },
 
   /**
@@ -89,7 +88,7 @@ Session.schema = {
    */
   currentUnit: {
     type: String,
-    optional: true
+    optional: true,
   },
 
   /**
@@ -99,128 +98,128 @@ Session.schema = {
   progress: {
     type: Number,
     defaultValue: 0,
-    min: 0
+    min: 0,
   },
 
   maxProgress: {
     type: Number,
     defaultValue: 0,
-    min: 0
-  }
+    min: 0,
+  },
 }
 
 Session.methods.currentById = {
   name: 'session.methods.currentById',
   schema: {
-    sessionId: String
+    sessionId: String,
   },
   numRequests: 10,
   timeInterval: 1000,
-  run: onServerExec(function () {
-    import { getSessionDoc } from './utils/getSessionDoc'
+  run: onServerExec(() => {
+    const { getSessionDoc } = require('./utils/getSessionDoc')
 
     return async function ({ sessionId }) {
       const { userId } = this
       return getSessionDoc({ sessionId, userId })
     }
-  })
+  }),
 }
 
 Session.methods.start = {
   name: 'session.start',
   schema: {
-    testCycleId: String
+    testCycleId: String,
   },
   numRequests: 1,
   timeInterval: 1000,
-  run: onServerExec(function () {
-    import { startSession } from './api/startSession'
+  run: onServerExec(() => {
+    const { startSession } = require('./api/startSession')
 
     return async function ({ testCycleId }) {
       const api = this
       return startSession({
         testCycleId: testCycleId,
-        userId: api.userId
+        userId: api.userId,
       })
     }
-  })
+  }),
 }
 
 Session.methods.cancel = {
   name: 'session.methods.cancel',
   schema: {
-    sessionId: String
+    sessionId: String,
   },
   numRequests: 1,
   timeInterval: 1000,
-  run: onServerExec(function () {
-    import { cancelSession } from './api/cancelSession'
+  run: onServerExec(() => {
+    const { cancelSession } = require('./api/cancelSession')
 
     return async function ({ sessionId }) {
       const api = this
       return cancelSession({
         sessionId: sessionId,
-        userId: api.userId
+        userId: api.userId,
       })
     }
-  })
+  }),
 }
 
 Session.methods.continue = {
   name: 'session.methods.continue',
   schema: {
-    sessionId: String
+    sessionId: String,
   },
   numRequests: 1,
   timeInterval: 1000,
-  run: onServerExec(function () {
-    import { continueSession } from './api/continueSession'
+  run: onServerExec(() => {
+    const { continueSession } = require('./api/continueSession')
 
     return async function ({ sessionId }) {
       const api = this
       return continueSession({
         sessionId: sessionId,
-        userId: api.userId
+        userId: api.userId,
       })
     }
-  })
+  }),
 }
 
 Session.methods.next = {
   name: 'session.methods.next',
   schema: {
-    sessionId: String
+    sessionId: String,
   },
   numRequests: 1,
   timeInterval: 1000,
-  run: onServerExec(function () {
-    import { updateSession } from './api/updateSession'
+  run: onServerExec(() => {
+    const { updateSession } = require('./api/updateSession')
     return async function ({ sessionId }) {
       const api = this
       return updateSession({
         sessionId: sessionId,
         userId: api.userId,
-        debug: api.debug
+        debug: api.debug,
       })
     }
-  })
+  }),
 }
 
 Session.methods.results = {
   name: 'session.methods.results',
   schema: {
-    sessionId: String
+    sessionId: String,
   },
   numRequests: 1,
   timeInterval: 1000,
-  run: onServerExec(function () {
-    import { generateResults } from './api/generateResults'
+  run: onServerExec(() => {
+    const { generateResults } = require('./api/generateResults')
 
     return function ({ sessionId }) {
       const { userId, debug, flagFromDb = true } = this
       return generateResults({ sessionId, userId, debug, flagFromDb })
     }
-  })
+  }),
 }
 
 /**
@@ -230,16 +229,18 @@ Session.methods.results = {
 Session.methods.byTestCycle = {
   name: 'session.methods.byTestCycle',
   schema: {
-    testCycleId: String
+    testCycleId: String,
   },
-  run: onServerExec(function () {
-    import { getLastSessionByTestCylce } from './api/getLastSessionByTestCyclce'
+  run: onServerExec(() => {
+    const {
+      getLastSessionByTestCylce,
+    } = require('./api/getLastSessionByTestCyclce')
 
     return function ({ testCycleId }) {
       const { userId } = this
       return getLastSessionByTestCylce({ testCycleId, userId })
     }
-  })
+  }),
 }
 
 /**
@@ -253,14 +254,12 @@ Session.methods.recentCompleted = {
     'users.$': String,
     resolve: {
       type: Boolean,
-      optional: true
-    }
+      optional: true,
+    },
   },
   backend: true,
-  run: onServerExec(function () {
-    import { recentCompleted } from './api/recentCompleted'
-    return function ({ users, resolve }) {
-      return recentCompleted({ users, resolve })
-    }
-  })
+  run: onServerExec(() => {
+    const { recentCompleted } = require('./api/recentCompleted')
+    return ({ users, resolve }) => recentCompleted({ users, resolve })
+  }),
 }

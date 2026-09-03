@@ -6,50 +6,56 @@ import { removeUser } from '../removeUser'
 import {
   clearCollection,
   mockCollection,
-  restoreCollection
+  restoreCollection,
 } from '../../../../tests/mockCollection'
 import { Session } from '../../../contexts/session/Session'
 import { Response } from '../../../contexts/response/Response'
 import { Feedback } from '../../../contexts/feedback/Feedback'
 import { stub, restoreAll, expectThrow } from '../../../../tests/helpers.tests'
 
-describe(removeUser.name, function () {
-  before(function () {
+describe(removeUser.name, () => {
+  before(() => {
     mockCollection(Session)
     mockCollection(Response)
     mockCollection(Feedback)
   })
-  after(async function () {
+  after(async () => {
     await restoreCollection(Session)
     await restoreCollection(Response)
     await restoreCollection(Feedback)
   })
 
-  afterEach(async function () {
+  afterEach(async () => {
     await restoreAll()
     clearCollection(Session)
     clearCollection(Response)
     clearCollection(Feedback)
   })
 
-  it('throws if the given user is not found', async function () {
+  it('throws if the given user is not found', async () => {
     await expectThrow({
       fn: () => removeUser(),
-      message: 'removeUser.userDoesNotExist'
+      message: 'removeUser.userDoesNotExist',
     })
     await expectThrow({
       fn: () => removeUser(Random.id()),
-      message: 'removeUser.userDoesNotExist'
+      message: 'removeUser.userDoesNotExist',
     })
   })
-  it('returns the amount of documents removed for the user', async function () {
+  it('returns the amount of documents removed for the user', async () => {
     const sessionsRemoved = Math.floor(Math.random() * 100)
     const responsesRemoved = Math.floor(Math.random() * 100)
     const feedbackRemoved = Math.floor(Math.random() * 100)
     const userRemoved = 1
-    stub(Session, 'collection', () => ({ removeAsync: async () => sessionsRemoved }))
-    stub(Response, 'collection', () => ({ removeAsync: async () => responsesRemoved }))
-    stub(Feedback, 'collection', () => ({ removeAsync: async () => feedbackRemoved }))
+    stub(Session, 'collection', () => ({
+      removeAsync: async () => sessionsRemoved,
+    }))
+    stub(Response, 'collection', () => ({
+      removeAsync: async () => responsesRemoved,
+    }))
+    stub(Feedback, 'collection', () => ({
+      removeAsync: async () => feedbackRemoved,
+    }))
     stub(Meteor.users, 'removeAsync', async () => userRemoved)
     stub(Meteor.users, 'findOneAsync', async () => ({ _id: Random.id() }))
 
@@ -57,10 +63,10 @@ describe(removeUser.name, function () {
       sessionsRemoved,
       responsesRemoved,
       userRemoved,
-      feedbackRemoved
+      feedbackRemoved,
     })
   })
-  it('allows to pass a debug log', async function () {
+  it('allows to pass a debug log', async () => {
     const userId = Random.id()
     const calledBy = Random.id()
     let called = false
@@ -70,7 +76,7 @@ describe(removeUser.name, function () {
     }
     await expectThrow({
       fn: () => removeUser(userId, calledBy, log),
-      message: 'removeUser.userDoesNotExist'
+      message: 'removeUser.userDoesNotExist',
     })
     expect(called).to.equal(true)
   })

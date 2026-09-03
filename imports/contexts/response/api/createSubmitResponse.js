@@ -4,18 +4,29 @@ import { Response } from '../Response'
 import { getSessionDoc } from '../../session/utils/getSessionDoc'
 import { isCurrentUnit } from '../../session/utils/isCurrentUnit'
 
-export const createSubmitResponse = ({ extractor, scorer }) =>
-  async ({ responseDoc = {}, userId, onError = () => {}, debug = () => {} } = {}) => {
+export const createSubmitResponse =
+  ({ extractor, scorer }) =>
+  async ({
+    responseDoc = {},
+    userId,
+    onError = () => {},
+    debug = () => {},
+  } = {}) => {
     const { sessionId, unitId, responses, contentId, page } = responseDoc
 
     // we need to make sure, that this data belongs to the current user's
     // session by checking the unit id against the session's current unit
-    const sessionDoc = sessionId && await getSessionDoc({ sessionId, userId })
+    const sessionDoc = sessionId && (await getSessionDoc({ sessionId, userId }))
 
     if (!sessionDoc || !unitId || !isCurrentUnit({ sessionDoc, unitId })) {
-      throw new Meteor.Error('response.submitError', 'response.isNotCurrentUnit', {
-        sessionId, unitId
-      })
+      throw new Meteor.Error(
+        'response.submitError',
+        'response.isNotCurrentUnit',
+        {
+          sessionId,
+          unitId,
+        },
+      )
     }
 
     let scores = []
@@ -24,8 +35,7 @@ export const createSubmitResponse = ({ extractor, scorer }) =>
       const unitDoc = await Unit.collection().findOneAsync(unitId)
       const itemDoc = extractor({ unitDoc, page, contentId }, debug)
       scores = scorer({ itemDoc, responseDoc })
-    }
-    catch (e) {
+    } catch (e) {
       onError(e)
       failed = true
     }
@@ -38,13 +48,16 @@ export const createSubmitResponse = ({ extractor, scorer }) =>
       contentId,
       page,
       scores,
-      failed
+      failed,
     }
 
-    return Response.collection().upsertAsync({
-      userId,
-      sessionId,
-      unitId,
-      contentId
-    }, { $set: scoreDoc })
+    return Response.collection().upsertAsync(
+      {
+        userId,
+        sessionId,
+        unitId,
+        contentId,
+      },
+      { $set: scoreDoc },
+    )
   }

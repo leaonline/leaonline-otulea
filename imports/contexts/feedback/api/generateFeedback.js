@@ -50,14 +50,23 @@ export const generateFeedback = async (options) => {
     testCycleDoc: Match.ObjectIncluding({ _id: String }),
     userId: String,
     flagFromDb: Match.Maybe(Boolean),
-    debug: Match.Maybe(Function)
+    debug: Match.Maybe(Function),
   })
 
-  const { sessionDoc, testCycleDoc, userId, flagFromDb, debug = () => {} } = options
+  const {
+    sessionDoc,
+    testCycleDoc,
+    userId,
+    flagFromDb,
+    debug = () => {},
+  } = options
   const sessionId = sessionDoc._id
 
   debug('(generateFeedback)', { sessionId, userId })
-  const existingFeedback = await Feedback.collection().findOneAsync({ sessionId, userId })
+  const existingFeedback = await Feedback.collection().findOneAsync({
+    sessionId,
+    userId,
+  })
 
   if (existingFeedback) {
     if (flagFromDb) {
@@ -77,14 +86,16 @@ export const generateFeedback = async (options) => {
   if (!sessionDoc.completedAt) {
     throw new Meteor.Error(
       'generateFeedback.error',
-      'generateFeedback.sessionNotComplete', {
+      'generateFeedback.sessionNotComplete',
+      {
         userId,
         sessionId,
         testCycle: sessionDoc.testCycle,
         completedAt: sessionDoc.completedAt,
         progress: sessionDoc.progress,
-        maxProgress: sessionDoc.maxProgress
-      })
+        maxProgress: sessionDoc.maxProgress,
+      },
+    )
   }
 
   // ///////////////////////////////////////////////////////////////////////////
@@ -96,28 +107,26 @@ export const generateFeedback = async (options) => {
     minCountCompetency,
     thresholdsCompetency,
     minCountAlphaLevel,
-    thresholdsAlphaLevel
+    thresholdsAlphaLevel,
   } = await getThresholds()
 
   // TODO cache to prevent many avoidable iterations
-  const sortedThresholdsCompetency = Object
-    .entries(thresholdsCompetency)
+  const sortedThresholdsCompetency = Object.entries(thresholdsCompetency)
     .map(([key, value]) => {
       return {
         max: value,
-        name: key
+        name: key,
       }
     })
     .sort((a, b) => {
       return b.max - a.max
     })
 
-  const sortedThresholdsAlphaLevel = Object
-    .entries(thresholdsAlphaLevel)
+  const sortedThresholdsAlphaLevel = Object.entries(thresholdsAlphaLevel)
     .map(([key, value]) => {
       return {
         max: value,
-        name: key
+        name: key,
       }
     })
     .sort((a, b) => {
@@ -130,9 +139,9 @@ export const generateFeedback = async (options) => {
   const alphaLevelIds = new Set()
 
   // iteration 1 to retrieve competencies and alpaheLevels
-  responses.forEach(scores => {
+  responses.forEach((scores) => {
     scores.forEach(({ competency }) => {
-      competency.forEach(competencyId => {
+      competency.forEach((competencyId) => {
         competencyIds.add(competencyId)
       })
     })
@@ -140,7 +149,7 @@ export const generateFeedback = async (options) => {
 
   debug('(generateFeedback)', 'get competencies')
   const competencyMap = await getCompetencies(Array.from(competencyIds))
-  competencyMap.forEach(doc => alphaLevelIds.add(doc.level))
+  competencyMap.forEach((doc) => alphaLevelIds.add(doc.level))
 
   debug('(generateFeedback)', 'get AlphaLevels')
   const alphaLevelMap = await getAlphaLevels(Array.from(alphaLevelIds))
@@ -153,7 +162,7 @@ export const generateFeedback = async (options) => {
   const aggregatedCompetencies = countCompetencies({
     responses,
     minCountCompetency,
-    debug
+    debug,
   })
 
   // ///////////////////////////////////////////////////////////////////////////
@@ -162,11 +171,11 @@ export const generateFeedback = async (options) => {
   debug('(generateFeedback)', 'start grading competencies')
   const aggregatedAlphaLevels = await gradeCompetenciesAndCountAlphaLevels({
     competencies: aggregatedCompetencies,
-    getCompetency: id => competencyMap.get(id),
-    getAlphaLevel: id => alphaLevelMap.get(id),
+    getCompetency: (id) => competencyMap.get(id),
+    getAlphaLevel: (id) => alphaLevelMap.get(id),
     minCountAlphaLevel: minCountAlphaLevel,
     thresholds: sortedThresholdsCompetency,
-    sessionDoc: sessionDoc
+    sessionDoc: sessionDoc,
   })
 
   // ///////////////////////////////////////////////////////////////////////////
@@ -176,7 +185,7 @@ export const generateFeedback = async (options) => {
   debug('(generateFeedback)', 'start grading alpha levels')
   gradeAlphaLevels({
     alphaLevels: aggregatedAlphaLevels,
-    thresholds: sortedThresholdsAlphaLevel
+    thresholds: sortedThresholdsAlphaLevel,
   })
 
   // ///////////////////////////////////////////////////////////////////////////
@@ -189,7 +198,7 @@ export const generateFeedback = async (options) => {
     dimension: testCycleDoc.dimension,
     testCycle: sessionDoc.testCycle,
     competencies: Array.from(aggregatedCompetencies.values()),
-    alphaLevels: Array.from(aggregatedAlphaLevels.values())
+    alphaLevels: Array.from(aggregatedAlphaLevels.values()),
   }
 
   const docId = await Feedback.collection().insertAsync(feedbackDoc)
@@ -204,17 +213,17 @@ export const generateFeedback = async (options) => {
 export const countCompetencies = ({ responses, minCountCompetency }) => {
   const competencies = new Map()
 
-  responses.forEach(result => {
+  responses.forEach((result) => {
     result.forEach(({ competency, score, isUndefined }) => {
       // since competency can actually hold more than one competency we
       // need another iteration to break it down to it's pieces
-      competency.forEach(competencyId => {
+      competency.forEach((competencyId) => {
         const current = competencies.get(competencyId) || {
           count: 0, // max occurrences
           scored: 0, // positive scores
           undef: 0, // skipped items
           min: minCountCompetency, // threshold
-          perc: 0 // percent of positive scores
+          perc: 0, // percent of positive scores
         }
 
         current.competencyId = competencyId
@@ -224,7 +233,7 @@ export const countCompetencies = ({ responses, minCountCompetency }) => {
           current.scored++
         }
 
-        current.undef += (isUndefined === 'true' ? 1 : 0)
+        current.undef += isUndefined === 'true' ? 1 : 0
 
         competencies.set(competencyId, current)
       })
@@ -234,7 +243,7 @@ export const countCompetencies = ({ responses, minCountCompetency }) => {
   // finally generate percent values in one iteration
   competencies.forEach((val, key) => {
     if (val.count > 0) {
-      val.perc = (val.scored / val.count)
+      val.perc = val.scored / val.count
       competencies.set(key, val)
     }
   })
@@ -242,7 +251,14 @@ export const countCompetencies = ({ responses, minCountCompetency }) => {
   return competencies
 }
 
-export const gradeCompetenciesAndCountAlphaLevels = async ({ competencies, minCountAlphaLevel, thresholds, getCompetency, getAlphaLevel, sessionDoc = {} }) => {
+export const gradeCompetenciesAndCountAlphaLevels = async ({
+  competencies,
+  minCountAlphaLevel,
+  thresholds,
+  getCompetency,
+  getAlphaLevel,
+  sessionDoc = {},
+}) => {
   const alphaLevels = new Map()
   const sessionId = sessionDoc._id
 
@@ -255,14 +271,16 @@ export const gradeCompetenciesAndCountAlphaLevels = async ({ competencies, minCo
     if (!competencyDoc) {
       const noCompetencyError = new Meteor.Error(
         'generateFeedback.error',
-        'generateFeedback.noCompetencyDoc', {
+        'generateFeedback.noCompetencyDoc',
+        {
           competencyId,
           sessionId,
           testCycle: sessionDoc.testCycle,
           completedAt: sessionDoc.completedAt,
           progress: sessionDoc.progress,
-          maxProgress: sessionDoc.maxProgress
-        })
+          maxProgress: sessionDoc.maxProgress,
+        },
+      )
 
       return notifyUsersAboutError(noCompetencyError)
     }
@@ -271,7 +289,7 @@ export const gradeCompetenciesAndCountAlphaLevels = async ({ competencies, minCo
       minCount: current.min,
       count: current.count,
       percent: current.perc,
-      thresholds: thresholds
+      thresholds: thresholds,
     })
 
     current.gradeName = grade.name
@@ -284,15 +302,16 @@ export const gradeCompetenciesAndCountAlphaLevels = async ({ competencies, minCo
     if (!alphaLevelDoc) {
       throw new Meteor.Error(
         'generateFeedback.error',
-        'generateFeedback.noAlphaLevelDoc', {
+        'generateFeedback.noAlphaLevelDoc',
+        {
           competencyId,
           alphaLevel: competencyDoc.level,
           sessionId,
           testCycle: sessionDoc.testCycle,
           completedAt: sessionDoc.completedAt,
           progress: sessionDoc.progress,
-          maxProgress: sessionDoc.maxProgress
-        }
+          maxProgress: sessionDoc.maxProgress,
+        },
       )
     }
     const alpha = alphaLevels.get(competencyDoc.level) || {
@@ -300,7 +319,7 @@ export const gradeCompetenciesAndCountAlphaLevels = async ({ competencies, minCo
       min: minCountAlphaLevel,
       count: 0,
       scored: 0,
-      perc: 0
+      perc: 0,
     }
 
     if (current.isGraded) {
@@ -314,7 +333,7 @@ export const gradeCompetenciesAndCountAlphaLevels = async ({ competencies, minCo
   // finally add percent values
   alphaLevels.forEach((value, key) => {
     if (value.count > 0) {
-      value.perc = value.count && (value.scored / value.count)
+      value.perc = value.count && value.scored / value.count
     }
 
     alphaLevels.set(key, value)
@@ -329,7 +348,7 @@ export const gradeAlphaLevels = ({ alphaLevels, thresholds }) => {
       minCount: alpha.min,
       count: alpha.count,
       percent: alpha.perc,
-      thresholds: thresholds
+      thresholds: thresholds,
     })
 
     alpha.gradeName = grade.name

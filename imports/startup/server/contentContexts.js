@@ -12,7 +12,16 @@ import { Thresholds } from '../../contexts/thresholds/Thresholds'
 import { Unit } from '../../contexts/Unit'
 import { UnitSet } from '../../contexts/unitSet/UnitSet'
 
-const contexts = [AlphaLevel, Competency, Dimension, Level, TestCycle, Thresholds, Unit, UnitSet]
+const contexts = [
+  AlphaLevel,
+  Competency,
+  Dimension,
+  Level,
+  TestCycle,
+  Thresholds,
+  Unit,
+  UnitSet,
+]
 
 for (const context of contexts) {
   const collection = createCollection(context)

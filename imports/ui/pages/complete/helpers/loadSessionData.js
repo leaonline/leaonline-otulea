@@ -32,6 +32,6 @@ export const loadSessionData = async ({ debug, sessionId }) => {
     levelDoc,
     unitSetDoc,
     color,
-    sessionLoaded: true
+    sessionLoaded: true,
   }
 }

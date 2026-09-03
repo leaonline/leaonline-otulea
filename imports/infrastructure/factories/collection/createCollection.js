@@ -5,7 +5,7 @@ import { Schema } from '../../../api/schema/Schema'
 import { LocalCollections } from '../../collections/LocalCollections'
 
 const collectionFactory = createCollectionFactory({
-  schemaFactory: Schema.create
+  schemaFactory: Schema.create,
 })
 
 export const createCollection = (context, debug = console.debug) => {
@@ -13,7 +13,7 @@ export const createCollection = (context, debug = console.debug) => {
   const options = {
     name: context.name,
     schema: context.schema,
-    attachSchema: true
+    attachSchema: true,
   }
 
   const isLocal = Meteor.isClient && context.isLocalCollection

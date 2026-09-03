@@ -4,7 +4,7 @@ import { Random } from 'meteor/random'
 import {
   clearCollection,
   mockCollection,
-  restoreCollection
+  restoreCollection,
 } from '../../../../tests/mockCollection'
 import { stub, restoreAll, expectThrow } from '../../../../tests/helpers.tests'
 import { Session } from '../Session'
@@ -15,11 +15,11 @@ import { DocNotFoundError } from '../../errors/DocNotFoundError'
 
 const startSession = Session.methods.start.run
 
-describe(Session.methods.start.name, function () {
+describe(Session.methods.start.name, () => {
   let userId
   let testCycleId
 
-  before(function () {
+  before(() => {
     mockCollection(Session)
     mockCollection(TestCycle)
     mockCollection(UnitSet)
@@ -28,14 +28,14 @@ describe(Session.methods.start.name, function () {
     testCycleId = Random.id()
   })
 
-  after(function () {
+  after(() => {
     restoreCollection(Session)
     restoreCollection(TestCycle)
     restoreCollection(UnitSet)
     restoreCollection(Unit)
   })
 
-  afterEach(async function () {
+  afterEach(async () => {
     restoreAll()
     await clearCollection(Session)
     await clearCollection(TestCycle)
@@ -46,13 +46,13 @@ describe(Session.methods.start.name, function () {
   it('throws if a running session already exists for this test', async () => {
     const doc = {}
     stub(Session, 'collection', () => ({
-      findOneAsync: async () => doc
+      findOneAsync: async () => doc,
     }))
     const env = { userId }
     const arg = { testCycleId }
     await expectThrow({
       fn: () => startSession.call(env, arg),
-      message: 'session.existsAlready'
+      message: 'session.existsAlready',
     })
   })
   it('throws if there is no doc for the given testCycleId', async () => {
@@ -62,7 +62,7 @@ describe(Session.methods.start.name, function () {
     const arg = { testCycleId }
     await expectThrow({
       fn: () => startSession.call(env, arg),
-      message: DocNotFoundError.reason
+      message: DocNotFoundError.reason,
     })
   })
   it('throws if there is no doc for the linked unitSetId', async () => {
@@ -73,19 +73,19 @@ describe(Session.methods.start.name, function () {
     const arg = { testCycleId }
     await expectThrow({
       fn: () => startSession.call(env, arg),
-      message: DocNotFoundError.reason
+      message: DocNotFoundError.reason,
     })
 
     doc.unitSets = []
     await expectThrow({
       fn: () => startSession.call(env, arg),
-      message: DocNotFoundError.reason
+      message: DocNotFoundError.reason,
     })
   })
   it('throws if there is no doc for the linked unitId', async () => {
     const usDoc = { _id: Random.id() }
     const tcDoc = {
-      unitSets: [usDoc._id]
+      unitSets: [usDoc._id],
     }
     stub(TestCycle, 'collection', () => ({ findOneAsync: async () => tcDoc }))
     stub(UnitSet, 'collection', () => ({ findOneAsync: async () => usDoc }))
@@ -94,13 +94,13 @@ describe(Session.methods.start.name, function () {
     const arg = { testCycleId }
     await expectThrow({
       fn: () => startSession.call(env, arg),
-      message: DocNotFoundError.reason
+      message: DocNotFoundError.reason,
     })
 
     usDoc.units = []
     await expectThrow({
       fn: () => startSession.call(env, arg),
-      message: DocNotFoundError.reason
+      message: DocNotFoundError.reason,
     })
   })
   it('creates a new session doc', async () => {
@@ -109,7 +109,7 @@ describe(Session.methods.start.name, function () {
     const tcDoc = {
       _id: Random.id(),
       unitSets: [usDoc._id],
-      progress: Math.random()
+      progress: Math.random(),
     }
     stub(TestCycle, 'collection', () => ({ findOneAsync: async () => tcDoc }))
     stub(UnitSet, 'collection', () => ({ findOneAsync: async () => usDoc }))

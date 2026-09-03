@@ -1,7 +1,11 @@
 /* eslint-env mocha */
 import { expect } from 'chai'
 import { Random } from 'meteor/random'
-import { clearCollection, mockCollection, restoreCollection } from '../../../../tests/mockCollection'
+import {
+  clearCollection,
+  mockCollection,
+  restoreCollection,
+} from '../../../../tests/mockCollection'
 import { restoreAll, stub } from '../../../../tests/helpers.tests'
 import { Session } from '../Session'
 import { TestCycle } from '../../testcycle/TestCycle'
@@ -37,24 +41,25 @@ describe(Session.methods.recentCompleted.name, async () => {
     completedAt,
     testCycleId = Random.id(),
     unitId = Random.id(),
-    unitSetId = Random.id()
+    unitSetId = Random.id(),
   }) => ({
     userId,
     startedAt: new Date(Date.now() - 60 * 1000 * 120),
     completedAt: completedAt,
     testCycle: testCycleId,
     unit: unitId,
-    unitSet: unitSetId
+    unitSet: unitSetId,
   })
 
   it('returns the N recent completed sessions for given users', async () => {
     // insert a few docs from our target users
-    const insert = async ({ completedAt }) => mapAsync(userIds, async (userId) => {
-      const insertId = await Session
-        .collection()
-        .insertAsync(createSessionDoc({ userId, completedAt }))
-      return await Session.collection().findOneAsync(insertId)
-    })
+    const insert = async ({ completedAt }) =>
+      mapAsync(userIds, async (userId) => {
+        const insertId = await Session.collection().insertAsync(
+          createSessionDoc({ userId, completedAt }),
+        )
+        return await Session.collection().findOneAsync(insertId)
+      })
 
     await insert({ completedAt: new Date() })
     // add some random docs from other users
@@ -66,15 +71,15 @@ describe(Session.methods.recentCompleted.name, async () => {
     const docs = await recentCompleted({ users: userIds })
     expect(docs).to.deep.equal(expected)
 
-    const tcDocs = docs.map(doc => ({ _id: doc.testCycle }))
+    const tcDocs = docs.map((doc) => ({ _id: doc.testCycle }))
 
     stub(TestCycle, 'collection', () => ({
       findOneAsync: async (_id) => {
-        return tcDocs.find(doc => doc._id === _id)
-      }
+        return tcDocs.find((doc) => doc._id === _id)
+      },
     }))
 
     const resolved = await recentCompleted({ users: userIds, resolve: true })
-    expect(resolved.map(doc => doc.testCycle)).to.deep.equal(tcDocs)
+    expect(resolved.map((doc) => doc.testCycle)).to.deep.equal(tcDocs)
   })
 })

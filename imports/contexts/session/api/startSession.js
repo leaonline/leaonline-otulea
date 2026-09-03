@@ -18,10 +18,13 @@ import { getDocument } from '../../../infrastructure/mixins/getDocument'
  * @return {any}
  */
 export const startSession = async (options = {}) => {
-  check(options, Match.ObjectIncluding({
-    testCycleId: String,
-    userId: String
-  }))
+  check(
+    options,
+    Match.ObjectIncluding({
+      testCycleId: String,
+      userId: String,
+    }),
+  )
 
   const { testCycleId, userId } = options
 
@@ -30,14 +33,14 @@ export const startSession = async (options = {}) => {
     userId,
     testCycle: testCycleId,
     completedAt: { $exists: false },
-    cancelledAt: { $exists: false }
+    cancelledAt: { $exists: false },
   })
 
   // There may be the the case where we find an aborted session.
   if (abortedSessionDoc) {
     throw new Meteor.Error('session.start.error', 'session.existsAlready', {
       sessionId: abortedSessionDoc._id,
-      unitSetId: testCycleId
+      unitSetId: testCycleId,
     })
   }
 

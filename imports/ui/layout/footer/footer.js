@@ -4,11 +4,11 @@ import { Logos } from '../../../contexts/logos/Logos'
 import { createIssuesLink } from './createIssuesLink'
 import './footer.html'
 
-const legalRoutes = Object.keys(Legal.schema).map(key => {
+const legalRoutes = Object.keys(Legal.schema).map((key) => {
   const value = Legal.schema[key]
   return {
     name: key,
-    label: value.label
+    label: value.label,
   }
 })
 
@@ -23,15 +23,15 @@ Template.footer.onCreated(function () {
       tts: ttsIsActive,
       language: true,
       translations: {
-        de: () => import('./i18n/de')
+        de: () => import('./i18n/de'),
       },
-      onComplete () {
+      onComplete() {
         instance.state.set('dependenciesComplete', true)
       },
-      onError (e) {
+      onError(e) {
         console.error(e)
         instance.state.set('dependenciesComplete', true)
-      }
+      },
     })
   }, 500)
 })
@@ -47,17 +47,17 @@ Template.footer.onRendered(function () {
 })
 
 Template.footer.helpers({
-  loadComplete () {
+  loadComplete() {
     return Template.getState('dependenciesComplete')
   },
-  logos () {
+  logos() {
     const logoDoc = Template.getState('logoDoc')
-    return logoDoc && logoDoc.footer
+    return logoDoc?.footer
   },
-  legalRoutes () {
+  legalRoutes() {
     return legalRoutes
   },
-  issuesLink () {
+  issuesLink() {
     return createIssuesLink({ url: window.location.href })
-  }
+  },
 })

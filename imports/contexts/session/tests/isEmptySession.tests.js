@@ -4,7 +4,7 @@ import { isEmptySession } from '../utils/isEmptySession'
 import {
   mockCollection,
   restoreCollection,
-  clearCollection
+  clearCollection,
 } from '../../../../tests/mockCollection'
 import { stub, restoreAll } from '../../../../tests/helpers.tests'
 import { Session } from '../Session'
@@ -32,7 +32,7 @@ describe(isEmptySession.name, async () => {
   })
   it('returns false, if there is no progress but there are response docs', async () => {
     stub(Response, 'collection', () => ({
-      countDocuments: async () => 1
+      countDocuments: async () => 1,
     }))
     const values = [undefined, 0, '', null]
     for (const progress of values) {
@@ -41,7 +41,7 @@ describe(isEmptySession.name, async () => {
   })
   it('returns true, if has no progress and no response docs', async () => {
     stub(Response, 'collection', () => ({
-      countDocuments: async () => 0
+      countDocuments: async () => 0,
     }))
     const values = [undefined, 0, '', null]
     for (const progress of values) {

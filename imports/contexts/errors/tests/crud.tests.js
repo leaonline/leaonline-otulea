@@ -8,70 +8,70 @@ import { Errors } from '../Errors'
 import {
   clearCollection,
   mockCollection,
-  restoreCollection
+  restoreCollection,
 } from '../../../../tests/mockCollection'
 import { stub, restoreAll, expectThrow } from '../../../../tests/helpers.tests'
 
-describe('crud', function () {
-  before(function () {
+describe('crud', () => {
+  before(() => {
     mockCollection(Errors)
   })
-  after(function () {
+  after(() => {
     restoreCollection(Errors)
   })
 
-  afterEach(function () {
+  afterEach(() => {
     restoreAll()
     clearCollection(Errors)
   })
 
-  describe(getError.name, function () {
-    it('returns the query result', async function () {
+  describe(getError.name, () => {
+    it('returns the query result', async () => {
       const doc = { _id: Random.id() }
       stub(Errors, 'collection', () => ({
-        findOneAsync: async query => {
+        findOneAsync: async (query) => {
           expect(query).to.equal(doc._id)
-        }
+        },
       }))
       await getError(doc._id)
     })
   })
-  describe(getAllErrors.name, function () {
-    it('returns the query result if not array is passed', async function () {
+  describe(getAllErrors.name, () => {
+    it('returns the query result if not array is passed', async () => {
       stub(Errors, 'collection', () => ({
-        find: query => {
+        find: (query) => {
           expect(query).to.deep.equal({})
           return { fetchAsync: async () => {} }
-        }
+        },
       }))
       await getAllErrors()
     })
-    it('returns the query with filtered ids, by given array', async function () {
+    it('returns the query with filtered ids, by given array', async () => {
       const arr = [Random.id()]
       stub(Errors, 'collection', () => ({
-        find: query => {
+        find: (query) => {
           expect(query).to.deep.equal({
-            _id: { $in: arr }
+            _id: { $in: arr },
           })
           return { fetchAsync: async () => {} }
-        }
+        },
       }))
       await getAllErrors(arr)
     })
-    it('throws if the ids param is given but not an array', async function () {
+    it('throws if the ids param is given but not an array', async () => {
       await expectThrow({
         fn: () => getAllErrors(true),
-        message: 'errors.getAll.arrayExpected'
+        message: 'errors.getAll.arrayExpected',
       })
     })
   })
-  describe(removeError.name, function () {
-    it('removes by the query', async function () {
+  describe(removeError.name, () => {
+    it('removes by the query', async () => {
       const doc = { _id: Random.id() }
       stub(Errors, 'collection', () => ({
-        removeAsync: async query => {
+        removeAsync: async (query) => {
           expect(query).to.equal(doc._id)
-        }
+        },
       }))
       await removeError(doc._id)
     })

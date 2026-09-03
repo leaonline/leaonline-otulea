@@ -4,7 +4,7 @@ import { Random } from 'meteor/random'
 import {
   clearCollection,
   mockCollection,
-  restoreCollection
+  restoreCollection,
 } from '../../../../tests/mockCollection'
 import { stub, restoreAll, expectThrow } from '../../../../tests/helpers.tests'
 import { Session } from '../Session'
@@ -55,25 +55,29 @@ describe(Session.methods.next.name, async () => {
     const arg = { sessionId }
     await expectThrow({
       fn: () => updateSession.call(env, arg),
-      message: DocNotFoundError.reason
+      message: DocNotFoundError.reason,
     })
   })
   it('throws if there is no testCycleDoc for the given testCycle', async () => {
     const sessionDoc = {}
-    stub(Session, 'collection', () => ({ findOneAsync: async () => sessionDoc }))
+    stub(Session, 'collection', () => ({
+      findOneAsync: async () => sessionDoc,
+    }))
     stub(TestCycle, 'collection', () => ({ findOneAsync: async () => {} }))
 
     const env = { userId }
     const arg = { sessionId }
     await expectThrow({
       fn: () => updateSession.call(env, arg),
-      message: DocNotFoundError.reason
+      message: DocNotFoundError.reason,
     })
   })
   it('throws if there is no UnitSet doc for the given unitSet id', async () => {
     const sessionDoc = {}
     const tcDoc = {}
-    stub(Session, 'collection', () => ({ findOneAsync: async () => sessionDoc }))
+    stub(Session, 'collection', () => ({
+      findOneAsync: async () => sessionDoc,
+    }))
     stub(TestCycle, 'collection', () => ({ findOneAsync: async () => tcDoc }))
     stub(UnitSet, 'collection', () => ({ findOneAsync: async () => {} }))
 
@@ -81,14 +85,16 @@ describe(Session.methods.next.name, async () => {
     const arg = { sessionId }
     await expectThrow({
       fn: () => updateSession.call(env, arg),
-      message: DocNotFoundError.reason
+      message: DocNotFoundError.reason,
     })
   })
   it('throws if there is no unit doc for the given unit id', async () => {
     const sessionDoc = {}
     const tcDoc = {}
     const usDoc = {}
-    stub(Session, 'collection', () => ({ findOneAsync: async () => sessionDoc }))
+    stub(Session, 'collection', () => ({
+      findOneAsync: async () => sessionDoc,
+    }))
     stub(TestCycle, 'collection', () => ({ findOneAsync: async () => tcDoc }))
     stub(UnitSet, 'collection', () => ({ findOneAsync: async () => usDoc }))
     stub(Unit, 'collection', () => ({ findOneAsync: async () => {} }))
@@ -97,7 +103,7 @@ describe(Session.methods.next.name, async () => {
     const arg = { sessionId }
     await expectThrow({
       fn: () => updateSession.call(env, arg),
-      message: DocNotFoundError.reason
+      message: DocNotFoundError.reason,
     })
   })
   it('throws if there can be no lists created from the given documents', async () => {
@@ -105,7 +111,9 @@ describe(Session.methods.next.name, async () => {
     const tcDoc = {}
     const usDoc = {}
     const unitDoc = { pages: [] }
-    stub(Session, 'collection', () => ({ findOneAsync: async () => sessionDoc }))
+    stub(Session, 'collection', () => ({
+      findOneAsync: async () => sessionDoc,
+    }))
     stub(TestCycle, 'collection', () => ({ findOneAsync: async () => tcDoc }))
     stub(UnitSet, 'collection', () => ({ findOneAsync: async () => usDoc }))
     stub(Unit, 'collection', () => ({ findOneAsync: async () => unitDoc }))
@@ -114,23 +122,23 @@ describe(Session.methods.next.name, async () => {
     const arg = { sessionId }
     await expectThrow({
       fn: () => updateSession.call(env, arg),
-      message: DocumentList.noList
+      message: DocumentList.noList,
     })
   })
   it('completes unitSet and cycle if this is the very last unit', async () => {
     const usDoc = {
       _id: Random.id(),
-      units: [currentUnit]
+      units: [currentUnit],
     }
     const tcDoc = {
       _id: Random.id(),
-      unitSets: [usDoc._id]
+      unitSets: [usDoc._id],
     }
     const sessionDoc = {
       _id: sessionId,
       currentUnit,
       testCycleId: tcDoc._id,
-      unitSet: usDoc._id
+      unitSet: usDoc._id,
     }
     const unitDoc = { pages: [{}, {}] }
     stub(Unit, 'collection', () => ({ findOneAsync: async () => unitDoc }))
@@ -144,7 +152,7 @@ describe(Session.methods.next.name, async () => {
         expect(modifier.$set.updatedAt instanceof Date).to.equal(true)
         expect(modifier.$set.completedAt instanceof Date).to.equal(true)
         expect(modifier.$inc.progress).to.equal(2)
-      }
+      },
     }))
 
     const env = { userId }
@@ -154,7 +162,7 @@ describe(Session.methods.next.name, async () => {
       nextUnit: null,
       nextUnitSet: null,
       hasStory: false,
-      completed: true
+      completed: true,
     })
   })
   it('completes unitSet and iterates to the next if this is the last unit but not last unit set', async () => {
@@ -162,22 +170,22 @@ describe(Session.methods.next.name, async () => {
     const nextUnitId = Random.id()
     const usDoc = {
       _id: Random.id(),
-      units: [currentUnit]
+      units: [currentUnit],
     }
     const nextUsDoc = {
       _id: nextUnitSetId,
       units: [nextUnitId],
-      story: [{}]
+      story: [{}],
     }
     const tcDoc = {
       _id: Random.id(),
-      unitSets: [usDoc._id, nextUnitSetId]
+      unitSets: [usDoc._id, nextUnitSetId],
     }
     const sessionDoc = {
       _id: sessionId,
       currentUnit,
       testCycleId: tcDoc._id,
-      unitSet: usDoc._id
+      unitSet: usDoc._id,
     }
     const unitDoc = { pages: [{}, {}] }
     stub(Unit, 'collection', () => ({ findOneAsync: async () => unitDoc }))
@@ -186,7 +194,7 @@ describe(Session.methods.next.name, async () => {
       findOneAsync: async (id) => {
         if (id === usDoc._id) return usDoc
         if (id === nextUsDoc._id) return nextUsDoc
-      }
+      },
     }))
     stub(Session, 'collection', () => ({
       findOneAsync: async () => sessionDoc,
@@ -196,7 +204,7 @@ describe(Session.methods.next.name, async () => {
         expect(modifier.$set.currentUnit).to.equal(nextUnitId)
         expect(modifier.$set.completedAt instanceof Date).to.equal(false)
         expect(modifier.$inc.progress).to.equal(2)
-      }
+      },
     }))
 
     const env = { userId }
@@ -206,24 +214,24 @@ describe(Session.methods.next.name, async () => {
       nextUnit: nextUnitId,
       nextUnitSet: nextUnitSetId,
       hasStory: true,
-      completed: false
+      completed: false,
     })
   })
   it('iterates to the next unit if this is not the last unit in unitSet', async () => {
     const nextUnitId = Random.id()
     const usDoc = {
       _id: Random.id(),
-      units: [currentUnit, nextUnitId]
+      units: [currentUnit, nextUnitId],
     }
     const tcDoc = {
       _id: Random.id(),
-      unitSets: [usDoc._id]
+      unitSets: [usDoc._id],
     }
     const sessionDoc = {
       _id: sessionId,
       currentUnit,
       testCycleId: tcDoc._id,
-      unitSet: usDoc._id
+      unitSet: usDoc._id,
     }
     const unitDoc = { pages: [{}, {}] }
     stub(Unit, 'collection', () => ({ findOneAsync: async () => unitDoc }))
@@ -237,7 +245,7 @@ describe(Session.methods.next.name, async () => {
         expect(modifier.$set.currentUnit).to.equal(nextUnitId)
         expect(modifier.$set.completedAt instanceof Date).to.equal(false)
         expect(modifier.$inc.progress).to.equal(2)
-      }
+      },
     }))
 
     const env = { userId }
@@ -247,7 +255,7 @@ describe(Session.methods.next.name, async () => {
       nextUnit: nextUnitId,
       nextUnitSet: null,
       hasStory: false,
-      completed: false
+      completed: false,
     })
   })
 })

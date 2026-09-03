@@ -9,7 +9,8 @@ import { AlphaLevel } from '../../AlphaLevel'
 import {
   generateFeedback,
   countCompetencies,
-  gradeCompetenciesAndCountAlphaLevels, gradeAlphaLevels
+  gradeCompetenciesAndCountAlphaLevels,
+  gradeAlphaLevels,
 } from '../api/generateFeedback'
 import { stub, restoreAll, expectThrow } from '../../../../tests/helpers.tests'
 import { Competency } from '../../Competency'
@@ -18,7 +19,7 @@ import { TestCycle } from '../../testcycle/TestCycle'
 import {
   clearCollection,
   mockCollection,
-  restoreCollection
+  restoreCollection,
 } from '../../../../tests/mockCollection'
 
 describe(countCompetencies.name, async () => {
@@ -29,12 +30,15 @@ describe(countCompetencies.name, async () => {
       [
         { competency: [id1, id2], score: 'true' },
         { competency: [id1, id2], score: 'true' },
-        { competency: [id1], score: 'false' }
-      ]
+        { competency: [id1], score: 'false' },
+      ],
     ]
 
     const minCountCompetency = 3
-    const competencies = await countCompetencies({ responses, minCountCompetency })
+    const competencies = await countCompetencies({
+      responses,
+      minCountCompetency,
+    })
 
     expect(competencies.get(id1)).to.deep.equal({
       competencyId: id1,
@@ -42,7 +46,7 @@ describe(countCompetencies.name, async () => {
       scored: 2,
       undef: 0,
       min: minCountCompetency,
-      perc: 2 / 3
+      perc: 2 / 3,
     })
 
     expect(competencies.get(id2)).to.deep.equal({
@@ -51,7 +55,7 @@ describe(countCompetencies.name, async () => {
       scored: 2,
       undef: 0,
       min: minCountCompetency,
-      perc: 1
+      perc: 1,
     })
   })
 })
@@ -70,7 +74,7 @@ describe(gradeCompetenciesAndCountAlphaLevels.name, async () => {
       scored: 3,
       undef: 0,
       min: 3,
-      perc: 1
+      perc: 1,
     })
     competencies.set(cId2, {
       competencyId: cId2,
@@ -78,7 +82,7 @@ describe(gradeCompetenciesAndCountAlphaLevels.name, async () => {
       scored: 2,
       undef: 0,
       min: 3,
-      perc: 2 / 3
+      perc: 2 / 3,
     })
     competencies.set(cId3, {
       competencyId: cId3,
@@ -86,7 +90,7 @@ describe(gradeCompetenciesAndCountAlphaLevels.name, async () => {
       scored: 0,
       undef: 0,
       min: 3,
-      perc: 0
+      perc: 0,
     })
     competencies.set(cId4, {
       competencyId: cId4,
@@ -94,29 +98,34 @@ describe(gradeCompetenciesAndCountAlphaLevels.name, async () => {
       scored: 2,
       undef: 0,
       min: 3,
-      perc: 0.5
+      perc: 0.5,
     })
 
-    const thresholds = [{
-      max: 1,
-      name: 'top'
-    }, {
-      max: 0.8,
-      name: 'good'
-    }, {
-      max: 0.5,
-      name: 'ok'
-    }, {
-      max: 0,
-      name: 'bad'
-    }]
+    const thresholds = [
+      {
+        max: 1,
+        name: 'top',
+      },
+      {
+        max: 0.8,
+        name: 'good',
+      },
+      {
+        max: 0.5,
+        name: 'ok',
+      },
+      {
+        max: 0,
+        name: 'bad',
+      },
+    ]
 
     await gradeCompetenciesAndCountAlphaLevels({
       competencies,
       thresholds,
       minCountAlphaLevel: 1,
-      getCompetency: id => ({ _id: id }),
-      getAlphaLevel: id => ({ _id: id })
+      getCompetency: (id) => ({ _id: id }),
+      getAlphaLevel: (id) => ({ _id: id }),
     })
 
     expect(competencies.get(cId1)).to.deep.equal({
@@ -128,7 +137,7 @@ describe(gradeCompetenciesAndCountAlphaLevels.name, async () => {
       perc: 1,
       gradeName: 'top',
       gradeIndex: 0,
-      isGraded: true
+      isGraded: true,
     })
     expect(competencies.get(cId2)).to.deep.equal({
       competencyId: cId2,
@@ -139,7 +148,7 @@ describe(gradeCompetenciesAndCountAlphaLevels.name, async () => {
       perc: 2 / 3,
       gradeName: 'ok',
       gradeIndex: 2,
-      isGraded: true
+      isGraded: true,
     })
     expect(competencies.get(cId3)).to.deep.equal({
       competencyId: cId3,
@@ -150,7 +159,7 @@ describe(gradeCompetenciesAndCountAlphaLevels.name, async () => {
       perc: 0,
       gradeName: 'bad',
       gradeIndex: 3,
-      isGraded: true
+      isGraded: true,
     })
     expect(competencies.get(cId4)).to.deep.equal({
       competencyId: cId4,
@@ -163,7 +172,7 @@ describe(gradeCompetenciesAndCountAlphaLevels.name, async () => {
       gradeIndex: 2,
       // note how isGraded: false does not affect
       // hypotehtical gradeName and gradeIndex
-      isGraded: false
+      isGraded: false,
     })
   })
   it('informs if a competency is a dead link', async () => {
@@ -176,9 +185,9 @@ describe(gradeCompetenciesAndCountAlphaLevels.name, async () => {
       scored: 0,
       undef: 0,
       min: 0,
-      perc: 1
+      perc: 1,
     })
-    stub(Email, 'sendAsync', async ({ to, subject, replyTo, from, text }) => {
+    stub(Email, 'sendAsync', async ({ text }) => {
       const errorStr = text.trim()
       const parsedError = JSON.parse(errorStr)
       expect(parsedError.error).to.equal('generateFeedback.error')
@@ -187,26 +196,31 @@ describe(gradeCompetenciesAndCountAlphaLevels.name, async () => {
       emailSent = true
     })
 
-    const thresholds = [{
-      max: 1,
-      name: 'top'
-    }, {
-      max: 0.8,
-      name: 'good'
-    }, {
-      max: 0.5,
-      name: 'ok'
-    }, {
-      max: 0,
-      name: 'bad'
-    }]
+    const thresholds = [
+      {
+        max: 1,
+        name: 'top',
+      },
+      {
+        max: 0.8,
+        name: 'good',
+      },
+      {
+        max: 0.5,
+        name: 'ok',
+      },
+      {
+        max: 0,
+        name: 'bad',
+      },
+    ]
 
     await gradeCompetenciesAndCountAlphaLevels({
       competencies,
       thresholds,
       minCountAlphaLevel: 1,
-      getCompetency: id => undefined,
-      getAlphaLevel: id => undefined
+      getCompetency: () => {},
+      getAlphaLevel: () => {},
     })
 
     expect(emailSent).to.equal(true)
@@ -226,7 +240,7 @@ describe(gradeCompetenciesAndCountAlphaLevels.name, async () => {
       scored: 3,
       undef: 0,
       min: 3,
-      perc: 1
+      perc: 1,
     })
     competencies.set(cid2, {
       competencyId: cid2,
@@ -234,37 +248,42 @@ describe(gradeCompetenciesAndCountAlphaLevels.name, async () => {
       scored: 3,
       undef: 0,
       min: 3,
-      perc: 1
+      perc: 1,
     })
 
-    const getCompetency = id => {
+    const getCompetency = (id) => {
       if (id === cid1) return cDoc1
       if (id === cid2) return cDoc2
     }
-    const getAlphaLevel = id => {
+    const getAlphaLevel = (id) => {
       if (id === aid) return aDoc
     }
 
-    const thresholds = [{
-      max: 1,
-      name: 'top'
-    }, {
-      max: 0.8,
-      name: 'good'
-    }, {
-      max: 0.5,
-      name: 'ok'
-    }, {
-      max: 0,
-      name: 'bad'
-    }]
+    const thresholds = [
+      {
+        max: 1,
+        name: 'top',
+      },
+      {
+        max: 0.8,
+        name: 'good',
+      },
+      {
+        max: 0.5,
+        name: 'ok',
+      },
+      {
+        max: 0,
+        name: 'bad',
+      },
+    ]
 
     const alphaLevels = await gradeCompetenciesAndCountAlphaLevels({
       competencies,
       getAlphaLevel,
       getCompetency,
       thresholds,
-      minCountAlphaLevel: 2
+      minCountAlphaLevel: 2,
     })
 
     expect(alphaLevels.get(aid)).to.deep.equal({
@@ -272,26 +291,31 @@ describe(gradeCompetenciesAndCountAlphaLevels.name, async () => {
       count: 2,
       min: 2,
       perc: 1,
-      scored: 2
+      scored: 2,
     })
   })
 })
 
 describe(gradeAlphaLevels.name, async () => {
   it('correctly grades alpha levels', async () => {
-    const thresholds = [{
-      max: 1,
-      name: 'top'
-    }, {
-      max: 0.5,
-      name: 'good'
-    }, {
-      max: 0.3,
-      name: 'ok'
-    }, {
-      max: 0,
-      name: 'bad'
-    }]
+    const thresholds = [
+      {
+        max: 1,
+        name: 'top',
+      },
+      {
+        max: 0.5,
+        name: 'good',
+      },
+      {
+        max: 0.3,
+        name: 'ok',
+      },
+      {
+        max: 0,
+        name: 'bad',
+      },
+    ]
 
     const aid1 = Random.id() // 3 / 3
     const aid2 = Random.id() // 2 / 3
@@ -305,35 +329,35 @@ describe(gradeAlphaLevels.name, async () => {
       min: 3,
       count: 3,
       scored: 3,
-      perc: 1
+      perc: 1,
     })
     alphaLevels.set(aid2, {
       alphaLevelId: aid2,
       min: 3,
       count: 3,
       scored: 2,
-      perc: 2 / 3
+      perc: 2 / 3,
     })
     alphaLevels.set(aid3, {
       alphaLevelId: aid3,
       min: 3,
       count: 3,
       scored: 1,
-      perc: 1 / 3
+      perc: 1 / 3,
     })
     alphaLevels.set(aid4, {
       alphaLevelId: aid4,
       min: 3,
       count: 3,
       scored: 0,
-      perc: 0
+      perc: 0,
     })
     alphaLevels.set(aid5, {
       alphaLevelId: aid5,
       min: 3,
       count: 2,
       scored: 2,
-      perc: 1
+      perc: 1,
     })
 
     gradeAlphaLevels({ alphaLevels, thresholds })
@@ -346,7 +370,7 @@ describe(gradeAlphaLevels.name, async () => {
       perc: 1,
       gradeName: 'top',
       gradeIndex: 0,
-      isGraded: true
+      isGraded: true,
     })
 
     expect(alphaLevels.get(aid2)).to.deep.equal({
@@ -357,7 +381,7 @@ describe(gradeAlphaLevels.name, async () => {
       perc: 2 / 3,
       gradeName: 'good',
       gradeIndex: 1,
-      isGraded: true
+      isGraded: true,
     })
 
     expect(alphaLevels.get(aid3)).to.deep.equal({
@@ -368,7 +392,7 @@ describe(gradeAlphaLevels.name, async () => {
       perc: 1 / 3,
       gradeName: 'ok',
       gradeIndex: 2,
-      isGraded: true
+      isGraded: true,
     })
 
     expect(alphaLevels.get(aid4)).to.deep.equal({
@@ -379,7 +403,7 @@ describe(gradeAlphaLevels.name, async () => {
       perc: 0,
       gradeName: 'bad',
       gradeIndex: 3,
-      isGraded: true
+      isGraded: true,
     })
 
     expect(alphaLevels.get(aid5)).to.deep.equal({
@@ -392,7 +416,7 @@ describe(gradeAlphaLevels.name, async () => {
       gradeIndex: 0,
       // note how isGraded:false does not affect
       // the hypothetical gradeName and gradeIndex
-      isGraded: false
+      isGraded: false,
     })
   })
 })
@@ -416,7 +440,7 @@ describe(generateFeedback.name, async () => {
     restoreCollection(AlphaLevel)
     restoreCollection(Competency)
   })
-  afterEach(async function () {
+  afterEach(async () => {
     restoreAll()
     await clearCollection(Feedback)
     await clearCollection(Session)
@@ -426,7 +450,7 @@ describe(generateFeedback.name, async () => {
     await clearCollection(AlphaLevel)
     await clearCollection(Competency)
   })
-  it('throws if session is not done yet', async function () {
+  it('throws if session is not done yet', async () => {
     const sessionId = Random.id()
     const userId = Random.id()
     const sessionDoc = { _id: sessionId }
@@ -434,19 +458,20 @@ describe(generateFeedback.name, async () => {
     // session doc does not exist
     await expectThrow({
       fn: () => generateFeedback({ userId }),
-      message: 'Match error: Missing key \'sessionDoc\''
+      message: "Match error: Missing key 'sessionDoc'",
     })
     await expectThrow({
-      fn: () => generateFeedback({
-        sessionDoc,
-        userId,
-        testCycleDoc: { _id: Random.id() }
-      }),
-      message: 'generateFeedback.sessionNotComplete'
+      fn: () =>
+        generateFeedback({
+          sessionDoc,
+          userId,
+          testCycleDoc: { _id: Random.id() },
+        }),
+      message: 'generateFeedback.sessionNotComplete',
     })
   })
 
-  it('returns a cached feedback, if one exists', async function () {
+  it('returns a cached feedback, if one exists', async () => {
     const userId = Random.id()
     const sessionId = Random.id()
     const doc = { _id: Random.id(), sessionId, userId }
@@ -456,17 +481,17 @@ describe(generateFeedback.name, async () => {
       sessionDoc: { _id: sessionId, completedAt: new Date() },
       userId,
       testCycleDoc: { _id: Random.id() },
-      flagFromDb: true
+      flagFromDb: true,
     })
     expect(existing).to.deep.equal({
       _id: doc._id,
       sessionId,
       userId,
-      fromDB: true
+      fromDB: true,
     })
   })
 
-  it('correctly grades a session', async function () {
+  it('correctly grades a session', async () => {
     const userId = Random.id()
     const ResponseCollection = Response.collection()
     const FeedbackCollection = Feedback.collection()
@@ -475,12 +500,14 @@ describe(generateFeedback.name, async () => {
 
     // create sessionDoc
     const dimensionId = Random.id()
-    const testCycle = await TestCycleCollection.insertAsync({ dimension: dimensionId })
+    const testCycle = await TestCycleCollection.insertAsync({
+      dimension: dimensionId,
+    })
     const sessionId = await SessionCollection.insertAsync({
       completedAt: new Date(),
       progress: 100,
       maxProgress: 100,
-      testCycle
+      testCycle,
     })
 
     const testCycleDoc = await TestCycleCollection.findOneAsync(testCycle)
@@ -492,14 +519,14 @@ describe(generateFeedback.name, async () => {
       thresholdsCompetency: {
         good: 0.8,
         ok: 0.6,
-        bad: 0
+        bad: 0,
       },
       minCountAlphaLevel: 2,
       thresholdsAlphaLevel: {
         good: 0.8,
         ok: 0.6,
-        bad: 0
-      }
+        bad: 0,
+      },
     }
 
     // mock competency and alphalevel docs from content server
@@ -532,8 +559,8 @@ describe(generateFeedback.name, async () => {
       scores: [
         { competency: [cid1, cid1], score: 'true' },
         { competency: [cid1], score: 'true' },
-        { competency: [cid2], score: 'true' }
-      ]
+        { competency: [cid2], score: 'true' },
+      ],
     })
 
     await ResponseCollection.insertAsync({
@@ -542,14 +569,14 @@ describe(generateFeedback.name, async () => {
       scores: [
         { competency: [cid1, cid1], score: 'true' },
         { competency: [cid1], score: 'true' },
-        { competency: [cid2], score: 'true' }
-      ]
+        { competency: [cid2], score: 'true' },
+      ],
     })
 
     const { _id, ...feedbackDoc } = await generateFeedback({
       sessionDoc,
       testCycleDoc,
-      userId
+      userId,
     })
 
     expect(feedbackDoc).to.deep.equal({
@@ -557,37 +584,42 @@ describe(generateFeedback.name, async () => {
       sessionId,
       testCycle,
       dimension: dimensionId,
-      alphaLevels: [{
-        alphaLevelId: aid,
-        count: 2,
-        gradeIndex: 0,
-        gradeName: 'good',
-        isGraded: true,
-        perc: 1,
-        scored: 2,
-        min: 2
-      }],
-      competencies: [{
-        competencyId: cid1,
-        count: 6,
-        gradeIndex: 0,
-        gradeName: 'good',
-        isGraded: true,
-        perc: 1,
-        scored: 6,
-        undef: 0,
-        min: 2
-      }, {
-        competencyId: cid2,
-        count: 2,
-        gradeIndex: 0,
-        gradeName: 'good',
-        isGraded: true,
-        perc: 1,
-        scored: 2,
-        undef: 0,
-        min: 2
-      }]
+      alphaLevels: [
+        {
+          alphaLevelId: aid,
+          count: 2,
+          gradeIndex: 0,
+          gradeName: 'good',
+          isGraded: true,
+          perc: 1,
+          scored: 2,
+          min: 2,
+        },
+      ],
+      competencies: [
+        {
+          competencyId: cid1,
+          count: 6,
+          gradeIndex: 0,
+          gradeName: 'good',
+          isGraded: true,
+          perc: 1,
+          scored: 6,
+          undef: 0,
+          min: 2,
+        },
+        {
+          competencyId: cid2,
+          count: 2,
+          gradeIndex: 0,
+          gradeName: 'good',
+          isGraded: true,
+          perc: 1,
+          scored: 2,
+          undef: 0,
+          min: 2,
+        },
+      ],
     })
 
     // /////////////////////////////////////////////////////////////////////////
@@ -604,8 +636,8 @@ describe(generateFeedback.name, async () => {
       scores: [
         { competency: [cid1, cid1], score: 'false' },
         { competency: [cid1], score: 'false' },
-        { competency: [cid2], score: 'false' }
-      ]
+        { competency: [cid2], score: 'false' },
+      ],
     })
 
     await ResponseCollection.insertAsync({
@@ -614,14 +646,14 @@ describe(generateFeedback.name, async () => {
       scores: [
         { competency: [cid1, cid1], score: 'false' },
         { competency: [cid1], score: 'false' },
-        { competency: [cid2], score: 'false' }
-      ]
+        { competency: [cid2], score: 'false' },
+      ],
     })
 
     const feedbackDoc2 = await generateFeedback({
       sessionDoc,
       testCycleDoc,
-      userId
+      userId,
     })
 
     delete feedbackDoc2._id
@@ -631,37 +663,42 @@ describe(generateFeedback.name, async () => {
       sessionId,
       testCycle,
       dimension: dimensionId,
-      alphaLevels: [{
-        alphaLevelId: aid,
-        count: 2,
-        gradeIndex: 2,
-        gradeName: 'bad',
-        isGraded: true,
-        perc: 0,
-        scored: 0,
-        min: 2
-      }],
-      competencies: [{
-        competencyId: cid1,
-        count: 6,
-        gradeIndex: 2,
-        gradeName: 'bad',
-        isGraded: true,
-        perc: 0,
-        scored: 0,
-        undef: 0,
-        min: 2
-      }, {
-        competencyId: cid2,
-        count: 2,
-        gradeIndex: 2,
-        gradeName: 'bad',
-        isGraded: true,
-        perc: 0,
-        scored: 0,
-        undef: 0,
-        min: 2
-      }]
+      alphaLevels: [
+        {
+          alphaLevelId: aid,
+          count: 2,
+          gradeIndex: 2,
+          gradeName: 'bad',
+          isGraded: true,
+          perc: 0,
+          scored: 0,
+          min: 2,
+        },
+      ],
+      competencies: [
+        {
+          competencyId: cid1,
+          count: 6,
+          gradeIndex: 2,
+          gradeName: 'bad',
+          isGraded: true,
+          perc: 0,
+          scored: 0,
+          undef: 0,
+          min: 2,
+        },
+        {
+          competencyId: cid2,
+          count: 2,
+          gradeIndex: 2,
+          gradeName: 'bad',
+          isGraded: true,
+          perc: 0,
+          scored: 0,
+          undef: 0,
+          min: 2,
+        },
+      ],
     })
     // /////////////////////////////////////////////////////////////////////////
     // CASE 3 - 2 True + 1 not enough
@@ -677,8 +714,8 @@ describe(generateFeedback.name, async () => {
       scores: [
         { competency: [cid1, cid1], score: 'true' },
         { competency: [cid1], score: 'true' },
-        { competency: [cid2], score: 'true' }
-      ]
+        { competency: [cid2], score: 'true' },
+      ],
     })
 
     await ResponseCollection.insertAsync({
@@ -688,14 +725,14 @@ describe(generateFeedback.name, async () => {
         { competency: [cid1, cid1], score: 'true' },
         { competency: [cid1], score: 'true' },
         { competency: [cid2], score: 'true' },
-        { competency: [cid3], score: 'true' }
-      ]
+        { competency: [cid3], score: 'true' },
+      ],
     })
 
     const feedbackDoc3 = await generateFeedback({
       sessionDoc,
       testCycleDoc,
-      userId
+      userId,
     })
 
     delete feedbackDoc3._id
@@ -705,49 +742,55 @@ describe(generateFeedback.name, async () => {
       sessionId,
       testCycle,
       dimension: dimensionId,
-      alphaLevels: [{
-        alphaLevelId: aid,
-        count: 2,
-        gradeIndex: 0,
-        gradeName: 'good',
-        isGraded: true,
-        perc: 1,
-        scored: 2,
-        min: 2
-      }],
-      competencies: [{
-        competencyId: cid1,
-        count: 6,
-        gradeIndex: 0,
-        gradeName: 'good',
-        isGraded: true,
-        perc: 1,
-        scored: 6,
-        undef: 0,
-        min: 2
-      }, {
-        competencyId: cid2,
-        count: 2,
-        gradeIndex: 0,
-        gradeName: 'good',
-        isGraded: true,
-        perc: 1,
-        scored: 2,
-        undef: 0,
-        min: 2
-      }, {
-        competencyId: cid3,
-        count: 1,
-        gradeIndex: 0,
-        gradeName: 'good',
-        // note how isGraded: false does not affect
-        // hypothetical gradeName and gradeIndex
-        isGraded: false,
-        perc: 1,
-        scored: 1,
-        undef: 0,
-        min: 2
-      }]
+      alphaLevels: [
+        {
+          alphaLevelId: aid,
+          count: 2,
+          gradeIndex: 0,
+          gradeName: 'good',
+          isGraded: true,
+          perc: 1,
+          scored: 2,
+          min: 2,
+        },
+      ],
+      competencies: [
+        {
+          competencyId: cid1,
+          count: 6,
+          gradeIndex: 0,
+          gradeName: 'good',
+          isGraded: true,
+          perc: 1,
+          scored: 6,
+          undef: 0,
+          min: 2,
+        },
+        {
+          competencyId: cid2,
+          count: 2,
+          gradeIndex: 0,
+          gradeName: 'good',
+          isGraded: true,
+          perc: 1,
+          scored: 2,
+          undef: 0,
+          min: 2,
+        },
+        {
+          competencyId: cid3,
+          count: 1,
+          gradeIndex: 0,
+          gradeName: 'good',
+          // note how isGraded: false does not affect
+          // hypothetical gradeName and gradeIndex
+          isGraded: false,
+          perc: 1,
+          scored: 1,
+          undef: 0,
+          min: 2,
+        },
+      ],
     })
 
     // /////////////////////////////////////////////////////////////////////////
@@ -764,8 +807,8 @@ describe(generateFeedback.name, async () => {
       scores: [
         { competency: [cid1, cid1], score: 'true' },
         { competency: [cid1], score: 'true' },
-        { competency: [cid2], score: 'false' }
-      ]
+        { competency: [cid2], score: 'false' },
+      ],
     })
 
     ResponseCollection.insertAsync({
@@ -775,14 +818,14 @@ describe(generateFeedback.name, async () => {
         { competency: [cid1, cid1], score: 'true' },
         { competency: [cid1], score: 'true' },
         { competency: [cid2], score: 'false' },
-        { competency: [cid3], score: 'true' }
-      ]
+        { competency: [cid3], score: 'true' },
+      ],
     })
 
     const feedbackDoc4 = await generateFeedback({
       sessionDoc,
       testCycleDoc,
-      userId
+      userId,
     })
 
     delete feedbackDoc4._id
@@ -792,47 +835,53 @@ describe(generateFeedback.name, async () => {
       sessionId,
       testCycle,
       dimension: dimensionId,
-      alphaLevels: [{
-        alphaLevelId: aid,
-        count: 2,
-        gradeIndex: 2,
-        gradeName: 'bad',
-        isGraded: true,
-        perc: 0.5,
-        scored: 1,
-        min: 2
-      }],
-      competencies: [{
-        competencyId: cid1,
-        count: 6,
-        gradeIndex: 0,
-        gradeName: 'good',
-        isGraded: true,
-        perc: 1,
-        scored: 6,
-        undef: 0,
-        min: 2
-      }, {
-        competencyId: cid2,
-        count: 2,
-        gradeIndex: 2,
-        gradeName: 'bad',
-        isGraded: true,
-        perc: 0,
-        scored: 0,
-        undef: 0,
-        min: 2
-      }, {
-        competencyId: cid3,
-        count: 1,
-        gradeIndex: 0,
-        gradeName: 'good',
-        isGraded: false,
-        perc: 1,
-        scored: 1,
-        undef: 0,
-        min: 2
-      }]
+      alphaLevels: [
+        {
+          alphaLevelId: aid,
+          count: 2,
+          gradeIndex: 2,
+          gradeName: 'bad',
+          isGraded: true,
+          perc: 0.5,
+          scored: 1,
+          min: 2,
+        },
+      ],
+      competencies: [
+        {
+          competencyId: cid1,
+          count: 6,
+          gradeIndex: 0,
+          gradeName: 'good',
+          isGraded: true,
+          perc: 1,
+          scored: 6,
+          undef: 0,
+          min: 2,
+        },
+        {
+          competencyId: cid2,
+          count: 2,
+          gradeIndex: 2,
+          gradeName: 'bad',
+          isGraded: true,
+          perc: 0,
+          scored: 0,
+          undef: 0,
+          min: 2,
+        },
+        {
+          competencyId: cid3,
+          count: 1,
+          gradeIndex: 0,
+          gradeName: 'good',
+          isGraded: false,
+          perc: 1,
+          scored: 1,
+          undef: 0,
+          min: 2,
+        },
+      ],
     })
     // /////////////////////////////////////////////////////////////////////////
     // CASE 5 - 1 good + 1 best + 1 not enough
@@ -848,8 +897,8 @@ describe(generateFeedback.name, async () => {
       scores: [
         { competency: [cid1, cid1], score: 'true' },
         { competency: [cid1], score: 'false' },
-        { competency: [cid2], score: 'true' }
-      ]
+        { competency: [cid2], score: 'true' },
+      ],
     })
 
     await ResponseCollection.insertAsync({
@@ -859,14 +908,14 @@ describe(generateFeedback.name, async () => {
         { competency: [cid1, cid1], score: 'true' },
         { competency: [cid1], score: 'true' },
         { competency: [cid2], score: 'true' },
-        { competency: [cid3], score: 'true' }
-      ]
+        { competency: [cid3], score: 'true' },
+      ],
     })
 
     const feedbackDoc5 = await generateFeedback({
       sessionDoc,
       testCycleDoc,
-      userId
+      userId,
     })
 
     delete feedbackDoc5._id
@@ -876,47 +925,53 @@ describe(generateFeedback.name, async () => {
       sessionId,
       testCycle,
       dimension: dimensionId,
-      alphaLevels: [{
-        alphaLevelId: aid,
-        count: 2,
-        gradeIndex: 0,
-        gradeName: 'good',
-        isGraded: true,
-        perc: (1 + (5 / 6)) / 2,
-        scored: 1 + (5 / 6),
-        min: 2
-      }],
-      competencies: [{
-        competencyId: cid1,
-        count: 6,
-        gradeIndex: 0,
-        gradeName: 'good',
-        isGraded: true,
-        perc: 5 / 6,
-        scored: 5,
-        undef: 0,
-        min: 2
-      }, {
-        competencyId: cid2,
-        count: 2,
-        gradeIndex: 0,
-        gradeName: 'good',
-        isGraded: true,
-        perc: 1,
-        scored: 2,
-        undef: 0,
-        min: 2
-      }, {
-        competencyId: cid3,
-        count: 1,
-        gradeIndex: 0,
-        gradeName: 'good',
-        isGraded: false,
-        perc: 1,
-        scored: 1,
-        undef: 0,
-        min: 2
-      }]
+      alphaLevels: [
+        {
+          alphaLevelId: aid,
+          count: 2,
+          gradeIndex: 0,
+          gradeName: 'good',
+          isGraded: true,
+          perc: (1 + 5 / 6) / 2,
+          scored: 1 + 5 / 6,
+          min: 2,
+        },
+      ],
+      competencies: [
+        {
+          competencyId: cid1,
+          count: 6,
+          gradeIndex: 0,
+          gradeName: 'good',
+          isGraded: true,
+          perc: 5 / 6,
+          scored: 5,
+          undef: 0,
+          min: 2,
+        },
+        {
+          competencyId: cid2,
+          count: 2,
+          gradeIndex: 0,
+          gradeName: 'good',
+          isGraded: true,
+          perc: 1,
+          scored: 2,
+          undef: 0,
+          min: 2,
+        },
+        {
+          competencyId: cid3,
+          count: 1,
+          gradeIndex: 0,
+          gradeName: 'good',
+          isGraded: false,
+          perc: 1,
+          scored: 1,
+          undef: 0,
+          min: 2,
+        },
+      ],
     })
   })
 })

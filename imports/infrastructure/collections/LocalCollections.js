@@ -28,7 +28,7 @@ LocalCollections.add = (name, collection) => {
  * @param name {string}
  * @return {Mongo.Collection|undefined}
  */
-LocalCollections.get = name => map.get(name)
+LocalCollections.get = (name) => map.get(name)
 
 /**
  * Get all local collections

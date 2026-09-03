@@ -1,7 +1,10 @@
 import { Feedback } from '../../contexts/feedback/Feedback'
 import { createCollection } from '../../infrastructure/factories/collection/createCollection'
 import { createMethods } from '../../infrastructure/factories/method/createMethods'
-import { rateLimitMethods, rateLimitPublications } from '../../infrastructure/factories/ratelimit/rateLimit'
+import {
+  rateLimitMethods,
+  rateLimitPublications,
+} from '../../infrastructure/factories/ratelimit/rateLimit'
 import { createPublications } from '../../infrastructure/factories/publication/createPublication'
 import { createGetAllMethod } from '../../api/services/createGetAllMethod'
 import { ServiceRegistry } from '../../api/services/ServiceRegistry'

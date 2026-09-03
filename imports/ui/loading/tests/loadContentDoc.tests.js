@@ -2,20 +2,26 @@
 import { loadContentDoc } from '../loadContentDoc'
 import { expect } from 'chai'
 import { RequestedDocsContext } from '../../../../tests/webapp-server-helpers'
-import { mockCollection, restoreCollection } from '../../../../tests/mockCollection'
+import {
+  mockCollection,
+  restoreCollection,
+} from '../../../../tests/mockCollection'
 
-describe(loadContentDoc.name, function () {
+describe(loadContentDoc.name, () => {
   before(() => {
     mockCollection(RequestedDocsContext)
   })
-  beforeEach(function () {
+  beforeEach(() => {
     RequestedDocsContext.collection().remove({})
   })
   after(() => {
     restoreCollection(RequestedDocsContext)
   })
-  it('loads a single document from the content server', async function () {
-    const doc = await loadContentDoc({ context: RequestedDocsContext, query: { test: 'foo' } })
+  it('loads a single document from the content server', async () => {
+    const doc = await loadContentDoc({
+      context: RequestedDocsContext,
+      query: { test: 'foo' },
+    })
     expect(doc).to.deep.equal({ _id: 'fooDoc', test: 'foo' })
 
     // local collection
@@ -23,7 +29,10 @@ describe(loadContentDoc.name, function () {
     expect(localDoc).to.deep.equal(doc)
 
     // cached response
-    const cachedDoc = await loadContentDoc({ context: RequestedDocsContext, query: { test: 'foo' } })
+    const cachedDoc = await loadContentDoc({
+      context: RequestedDocsContext,
+      query: { test: 'foo' },
+    })
     expect(cachedDoc).to.deep.equal(doc)
     expect(RequestedDocsContext.collection().find().count()).to.equal(1)
   })

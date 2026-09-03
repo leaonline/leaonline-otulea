@@ -9,6 +9,6 @@ import { Session } from '../Session'
 export const getSessionDoc = async ({ sessionId, userId }) => {
   return Session.collection().findOneAsync({
     _id: sessionId,
-    userId: userId
+    userId: userId,
   })
 }

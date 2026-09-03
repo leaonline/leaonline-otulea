@@ -8,7 +8,7 @@ const getInspect = (results, debug) => async (name, fn) => {
     if (data.error) {
       data.error = normalizeError({
         error: data.error,
-        template: 'diagnostics'
+        template: 'diagnostics',
       })
     }
     const label = `diagnostics.${name}`
@@ -20,20 +20,18 @@ const getInspect = (results, debug) => async (name, fn) => {
     try {
       debug(name, 'collect')
       await fn(collector)
-    }
-    catch (error) {
+    } catch (error) {
       debug(name, 'collect failed', error.message)
       collector({ error })
     }
   }
 
-  return Promise.race([
-    inspect(),
-    asyncTimeout(500)
-  ])
+  return Promise.race([inspect(), asyncTimeout(500)])
 }
 
-export const runDiagnostics = async function runDiagnostics ({ debug = () => {} } = {}) {
+export const runDiagnostics = async function runDiagnostics({
+  debug = () => {},
+} = {}) {
   const results = []
   debug('exec runDiagnostics()')
   debug('get inspector')
@@ -57,14 +55,14 @@ export const runDiagnostics = async function runDiagnostics ({ debug = () => {} 
 
 const initPerformance = () => window.performance.mark('diagnosticsStart')
 
-async function checkServiceWorker (collector) {
+async function checkServiceWorker(collector) {
   if (!navigator.serviceWorker) {
     return collector({ status: 'notDefined' })
   }
 
   const url = Meteor.absoluteUrl()
   const registrations = await navigator.serviceWorker.getRegistrations()
-  const found = registrations.find(worker => {
+  const found = registrations.find((worker) => {
     if (!worker?.scope) return false
 
     return worker.scope.includes(url)
@@ -79,11 +77,11 @@ async function checkServiceWorker (collector) {
     success: true,
     active: !!found.active,
     installing: !!found.installing,
-    waiting: !!found.waiting
+    waiting: !!found.waiting,
   })
 }
 
-async function checkOSInfo (collector) {
+async function checkOSInfo(collector) {
   const { getOSInfo } = await import('../../../ui/utils/getOSInfo')
   const UAParser = (await import('ua-parser-js')).default
   const parser = new UAParser()
@@ -92,8 +90,7 @@ async function checkOSInfo (collector) {
   let result
   try {
     result = await getOSInfo()
-  }
-  catch (e) {
+  } catch (e) {
     parsed.error = e
   }
 
@@ -108,7 +105,7 @@ async function checkOSInfo (collector) {
   return collector(parsed)
 }
 
-async function checkTTS (collector) {
+async function checkTTS(collector) {
   const { initializeTTS } = await import('../../../api/tts/initializeTTS')
 
   const result = {}
@@ -116,8 +113,7 @@ async function checkTTS (collector) {
 
   try {
     engine = await initializeTTS()
-  }
-  catch (initError) {
+  } catch (initError) {
     console.error('TTS init error', initError.message)
     result.error = initError
     result.status = 'failed'
@@ -132,8 +128,8 @@ async function checkTTS (collector) {
   }
 
   await new Promise((resolve) => {
-    const fail = error => {
-      console.error('play error', error && error.message)
+    const fail = (error) => {
+      console.error('play error', error?.message)
 
       if (error) {
         result.error = error || new Error('unknown TTS play error')
@@ -152,16 +148,15 @@ async function checkTTS (collector) {
           result.success = true
           resolve(collector(result))
         },
-        onError: event => fail(event.error)
+        onError: (event) => fail(event.error),
       })
-    }
-    catch (error) {
+    } catch (error) {
       fail(error)
     }
   })
 }
 
-async function checkLanguage (collector) {
+async function checkLanguage(collector) {
   const { initLanguage } = await import('../../../api/i18n/initLanguage')
   const translation = await import('./diagnosts_de')
   const i18n = await initLanguage()
@@ -169,7 +164,7 @@ async function checkLanguage (collector) {
   collector({ success: !i18n.get('diagnostics.title').includes('.') })
 }
 
-async function checkScreen (collector) {
+async function checkScreen(collector) {
   const screen = window.screen || {}
   collector({
     availWidth: screen.availWidth,
@@ -179,11 +174,11 @@ async function checkScreen (collector) {
     colorDepth: screen.colorDepth,
     pixelDepth: screen.pixelDepth,
     orientation: screen.orientation?.type,
-    success: true
+    success: true,
   })
 }
 
-async function checkGraphics (collector) {
+async function checkGraphics(collector) {
   const gl = document.createElement('canvas').getContext('webgl')
   if (!gl) {
     return collector({ gl: 'no webgl' })
@@ -193,23 +188,27 @@ async function checkGraphics (collector) {
   if (debugInfo) {
     return collector({
       gl: gl.getParameter(gl.SHADING_LANGUAGE_VERSION),
-      glVendor: gl.getParameter(gl.VENDOR) || gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL),
-      glRenderer: gl.getParameter(gl.RENDERER) || gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL),
-      success: true
+      glVendor:
+        gl.getParameter(gl.VENDOR) ||
+        gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL),
+      glRenderer:
+        gl.getParameter(gl.RENDERER) ||
+        gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL),
+      success: true,
     })
   }
 
   return collector({ gl: 'no WEBGL_debug_renderer_info' })
 }
 
-async function checkFont (collector) {
+async function checkFont(collector) {
   /**
    * Checks if a font is available to be used on a web page.
    * @license MIT
    * @copyright Sam Clarke 2013
    * @author Sam Clarke <sam@samclarke.com>
    */
-  const isFontAailable = (function (document) {
+  const isFontAailable = ((document) => {
     let width
     const body = document.body
 
@@ -219,10 +218,10 @@ async function checkFont (collector) {
       'position:absolute',
       'width:auto',
       'font-size:128px',
-      'left:-99999px'
+      'left:-99999px',
     ].join(' !important;')
 
-    const getWidth = function (fontFamily) {
+    const getWidth = (fontFamily) => {
       container.style.fontFamily = fontFamily
 
       body.appendChild(container)
@@ -238,17 +237,16 @@ async function checkFont (collector) {
     const serifWidth = getWidth('serif')
     const sansWidth = getWidth('sans-serif')
 
-    return function (font) {
-      return monoWidth !== getWidth(font + ',monospace') ||
-        sansWidth !== getWidth(font + ',sans-serif') ||
-        serifWidth !== getWidth(font + ',serif')
-    }
+    return (font) =>
+      monoWidth !== getWidth(font + ',monospace') ||
+      sansWidth !== getWidth(font + ',sans-serif') ||
+      serifWidth !== getWidth(font + ',serif')
   })(window.document)
 
   return collector({ success: isFontAailable('Semikolon') })
 }
 
-async function checkLocalStoage (collector) {
+async function checkLocalStoage(collector) {
   const key = Math.random().toString(10)
   const value = Math.random().toString(10)
   window.localStorage.setItem(key, value)
@@ -258,14 +256,18 @@ async function checkLocalStoage (collector) {
   return collector({ success: true })
 }
 
-const measurePerformance = collector => {
+const measurePerformance = (collector) => {
   window.performance.mark('diagnosticsEnd')
-  window.performance.measure('diagnosticsComplete', 'diagnosticsStart', 'diagnosticsEnd')
+  window.performance.measure(
+    'diagnosticsComplete',
+    'diagnosticsStart',
+    'diagnosticsEnd',
+  )
   const result = window.performance.getEntriesByName('diagnosticsComplete')[0]
 
   collector({
     success: true,
     duration: result.duration,
-    startTime: result.startTime
+    startTime: result.startTime,
   })
 }

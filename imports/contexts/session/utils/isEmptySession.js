@@ -5,8 +5,10 @@ import { Response } from '../../response/Response'
  * @param sessionDoc
  * @return {Promise<Boolean>}
  */
-export const isEmptySession = async sessionDoc => {
+export const isEmptySession = async (sessionDoc) => {
   if (sessionDoc?.progress) return false
-  const responses = await Response.collection().countDocuments({ _id: sessionDoc._id })
+  const responses = await Response.collection().countDocuments({
+    _id: sessionDoc._id,
+  })
   return responses === 0
 }

@@ -23,11 +23,14 @@ import { Unit } from '../../Unit'
  *  completed: Boolean
  * }}
  */
-export const updateSession = async function (options = {}) {
-  check(options, Match.ObjectIncluding({
-    sessionId: String,
-    userId: String
-  }))
+export const updateSession = async (options = {}) => {
+  check(
+    options,
+    Match.ObjectIncluding({
+      sessionId: String,
+      userId: String,
+    }),
+  )
 
   const { sessionId, userId, debug = () => {} } = options
 
@@ -42,7 +45,7 @@ export const updateSession = async function (options = {}) {
   checkDocument(testCycleDoc, TestCycle, {
     testCycle,
     sessionId,
-    userId
+    userId,
   })
 
   // get unitSet doc
@@ -60,14 +63,14 @@ export const updateSession = async function (options = {}) {
     context: TestCycle,
     fieldName: 'unitSets',
     document: testCycleDoc,
-    currentId: unitSet
+    currentId: unitSet,
   })
 
   const unitList = createDocumentList({
     context: UnitSet,
     fieldName: 'units',
     document: unitSetDoc,
-    currentId: currentUnit
+    currentId: currentUnit,
   })
 
   const timestamp = new Date()
@@ -83,11 +86,11 @@ export const updateSession = async function (options = {}) {
       $set: {
         currentUnit: null,
         updatedAt: timestamp,
-        completedAt: timestamp
+        completedAt: timestamp,
       },
       $inc: {
-        progress: progressIncrement
-      }
+        progress: progressIncrement,
+      },
     })
 
     debug('session -> testcycle complete', sessionId)
@@ -95,7 +98,7 @@ export const updateSession = async function (options = {}) {
       nextUnit: null,
       nextUnitSet: null,
       hasStory: false,
-      completed: true
+      completed: true,
     }
   }
 
@@ -109,7 +112,7 @@ export const updateSession = async function (options = {}) {
     checkDocument(nextUnitSetDoc, UnitSet, {
       nextUnitSetId,
       sessionId,
-      userId
+      userId,
     })
 
     const firstUnit = nextUnitSetDoc.units[0]
@@ -118,20 +121,25 @@ export const updateSession = async function (options = {}) {
       $set: {
         unitSet: nextUnitSetId,
         currentUnit: firstUnit,
-        updatedAt: timestamp
+        updatedAt: timestamp,
       },
       $inc: {
-        progress: progressIncrement
-      }
+        progress: progressIncrement,
+      },
     })
 
     const hasStory = nextUnitSetDoc.story?.length > 0
-    debug('session -> load next unit from new unitSet', sessionId, firstUnit, hasStory)
+    debug(
+      'session -> load next unit from new unitSet',
+      sessionId,
+      firstUnit,
+      hasStory,
+    )
     return {
       nextUnit: firstUnit,
       nextUnitSet: nextUnitSetId,
       hasStory: hasStory,
-      completed: false
+      completed: false,
     }
   }
 
@@ -142,11 +150,11 @@ export const updateSession = async function (options = {}) {
   await Session.collection().updateAsync(sessionDoc._id, {
     $set: {
       currentUnit: nextUnit,
-      updatedAt: timestamp
+      updatedAt: timestamp,
     },
     $inc: {
-      progress: progressIncrement
-    }
+      progress: progressIncrement,
+    },
   })
 
   debug('session -> load next unit from current unitSet', sessionId, nextUnit)
@@ -154,6 +162,6 @@ export const updateSession = async function (options = {}) {
     nextUnit: nextUnit,
     nextUnitSet: null,
     hasStory: false,
-    completed: false
+    completed: false,
   }
 }

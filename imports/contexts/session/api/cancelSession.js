@@ -15,14 +15,20 @@ import { checkDocument } from '../../../infrastructure/mixins/checkDocument'
  * @return {*}
  */
 export const cancelSession = async (options = {}) => {
-  check(options, Match.ObjectIncluding({
-    sessionId: String,
-    userId: String
-  }))
+  check(
+    options,
+    Match.ObjectIncluding({
+      sessionId: String,
+      userId: String,
+    }),
+  )
 
   const { sessionId, userId } = options
   const SessionCollection = Session.collection()
-  const sessionDoc = await SessionCollection.findOneAsync({ _id: sessionId, userId })
+  const sessionDoc = await SessionCollection.findOneAsync({
+    _id: sessionId,
+    userId,
+  })
 
   checkDocument(sessionDoc, Session, { sessionId, userId })
 
@@ -34,6 +40,6 @@ export const cancelSession = async (options = {}) => {
 
   // otherwise we update the session to indicate it's cancelled by the user
   return SessionCollection.updateAsync(sessionId, {
-    $set: { cancelledAt: new Date() }
+    $set: { cancelledAt: new Date() },
   })
 }

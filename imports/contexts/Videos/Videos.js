@@ -5,7 +5,7 @@ export const Videos = {
   name: 'videos',
   label: 'videos.title',
   icon: 'video',
-  isConfigDoc: true
+  isConfigDoc: true,
 }
 
 Videos.init = onServer(async () => {
@@ -21,32 +21,32 @@ Videos.schema = {
     type: String,
     label: 'videos.welcome',
     optional: true,
-    isMediaUrl: true
+    isMediaUrl: true,
   },
   overview: {
     type: String,
     label: 'videos.overview',
     optional: true,
-    isMediaUrl: true
+    isMediaUrl: true,
   },
   task: {
     type: String,
     label: 'videos.task',
     optional: true,
-    isMediaUrl: true
+    isMediaUrl: true,
   },
   complete: {
     type: String,
     label: 'videos.complete',
     optional: true,
-    isMediaUrl: true
+    isMediaUrl: true,
   },
   notFound: {
     type: String,
     label: 'videos.notFound',
     optional: true,
-    isMediaUrl: true
-  }
+    isMediaUrl: true,
+  },
 }
 
 Videos.publications = {}
@@ -56,9 +56,7 @@ Videos.publications.single = {
   schema: {},
   numRequests: 1,
   timeInterval: 250,
-  run: onServer(function () {
-    return Videos.collection().find({}, { limit: 1 })
-  })
+  run: onServer(() => Videos.collection().find({}, { limit: 1 })),
 }
 
 Videos.methods = {}
@@ -71,19 +69,18 @@ Videos.methods.update = {
   schema: Object.assign({}, Videos.schema, {
     _id: {
       type: String,
-      optional: true
-    }
+      optional: true,
+    },
   }),
-  run: onServer(async function (updateDoc) {
+  run: onServer(async (updateDoc) => {
     const LogoCollection = Videos.collection()
     const logoDoc = await LogoCollection.findOneAsync()
     if (!logoDoc) {
       return LogoCollection.insertAsync(updateDoc)
-    }
-    else {
+    } else {
       return LogoCollection.updateAsync(logoDoc._id, { $set: updateDoc })
     }
-  })
+  }),
 }
 
 Videos.methods.get = {
@@ -92,23 +89,20 @@ Videos.methods.get = {
   numRequests: 1,
   timeInterval: 250,
   schema: {},
-  run: onServer(async function () {
-    return Videos.collection().findOneAsync()
-  }),
-  call: onClient(function (cb) {
+  run: onServer(async () => Videos.collection().findOneAsync()),
+  call: onClient((cb) => {
     Meteor.call(Videos.methods.get.name, cb)
-  })
+  }),
 }
 
 Videos.helpers = {}
 
 let _conf
 
-Videos.helpers.load = function (cb = () => {}) {
+Videos.helpers.load = (cb = () => {}) => {
   if (_conf) {
     return cb(null, _conf)
-  }
-  else {
+  } else {
     Videos.methods.get.call((err, res) => {
       if (err) return cb(err)
       _conf = res
@@ -117,6 +111,4 @@ Videos.helpers.load = function (cb = () => {}) {
   }
 }
 
-Videos.helpers.get = function (name) {
-  return _conf && _conf[name]
-}
+Videos.helpers.get = (name) => _conf?.[name]

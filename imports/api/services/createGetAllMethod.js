@@ -1,5 +1,5 @@
 import { onServerExec } from '../../utils/archUtils'
-import {createLog} from "../../utils/createLog";
+import { createLog } from '../../utils/createLog'
 
 /**
  * Creates a method to get all documents from a collection.
@@ -11,58 +11,70 @@ import {createLog} from "../../utils/createLog";
  * @param defaultQuery {object=}
  * @return {{schema: {'dependencies.$': (function(String, String)), 'ids.$': (function(String, String)), ids: {optional: boolean, type: ArrayConstructor}, dependencies: {optional: boolean, type: ArrayConstructor}}, name: string, backend: boolean, run: *}}
  */
-export const createGetAllMethod = ({ context, run, defaultQuery, backendOnly = true, debug, ...addtionalMixins }) => {
+export const createGetAllMethod = ({
+  context,
+  run,
+  defaultQuery,
+  backendOnly = true,
+  debug,
+  ...addtionalMixins
+}) => {
   const { name } = context
-    const methodName = `${name}.methods.getAll`
-    const prefix = `[${name}][${methodName}]:`
-    const _debug = debug ?? createLog({ name: context.name, level: 'debug' })
+  const methodName = `${name}.methods.getAll`
+  const prefix = `[${name}][${methodName}]:`
+  const _debug = debug ?? createLog({ name: context.name, level: 'debug' })
   return {
     name: methodName,
     backend: backendOnly,
     schema: {
       ids: {
         type: Array,
-        optional: true
+        optional: true,
       },
       'ids.$': String,
       dependencies: {
         type: Array,
-        optional: true
+        optional: true,
       },
       'dependencies.$': Object,
       'dependencies.$.name': String,
       'dependencies.$.query': {
         type: Object,
-        optional: true
-      }
+        optional: true,
+      },
     },
     run: onServerExec(() => {
-      import { getCollection } from '../../infrastructure/collections/getCollection'
+      const {
+        getCollection,
+      } = require('../../infrastructure/collections/getCollection')
 
-      return run ?? async function ({ ids, dependencies = [] }) {
+      return (
+        run ??
+        (async ({ ids, dependencies = [] }) => {
           _debug(prefix, ids, dependencies && JSON.stringify(dependencies))
-        // return value
-        const output = {}
+          // return value
+          const output = {}
 
-        // get main documents, if hashes do not match
-        const collection = getCollection(name)
-        const query = defaultQuery ?? Object.create(null)
-        if (ids) query._id = { $in: ids }
-        output[name] = await collection.find(query).fetchAsync()
+          // get main documents, if hashes do not match
+          const collection = getCollection(name)
+          const query = defaultQuery ?? Object.create(null)
+          if (ids) query._id = { $in: ids }
+          output[name] = await collection.find(query).fetchAsync()
           _debug(prefix, name, output[name]?.length, 'documents')
 
-        // dependencies
-        for (const dep of dependencies) {
-          const depName = dep.name
-          const depCollection = getCollection(depName)
-          const depQuery = dep.query ?? Object.create(null)
-          output[depName] = await depCollection.find(depQuery).fetchAsync()
+          // dependencies
+          for (const dep of dependencies) {
+            const depName = dep.name
+            const depCollection = getCollection(depName)
+            const depQuery = dep.query ?? Object.create(null)
+            output[depName] = await depCollection.find(depQuery).fetchAsync()
             _debug(prefix, depName, output[depName]?.length, 'documents')
-        }
+          }
 
-        return output
-      }
+          return output
+        })
+      )
     }),
-    ...addtionalMixins
+    ...addtionalMixins,
   }
 }

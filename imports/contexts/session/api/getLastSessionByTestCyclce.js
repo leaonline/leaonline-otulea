@@ -1,7 +1,7 @@
 import { Session } from '../Session'
 
 const projection = {
-  hint: { $natural: -1 }
+  hint: { $natural: -1 },
 }
 
 /**
@@ -17,7 +17,7 @@ export const getLastSessionByTestCylce = ({ testCycleId, userId }) => {
     userId: userId,
     testCycle: testCycleId,
     startedAt: { $exists: true },
-    cancelledAt: { $exists: false }
+    cancelledAt: { $exists: false },
   }
 
   // TODO maybe add a flag to settings.json with number of days/hours that

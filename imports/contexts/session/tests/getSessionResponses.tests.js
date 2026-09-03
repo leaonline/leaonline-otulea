@@ -5,29 +5,29 @@ import { getSessionResponses } from '../api/getSessionResponses'
 import {
   clearCollection,
   mockCollection,
-  restoreCollection
+  restoreCollection,
 } from '../../../../tests/mockCollection'
 import { stub, restoreAll } from '../../../../tests/helpers.tests'
 import { Response } from '../../response/Response'
 
-describe(getSessionResponses.name, function () {
-  before(function () {
+describe(getSessionResponses.name, () => {
+  before(() => {
     mockCollection(Response)
   })
 
-  after(function () {
+  after(() => {
     restoreCollection(Response)
   })
 
   let sessionId
   let userId
 
-  beforeEach(function () {
+  beforeEach(() => {
     sessionId = Random.id()
     userId = Random.id()
   })
 
-  afterEach(function () {
+  afterEach(() => {
     restoreAll()
     clearCollection(Response)
   })
@@ -37,18 +37,20 @@ describe(getSessionResponses.name, function () {
       { scores: Random.id() },
       { scores: Random.id() },
       { scores: Random.id() },
-      { scores: Random.id() }
+      { scores: Random.id() },
     ]
 
-    const expected = docs.map(doc => doc.scores)
+    const expected = docs.map((doc) => doc.scores)
 
     stub(Response, 'collection', () => ({
-      find (query) {
+      find(query) {
         expect(query).to.deep.equal({ sessionId, userId })
         return { fetchAsync: async () => docs }
-      }
+      },
     }))
 
-    expect(await getSessionResponses({ sessionId, userId })).to.deep.equal(expected)
+    expect(await getSessionResponses({ sessionId, userId })).to.deep.equal(
+      expected,
+    )
   })
 })

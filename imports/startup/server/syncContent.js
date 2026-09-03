@@ -24,14 +24,13 @@ Meteor.startup(async () => {
 
   // contexts to sync are only queued,
   // if they are flagged in the settings.json
-  const contexts = ContentServer.contexts().filter(ctx => !!sync[ctx.name])
+  const contexts = ContentServer.contexts().filter((ctx) => !!sync[ctx.name])
 
   if (contexts.length > 0) {
     for (const ctx of contexts) {
       try {
         await ContentServer.sync(ctx)
-      }
-      catch (e) {
+      } catch (e) {
         log('sync failed for', ctx.name)
         console.error(e)
       }

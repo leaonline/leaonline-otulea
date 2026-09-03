@@ -1,7 +1,11 @@
 /* eslint-env mocha */
 import { expect } from 'chai'
 import { Random } from 'meteor/random'
-import { clearCollection, mockCollection, restoreCollection } from '../../../../tests/mockCollection'
+import {
+  clearCollection,
+  mockCollection,
+  restoreCollection,
+} from '../../../../tests/mockCollection'
 import { stub, restoreAll, expectThrow } from '../../../../tests/helpers.tests'
 import { Session } from '../Session'
 import { Response } from '../../response/Response'
@@ -39,17 +43,17 @@ describe(Session.methods.cancel.name, async () => {
     const arg = { sessionId }
     await expectThrow({
       fn: () => cancelSession.call(env, arg),
-      message: DocNotFoundError.reason
+      message: DocNotFoundError.reason,
     })
   })
   it('deletes the sessionDoc if its empty', async () => {
     const doc = { _id: sessionId }
     stub(Session, 'collection', () => ({
       findOneAsync: async () => doc,
-      removeAsync: async id => {
+      removeAsync: async (id) => {
         expect(id).to.deep.equal(sessionId)
         return 1
-      }
+      },
     }))
     stub(Response, 'collection', () => ({ countDocuments: async () => 0 }))
     const env = { userId }
@@ -65,7 +69,7 @@ describe(Session.methods.cancel.name, async () => {
         expect(id).to.deep.equal(sessionId)
         expect(modifier.$set.cancelledAt instanceof Date).to.equal(true)
         return 1
-      }
+      },
     }))
     stub(Response, 'collection', () => ({ countDocuments: async () => 1 }))
     const env = { userId }

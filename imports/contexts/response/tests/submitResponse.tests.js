@@ -5,7 +5,7 @@ import { createSubmitResponse } from '../api/createSubmitResponse'
 import {
   clearCollection,
   mockCollection,
-  restoreCollection
+  restoreCollection,
 } from '../../../../tests/mockCollection'
 import { Unit } from '../../Unit'
 import { Session } from '../../session/Session'
@@ -13,13 +13,13 @@ import { Response } from '../Response'
 import { expectThrow, restoreAll, stub } from '../../../../tests/helpers.tests'
 import { asyncTimeout } from '../../../utils/asyncTimeout'
 
-describe(createSubmitResponse.name, function () {
-  before(function () {
+describe(createSubmitResponse.name, () => {
+  before(() => {
     mockCollection(Unit)
     mockCollection(Session)
     mockCollection(Response)
   })
-  after(function () {
+  after(() => {
     restoreCollection(Unit)
     restoreCollection(Session)
     restoreCollection(Response)
@@ -30,7 +30,7 @@ describe(createSubmitResponse.name, function () {
     await clearCollection(Session)
     await clearCollection(Response)
   })
-  it('throws if the session and unit do not match', async function () {
+  it('throws if the session and unit do not match', async () => {
     const submitResponse = createSubmitResponse({})
     const input = [
       undefined,
@@ -39,24 +39,24 @@ describe(createSubmitResponse.name, function () {
       {
         responseDoc: {
           sessionId: Random.id(),
-          unitId: Random.id()
-        }
-      }
+          unitId: Random.id(),
+        },
+      },
     ]
 
     for (const entry of input) {
       await expectThrow({
         fn: () => submitResponse(entry),
-        message: 'response.isNotCurrentUnit'
+        message: 'response.isNotCurrentUnit',
       })
     }
   })
   it('submits a scored response', async () => {
     stub(Session, 'collection', () => ({
-      findOneAsync: async () => sessionDoc
+      findOneAsync: async () => sessionDoc,
     }))
     stub(Unit, 'collection', () => ({
-      findOneAsync: async () => unitDoc
+      findOneAsync: async () => unitDoc,
     }))
 
     const userId = Random.id()
@@ -64,21 +64,21 @@ describe(createSubmitResponse.name, function () {
     const unitDoc = { _id: Random.id() }
     const sessionDoc = {
       _id: Random.id(),
-      currentUnit: unitDoc._id
+      currentUnit: unitDoc._id,
     }
     const responseDoc = {
       sessionId: sessionDoc._id,
       unitId: unitDoc._id,
       contentId: Random.id(),
       responses: [Random.id()],
-      page: Math.floor(Math.random() * 10000)
+      page: Math.floor(Math.random() * 10000),
     }
 
     const scores = [Random.id()]
 
     const submitResponse = createSubmitResponse({
       extractor: () => itemDoc,
-      scorer: () => scores
+      scorer: () => scores,
     })
 
     let upsertComplete = false
@@ -88,7 +88,7 @@ describe(createSubmitResponse.name, function () {
           userId: userId,
           sessionId: sessionDoc._id,
           unitId: unitDoc._id,
-          contentId: responseDoc.contentId
+          contentId: responseDoc.contentId,
         })
 
         expect(modifier).to.deep.equal({
@@ -100,11 +100,11 @@ describe(createSubmitResponse.name, function () {
             responses: responseDoc.responses,
             page: responseDoc.page,
             scores: scores,
-            failed: undefined
-          }
+            failed: undefined,
+          },
         })
         upsertComplete = true
-      }
+      },
     }))
 
     await submitResponse({ responseDoc, userId })
@@ -112,27 +112,27 @@ describe(createSubmitResponse.name, function () {
   })
   it('submits a response with failed score', async () => {
     stub(Session, 'collection', () => ({
-      findOneAsync: async () => sessionDoc
+      findOneAsync: async () => sessionDoc,
     }))
     stub(Unit, 'collection', () => ({
-      findOneAsync: async () => unitDoc
+      findOneAsync: async () => unitDoc,
     }))
 
     const userId = Random.id()
     const itemDoc = {}
     const unitDoc = {
-      _id: Random.id()
+      _id: Random.id(),
     }
     const sessionDoc = {
       _id: Random.id(),
-      currentUnit: unitDoc._id
+      currentUnit: unitDoc._id,
     }
     const responseDoc = {
       sessionId: sessionDoc._id,
       unitId: unitDoc._id,
       contentId: Random.id(),
       responses: [Random.id()],
-      page: Math.floor(Math.random() * 10000)
+      page: Math.floor(Math.random() * 10000),
     }
 
     const errorId = Random.id()
@@ -145,7 +145,7 @@ describe(createSubmitResponse.name, function () {
           userId: userId,
           sessionId: sessionDoc._id,
           unitId: unitDoc._id,
-          contentId: responseDoc.contentId
+          contentId: responseDoc.contentId,
         })
 
         expect(modifier).to.deep.equal({
@@ -157,12 +157,12 @@ describe(createSubmitResponse.name, function () {
             responses: responseDoc.responses,
             page: responseDoc.page,
             scores: [],
-            failed: true
-          }
+            failed: true,
+          },
         })
 
         ups1Called++
-      }
+      },
     }))
 
     // fail at extractor
@@ -170,14 +170,14 @@ describe(createSubmitResponse.name, function () {
       extractor: () => {
         throw new Error(errorId)
       },
-      scorer: () => []
+      scorer: () => [],
     })({
       responseDoc,
       userId,
-      onError: e => {
+      onError: (e) => {
         expect(e.message).to.equal(errorId)
         err1Called = true
-      }
+      },
     })
 
     // fail at scorer
@@ -185,14 +185,14 @@ describe(createSubmitResponse.name, function () {
       extractor: () => itemDoc,
       scorer: () => {
         throw new Error(errorId)
-      }
+      },
     })({
       responseDoc,
       userId,
-      onError: e => {
+      onError: (e) => {
         expect(e.message).to.equal(errorId)
         err2Called = true
-      }
+      },
     })
 
     await asyncTimeout(10)

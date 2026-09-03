@@ -23,7 +23,7 @@ const fields = {
   cancelledAt: 1,
   progress: 1,
   maxProgress: 1,
-  isComplete: 1
+  isComplete: 1,
 }
 
 const fieldNames = Object.keys(fields)
@@ -40,18 +40,18 @@ const createCachedGetter = (collection) => {
 
 const getDimension = createCachedGetter(Dimension.collection())
 const getLevel = createCachedGetter(Level.collection())
-const getCompetency = _id => {
+const getCompetency = (_id) => {
   const map = getCompetencies([_id])
   return map.get(_id)
 }
-const getAlphaLevel = _id => {
+const getAlphaLevel = (_id) => {
   const map = getAlphaLevels([_id])
   return map.get(_id)
 }
-const toDate = value => value ? new Date(value).toISOString() : ''
+const toDate = (value) => (value ? new Date(value).toISOString() : '')
 
 class Row {
-  constructor ({ user }) {
+  constructor({ user }) {
     this.user = user
     this.userId = user._id
     this.code = user.username
@@ -66,7 +66,7 @@ class Row {
     this.tag = user.comment ?? ''
   }
 
-  addSession (sessionDoc, testCycleDoc) {
+  addSession(sessionDoc, testCycleDoc) {
     this.sessionId = sessionDoc._id
     this.testCycleId = testCycleDoc._id
     this.dimension = getDimension(testCycleDoc.dimension).title ?? 'missing'
@@ -80,16 +80,19 @@ class Row {
     this.isComplete = this.progress === this.maxProgress
 
     if (!this.cancelledAt && sessionDoc.startedAt && sessionDoc.completedAt) {
-      this.duration = new Date(sessionDoc.completedAt).getTime() - new Date(sessionDoc.startedAt).getTime()
-    }
-    else {
+      this.duration =
+        new Date(sessionDoc.completedAt).getTime() -
+        new Date(sessionDoc.startedAt).getTime()
+    } else {
       this.duration = -999 // no time computable
     }
   }
 
-  addRecord (doc = {}) {
+  addRecord(doc = {}) {
     if (this.sessionId !== doc.sessionId) {
-      throw new Error(`Session Id mismatch! Expected ${this.sessionId}, got ${doc.sessionId}`)
+      throw new Error(
+        `Session Id mismatch! Expected ${this.sessionId}, got ${doc.sessionId}`,
+      )
     }
     const competencies = doc.competencies || []
     const alphaLevels = doc.alphaLevels || []
@@ -97,10 +100,16 @@ class Row {
     alphaLevels.forEach(({ alphaLevelId, count, scored, undef }) => {
       const alphaLevelDoc = getAlphaLevel(alphaLevelId)
       const shortCode = alphaLevelDoc?.shortCode ?? `missing-${alphaLevelId}`
-      const existingComp = this.alphaLevels[shortCode] || { count: 0, scored: 0, perc: 0, undef: 0, graded: 0 }
-      existingComp.count += (count || 0)
-      existingComp.scored += (scored || 0)
-      existingComp.undef += (undef || 0)
+      const existingComp = this.alphaLevels[shortCode] || {
+        count: 0,
+        scored: 0,
+        perc: 0,
+        undef: 0,
+        graded: 0,
+      }
+      existingComp.count += count || 0
+      existingComp.scored += scored || 0
+      existingComp.undef += undef || 0
       existingComp.perc += existingComp.scored / (existingComp.count || 1)
       this.alphaLevels[shortCode] = existingComp
     })
@@ -108,62 +117,88 @@ class Row {
     competencies.forEach(({ competencyId, count, scored, undef }) => {
       const competencyDoc = getCompetency(competencyId)
       const shortCode = competencyDoc?.shortCode ?? `missing-${competencyId}`
-      const existingComp = this.competencies[shortCode] || { count: 0, scored: 0, perc: 0, undef: 0, graded: 0 }
-      existingComp.count += (count || 0)
-      existingComp.scored += (scored || 0)
-      existingComp.undef += (undef || 0)
+      const existingComp = this.competencies[shortCode] || {
+        count: 0,
+        scored: 0,
+        perc: 0,
+        undef: 0,
+        graded: 0,
+      }
+      existingComp.count += count || 0
+      existingComp.scored += scored || 0
+      existingComp.undef += undef || 0
       existingComp.perc += existingComp.scored / (existingComp.count || 1)
       this.competencies[shortCode] = existingComp
     })
   }
 }
 
-export const alphaUsers = ({ dryRun = true, includeAlphaLevels, includeCompetencies }) => {
+export const alphaUsers = ({
+  dryRun = true,
+  includeAlphaLevels,
+  includeCompetencies,
+}) => {
   const rows = []
   const eventLog = []
   const log = (...args) => eventLog.push(args.join(' '))
 
   Meteor.users.find({}).forEach((user) => {
-    if (!user || !user.username || !user._id || !user.createdAt || !user.updatedAt) {
+    if (!user?.username || !user?._id || !user?.createdAt || !user?.updatedAt) {
       return log('[Skip] incomplete user', JSON.stringify(user, null, 0))
     }
 
     const username = `${user.username}-(${user._id})`
-    const sessionCursor = Session.collection().find({ userId: user._id, completedAt: { $exists: true } })
+    const sessionCursor = Session.collection().find({
+      userId: user._id,
+      completedAt: { $exists: true },
+    })
 
     if (sessionCursor.count() === 0) {
       return log('[Skip] incomplete session for user', username)
     }
 
-    sessionCursor.forEach(sessionDoc => {
+    sessionCursor.forEach((sessionDoc) => {
       const row = new Row({ user })
 
       if (!sessionDoc.testCycle) {
-        return log(`[Missing] test cycle for ${username} and session ${sessionDoc._id}`)
+        return log(
+          `[Missing] test cycle for ${username} and session ${sessionDoc._id}`,
+        )
       }
 
       const testCycleDoc = TestCycle.collection().findOne(sessionDoc.testCycle)
 
       if (!testCycleDoc) {
-        return log(`[Missing] test cycle for ${username} and session ${sessionDoc._id}`)
+        return log(
+          `[Missing] test cycle for ${username} and session ${sessionDoc._id}`,
+        )
       }
 
       row.addSession(sessionDoc, testCycleDoc)
 
-      const feedbackDocs = getFeedbackDocs({ sessionDoc, testCycleDoc, user, log })
+      const feedbackDocs = getFeedbackDocs({
+        sessionDoc,
+        testCycleDoc,
+        user,
+        log,
+      })
       const feedbackCount = feedbackDocs.count()
 
       // if we have an existing feedback it's all fine
       if (feedbackCount === 0) {
-        return log(`[Missing] no feedback found/generated for ${username} and session ${sessionDoc._id}`)
+        return log(
+          `[Missing] no feedback found/generated for ${username} and session ${sessionDoc._id}`,
+        )
       }
 
       if (feedbackCount > 1) {
-        log(`[Warning] found ${feedbackCount} feedback docs for ${username} and session ${sessionDoc._id}`)
+        log(
+          `[Warning] found ${feedbackCount} feedback docs for ${username} and session ${sessionDoc._id}`,
+        )
       }
 
       // finally add records from this feedback doc
-      feedbackDocs.forEach(doc => row.addRecord(doc))
+      feedbackDocs.forEach((doc) => row.addRecord(doc))
       rows.push(row)
     })
   })
@@ -172,18 +207,18 @@ export const alphaUsers = ({ dryRun = true, includeAlphaLevels, includeCompetenc
   const allAlphaLevels = {}
   const allCompetencies = {}
 
-  rows.forEach(row => {
+  rows.forEach((row) => {
     const ckeys = Object.keys(row.competencies)
     const akeys = Object.keys(row.alphaLevels)
 
     // print(row.code, ckeys.length, akeys.length)
-    ckeys.forEach(key => {
+    ckeys.forEach((key) => {
       allCompetencies[`${key}#c`] = 1
       allCompetencies[`${key}#s`] = 1
       allCompetencies[`${key}#u`] = 1
       allCompetencies[`${key}#p`] = 1
     })
-    akeys.forEach(key => {
+    akeys.forEach((key) => {
       allAlphaLevels[`${key}#c`] = 1
       allAlphaLevels[`${key}#s`] = 1
       allAlphaLevels[`${key}#u`] = 1
@@ -192,7 +227,7 @@ export const alphaUsers = ({ dryRun = true, includeAlphaLevels, includeCompetenc
   })
 
   const header = []
-  const addToHeader = name => header.push(name)
+  const addToHeader = (name) => header.push(name)
   fieldNames.forEach(addToHeader)
 
   let alphaKeys
@@ -209,15 +244,15 @@ export const alphaUsers = ({ dryRun = true, includeAlphaLevels, includeCompetenc
 
   let out = header.join(';') + '\n'
 
-  rows.forEach(row => {
+  rows.forEach((row) => {
     let line = ''
-    const addToLine = value => {
+    const addToLine = (value) => {
       if (value === null || value === undefined) {
         value = ''
       }
       line += `${value};`
     }
-    const addComplex = target => keyWithHash => {
+    const addComplex = (target) => (keyWithHash) => {
       const [key, type] = keyWithHash.split('#')
       const value = target[key] || {}
 
@@ -235,7 +270,7 @@ export const alphaUsers = ({ dryRun = true, includeAlphaLevels, includeCompetenc
       }
     }
 
-    fieldNames.forEach(key => addToLine(row[key]))
+    fieldNames.forEach((key) => addToLine(row[key]))
 
     if (includeAlphaLevels) {
       alphaKeys.forEach(addComplex(row.alphaLevels))
@@ -254,8 +289,7 @@ export const alphaUsers = ({ dryRun = true, includeAlphaLevels, includeCompetenc
     fs.writeFile(logFilePath, eventLog.join('\n'), (err) => {
       if (err) {
         console.log('error', logFilePath, err.message)
-      }
-      else {
+      } else {
         console.log(logFilePath, 'saved')
       }
     })
@@ -265,8 +299,7 @@ export const alphaUsers = ({ dryRun = true, includeAlphaLevels, includeCompetenc
     fs.writeFile(alphaCsvPath, out, (err) => {
       if (err) {
         console.log('error', alphaCsvPath, err)
-      }
-      else {
+      } else {
         console.log(alphaCsvPath, 'saved')
       }
     })
@@ -281,8 +314,7 @@ const getFeedbackDocs = ({ sessionDoc, testCycleDoc, user, log }) => {
     log(`[Create] feedback for ${user.username} session ${sessionDoc._id}`)
     try {
       generateFeedback({ sessionDoc, testCycleDoc, userId: user._id })
-    }
-    catch (e) {
+    } catch (e) {
       log('[Error]', e.message)
     }
   }

@@ -8,17 +8,17 @@ import { Users } from '../../contexts/user/User'
 
 mockCollection(Users)
 
-describe(generateAccounts.name, function () {
-  beforeEach(async function () {
+describe(generateAccounts.name, () => {
+  beforeEach(async () => {
     await Users.collection().removeAsync()
   })
-  it('generates x users by given amount with random codes', async function () {
+  it('generates x users by given amount with random codes', async () => {
     const comment = Random.id()
     const result = await generateAccounts({
       amount: 5,
       dryRun: false,
       isDemo: true,
-      comment: comment
+      comment: comment,
     })
     const { users, ...rest } = result
     expect(rest).to.deep.equal({
@@ -27,7 +27,7 @@ describe(generateAccounts.name, function () {
       dryRun: false,
       comment: comment,
       isDemo: true,
-      updated: 5
+      updated: 5,
     })
 
     expect(users.length).to.equal(5)
@@ -38,13 +38,13 @@ describe(generateAccounts.name, function () {
       expect(userDoc.comment).to.equal(comment)
     }
   })
-  it('does no db writes if dry-run is active', async function () {
+  it('does no db writes if dry-run is active', async () => {
     const comment = Random.id()
     const result = await generateAccounts({
       amount: 5,
       dryRun: true,
       isDemo: false,
-      comment: comment
+      comment: comment,
     })
     const { users, ...rest } = result
     expect(rest).to.deep.equal({
@@ -53,7 +53,7 @@ describe(generateAccounts.name, function () {
       dryRun: true,
       comment: comment,
       isDemo: false,
-      updated: 0
+      updated: 0,
     })
 
     for (const user of users) {

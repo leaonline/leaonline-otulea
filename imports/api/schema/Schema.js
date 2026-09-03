@@ -10,16 +10,15 @@ export const Schema = {}
 Schema.provider = SimpleSchema
 
 Schema.create = isomorph({
-  onServer: function () {
-    return function (schemaDefinition, options) {
-      return new SimpleSchema(schemaDefinition, options)
-    }
-  },
-  onClient: function () {
+  onServer: () => (schemaDefinition, options) =>
+    new SimpleSchema(schemaDefinition, options),
+  onClient: () => {
     const { Tracker } = require('meteor/tracker')
 
-    return function (schemaDefinition, options) {
-      return new SimpleSchema(schemaDefinition, Object.assign({ tracker: Tracker }, options))
-    }
-  }
+    return (schemaDefinition, options) =>
+      new SimpleSchema(
+        schemaDefinition,
+        Object.assign({ tracker: Tracker }, options),
+      )
+  },
 })

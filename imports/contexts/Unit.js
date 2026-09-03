@@ -3,7 +3,7 @@ import { createGetAllMethod } from '../api/services/createGetAllMethod'
 import { createGetMethod } from '../api/services/createGetMethod'
 
 Unit.sync = {
-  query: { isLegacy: true }
+  query: { isLegacy: true },
 }
 Unit.isLocalCollection = true
 
@@ -19,7 +19,7 @@ Unit.getContentElement = ({ unit, page, contentId }) => {
     return null
   }
 
-  const byId = element => element.contentId === contentId
+  const byId = (element) => element.contentId === contentId
   const p = unit.pages[page]
   if (p?.content?.length) {
     const contentElement = p.content.find(byId)
@@ -44,7 +44,7 @@ Unit.getContentElement = ({ unit, page, contentId }) => {
 Unit.methods = Unit.methods ?? {}
 Unit.methods.getAll = createGetAllMethod({
   context: Unit,
-  backendOnly: false
+  backendOnly: false,
 })
 
 Unit.methods.get = createGetMethod({
@@ -53,13 +53,13 @@ Unit.methods.get = createGetMethod({
   schema: {
     _id: {
       type: String,
-      optional: true
+      optional: true,
     },
     shortCode: {
       type: String,
-      optional: true
-    }
-  }
+      optional: true,
+    },
+  },
 })
 
 export { Unit }

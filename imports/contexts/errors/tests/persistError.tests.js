@@ -6,22 +6,22 @@ import { persistError } from '../api/persistError'
 import {
   clearCollection,
   mockCollection,
-  restoreCollection
+  restoreCollection,
 } from '../../../../tests/mockCollection'
 import { Errors } from '../Errors'
 import { restoreAll, stub } from '../../../../tests/helpers.tests'
 
-describe(persistError.name, function () {
-  before(function () {
+describe(persistError.name, () => {
+  before(() => {
     mockCollection(Errors)
   })
-  after(async function () {
+  after(async () => {
     restoreCollection(Errors)
   })
-  beforeEach(function () {
+  beforeEach(() => {
     stub(Email, 'sendAsync', async () => {})
   })
-  afterEach(async function () {
+  afterEach(async () => {
     restoreAll()
     await clearCollection(Errors)
   })
@@ -31,10 +31,10 @@ describe(persistError.name, function () {
     stub(Errors, 'collection', () => ({
       findOneAsync: async () => {},
       updateAsync: expect.fail,
-      insertAsync: async doc => {
+      insertAsync: async (doc) => {
         expect(doc).to.deep.equal(insertDoc)
         inserted = true
-      }
+      },
     }))
     await persistError(insertDoc)
     expect(inserted).to.equal(true)
@@ -47,11 +47,11 @@ describe(persistError.name, function () {
       updateAsync: async (id, transform) => {
         expect(id).to.equal(updateDoc._id)
         expect(transform).to.deep.equal({
-          $inc: { count: 1 }
+          $inc: { count: 1 },
         })
         updated = true
       },
-      insertAsync: expect.fail
+      insertAsync: expect.fail,
     }))
     await persistError(updateDoc)
     expect(updated).to.equal(true)

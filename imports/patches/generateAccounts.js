@@ -8,7 +8,13 @@ const settings = Meteor.settings.public.accounts
 const codeLength = settings.code.length
 const defaultMaxRetries = settings.code.maxRetries
 
-export const generateAccounts = async ({ amount, dryRun, isDemo = false, comment, debug = () => {} }) => {
+export const generateAccounts = async ({
+  amount,
+  dryRun,
+  isDemo = false,
+  comment,
+  debug = () => {},
+}) => {
   debug('[generateAccounts]: run', { dryRun, amount, isDemo, comment })
 
   let usersLength = await Meteor.users.estimatedDocumentCount()
@@ -21,13 +27,12 @@ export const generateAccounts = async ({ amount, dryRun, isDemo = false, comment
     comment: comment,
     dryRun: dryRun,
     users: [],
-    updated: 0
+    updated: 0,
   }
 
-  async function createUser ({ codeLength, usersLength }) {
-    const maxRetries = usersLength > defaultMaxRetries
-      ? usersLength
-      : defaultMaxRetries
+  async function createUser({ codeLength, usersLength }) {
+    const maxRetries =
+      usersLength > defaultMaxRetries ? usersLength : defaultMaxRetries
 
     const code = await generateUserCode(codeLength, maxRetries)
     const userId = dryRun
@@ -38,7 +43,7 @@ export const generateAccounts = async ({ amount, dryRun, isDemo = false, comment
     return { userId, code }
   }
 
-  async function generate () {
+  async function generate() {
     const result = await createUser({ codeLength, usersLength })
     if (result) {
       output.users.push(result)
@@ -50,18 +55,17 @@ export const generateAccounts = async ({ amount, dryRun, isDemo = false, comment
     return decide()
   }
 
-  async function decide () {
+  async function decide() {
     if (count < amount) {
       await asyncTimeout(generate, 250)
       return generate()
-    }
-    else {
+    } else {
       return complete()
     }
   }
 
   // on complete we need to update all users with respective flags
-  async function complete () {
+  async function complete() {
     debug('[generateAccounts]: update all users')
     const ids = output.users.map(({ userId }) => userId)
     const query = { _id: { $in: ids } }

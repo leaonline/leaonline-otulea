@@ -9,11 +9,14 @@ import { check, Match } from 'meteor/check'
  * @return {*}
  */
 export const extractItemDefinition = (input, debug = () => {}) => {
-  check(input, Match.ObjectIncluding({
-    unitDoc: Object,
-    page: Number,
-    contentId: String
-  }))
+  check(
+    input,
+    Match.ObjectIncluding({
+      unitDoc: Object,
+      page: Number,
+      contentId: String,
+    }),
+  )
 
   const { unitDoc, page, contentId } = input
   const unitId = unitDoc._id
@@ -24,7 +27,7 @@ export const extractItemDefinition = (input, debug = () => {}) => {
     debug(unitDoc)
     throw new Meteor.Error(toErr('error'), toErr('arrayIndexOutOfBounds'), {
       unitId,
-      page
+      page,
     })
   }
 
@@ -38,22 +41,25 @@ export const extractItemDefinition = (input, debug = () => {}) => {
     throw new Meteor.Error(toErr('error'), toErr('noContent'), {
       unitId,
       shortCode,
-      page
+      page,
     })
   }
 
-  const entry = content.find(obj => obj.contentId === contentId)
+  const entry = content.find((obj) => obj.contentId === contentId)
 
   if (!entry) {
     debug('[extractItemDefinition]: entry not found by contentId', contentId)
     debug(content)
     const { shortCode } = unitDoc
     throw new Meteor.Error(toErr('error'), toErr('entryNotFound'), {
-      unitId, page, contentId, shortCode
+      unitId,
+      page,
+      contentId,
+      shortCode,
     })
   }
 
   return entry
 }
 
-const toErr = name => `${extractItemDefinition.name}.${name}`
+const toErr = (name) => `${extractItemDefinition.name}.${name}`

@@ -12,24 +12,25 @@ export const initLanguage = async (debug = () => {}) => {
   const i18nProvider = new I18N({
     i18n: {
       settings: { defaultLocale, [defaultLocale]: localeSettings },
-      [defaultLocale]: language
+      [defaultLocale]: language,
     },
     helperName: '___i18n___',
-    helperSettingsName: '___i18nSettings___'
+    helperSettingsName: '___i18nSettings___',
   })
 
   i18n.load({
     get: i18nProvider.get,
-    set: (locale, definitions) => i18nProvider.addl10n({ [locale]: definitions }),
+    set: (locale, definitions) =>
+      i18nProvider.addl10n({ [locale]: definitions }),
     getLocale: () => i18nProvider.currentLocale.get(),
-    thisContext: i18nProvider
+    thisContext: i18nProvider,
   })
 
   document.documentElement.setAttribute('lang', defaultLocale)
   debug('[initLanguage]: loaded')
 
   // also register a language helper for templates
-  Template.registerHelper('i18n', function (...args) {
+  Template.registerHelper('i18n', (...args) => {
     args.pop()
     return i18n.get(...args)
   })

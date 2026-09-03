@@ -4,8 +4,8 @@ import { expect } from 'chai'
 import { isDebugUser } from '../isDebugUser'
 import { overrideStub, restoreAll, stub } from '../../../../tests/helpers.tests'
 
-describe(isDebugUser.name, function () {
-  afterEach(function () {
+describe(isDebugUser.name, () => {
+  afterEach(() => {
     restoreAll()
   })
 

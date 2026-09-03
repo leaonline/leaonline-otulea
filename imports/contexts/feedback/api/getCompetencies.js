@@ -3,4 +3,4 @@ import { createContentFetcher } from '../../../api/http/createContentFetcher'
 
 const { fetcher } = createContentFetcher({ context: Competency })
 
-export const getCompetencies = ids => fetcher(ids)
+export const getCompetencies = (ids) => fetcher(ids)

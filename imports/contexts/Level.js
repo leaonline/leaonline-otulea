@@ -3,19 +3,19 @@ import { createGetAllMethod } from '../api/services/createGetAllMethod'
 import { createGetMethod } from '../api/services/createGetMethod'
 
 Level.sync = {
-  query: { isLegacy: true }
+  query: { isLegacy: true },
 }
 Level.isLocalCollection = true
 
 Level.methods = Level.methods ?? {}
 Level.methods.getAll = createGetAllMethod({
   context: Level,
-  backendOnly: false
+  backendOnly: false,
 })
 
 Level.methods.get = createGetMethod({
   context: Level,
-  backendOnly: false
+  backendOnly: false,
 })
 
 export { Level }

@@ -5,4 +5,5 @@
  * @param context
  * @return {Promise<object|undefined>}
  */
-export const getDocument = (docId, context) => context.collection().findOneAsync(docId)
+export const getDocument = (docId, context) =>
+  context.collection().findOneAsync(docId)

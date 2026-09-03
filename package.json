@@ -5,8 +5,10 @@
     "start": "meteor run",
     "test:once": "meteor test --once --driver-package meteortesting:mocha",
     "test:app": "TEST_WATCH=1 meteor test --full-app --driver-package meteortesting:mocha",
-    "lint:code": "standardx -v | snazzy",
-    "lint:code-fix": "standardx --fix -v | snazzy",
+    "lint:code": "npx @biomejs/biome lint ./",
+    "lint:code-fix": "npx @biomejs/biome lint --write ./",
+    "format:code": "npx @biomejs/biome format ./",
+    "format:code-fix": "npx @biomejs/biome format --write ./",
     "lint:style": "stylelint \"**/*.scss\"",
     "lint:style-fix": "stylelint --fix \"**/*.scss\"",
     "build:notes-tree": "markdown-notes-tree && npm run lint:markdown-fix",
@@ -39,34 +41,12 @@
   },
   "devDependencies": {
     "@babel/core": "^7.29.0",
-    "@babel/eslint-parser": "^7.28.6",
+    "@biomejs/biome": "2.5.12",
     "babel-plugin-istanbul": "^7.0.1",
     "chai": "^6.2.2",
-    "eslint-plugin-security": "^3.0.1",
     "puppeteer": "^24.37.2",
     "simpl-schema": "^1.13.1",
-    "sinon": "^21.0.1",
-    "snazzy": "^9.0.0",
-    "standardx": "^7.0.0",
-    "stylelint": "^17.2.0",
-    "stylelint-config-standard": "^40.0.0"
-  },
-  "eslintConfig": {
-    "parser": "@babel/eslint-parser",
-    "parserOptions": {
-      "sourceType": "module",
-      "allowImportExportEverywhere": true
-    },
-    "rules": {
-      "brace-style": [
-        "error",
-        "stroustrup",
-        {
-          "allowSingleLine": true
-        }
-      ],
-      "import/no-duplicates": 0
-    }
+    "sinon": "^21.0.1"
   },
   "babel": {
     "env": {

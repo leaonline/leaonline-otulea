@@ -8,20 +8,20 @@ import { AlphaLevel } from '../../AlphaLevel'
 import {
   clearCollection,
   mockCollection,
-  restoreCollection
+  restoreCollection,
 } from '../../../../tests/mockCollection'
 import { stub, restoreAll, expectThrow } from '../../../../tests/helpers.tests'
 import { HTTP } from 'meteor/jkuester:http'
 
 const randomHex = () => Math.round(Math.random() * 100000).toString(16)
 
-describe(addRecord.name, function () {
-  before(function () {
+describe(addRecord.name, () => {
+  before(() => {
     mockCollection(Record)
     mockCollection(Competency, { attachSchema: false })
     mockCollection(AlphaLevel, { attachSchema: false })
   })
-  after(function () {
+  after(() => {
     restoreCollection(Record)
     restoreCollection(Competency)
     restoreCollection(AlphaLevel)
@@ -33,48 +33,49 @@ describe(addRecord.name, function () {
     restoreAll()
   })
 
-  it('throws if params are missing or invalid', async function () {
+  it('throws if params are missing or invalid', async () => {
     const data = [
-      [{}, 'Missing key \'userId\''],
+      [{}, "Missing key 'userId'"],
       [
         {
           userId: Random.id(6),
           testCycleDoc: {},
           sessionDoc: {},
-          feedbackDoc: {}
-        }, 'Missing key \'dimension\' in field testCycleDoc'
+          feedbackDoc: {},
+        },
+        "Missing key 'dimension' in field testCycleDoc",
       ],
       [
         {
           userId: Random.id(6),
           testCycleDoc: {
             dimension: Random.id(4),
-            level: Random.id(4)
+            level: Random.id(4),
           },
           sessionDoc: {},
-          feedbackDoc: {}
+          feedbackDoc: {},
         },
-        'Missing key \'startedAt\' in field sessionDoc'
+        "Missing key 'startedAt' in field sessionDoc",
       ],
       [
         {
           userId: Random.id(6),
           testCycleDoc: {
             dimension: Random.id(4),
-            level: Random.id(4)
+            level: Random.id(4),
           },
           sessionDoc: {
             startedAt: new Date(),
             completedAt: new Date(),
-            cancelledAt: new Date()
+            cancelledAt: new Date(),
           },
           feedbackDoc: {
             competencies: [],
-            alphaLevels: ['foo']
-          }
+            alphaLevels: ['foo'],
+          },
         },
-        'Expected object, got string in field feedbackDoc.alphaLevels[0]'
-      ]
+        'Expected object, got string in field feedbackDoc.alphaLevels[0]',
+      ],
     ]
 
     for (const entry of data) {
@@ -82,17 +83,17 @@ describe(addRecord.name, function () {
       await expectThrow({ fn: () => addRecord(input), message })
     }
   })
-  it('creates a new record if none exists for the given user/dimension/level/date', async function () {
+  it('creates a new record if none exists for the given user/dimension/level/date', async () => {
     const alphaLevelId = await AlphaLevel.collection().insertAsync({
       shortCode: randomHex(),
       description: randomHex(),
-      level: 99
+      level: 99,
     })
     const competencyId = await Competency.collection().insertAsync({
       shortCode: randomHex(),
       description: randomHex(),
       level: alphaLevelId,
-      category: randomHex()
+      category: randomHex(),
     })
 
     const data = {
@@ -100,41 +101,47 @@ describe(addRecord.name, function () {
       testCycleDoc: {
         _id: Random.id(6),
         dimension: Random.id(4),
-        level: Random.id(4)
+        level: Random.id(4),
       },
       sessionDoc: {
         _id: Random.id(6),
         startedAt: new Date(),
         completedAt: new Date(),
-        cancelledAt: new Date()
+        cancelledAt: new Date(),
       },
       feedbackDoc: {
         _id: Random.id(6),
-        competencies: [{
-          competencyId: competencyId,
-          count: 10,
-          scored: 9,
-          perc: 0.9,
-          undef: 0,
-          isGraded: true,
-          gradeName: 'accomplished'
-        }],
-        alphaLevels: [{
-          alphaLevelId: alphaLevelId,
-          count: 1,
-          scored: 1,
-          perc: 1,
-          undef: 0,
-          isGraded: true
-        }]
-      }
+        competencies: [
+          {
+            competencyId: competencyId,
+            count: 10,
+            scored: 9,
+            perc: 0.9,
+            undef: 0,
+            isGraded: true,
+            gradeName: 'accomplished',
+          },
+        ],
+        alphaLevels: [
+          {
+            alphaLevelId: alphaLevelId,
+            count: 1,
+            scored: 1,
+            perc: 1,
+            undef: 0,
+            isGraded: true,
+          },
+        ],
+      },
     }
 
-    const alphaLevelDoc = await AlphaLevel.collection().findOneAsync(alphaLevelId)
-    const competencyDoc = await Competency.collection().findOneAsync(competencyId)
+    const alphaLevelDoc =
+      await AlphaLevel.collection().findOneAsync(alphaLevelId)
+    const competencyDoc =
+      await Competency.collection().findOneAsync(competencyId)
 
     // stubbing fetch to content server
-    stub(HTTP, 'get', (url, params) => {
+    stub(HTTP, 'get', (url) => {
       if (url.includes(AlphaLevel.routes.all.path)) {
         return { data: [alphaLevelDoc] }
       }
@@ -165,52 +172,58 @@ describe(addRecord.name, function () {
       session: data.sessionDoc._id,
       feedback: data.feedbackDoc._id,
 
-      competencies: [{
-        _id: competencyId,
-        description: competencyDoc.description,
-        shortCode: competencyDoc.shortCode,
-        alphaLevel: competencyDoc.level,
-        category: competencyDoc.category,
-        count: data.feedbackDoc.competencies[0].count,
-        scored: data.feedbackDoc.competencies[0].scored,
-        perc: data.feedbackDoc.competencies[0].perc,
-        undef: data.feedbackDoc.competencies[0].undef,
-        isGraded: data.feedbackDoc.competencies[0].isGraded,
-        gradeName: data.feedbackDoc.competencies[0].gradeName,
-        development: 'new'
-      }],
+      competencies: [
+        {
+          _id: competencyId,
+          description: competencyDoc.description,
+          shortCode: competencyDoc.shortCode,
+          alphaLevel: competencyDoc.level,
+          category: competencyDoc.category,
+          count: data.feedbackDoc.competencies[0].count,
+          scored: data.feedbackDoc.competencies[0].scored,
+          perc: data.feedbackDoc.competencies[0].perc,
+          undef: data.feedbackDoc.competencies[0].undef,
+          isGraded: data.feedbackDoc.competencies[0].isGraded,
+          gradeName: data.feedbackDoc.competencies[0].gradeName,
+          development: 'new',
+        },
+      ],
 
-      alphaLevels: [{
-        _id: alphaLevelId,
-        description: alphaLevelDoc.description,
-        shortCode: alphaLevelDoc.shortCode,
-        level: alphaLevelDoc.level,
-        count: data.feedbackDoc.alphaLevels[0].count,
-        scored: data.feedbackDoc.alphaLevels[0].scored,
-        perc: data.feedbackDoc.alphaLevels[0].perc,
-        isGraded: data.feedbackDoc.alphaLevels[0].isGraded,
-        development: 'new'
-      }]
+      alphaLevels: [
+        {
+          _id: alphaLevelId,
+          description: alphaLevelDoc.description,
+          shortCode: alphaLevelDoc.shortCode,
+          level: alphaLevelDoc.level,
+          count: data.feedbackDoc.alphaLevels[0].count,
+          scored: data.feedbackDoc.alphaLevels[0].scored,
+          perc: data.feedbackDoc.alphaLevels[0].perc,
+          isGraded: data.feedbackDoc.alphaLevels[0].isGraded,
+          development: 'new',
+        },
+      ],
     })
   })
-  it('replaces an existing record, if such already exists', async function () {
+  it('replaces an existing record, if such already exists', async () => {
     const alphaLevelId = await AlphaLevel.collection().insertAsync({
       shortCode: randomHex(),
       description: randomHex(),
-      level: 99
+      level: 99,
     })
     const competencyId = await Competency.collection().insertAsync({
       shortCode: randomHex(),
       description: randomHex(),
       level: alphaLevelId,
-      category: randomHex()
+      category: randomHex(),
     })
 
-    const alphaLevelDoc = await AlphaLevel.collection().findOneAsync(alphaLevelId)
-    const competencyDoc = await Competency.collection().findOneAsync(competencyId)
+    const alphaLevelDoc =
+      await AlphaLevel.collection().findOneAsync(alphaLevelId)
+    const competencyDoc =
+      await Competency.collection().findOneAsync(competencyId)
 
     // stubbing fetch to content server
-    stub(HTTP, 'get', (url, params) => {
+    stub(HTTP, 'get', (url) => {
       if (url.includes(AlphaLevel.routes.all.path)) {
         return { data: [alphaLevelDoc] }
       }
@@ -227,34 +240,38 @@ describe(addRecord.name, function () {
       testCycleDoc: {
         _id: Random.id(6),
         dimension: Random.id(4),
-        level: Random.id(4)
+        level: Random.id(4),
       },
       sessionDoc: {
         _id: Random.id(6),
         startedAt: new Date(),
         completedAt: new Date(),
-        cancelledAt: new Date()
+        cancelledAt: new Date(),
       },
       feedbackDoc: {
         _id: Random.id(6),
-        competencies: [{
-          competencyId: competencyId,
-          count: 10,
-          scored: 9,
-          perc: 0.9,
-          undef: 0,
-          isGraded: true,
-          gradeName: 'accomplished'
-        }],
-        alphaLevels: [{
-          alphaLevelId: alphaLevelId,
-          count: 1,
-          scored: 1,
-          perc: 1,
-          undef: 0,
-          isGraded: true
-        }]
-      }
+        competencies: [
+          {
+            competencyId: competencyId,
+            count: 10,
+            scored: 9,
+            perc: 0.9,
+            undef: 0,
+            isGraded: true,
+            gradeName: 'accomplished',
+          },
+        ],
+        alphaLevels: [
+          {
+            alphaLevelId: alphaLevelId,
+            count: 1,
+            scored: 1,
+            perc: 1,
+            undef: 0,
+            isGraded: true,
+          },
+        ],
+      },
     }
 
     const result = await addRecord(data)
@@ -285,52 +302,58 @@ describe(addRecord.name, function () {
       session: data.sessionDoc._id,
       feedback: data.feedbackDoc._id,
 
-      competencies: [{
-        _id: competencyId,
-        description: competencyDoc.description,
-        shortCode: competencyDoc.shortCode,
-        alphaLevel: competencyDoc.level,
-        category: competencyDoc.category,
-        count: data.feedbackDoc.competencies[0].count,
-        scored: data.feedbackDoc.competencies[0].scored,
-        perc: data.feedbackDoc.competencies[0].perc,
-        undef: data.feedbackDoc.competencies[0].undef,
-        isGraded: data.feedbackDoc.competencies[0].isGraded,
-        gradeName: data.feedbackDoc.competencies[0].gradeName,
-        development: 'new'
-      }],
+      competencies: [
+        {
+          _id: competencyId,
+          description: competencyDoc.description,
+          shortCode: competencyDoc.shortCode,
+          alphaLevel: competencyDoc.level,
+          category: competencyDoc.category,
+          count: data.feedbackDoc.competencies[0].count,
+          scored: data.feedbackDoc.competencies[0].scored,
+          perc: data.feedbackDoc.competencies[0].perc,
+          undef: data.feedbackDoc.competencies[0].undef,
+          isGraded: data.feedbackDoc.competencies[0].isGraded,
+          gradeName: data.feedbackDoc.competencies[0].gradeName,
+          development: 'new',
+        },
+      ],
 
-      alphaLevels: [{
-        _id: alphaLevelId,
-        description: alphaLevelDoc.description,
-        shortCode: alphaLevelDoc.shortCode,
-        level: alphaLevelDoc.level,
-        count: data.feedbackDoc.alphaLevels[0].count,
-        scored: data.feedbackDoc.alphaLevels[0].scored,
-        perc: data.feedbackDoc.alphaLevels[0].perc,
-        isGraded: data.feedbackDoc.alphaLevels[0].isGraded,
-        development: 'new'
-      }]
+      alphaLevels: [
+        {
+          _id: alphaLevelId,
+          description: alphaLevelDoc.description,
+          shortCode: alphaLevelDoc.shortCode,
+          level: alphaLevelDoc.level,
+          count: data.feedbackDoc.alphaLevels[0].count,
+          scored: data.feedbackDoc.alphaLevels[0].scored,
+          perc: data.feedbackDoc.alphaLevels[0].perc,
+          isGraded: data.feedbackDoc.alphaLevels[0].isGraded,
+          development: 'new',
+        },
+      ],
     })
   })
-  it('compares compatencies / alphalevels development with previous days', async function () {
+  it('compares compatencies / alphalevels development with previous days', async () => {
     const alphaLevelId = await AlphaLevel.collection().insertAsync({
       shortCode: randomHex(),
       description: randomHex(),
-      level: 99
+      level: 99,
     })
     const competencyId = await Competency.collection().insertAsync({
       shortCode: randomHex(),
       description: randomHex(),
       level: alphaLevelId,
-      category: randomHex()
+      category: randomHex(),
     })
 
-    const alphaLevelDoc = await AlphaLevel.collection().findOneAsync(alphaLevelId)
-    const competencyDoc = await Competency.collection().findOneAsync(competencyId)
+    const alphaLevelDoc =
+      await AlphaLevel.collection().findOneAsync(alphaLevelId)
+    const competencyDoc =
+      await Competency.collection().findOneAsync(competencyId)
 
     // stubbing fetch to content server
-    stub(HTTP, 'get', (url, params) => {
+    stub(HTTP, 'get', (url) => {
       if (url.includes(AlphaLevel.routes.all.path)) {
         return { data: [alphaLevelDoc] }
       }
@@ -347,34 +370,38 @@ describe(addRecord.name, function () {
       testCycleDoc: {
         _id: Random.id(6),
         dimension: Random.id(4),
-        level: Random.id(4)
+        level: Random.id(4),
       },
       sessionDoc: {
         _id: Random.id(6),
         startedAt: new Date(),
         completedAt: new Date(),
-        cancelledAt: new Date()
+        cancelledAt: new Date(),
       },
       feedbackDoc: {
         _id: Random.id(6),
-        competencies: [{
-          competencyId: competencyId,
-          count: 10,
-          scored: 9,
-          perc: 0.9,
-          undef: 0,
-          isGraded: true,
-          gradeName: 'accomplished'
-        }],
-        alphaLevels: [{
-          alphaLevelId: alphaLevelId,
-          count: 1,
-          scored: 1,
-          perc: 1,
-          undef: 0,
-          isGraded: true
-        }]
-      }
+        competencies: [
+          {
+            competencyId: competencyId,
+            count: 10,
+            scored: 9,
+            perc: 0.9,
+            undef: 0,
+            isGraded: true,
+            gradeName: 'accomplished',
+          },
+        ],
+        alphaLevels: [
+          {
+            alphaLevelId: alphaLevelId,
+            count: 1,
+            scored: 1,
+            perc: 1,
+            undef: 0,
+            isGraded: true,
+          },
+        ],
+      },
     }
     const yesterday = data.sessionDoc.startedAt.getDate() - 1
     data.sessionDoc.startedAt.setDate(yesterday)

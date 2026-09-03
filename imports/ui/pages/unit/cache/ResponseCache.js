@@ -6,18 +6,18 @@ import { simpleHash } from '../../../../utils/simpleHash'
  * Keeps responses in a storage (Storage API).
  */
 export class ResponseCache {
-  static create (storage, options) {
+  static create(storage, options) {
     return new ResponseCache(storage, options)
   }
 
-  constructor (storage, options = {}) {
+  constructor(storage, options = {}) {
     this.storage = storage
     this.getKey = options.getKey || getKey
     this.encode = options.encode || encB64
     this.decode = options.decode || decB64
   }
 
-  save (responseData) {
+  save(responseData) {
     const key = this.getKey(responseData)
     const value = EJSON.stringify(responseData)
     const b64Value = this.encode(value)
@@ -25,13 +25,13 @@ export class ResponseCache {
     return { key, value: b64Value }
   }
 
-  load (responseData) {
+  load(responseData) {
     const key = this.getKey(responseData)
     const value = this.storage.getItem(key)
     return value && EJSON.parse(this.decode(value))
   }
 
-  clear (responseData) {
+  clear(responseData) {
     const key = this.getKey(responseData)
     // no need to clear items that do not exist
     if (!this.storage.getItem(key)) {
@@ -42,7 +42,7 @@ export class ResponseCache {
     return !this.storage.getItem(key)
   }
 
-  flush () {
+  flush() {
     const self = this
     // custom storage implementations may use getAll to return all items,
     // otherwise we assume it's a simple key-value store, and we iterate over keys
@@ -59,10 +59,10 @@ export class ResponseCache {
   }
 }
 
-const encB64 = x => btoa(x)
-const decB64 = y => atob(y)
+const encB64 = (x) => btoa(x)
+const decB64 = (y) => atob(y)
 
-function getKey ({ sessionId, unitId, page, contentId }) {
+function getKey({ sessionId, unitId, page, contentId }) {
   const hash = simpleHash(`${sessionId}-${unitId}-${page}-${contentId}`)
   return `rc-${hash}`
 }

@@ -2,7 +2,10 @@
 import { expect } from 'chai'
 import { Random } from 'meteor/random'
 import { getCompetencies } from '../api/getCompetencies'
-import { mockCollection, restoreCollection } from '../../../../tests/mockCollection'
+import {
+  mockCollection,
+  restoreCollection,
+} from '../../../../tests/mockCollection'
 import { Competency } from '../../Competency'
 
 describe(getCompetencies.name, async () => {
@@ -16,13 +19,16 @@ describe(getCompetencies.name, async () => {
   it('fetches competency docs by given ids and returns them as a map', async () => {
     const id1 = Random.id()
     const id2 = Random.id()
-    const docs = [{
-      _id: id1,
-      title: Random.id()
-    }, {
-      _id: id2,
-      title: Random.id()
-    }]
+    const docs = [
+      {
+        _id: id1,
+        title: Random.id(),
+      },
+      {
+        _id: id2,
+        title: Random.id(),
+      },
+    ]
 
     for (const doc of docs) {
       await Competency.collection().insertAsync(doc)

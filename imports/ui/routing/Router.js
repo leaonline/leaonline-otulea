@@ -13,38 +13,36 @@ export const Router = {}
 Router.src = FlowRouter
 Router.debug = false
 
-Router.go = function (value, ...optionalArgs) {
+Router.go = (value, ...optionalArgs) => {
   const type = typeof value
   if (type === 'object' && value !== null) {
     return FlowRouter.go(value.path(...optionalArgs))
-  }
-  else if (type === 'string') {
+  } else if (type === 'string') {
     return FlowRouter.go(value)
-  }
-  else {
-    throw new Error(`Unexpected format: got [${type}], expected string or object`)
+  } else {
+    throw new Error(
+      `Unexpected format: got [${type}], expected string or object`,
+    )
   }
 }
 
-Router.has = function (path) {
-  return paths[path]
-}
+Router.has = (path) => paths[path]
 
-Router.location = function (options = {}) {
+Router.location = (options = {}) => {
   if (options.pathName) {
     return FlowRouter.current().route.name
   }
   return FlowRouter.current().path
 }
 
-Router.current = function (options = {}) {
+Router.current = (options = {}) => {
   if (options.reactive) {
     FlowRouter.watchPathChange()
   }
   return FlowRouter.current()
 }
 
-Router.param = function (value) {
+Router.param = (value) => {
   const type = typeof value
   if (type === 'object') {
     return FlowRouter.setParams(value)
@@ -55,7 +53,7 @@ Router.param = function (value) {
   throw new Error(`Unexpected format: [${type}], expected string or object`)
 }
 
-Router.queryParam = function (value) {
+Router.queryParam = (value) => {
   const type = typeof value
   if (type === 'object') {
     return FlowRouter.setQueryParams(value)
@@ -68,13 +66,13 @@ Router.queryParam = function (value) {
 
 let _titlePrefix = ''
 
-Router.titlePrefix = function (value = '') {
+Router.titlePrefix = (value = '') => {
   _titlePrefix = value
 }
 
 let _loadingTemplate
 
-Router.loadingTemplate = function (value = 'loading') {
+Router.loadingTemplate = (value = 'loading') => {
   _loadingTemplate = value
 }
 
@@ -91,10 +89,10 @@ const paths = {}
     .action() hook
     .triggersExit() hooks
  */
-function createRoute (routeDef, onError) {
+function createRoute(routeDef, onError) {
   return {
     name: routeDef.key,
-    whileWaiting () {
+    whileWaiting() {
       // we render by default a "loading" template if the Template has not been loaded yet
       // which can be explicitly prevented by switching showLoading to false
       if (!Template[routeDef.template] && routeDef.showLoading !== false) {
@@ -102,7 +100,7 @@ function createRoute (routeDef, onError) {
         this.render(routeDef.target, _loadingTemplate)
       }
     },
-    waitOn () {
+    waitOn() {
       return Promise.all([
         Promise.resolve(routeDef.load()),
         new Promise((resolve) => {
@@ -113,16 +111,18 @@ function createRoute (routeDef, onError) {
               resolve()
             }
           })
-        })
+        }),
       ])
     },
     triggersEnter: routeDef.triggersEnter && routeDef.triggersEnter(),
-    action (params, queryParams) {
+    action(params, queryParams) {
       // if we have loaded the template but it is not available
       // on the rendering pipeline through Template.<name> we
       // just skip the action and wait for the next rendering cycle
       if (!Template[routeDef.template]) {
-        console.warn(`Found rendering attempt on unloaded Template [${routeDef.template}]`)
+        console.warn(
+          `Found rendering attempt on unloaded Template [${routeDef.template}]`,
+        )
         return
       }
 
@@ -150,17 +150,16 @@ function createRoute (routeDef, onError) {
 
       try {
         this.render(routeDef.target, routeDef.template, data)
-      }
-      catch (e) {
+      } catch (e) {
         if (typeof onError === 'function') {
           onError(e)
         }
       }
-    }
+    },
   }
 }
 
-Router.register = function (routeDefinition, onError) {
+Router.register = (routeDefinition, onError) => {
   const path = routeDefinition.path()
   paths[path] = routeDefinition
   const routeInstance = createRoute(routeDefinition, onError)
@@ -168,7 +167,7 @@ Router.register = function (routeDefinition, onError) {
 }
 
 Router.helpers = {
-  isActive (name) {
+  isActive(name) {
     return RouterHelpers.name(name)
-  }
+  },
 }

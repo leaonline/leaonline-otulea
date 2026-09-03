@@ -15,13 +15,23 @@ import { asyncHTTP } from './asyncHTTP'
  * @param debug {function?} optional debug logger
  * @return {Promise<Object>} A promise resoling to an object or void
  */
-export const loadContentDoc = async ({ context, collection, name, unlessExists, query, from = 'current', debug = () => {}, throwIfNotFound = false }) => {
+export const loadContentDoc = async ({
+  context,
+  collection,
+  name,
+  unlessExists,
+  query,
+  from = 'current',
+  debug = () => {},
+  throwIfNotFound = false,
+}) => {
   debug('loadContentDoc', context.name, JSON.stringify(query, null, 0))
   if (!context) {
     throw new Error('Context is expected')
   }
 
-  const localCollection = collection ?? context.collection() ?? getLocalCollection(context.name)
+  const localCollection =
+    collection ?? context.collection() ?? getLocalCollection(context.name)
   if (!localCollection) {
     throw new Error(`Expected collection for ctx ${context.name}`)
   }
@@ -44,7 +54,9 @@ export const loadContentDoc = async ({ context, collection, name, unlessExists, 
   const document = await loader({ context, name, query })
 
   if (!document && throwIfNotFound) {
-    throw new Error(`Expected document for ctx ${context.name} and query ${query ? EJSON.stringify(query) : undefined}`)
+    throw new Error(
+      `Expected document for ctx ${context.name} and query ${query ? EJSON.stringify(query) : undefined}`,
+    )
   }
 
   if (document) {
@@ -60,16 +72,18 @@ loaders.remote = async ({ name, context, query }) => {
   let route
   if (query.shortCode) route = context.routes.byCode
   if (query._id) route = context.routes.byId
-  if (!route) throw new Error(`No route for query/context: ${query}, ${context}`)
+  if (!route)
+    throw new Error(`No route for query/context: ${query}, ${context}`)
   const url = new URL(name ?? `${contentBase}${route.path}`)
   url.search = new URLSearchParams(query)
-  const res =  await asyncHTTP('GET', url.toString())
+  const res = await asyncHTTP('GET', url.toString())
   if (res.statusCode >= 400) {
     throw new Error(res.statusCode + res.content)
   }
   return res?.data
 }
-loaders.current = ({ name, context, query }) =>  callMethod({
-  name: name ?? context.methods.get,
-  args: query
-})
+loaders.current = ({ name, context, query }) =>
+  callMethod({
+    name: name ?? context.methods.get,
+    args: query,
+  })

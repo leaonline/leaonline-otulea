@@ -5,7 +5,7 @@ const origin = Meteor.absoluteUrl()
 const defaultHeaders = {
   origin: origin,
   mode: 'cors',
-  cache: 'no-store'
+  cache: 'no-store',
 }
 
 /**

@@ -5,18 +5,18 @@ import crypto from 'node:crypto'
 import { WebApp } from 'meteor/webapp'
 import { Autoupdate } from 'meteor/autoupdate'
 
-const self = '\'self\''
+const self = "'self'"
 const data = 'data:'
 const blob = 'blob:'
-const unsafeEval = '\'unsafe-eval\''
-const unsafeInline = '\'unsafe-inline\''
+const unsafeEval = "'unsafe-eval'"
+const unsafeInline = "'unsafe-inline'"
 
 /**
  * Creates a helmet-compatible CSP-configuration
  * @param externalHostUrls {Array|undefined} Optional array with allowed hosts
  * @return {Object} a CSP configuration object
  */
-export function createCSPOptions (externalHostUrls = []) {
+export function createCSPOptions(externalHostUrls = []) {
   // get the default connect source for our current domain
   const { usesHttps, connectSrc } = getConnectSrc(Meteor.absoluteUrl())
 
@@ -26,25 +26,35 @@ export function createCSPOptions (externalHostUrls = []) {
   // Otherwise the app would not be able to start, since the runtimeConfigScript
   // is rejected __meteor_runtime_config__ is not available, causing
   // a cascade of follow-up errors.
-  const hashes = [true, false].map(isModern => {
+  const hashes = [true, false].map((isModern) => {
     const runtimeConfig = Object.assign(__meteor_runtime_config__, Autoupdate, {
       accountsConfigCalled: true, // this may depend on, whether you called Accounts.config
-      isModern: isModern
+      isModern: isModern,
     })
 
     // add client versions to __meteor_runtime_config__
-    Object.keys(WebApp.clientPrograms).forEach(arch => {
+    Object.keys(WebApp.clientPrograms).forEach((arch) => {
       __meteor_runtime_config__.versions[arch] = {
-        version: Autoupdate.autoupdateVersion || WebApp.clientPrograms[arch].version(),
-        versionRefreshable: Autoupdate.autoupdateVersion || WebApp.clientPrograms[arch].versionRefreshable(),
-        versionNonRefreshable: Autoupdate.autoupdateVersion || WebApp.clientPrograms[arch].versionNonRefreshable(),
+        version:
+          Autoupdate.autoupdateVersion || WebApp.clientPrograms[arch].version(),
+        versionRefreshable:
+          Autoupdate.autoupdateVersion ||
+          WebApp.clientPrograms[arch].versionRefreshable(),
+        versionNonRefreshable:
+          Autoupdate.autoupdateVersion ||
+          WebApp.clientPrograms[arch].versionNonRefreshable(),
         // comment the following line if you use Meteor < 2.0
-        versionReplaceable: Autoupdate.autoupdateVersion || WebApp.clientPrograms[arch].versionReplaceable()
+        versionReplaceable:
+          Autoupdate.autoupdateVersion ||
+          WebApp.clientPrograms[arch].versionReplaceable(),
       }
     })
 
     const runtimeConfigScript = `__meteor_runtime_config__ = JSON.parse(decodeURIComponent("${encodeURIComponent(JSON.stringify(runtimeConfig))}"))`
-    return crypto.createHash('sha256').update(runtimeConfigScript).digest('base64')
+    return crypto
+      .createHash('sha256')
+      .update(runtimeConfigScript)
+      .digest('base64')
   })
 
   const opt = {
@@ -59,7 +69,7 @@ export function createCSPOptions (externalHostUrls = []) {
           // must be kept in order to make them work.
           unsafeEval,
           `'sha256-${hashes[0]}'`,
-          `'sha256-${hashes[1]}'`
+          `'sha256-${hashes[1]}'`,
         ],
         childSrc: [self],
         // If you have external apps, that should be allowed as sources for
@@ -90,37 +100,37 @@ export function createCSPOptions (externalHostUrls = []) {
           // 'allow-popups-to-escape-sandbox',
           // 'allow-presentation',
           'allow-same-origin',
-          'allow-scripts'
+          'allow-scripts',
           // 'allow-storage-access-by-user-activation ', // experimental
           // 'allow-top-navigation',
           // 'allow-top-navigation-by-user-activation'
         ],
         styleSrc: [self, unsafeInline],
-        workerSrc: [self, blob]
-      }
+        workerSrc: [self, blob],
+      },
     },
     strictTransportSecurity: {
       maxAge: 15552000,
       includeSubDomains: true,
-      preload: false
+      preload: false,
     },
     referrerPolicy: {
-      policy: 'no-referrer'
+      policy: 'no-referrer',
     },
     expectCt: {
       enforce: true,
-      maxAge: 604800
+      maxAge: 604800,
     },
     frameguard: {
-      action: 'sameorigin'
+      action: 'sameorigin',
     },
     dnsPrefetchControl: {
-      allow: false
+      allow: false,
     },
     permittedCrossDomainPolicies: {
-      permittedPolicies: 'none'
+      permittedPolicies: 'none',
     },
-    hidePoweredBy: true
+    hidePoweredBy: true,
   }
 
   // We assume, that we are working on a localhost when there is no https
@@ -128,23 +138,23 @@ export function createCSPOptions (externalHostUrls = []) {
   // Run your project with --production flag to simulate script-src hashing
   if (!usesHttps && Meteor.isDevelopment) {
     delete opt.contentSecurityPolicy.directives.blockAllMixedContent
-    opt.contentSecurityPolicy.directives.scriptSrc = [self, unsafeEval, unsafeInline]
+    opt.contentSecurityPolicy.directives.scriptSrc = [
+      self,
+      unsafeEval,
+      unsafeInline,
+    ]
   }
 
   return opt
 }
 
 /** @private Transforms a given url to a valid connect-src */
-const getConnectSrc = url => {
+const getConnectSrc = (url) => {
   check(url, String)
   const domain = url.replace(/http(s)*:\/\//, '').replace(/\/$/, '')
   const s = url.match(/(?!=http)s(?=:\/\/)/) ? 's' : ''
   const usesHttps = s.length > 0
-  const connectSrc = [
-    self,
-    `http${s}://${domain}`,
-    `ws${s}://${domain}`
-  ]
+  const connectSrc = [self, `http${s}://${domain}`, `ws${s}://${domain}`]
 
   return { domain, usesHttps, connectSrc }
 }

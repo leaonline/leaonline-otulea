@@ -1,5 +1,5 @@
 /* eslint-env mocha */
-describe('scoring', function () {
-  import './scoreResponses.tests'
-  import './extractItemDefinition.tests'
+describe('scoring', () => {
+  require('./scoreResponses.tests')
+  require('./extractItemDefinition.tests')
 })

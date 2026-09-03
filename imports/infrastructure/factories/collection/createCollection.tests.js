@@ -7,19 +7,19 @@ import { createCollection } from './createCollection'
 
 const routes = {
   byId: {
-    path: '/'
-  }
+    path: '/',
+  },
 }
 const debug = () => {}
 
-describe(createCollection.name, function () {
+describe(createCollection.name, () => {
   if (Meteor.isServer) {
-    it('creates a local collection, if flagged as such', function () {
+    it('creates a local collection, if flagged as such', () => {
       const ctx = {
         name: Random.id(),
         isLocalCollection: true,
         routes,
-        schema: {}
+        schema: {},
       }
       const local = createCollection(ctx, debug)
       expect(local instanceof Mongo.Collection).to.equal(true)
@@ -29,11 +29,11 @@ describe(createCollection.name, function () {
   }
 
   if (Meteor.isClient) {
-    it('creates a plain local collection on the client, if flagged as such', function () {
+    it('creates a plain local collection on the client, if flagged as such', () => {
       const ctx = {
         name: Random.id(),
         isLocalCollection: true,
-        schema: {}
+        schema: {},
       }
       const local = createCollection(ctx, debug)
       expect(local instanceof Mongo.Collection).to.equal(true)
@@ -42,11 +42,11 @@ describe(createCollection.name, function () {
     })
   }
 
-  it('creates a standard collection, if not flagged as local', function () {
+  it('creates a standard collection, if not flagged as local', () => {
     const collectionName = Random.id()
     const ctx = {
       name: collectionName,
-      schema: {}
+      schema: {},
     }
     const collection = createCollection(ctx, debug)
     expect(collection instanceof Mongo.Collection).to.equal(true)

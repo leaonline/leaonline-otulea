@@ -1,10 +1,9 @@
 import { AlphaLevel } from 'meteor/leaonline:corelib/contexts/AlphaLevel'
 import { createGetAllMethod } from '../api/services/createGetAllMethod'
 import { createGetMethod } from '../api/services/createGetMethod'
-import {createLog} from "../utils/createLog";
 
 AlphaLevel.sync = {
-  query: {}
+  query: {},
 }
 AlphaLevel.isLocalCollection = true
 

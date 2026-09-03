@@ -24,13 +24,14 @@ const renderersLoaded = initTaskRenderers()
 const responseCache = ResponseCache.create(window.localStorage)
 const pageCache = UnitPageCache.create(window.localStorage)
 const submitItems = createItemSubmit({
-  loadValue: responseDoc => responseCache.load(responseDoc),
-  prepare: responseDoc => console.info('[Template.Unit]: submit to server', responseDoc),
+  loadValue: (responseDoc) => responseCache.load(responseDoc),
+  prepare: (responseDoc) =>
+    console.info('[Template.Unit]: submit to server', responseDoc),
   onSuccess: (result, responseDoc) => {
     const cleared = responseCache.clear(responseDoc)
     console.info('[Template.Unit]: clear storage', cleared, responseDoc)
   },
-  onError: (error, responseDoc) => console.error(error, responseDoc)
+  onError: (error, responseDoc) => console.error(error, responseDoc),
 })
 
 Template.unit.onCreated(function () {
@@ -44,27 +45,27 @@ Template.unit.onCreated(function () {
     tts: true,
     contexts: [Session, Unit, UnitSet, Response, Dimension, Level],
     translations: {
-      de: () => import('./i18n/de')
+      de: () => import('./i18n/de'),
     },
-    onComplete () {
+    onComplete() {
       instance.onItemInput = createItemInput({
         cache: responseCache,
-        debug: instance.api.debug
+        debug: instance.api.debug,
       })
       instance.onItemLoad = createItemLoad({
         cache: responseCache,
-        debug: instance.api.debug
+        debug: instance.api.debug,
       })
       instance.onNewPage = ({ action, newPage }, onComplete) => {
         onPageNavUpdate({
           action,
           newPage,
           templateInstance: instance,
-          onComplete
+          onComplete,
         })
       }
       instance.dependenciesLoaded.set(true)
-    }
+    },
   })
 
   const { info } = api
@@ -84,11 +85,11 @@ Template.unit.onCreated(function () {
 
     instance.state.clear()
     sessionLoader({ sessionId, unitId })
-      .catch(err => {
+      .catch((err) => {
         info('session loader failed')
         abortUnit(instance, err)
       })
-      .then(responseData => {
+      .then((responseData) => {
         if (!responseData) {
           info('response data undefined')
           return abortUnit(instance)
@@ -100,11 +101,17 @@ Template.unit.onCreated(function () {
           unitSetDoc,
           dimensionDoc,
           levelDoc,
-          color
+          color,
         } = responseData
 
         // first we check for all docs, even one left-out doc is not acceptable
-        if (!sessionDoc || !unitDoc || !unitSetDoc || !dimensionDoc || !levelDoc) {
+        if (
+          !sessionDoc ||
+          !unitDoc ||
+          !unitSetDoc ||
+          !dimensionDoc ||
+          !levelDoc
+        ) {
           info('response data is incomplete')
           return abortUnit(instance)
         }
@@ -141,7 +148,7 @@ Template.unit.onCreated(function () {
           unitDoc,
           currentPageCount,
           maxPages: unitDoc.pages.length,
-          hasNext: unitDoc.pages.length > currentPageCount + 1
+          hasNext: unitDoc.pages.length > currentPageCount + 1,
         })
       })
   })
@@ -150,25 +157,29 @@ Template.unit.onCreated(function () {
 Template.unit.onDestroyed(function () {
   const instance = this
   instance.state.set({
-    fadedOut: null
+    fadedOut: null,
   })
 })
 
 Template.unit.helpers({
-  loadComplete () {
+  loadComplete() {
     const instance = Template.instance()
-    return instance.dependenciesLoaded.get() &&
+    return (
+      instance.dependenciesLoaded.get() &&
       instance.state.get('unitDoc') &&
       instance.state.get('sessionDoc') &&
       renderersLoaded.get()
+    )
   },
-  navLoadComplete () {
+  navLoadComplete() {
     const instance = Template.instance()
-    return instance.state.get('sessionDoc') &&
+    return (
+      instance.state.get('sessionDoc') &&
       instance.state.get('dimensionDoc') &&
       instance.state.get('levelDoc')
+    )
   },
-  pageContentData () {
+  pageContentData() {
     if (!renderersLoaded.get()) return
 
     const instance = Template.instance()
@@ -197,11 +208,11 @@ Template.unit.helpers({
       onInput,
       onLoad,
       onNewPage,
-      onLoadError: err => console.error(err),
-      onLoadComplete: () => console.warn('item renderer load complete')
+      onLoadError: (err) => console.error(err),
+      onLoadComplete: () => console.warn('item renderer load complete'),
     }
   },
-  navbarData () {
+  navbarData() {
     const instance = Template.instance()
     const sessionDoc = instance.state.get('sessionDoc')
     const levelDoc = instance.state.get('levelDoc')
@@ -214,19 +225,19 @@ Template.unit.helpers({
       unitSetDoc,
       dimensionDoc,
       showProgress: true,
-      onExit: instance.data.exit
+      onExit: instance.data.exit,
     }
-  }
+  },
 })
 
 Template.unit.events({
-  'click .lea-unit-finishstory-button' (event, templateInstance) {
+  'click .lea-unit-finishstory-button'(event, templateInstance) {
     event.preventDefault()
     templateInstance.api.fadeOut('.lea-unit-story-container', () => {
       templateInstance.state.set('unitStory', null)
     })
   },
-  'click .lea-pagenav-finish-button': async function (event, templateInstance) {
+  'click .lea-pagenav-finish-button': async (event, templateInstance) => {
     event.preventDefault()
 
     // prevent multiple calls by fast-multiple-clicking
@@ -241,8 +252,7 @@ Template.unit.events({
 
     try {
       await submitItems({ sessionId, unitDoc, page })
-    }
-    catch (e) {
+    } catch (e) {
       console.error(e)
     }
 
@@ -254,10 +264,9 @@ Template.unit.events({
     try {
       sessionUpdate = await templateInstance.api.callMethod({
         name: Session.methods.next.name,
-        args: { sessionId }
+        args: { sessionId },
       })
-    }
-    catch (e) {
+    } catch (e) {
       templateInstance.api.info('session update failed')
       return abortUnit(templateInstance, e)
     }
@@ -281,13 +290,13 @@ Template.unit.events({
         unitId: nextUnit,
         unitSetId: nextUnitSet,
         hasStory,
-        completed
+        completed,
       })
     })
-  }
+  },
 })
 
-function onPageNavUpdate ({ action, newPage, templateInstance, onComplete }) {
+function onPageNavUpdate({ action, newPage, templateInstance, onComplete }) {
   const unitDoc = templateInstance.state.get('unitDoc')
   const unitId = unitDoc._id
   const sessionDoc = templateInstance.state.get('sessionDoc')
@@ -299,12 +308,14 @@ function onPageNavUpdate ({ action, newPage, templateInstance, onComplete }) {
   newPage.sessionDoc = sessionDoc
 
   if (!newPage.currentPage) {
-    throw new Error(`Undefined page for current index ${newPage.currentPageCount}`)
+    throw new Error(
+      `Undefined page for current index ${newPage.currentPageCount}`,
+    )
   }
 
   setTimeout(() => {
     submitItems({ sessionId, unitDoc, page: currentPageCount })
-      .catch(e => {
+      .catch((e) => {
         console.error(e)
         onComplete()
       })
@@ -315,7 +326,7 @@ function onPageNavUpdate ({ action, newPage, templateInstance, onComplete }) {
   }, 500)
 }
 
-function abortUnit (templateInstance, err) {
+function abortUnit(templateInstance, err) {
   if (err) {
     console.error('Unit aborted')
     console.error(err) // todo sendError

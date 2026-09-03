@@ -17,7 +17,7 @@ export const createContentFetcher = ({ context, debug = noop }) => {
 
   const api = {
     cache: new Map(),
-    fetcher: async ids => {
+    fetcher: async (ids) => {
       const collection = context.collection()
 
       if (!collection) {
@@ -27,11 +27,10 @@ export const createContentFetcher = ({ context, debug = noop }) => {
       const docMap = new Map()
       const toLoad = []
 
-      ids.forEach(id => {
+      ids.forEach((id) => {
         if (api.cache.has(id)) {
           docMap.set(id, { ...api.cache.get(id) })
-        }
-        else {
+        } else {
           toLoad.push(id)
         }
       })
@@ -41,8 +40,10 @@ export const createContentFetcher = ({ context, debug = noop }) => {
         return docMap
       }
 
-      const fetchedDocs = await collection.find({ _id: { $in: toLoad } }).fetchAsync()
-      fetchedDocs.forEach(doc => {
+      const fetchedDocs = await collection
+        .find({ _id: { $in: toLoad } })
+        .fetchAsync()
+      fetchedDocs.forEach((doc) => {
         docMap.set(doc._id, doc)
         api.cache.set(doc._id, doc)
       })
@@ -50,10 +51,15 @@ export const createContentFetcher = ({ context, debug = noop }) => {
       requested = ids.length
       loaded = toLoad.length
       cached = fetchedDocs.length
-      debug(`[fetcher][${context.name}]:`, { requested, loaded, cached, size: api.cache.size })
+      debug(`[fetcher][${context.name}]:`, {
+        requested,
+        loaded,
+        cached,
+        size: api.cache.size,
+      })
 
       return docMap
-    }
+    },
   }
 
   return api

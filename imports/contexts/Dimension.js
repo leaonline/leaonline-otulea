@@ -3,7 +3,7 @@ import { createGetAllMethod } from '../api/services/createGetAllMethod'
 import { createGetMethod } from '../api/services/createGetMethod'
 
 Dimension.sync = {
-  query: { isLegacy: true }
+  query: { isLegacy: true },
 }
 Dimension.isLocalCollection = true
 

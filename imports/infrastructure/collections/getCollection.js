@@ -8,6 +8,6 @@ import { makeGloballyAvailable } from '../../utils/makeGloballyAvailable'
  * @param name {string}
  * @return {Mongo.Collection|undefined}
  */
-export const getCollection = name => Mongo.getCollection(name)
+export const getCollection = (name) => Mongo.getCollection(name)
 
 makeGloballyAvailable({ getCollection })
