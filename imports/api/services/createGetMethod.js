@@ -23,7 +23,10 @@ export const createGetMethod = ({
     run: onServer(
       run ||
         (async (query) => {
-          const document = await getCollection(context.name).findOneAsync(query)
+          const collection = context.collection
+            ? context.collection()
+            : getCollection(context.name)
+          const document = await collection.findOneAsync(query)
           _debug(prefix, JSON.stringify(query, null, 0), `found=${!!document}`)
           return document
         }),

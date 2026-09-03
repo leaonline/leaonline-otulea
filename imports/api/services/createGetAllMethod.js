@@ -56,7 +56,9 @@ export const createGetAllMethod = ({
           const output = {}
 
           // get main documents, if hashes do not match
-          const collection = getCollection(name)
+          const collection = context.collection
+            ? context.collection()
+            : getCollection(name)
           const query = defaultQuery ?? Object.create(null)
           if (ids) query._id = { $in: ids }
           output[name] = await collection.find(query).fetchAsync()

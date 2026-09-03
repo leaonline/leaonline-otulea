@@ -6,6 +6,10 @@ import { onServerExec } from '../imports/utils/archUtils'
 export const RequestedDocsContext = {
   name: '__test__requested_docs_content',
   schema: {
+      _id: {
+          type: String,
+          optional: true
+      },
     test: String
   },
   methods: {}
@@ -14,6 +18,10 @@ export const RequestedDocsContext = {
 RequestedDocsContext.methods.get = createGetMethod({
   context: RequestedDocsContext,
   schema: {
+      _id: {
+          type: String,
+          optional: true
+      },
     test: String
   },
   backendOnly: false,
@@ -23,7 +31,14 @@ RequestedDocsContext.methods.get = createGetMethod({
 RequestedDocsContext.methods.getAll = createGetAllMethod({
   context: RequestedDocsContext,
   schema: {
-    test: String
+      _id: {
+          type: String,
+          optional: true
+      },
+    test: {
+        type: String,
+        optional: true
+    }
   },
   backendOnly: false,
   isPublic: true
@@ -45,3 +60,5 @@ onServerExec(() => {
   }
   init().catch(console.error)
 })
+
+export const createUrl = url => Meteor.absoluteUrl(url)

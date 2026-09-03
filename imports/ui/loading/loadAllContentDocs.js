@@ -62,7 +62,7 @@ export const loadAllContentDocs = async ({
     name: methodName,
     args: params,
   })
-
+  console.debug(allDocuments)
   for (const [name, documents = []] of Object.entries(allDocuments)) {
     // skip further processing if no documents have been received
     debug(
@@ -75,7 +75,7 @@ export const loadAllContentDocs = async ({
         throw new Error('Expected doc with _id to upsert')
       }
       const docId = doc._id
-      localCollection.upsert(doc._id, { $set: doc })
+      localCollection.upsert(doc._id, { $set: { ...doc } })
       doc._id = docId
     }
   }

@@ -2,7 +2,7 @@ import { Unit } from '../../Unit'
 import { createDocumentList } from '../../../api/lists/createDocumentList'
 
 export const showStoryBeforeUnit = (unitId, unitSetDoc) => {
-  if (!unitSetDoc.units?.length) {
+  if (!unitSetDoc?.units?.length) {
     throw new Error('Expected valid unitSet doc, got none or invalid doc')
   }
 

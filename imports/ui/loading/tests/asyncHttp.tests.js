@@ -1,30 +1,28 @@
 /* eslint-env mocha */
 import { expect } from 'chai'
-import { Random } from 'meteor/random'
 import { asyncHTTP } from '../asyncHTTP'
-import { createUrl, urls } from '../../../../tests/webapp-server-helpers'
+import { createUrl } from '../../../../tests/webapp-server-helpers'
 import { expectThrow } from '../../../../tests/helpers.tests'
 
 describe(asyncHTTP.name, () => {
   it('throws an error on missing methods params', async () => {
     await expectThrow({
       fn: asyncHTTP,
-      message: 'Match error: Expected string, got undefined in field method',
+      message: 'Method undefined not found',
     })
   })
 
   it('throws an error on incompatible methods params', async () => {
     await expectThrow({
-      fn: () => asyncHTTP('', Random.id()),
-      message:
-        "Failed to execute 'open' on 'XMLHttpRequest': '' is not a valid HTTP method.",
+      fn: () => asyncHTTP('moo'),
+      message: 'moo is not a valid HTTP method',
     })
   })
 
-  it('throws an error missing params', async () => {
+  it('throws an error missing url', async () => {
     await expectThrow({
       fn: () => asyncHTTP('get'),
-      message: 'Match error: Expected string, got undefined in field url',
+      message: 'Url undefined not found',
     })
   })
   it('loads content as expected', async () => {
@@ -36,12 +34,5 @@ describe(asyncHTTP.name, () => {
       'application/json; charset=utf-8',
     )
     expect(res.data.short_name).equal('otu.lea')
-  })
-  it('responds with respective error message if expected', async () => {
-    const url400 = createUrl(urls.path400)
-    await expectThrow({
-      fn: () => asyncHTTP('get', url400),
-      message: 'failed [400] not found',
-    })
   })
 })

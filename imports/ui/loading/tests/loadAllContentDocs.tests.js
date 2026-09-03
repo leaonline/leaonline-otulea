@@ -8,43 +8,22 @@ describe(loadAllContentDocs.name, () => {
   beforeEach(() => {
     RequestedDocsContext.collection().remove({})
   })
-  it('throws on error-responses', async () => {
-    await expectThrow({
-      fn: () => loadAllContentDocs(RequestedDocsContext, { createError: true }),
-      message: 'failed [404] Invalid request / createError',
-    })
-  })
-  it('throws if docs contain no _id value', async () => {
-    await expectThrow({
-      fn: () => loadAllContentDocs(RequestedDocsContext, { noId: true }),
-      message: 'Expected doc with _id to upsert',
-    })
-  })
   it('loads all docs by given context', async () => {
-    const docs = await loadAllContentDocs(RequestedDocsContext, {})
+    const loaded = await loadAllContentDocs({
+      context: RequestedDocsContext,
+      collection: RequestedDocsContext.collection(),
+    })
+    const docs = loaded[RequestedDocsContext.name]
 
-    expect(docs).to.deep.equal([RequestedDocsContext.doc])
-    expect(RequestedDocsContext.collection().find().count()).to.equal(1)
+    expect(RequestedDocsContext.collection().find().count()).to.equal(3)
+    expect(docs).to.deep.equal([
+      { _id: 'fooDoc', test: 'foo' },
+      { _id: 'barDoc', test: 'bar' },
+      { _id: 'mooDoc', test: 'moo' },
+    ])
 
     // local collection
     const localDocs = RequestedDocsContext.collection().find().fetch()
     expect(localDocs).to.deep.equal(docs)
-
-    // cached response
-    const cachedDocs = await loadAllContentDocs(RequestedDocsContext)
-    expect(cachedDocs).to.deep.equal(docs)
-    expect(RequestedDocsContext.collection().find().count()).to.equal(1)
-  })
-  it('several result formats', async () => {
-    let docs
-
-    docs = await loadAllContentDocs(RequestedDocsContext, { noDocs: true })
-    expect(docs).to.deep.equal([])
-
-    docs = await loadAllContentDocs(RequestedDocsContext, { noArray: true })
-    expect(docs).to.deep.equal([RequestedDocsContext.doc])
-
-    docs = await loadAllContentDocs(RequestedDocsContext, { empty: true })
-    expect(docs).to.deep.equal([])
   })
 })

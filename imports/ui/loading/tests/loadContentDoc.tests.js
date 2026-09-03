@@ -22,10 +22,11 @@ describe(loadContentDoc.name, () => {
       context: RequestedDocsContext,
       query: { test: 'foo' },
     })
+
     expect(doc).to.deep.equal({ _id: 'fooDoc', test: 'foo' })
 
     // local collection
-    const localDoc = RequestedDocsContext.collection().findOne(docId)
+    const localDoc = RequestedDocsContext.collection().findOne('fooDoc')
     expect(localDoc).to.deep.equal(doc)
 
     // cached response
