@@ -98,13 +98,6 @@ jobs:
           repository: leaonline/theme
           path: github/theme
 
-      - name: Checkout Collection2
-        uses: actions/checkout@v4
-        with:
-          repository: Meteor-Community-Packages/meteor-collection2
-          path: github/meteor-collection2
-          ref: release/v4
-
       # CACHING
       - name: Install Meteor
         id: cache-meteor-install
