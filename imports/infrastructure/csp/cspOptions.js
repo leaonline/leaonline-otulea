@@ -1,9 +1,5 @@
-/* global __meteor_runtime_config__ */
 import { Meteor } from 'meteor/meteor'
 import { check } from 'meteor/check'
-import crypto from 'node:crypto'
-import { WebApp } from 'meteor/webapp'
-import { Autoupdate } from 'meteor/autoupdate'
 
 const self = "'self'"
 const data = 'data:'
@@ -16,46 +12,14 @@ const unsafeInline = "'unsafe-inline'"
  * @param externalHostUrls {Array|undefined} Optional array with allowed hosts
  * @return {Object} a CSP configuration object
  */
-export function createCSPOptions(externalHostUrls = []) {
+export function createCSPOptions(externalHostUrls = [], environment = {}) {
+  const {
+    absoluteUrl = Meteor.absoluteUrl(),
+    isDevelopment = Meteor.isDevelopment,
+  } = environment
+
   // get the default connect source for our current domain
-  const { usesHttps, connectSrc } = getConnectSrc(Meteor.absoluteUrl())
-
-  // Prepare runtime config for generating the sha256 hash
-  // It is important, that the hash meets exactly the hash of the
-  // script in the client bundle.
-  // Otherwise the app would not be able to start, since the runtimeConfigScript
-  // is rejected __meteor_runtime_config__ is not available, causing
-  // a cascade of follow-up errors.
-  const hashes = [true, false].map((isModern) => {
-    const runtimeConfig = Object.assign(__meteor_runtime_config__, Autoupdate, {
-      accountsConfigCalled: true, // this may depend on, whether you called Accounts.config
-      isModern: isModern,
-    })
-
-    // add client versions to __meteor_runtime_config__
-    Object.keys(WebApp.clientPrograms).forEach((arch) => {
-      __meteor_runtime_config__.versions[arch] = {
-        version:
-          Autoupdate.autoupdateVersion || WebApp.clientPrograms[arch].version(),
-        versionRefreshable:
-          Autoupdate.autoupdateVersion ||
-          WebApp.clientPrograms[arch].versionRefreshable(),
-        versionNonRefreshable:
-          Autoupdate.autoupdateVersion ||
-          WebApp.clientPrograms[arch].versionNonRefreshable(),
-        // comment the following line if you use Meteor < 2.0
-        versionReplaceable:
-          Autoupdate.autoupdateVersion ||
-          WebApp.clientPrograms[arch].versionReplaceable(),
-      }
-    })
-
-    const runtimeConfigScript = `__meteor_runtime_config__ = JSON.parse(decodeURIComponent("${encodeURIComponent(JSON.stringify(runtimeConfig))}"))`
-    return crypto
-      .createHash('sha256')
-      .update(runtimeConfigScript)
-      .digest('base64')
-  })
+  const { usesHttps, connectSrc } = getConnectSrc(absoluteUrl)
 
   const opt = {
     contentSecurityPolicy: {
@@ -68,8 +32,6 @@ export function createCSPOptions(externalHostUrls = []) {
           // to tighten security. However, if you use dynamic imports this line
           // must be kept in order to make them work.
           unsafeEval,
-          `'sha256-${hashes[0]}'`,
-          `'sha256-${hashes[1]}'`,
         ],
         childSrc: [self],
         // If you have external apps, that should be allowed as sources for
@@ -135,8 +97,8 @@ export function createCSPOptions(externalHostUrls = []) {
 
   // We assume, that we are working on a localhost when there is no https
   // connection available.
-  // Run your project with --production flag to simulate script-src hashing
-  if (!usesHttps && Meteor.isDevelopment) {
+  // Run your project with --production to exercise the strict script policy.
+  if (!usesHttps && isDevelopment) {
     delete opt.contentSecurityPolicy.directives.blockAllMixedContent
     opt.contentSecurityPolicy.directives.scriptSrc = [
       self,
