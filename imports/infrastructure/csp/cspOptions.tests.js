@@ -13,7 +13,9 @@ describe(createCSPOptions.name, () => {
     expect(scriptSrc).to.include("'self'")
     expect(scriptSrc).to.include("'unsafe-eval'")
     expect(scriptSrc).not.to.include("'unsafe-inline'")
-    expect(scriptSrc.some(source => source.startsWith("'sha256-"))).to.equal(false)
+    expect(scriptSrc.some((source) => source.startsWith("'sha256-"))).to.equal(
+      false,
+    )
   })
 
   it('keeps the localhost development fallback', () => {
@@ -22,7 +24,8 @@ describe(createCSPOptions.name, () => {
       isDevelopment: true,
     })
 
-    expect(options.contentSecurityPolicy.directives.scriptSrc)
-      .to.include("'unsafe-inline'")
+    expect(options.contentSecurityPolicy.directives.scriptSrc).to.include(
+      "'unsafe-inline'",
+    )
   })
 })

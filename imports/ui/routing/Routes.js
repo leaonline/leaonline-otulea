@@ -6,15 +6,17 @@ import { lazyRequire } from '../../utils/lazyRequire'
 export const Routes = {}
 
 const go = (...args) => {
-    const goto = getGotoRoute()
-    return goto(...args)
+  const goto = getGotoRoute()
+  return goto(...args)
 }
 const getGotoRoute = lazyRequire(() => {
   const { gotoRoute } = require('./gotoRoute')
   return gotoRoute
 })
 
-const settings = lazyRequire(() => require('../../../resources/i18n/de/routes.json'))
+const settings = lazyRequire(() =>
+  require('../../../resources/i18n/de/routes.json'),
+)
 
 /**
  * Renders a default template for all pages that have not been found.

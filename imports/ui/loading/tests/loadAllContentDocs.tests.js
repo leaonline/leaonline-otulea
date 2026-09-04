@@ -2,7 +2,6 @@
 import { loadAllContentDocs } from '../loadAllContentDocs'
 import { expect } from 'chai'
 import { RequestedDocsContext } from '../../../../tests/webapp-server-helpers'
-import { expectThrow } from '../../../../tests/helpers.tests'
 
 describe(loadAllContentDocs.name, () => {
   beforeEach(() => {

@@ -1,5 +1,4 @@
 import { HTTP } from 'meteor/jkuester:http'
-import { check, Match } from 'meteor/check'
 
 const defaultTimeout = 5000
 
