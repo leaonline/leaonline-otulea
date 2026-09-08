@@ -89,7 +89,8 @@ const paths = {}
     .action() hook
     .triggersExit() hooks
  */
-function createRoute(routeDef, onError) {
+function createRoute(routeDef, onError = console.error) {
+  if (!routeDef) throw new Error(`Fatal: expected route-definition, got ${routeDef}.`)
   return {
     name: routeDef.key,
     whileWaiting() {
@@ -114,7 +115,7 @@ function createRoute(routeDef, onError) {
         }),
       ])
     },
-    triggersEnter: routeDef.triggersEnter?.triggersEnter(),
+    triggersEnter: routeDef?.triggersEnter?.(),
     action(params, queryParams) {
       // if we have loaded the template but it is not available
       // on the rendering pipeline through Template.<name> we

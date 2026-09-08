@@ -94,7 +94,6 @@ Template.unit.onCreated(function () {
           info('response data undefined')
           return abortUnit(instance)
         }
-
         const {
           sessionDoc,
           unitDoc,
@@ -216,14 +215,16 @@ Template.unit.helpers({
     const instance = Template.instance()
     const sessionDoc = instance.state.get('sessionDoc')
     const levelDoc = instance.state.get('levelDoc')
+    const unitDoc = instance.state.get('unitDoc')
     const unitSetDoc = instance.state.get('unitSetDoc')
     const dimensionDoc = instance.state.get('dimensionDoc')
-
+debugger
     return {
       sessionDoc,
       levelDoc,
       unitSetDoc,
       dimensionDoc,
+      unitDoc,
       showProgress: true,
       onExit: instance.data.exit,
     }

@@ -18,7 +18,7 @@ Template.navbar.onCreated(function () {
 
   instance.autorun(() => {
     const data = Template.currentData()
-    const { sessionDoc, showProgress, dimensionDoc, levelDoc, unitSetDoc } =
+    const { sessionDoc, showProgress, dimensionDoc, levelDoc, unitSetDoc, unitDoc } =
       data
 
     if (!sessionDoc || !unitSetDoc || !dimensionDoc || !levelDoc) {
@@ -48,7 +48,7 @@ Template.navbar.onCreated(function () {
     }
 
     const loadComplete = true
-    instance.state.set({ showProgress, progress, labels, loadComplete })
+    instance.state.set({ showProgress, progress, labels, loadComplete, unitDoc })
   })
 })
 
@@ -59,6 +59,11 @@ Template.navbar.helpers({
       instance.state.get('dependenciesLoaded') &&
       instance.state.get('loadComplete')
     )
+  },
+  details () {
+    return {
+      unitDoc: Template.getState('unitDoc')
+    }
   },
   showProgress() {
     return Template.getState('showProgress')

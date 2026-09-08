@@ -3,6 +3,7 @@
 		{{#with labels}}
 			<span class="lea-text-bold no-wrap text-{{this.type}}">
                 {{#if ../showUsername}}{{currentUser.username}} - {{/if}}{{this.dimension}} - {{this.level}}
+				{{#if isDebugUser}}| unit: {{details.unitDoc.shortCode}}{{/if}}
             </span>
 		{{/with}}
 	</div>
