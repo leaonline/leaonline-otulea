@@ -15,21 +15,22 @@ const forbidden = /[0oq17ij5s]+/gi
  * @param length {number} the length of the code in chars
  * @param maxRetries {number} the number of maxmimum retries
  * @throws {Meteor.Error} if no code could be generated within maxRetries
- * @return {string} the code for the usernames
+ * @return {Promise<String>} the code for the usernames
  */
 
-export const generateUserCode = (length = 5, maxRetries = 500) => {
+export const generateUserCode = async (length = 5, maxRetries = 500) => {
   let count = 0
 
   while (count++ < maxRetries) {
     const code = Random.id(length).toUpperCase()
 
-    if (!forbidden.test(code) && !Accounts.findUserByUsername(code)) {
+    if (!forbidden.test(code) && !(await Accounts.findUserByUsername(code))) {
       return code
     }
   }
 
   throw new Meteor.Error(
     'generateUserCode.error',
-    'generateUserCode.maxTriesExceeded')
+    'generateUserCode.maxTriesExceeded',
+  )
 }

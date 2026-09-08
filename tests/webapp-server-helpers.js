@@ -1,116 +1,64 @@
-import { Meteor } from 'meteor/meteor'
 import { Mongo } from 'meteor/mongo'
-import { WebApp } from 'meteor/webapp'
-import { Random } from 'meteor/random'
-import { EJSON } from 'meteor/ejson'
-
-const toPath = name => `/${name}`
-
-export const createUrl = path => Meteor.absoluteUrl(path)
-
-export const urls = {
-  path400: toPath('path400'),
-  path200: toPath('path200')
-}
+import { createGetMethod } from '../imports/api/services/createGetMethod'
+import { createGetAllMethod } from '../imports/api/services/createGetAllMethod'
+import { onServerExec } from '../imports/utils/archUtils'
 
 export const RequestedDocsContext = {
-  name: Random.id(),
-  routes: {
-    byId: {
-      path: toPath('singleDocById'),
-      method: 'get',
-      docId: '0123456789'
-    },
-    all: {
-      path: toPath('allDocsById'),
-      method: 'get'
+  name: '__test__requested_docs_content',
+  schema: {
+      _id: {
+          type: String,
+          optional: true
+      },
+    test: String
+  },
+  methods: {}
+}
+
+RequestedDocsContext.methods.get = createGetMethod({
+  context: RequestedDocsContext,
+  schema: {
+      _id: {
+          type: String,
+          optional: true
+      },
+    test: String
+  },
+  backendOnly: false,
+  isPublic: true
+})
+
+RequestedDocsContext.methods.getAll = createGetAllMethod({
+  context: RequestedDocsContext,
+  schema: {
+      _id: {
+          type: String,
+          optional: true
+      },
+    test: {
+        type: String,
+        optional: true
     }
   },
-  doc: {
-    _id: '0123456789',
-    foo: 'bar',
-    date: new Date('2018-05-09'),
-    regex: /[a-z]/g
-  }
-}
+  backendOnly: false,
+  isPublic: true
+})
 
 const _singleDocCollection = new Mongo.Collection(null)
 RequestedDocsContext.collection = () => _singleDocCollection
 
-if (Meteor.isServer) {
-  WebApp.connectHandlers.use(urls.path200, function (req, res, next) {
-    next()
-  })
+onServerExec(() => {
+  import { createMethod } from '../imports/infrastructure/factories/method/createMethods'
 
-  WebApp.connectHandlers.use(urls.path400, function (req, res) {
-    res.writeHead(400)
-    res.end('not found')
-  })
+  createMethod(RequestedDocsContext.methods.get)
+  createMethod(RequestedDocsContext.methods.getAll)
 
-  WebApp.connectHandlers.use(RequestedDocsContext.routes.byId.path, function (req, res) {
-    const { _id } = req.query
+  const init = async () => {
+    await RequestedDocsContext.collection().insertAsync({ _id: 'fooDoc', test: 'foo' })
+    await RequestedDocsContext.collection().insertAsync({ _id: 'barDoc', test: 'bar' })
+    await RequestedDocsContext.collection().insertAsync({ _id: 'mooDoc', test: 'moo' })
+  }
+  init().catch(console.error)
+})
 
-    if (_id === 'plain') {
-      res.writeHead(200, { 'Content-Type': 'application/json; charset=UTF-8' })
-      res.end(EJSON.stringify(new Date()))
-      return
-    }
-
-    if (_id !== RequestedDocsContext.doc._id) {
-      res.writeHead(404)
-      res.end(`Invalid request id ${_id}`)
-      return
-    }
-
-    res.writeHead(200, {
-      'Content-Type': 'application/json; charset=UTF-8'
-    })
-
-    const { doc } = RequestedDocsContext
-    res.end(EJSON.stringify(doc))
-  })
-
-  WebApp.connectHandlers.use(RequestedDocsContext.routes.all.path, function (req, res) {
-    const { noId, noDocs, noArray, empty, createError } = req.query
-
-    if (noId) {
-      const doc = { ...RequestedDocsContext.doc }
-      delete doc._id
-
-      res.writeHead(200, { 'Content-Type': 'application/json; charset=UTF-8' })
-      res.end(EJSON.stringify([doc]))
-      return
-    }
-
-    if (noDocs) {
-      res.writeHead(200, { 'Content-Type': 'application/json; charset=UTF-8' })
-      res.end(EJSON.stringify([]))
-      return
-    }
-
-    if (noArray) {
-      res.writeHead(200, { 'Content-Type': 'application/json; charset=UTF-8' })
-      res.end(EJSON.stringify(RequestedDocsContext.doc))
-      return
-    }
-
-    if (empty) {
-      res.writeHead(200, { 'Content-Type': 'application/json; charset=UTF-8' })
-      res.end(EJSON.stringify([]))
-      return
-    }
-
-    if (createError) {
-      res.writeHead(404)
-      res.end('Invalid request / createError')
-      return
-    }
-
-    res.writeHead(200, {
-      'Content-Type': 'application/json; charset=UTF-8'
-    })
-
-    const { doc } = RequestedDocsContext
-    res.end(EJSON.stringify([doc]))
-  })
-}
+export const createUrl = url => Meteor.absoluteUrl(url)

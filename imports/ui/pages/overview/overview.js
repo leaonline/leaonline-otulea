@@ -11,10 +11,11 @@ import { dataTarget } from '../../../utils/dataTarget'
 import { getUnitSetForDimensionAndLevel } from '../../../contexts/unitSet/api/getUnitSetForDimensionAndLevel'
 import { showStoryBeforeUnit } from '../../../contexts/unitSet/api/showStoryBeforeUnit'
 import { loadContentDoc } from '../../loading/loadContentDoc'
+import { fatal } from '../../components/fatal/fatal'
 import '../../components/container/container'
 import './overview.scss'
 import './overview.html'
-import { fatal } from '../../components/fatal/fatal'
+import { sendError } from '../../../contexts/errors/api/sendError'
 
 Template.overview.onDestroyed(function () {
   const instance = this
@@ -27,38 +28,53 @@ Template.overview.onCreated(function () {
   instance.initDependencies({
     language: true,
     translations: {
-      de: () => import('./i18n/de')
+      de: () => import('./i18n/de'),
     },
     tts: true,
     debug: true,
     contexts: [Session, TestCycle, UnitSet, Dimension, Level],
     onComplete: async () => {
       instance.state.set('dependenciesComplete', true)
-    }
+    },
   })
 
   const { loadAllContentDocs, callMethod, debug } = instance.api
   const loadContentDocuments = async () => {
-    const allTestCycles = await loadAllContentDocs(TestCycle, { isLegacy: true }, debug)
+    const { testCycle } = await loadAllContentDocs({
+      context: TestCycle,
+    })
 
-    if (!allTestCycles?.length) {
+    if (!testCycle?.length) {
       throw new Error('content.notAvailable')
     }
 
     const dimensions = new Set()
     const levels = new Set()
 
-    allTestCycles.forEach(tstCycleDoc => {
+    testCycle.forEach((tstCycleDoc) => {
       dimensions.add(tstCycleDoc.dimension)
       levels.add(tstCycleDoc.level)
     })
 
-    await loadAllContentDocs(Dimension, { ids: Array.from(dimensions) }, debug)
-    await loadAllContentDocs(Level, { ids: Array.from(levels) }, debug)
+    const dimensionIds = Array.from(dimensions)
+    await loadAllContentDocs({
+      context: Dimension,
+      ids: dimensionIds,
+      debug,
+      params: { ids: dimensionIds },
+    })
+
+    const levelIds = Array.from(levels)
+    await loadAllContentDocs({
+      context: Level,
+      ids: levelIds,
+      debug,
+      params: { ids: levelIds },
+    })
 
     instance.state.set({
       contentDocsLoadComplete: true,
-      dimensionFilter: Array.from(dimensions)
+      dimensionFilter: Array.from(dimensions),
     })
   }
 
@@ -66,13 +82,14 @@ Template.overview.onCreated(function () {
     if (!instance.state.get('contentDocsLoadComplete')) {
       return
     }
-
     const data = Template.currentData()
     const { d } = data.queryParams
     const { l } = data.queryParams
 
     const dimension = Dimension.collection().findOne({ _id: d })
-    const currentDimension = Tracker.nonreactive(() => instance.state.get('dimension'))
+    const currentDimension = Tracker.nonreactive(() =>
+      instance.state.get('dimension'),
+    )
 
     if (dimension && dimension !== currentDimension) {
       // if a dimension has been selected we create a filter list of
@@ -87,7 +104,7 @@ Template.overview.onCreated(function () {
       instance.state.set({
         levelFilter: Array.from(levelFilter),
         dimension: dimension,
-        color: color
+        color: color,
       })
     }
 
@@ -97,7 +114,7 @@ Template.overview.onCreated(function () {
       instance.state.set({
         dimension: null,
         levelFilter: null,
-        color: 'secondary'
+        color: 'secondary',
       })
     }
 
@@ -117,7 +134,7 @@ Template.overview.onCreated(function () {
     if (dimension && level) {
       const testCycle = TestCycle.collection().findOne({
         dimension: d,
-        level: l
+        level: l,
       })
       instance.state.set('selectedTestCycle', testCycle)
     }
@@ -129,11 +146,12 @@ Template.overview.onCreated(function () {
       setTimeout(() => {
         const $target = instance.$(target)
         const scrollTarget = $target && $target.get(0)
-        scrollTarget && scrollTarget.scrollIntoView({
-          block: 'start',
-          inline: 'nearest',
-          behavior: 'smooth'
-        })
+        scrollTarget &&
+          scrollTarget.scrollIntoView({
+            block: 'start',
+            inline: 'nearest',
+            behavior: 'smooth',
+          })
       }, 250)
     }
   })
@@ -147,70 +165,70 @@ Template.overview.onCreated(function () {
     callMethod({
       name: Session.methods.byTestCycle.name,
       args: { testCycleId: testCycle._id },
-      success: sessionDoc => {
+      success: (sessionDoc) => {
         console.debug('session doc loaded', { sessionDoc })
         if (!sessionDoc) {
           return instance.state.set({
             completedSessionDetected: false,
             abortedSessionDetected: false,
-            sessionDoc: null
+            sessionDoc: null,
           })
         }
 
         if (sessionDoc.completedAt) {
           instance.state.set({ completedSessionDetected: true, sessionDoc })
-        }
-
-        else if (testCycle && sessionDoc && sessionDoc.testCycle === testCycle._id) {
+        } else if (
+          testCycle &&
+          sessionDoc &&
+          sessionDoc.testCycle === testCycle._id
+        ) {
           instance.state.set({ abortedSessionDetected: true, sessionDoc })
-        }
-
-        else {
-          instance.api.debug('warning! session has undefined state', { sessionDoc })
+        } else {
+          instance.api.debug('warning! session has undefined state', {
+            sessionDoc,
+          })
           instance.state.set({
             completedSessionDetected: false,
-            abortedSessionDetected: false
+            abortedSessionDetected: false,
           })
         }
-      }
+      },
     })
   })
 
-  loadContentDocuments()
-    .catch(e => {
-      fatal({
-        error: {
-          message: 'content.notAvailable',
-          original: e.message
-        }
-      })
-
-      instance.api.sendError({ error: e })
-    })
+  loadContentDocuments().catch((e) => {
+    const error = {
+      message: 'content.notAvailable',
+      original: e.message,
+    }
+    fatal({ error })
+    instance.state.set({ error })
+    instance.api.sendError({ error: e })
+  })
 })
 
 Template.overview.helpers({
-  loadComplete () {
+  loadComplete() {
     return Template.getState('dependenciesComplete')
   },
   // ---------------------- // ----------------------
   // Dimension
   // ---------------------- // ----------------------
-  dimensionSelected () {
+  dimensionSelected() {
     return Template.getState('dimension')
   },
-  isSelectedDimension (_id) {
+  isSelectedDimension(_id) {
     const dimension = Template.getState('dimension')
     return dimension?._id === _id
   },
-  dimensionDisabled (dimension) {
+  dimensionDisabled(dimension) {
     return !getUnitSetForDimensionAndLevel({ dimension })
   },
 
   // return all dimensions, filtered by those, which are defined by
   // our received test-cycles
 
-  allDimensions () {
+  allDimensions() {
     const instance = Template.instance()
     if (!instance.state.get('contentDocsLoadComplete')) {
       return
@@ -221,18 +239,19 @@ Template.overview.helpers({
     if (dimensionFilter && dimensionFilter.length > 0) {
       query._id = { $in: dimensionFilter }
     }
-    return Dimension.collection().find(query)
+
+    return Dimension.collection().find(query, { sort: { shortNum: 1 } })
   },
-  colorTypeName ({ colorType }) {
+  colorTypeName({ colorType }) {
     return ColorType.byIndex(colorType)?.type
   },
-  colorType () {
+  colorType() {
     return Template.getState('color')
   },
   // ---------------------- // ----------------------
   // LEVELS
   // ---------------------- // ----------------------
-  allLevels () {
+  allLevels() {
     const instance = Template.instance()
     if (!instance.state.get('contentDocsLoadComplete')) {
       return
@@ -244,51 +263,56 @@ Template.overview.helpers({
       query._id = { $in: levelFilter }
     }
 
-    return Level.collection().find(query)
+    return Level.collection().find(query, { sort: { level: 1 } })
   },
-  levelSelected () {
+  levelSelected() {
     return Template.getState('level')
   },
-  isSelectedLevel (_id) {
+  isSelectedLevel(_id) {
     const level = Template.getState('level')
     return level?._id === _id
   },
   // ---------------------- // ----------------------
   // SESSION
   // ---------------------- // ----------------------
-  levelLoadComplete () {
+  levelLoadComplete() {
     const instance = Template.instance()
-    return instance.state.get('dependenciesComplete') &&
+    return (
+      instance.state.get('dependenciesComplete') &&
       instance.state.get('selectedTestCycle')
+    )
   },
-  levelDescription () {
+  levelDescription() {
     const testCycleDoc = Template.getState('selectedTestCycle')
     return testCycleDoc?.selfAssessment
   },
   // ---------------------- // ----------------------
   // SESSION
   // ---------------------- // ----------------------
-  sessionAborted () {
+  sessionAborted() {
     return Template.getState('abortedSessionDetected')
   },
-  sessionCompleted () {
+  sessionCompleted() {
     return Template.getState('completedSessionDetected')
   },
-  sessionDoc () {
+  sessionDoc() {
     return Template.getState('sessionDoc')
   },
-  starting () {
+  starting() {
     return Template.getState('starting')
-  }
+  },
+  error() {
+    return Template.getState('error')
+  },
 })
 
 Template.overview.events({
-  'click .lea-dimension-button' (event, templateInstance) {
+  'click .lea-dimension-button'(event, templateInstance) {
     event.preventDefault()
     const d = dataTarget(event, 'dimension')
     templateInstance.api.queryParam({ d, l: null })
   },
-  'click .lea-back-button' (event, templateInstance) {
+  'click .lea-back-button'(event, templateInstance) {
     event.preventDefault()
     const type = dataTarget(event, 'type')
     const target = dataTarget(event)
@@ -307,16 +331,16 @@ Template.overview.events({
       templateInstance.api.queryParam(queryParams)
     })
   },
-  'click .lea-level-button' (event, templateInstance) {
+  'click .lea-level-button'(event, templateInstance) {
     event.preventDefault()
     const l = dataTarget(event, 'level')
     templateInstance.api.queryParam({ l })
   },
-  'click .lea-restart-button' (event, templateInstance) {
+  'click .lea-restart-button'(event, templateInstance) {
     event.preventDefault()
     restartSession(templateInstance)
   },
-  'click .lea-continue-button' (event, templateInstance) {
+  'click .lea-continue-button'(event, templateInstance) {
     event.preventDefault()
 
     const sessionDoc = templateInstance.state.get('sessionDoc')
@@ -326,16 +350,16 @@ Template.overview.events({
       name: Session.methods.continue.name,
       args: { sessionId },
       templateInstance,
-      isFreshStart: false
+      isFreshStart: false,
     })
   },
-  'click .lea-overview-confirm-button' (event, templateInstance) {
+  'click .lea-overview-confirm-button'(event, templateInstance) {
     event.preventDefault()
     startNewSession(templateInstance)
-  }
+  },
 })
 
-function restartSession (templateInstance) {
+function restartSession(templateInstance) {
   const sessionDoc = templateInstance.state.get('sessionDoc')
   const sessionId = sessionDoc._id
 
@@ -347,34 +371,37 @@ function restartSession (templateInstance) {
       // after we obsoleted the old session we start a new one as we do
       // when the user clicks the launch button
       startNewSession(templateInstance)
-    }
+    },
   })
 }
 
-function startNewSession (templateInstance) {
+function startNewSession(templateInstance) {
   const selectedTestCycle = templateInstance.state.get('selectedTestCycle')
   const testCycleId = selectedTestCycle._id
   launch({
     name: Session.methods.start.name,
     args: { testCycleId },
     templateInstance,
-    isFreshStart: true
+    isFreshStart: true,
   })
 }
 
-function launch ({ templateInstance, name, args, isFreshStart }) {
+function launch({ templateInstance, name, args, isFreshStart }) {
   templateInstance.api.callMethod({
     name: name,
     args: args,
     prepare: () => templateInstance.state.set('starting', true),
-    failure: er => {
+    failure: (er) => {
       // if there is the rare case that the session exists although the user
       // intended to launch a new session, we try to restart the session
       if (er?.details === 'session.sessionExists') {
         restartSession(templateInstance)
+      } else {
+        fatal({ error: er })
+        sendError({ error: er })
       }
     },
-    success: sessionDoc => {
+    success: (sessionDoc) => {
       TTSEngine.stop()
       const { fadeOut, debug } = templateInstance.api
       const { next, story } = templateInstance.data
@@ -384,28 +411,28 @@ function launch ({ templateInstance, name, args, isFreshStart }) {
         // go to the fist unit, which is decided here but routed externally
         const sessionId = sessionDoc._id
         const unitId = sessionDoc.currentUnit
-        let unitSetDoc = UnitSet.collection().findOne(sessionDoc.unitSet)
-
-        // if the unit set doc does not exist at this point we need to fetch it
-        if (!unitSetDoc) {
-          debug('UnitSet not found, attempt to fetch it')
-          unitSetDoc = await loadContentDoc(UnitSet, sessionDoc.unitSet)
-        }
-
-        const shouldShowStory = isFreshStart && showStoryBeforeUnit(unitId, unitSetDoc)
+        const unitSetDoc = await loadContentDoc({
+          context: UnitSet,
+          query: { _id: sessionDoc.unitSet },
+          unlessExists: true,
+          throwIfNotFound: true,
+        })
+        const unitSetId = unitSetDoc._id
+        const shouldShowStory =
+          isFreshStart && showStoryBeforeUnit(unitId, unitSetDoc)
         const onCompleteHandler = shouldShowStory
-          ? () => story({ sessionId, unitId, unitSetId: unitSetDoc._id })
+          ? () => story({ sessionId, unitId, unitSetId })
           : () => next({ sessionId, unitId })
 
         fadeOut('.lea-overview-container', () => {
           onCompleteHandler()
         })
       }, 100)
-    }
+    },
   })
 }
 
-function getScrollTarget (dimension, level) {
+function getScrollTarget(dimension, level) {
   if (!dimension && !level) {
     return 'overview-dimensions-container'
   }

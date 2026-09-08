@@ -1,7 +1,7 @@
 import { Session } from '../Session'
 
 const projection = {
-  hint: { $natural: -1 }
+  hint: { $natural: -1 },
 }
 
 /**
@@ -9,17 +9,18 @@ const projection = {
  * @param testCycleId
  * @param userId
  * @param completed
- * @return {sessionDoc}
+ * @async
+ * @return {Promise.<object|undefined>}
  */
 export const getLastSessionByTestCylce = ({ testCycleId, userId }) => {
   const query = {
     userId: userId,
     testCycle: testCycleId,
     startedAt: { $exists: true },
-    cancelledAt: { $exists: false }
+    cancelledAt: { $exists: false },
   }
 
   // TODO maybe add a flag to settings.json with number of days/hours that
   // TODO define a threshold until a session can be continued.
-  return Session.collection().findOne(query, projection)
+  return Session.collection().findOneAsync(query, projection)
 }

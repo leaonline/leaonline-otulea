@@ -1,0 +1,97 @@
+<template name="internal">
+  <div class="container">
+    {{#onComplete complete=dependenciesComplete}}
+      {{#unless currentUser}}
+        <h1>Login for Internal</h1>
+        {{> login}}
+      {{else}}
+        <div class="{{#if isFullScreen}}d-none{{/if}}">
+        <h1>{{i18n "internal.title"}}</h1>
+        <div class="">
+          <div class="d-flex align-items-baseline">
+            <select class="form-control" id="typeSelect">
+              <option value="unitSet" selected>Unit-Set</option>
+              <option value="unit">Unit</option>
+              <option value="testCycle">Test-Cycle</option>
+            </select>
+            <select class="form-control" id="fieldSelect">
+              <option value="code" selected>Short-Code (lea id)</option>
+              <option value="_id">Document _id</option>
+            </select>
+              <select class="form-control" id="targetSelect">
+                  <option value="remote" selected>load from Backend (live)</option>
+                  <option value="current">load from Lab (synced)</option>
+              </select>
+            <input type="text" placeholder="{{i18n 'internal.enterValue'}}" class="form-control me-2" id="unitInput" />
+            <button class="ms-1 ml-1 btn btn-primary mb-2 no-wrap" id="unitSearchButton">
+              {{i18n "internal.load"}}
+            </button>
+          </div>
+        </div>
+
+        {{#if error}}
+          <div class="alert alert-danger">
+            {{error.message}}
+          </div>
+        {{/if}}
+
+        {{!- if unit set is loaded, we need to show the story and the available units --}}
+        {{#if unitSetDoc}}
+          <div class="d-flex align-items-baseline mt-2">
+          <div class="grid">
+            {{#if unitSetDoc.story}}
+              <button class="story-btn btn btn-sm btn-{{#unless story}}outline-{{/unless}}secondary">
+                {{i18n "unitSet.story"}}
+              </button>
+            {{/if}}
+            {{#each unit in unitDocs}}
+              <button class="unit-btn btn btn-sm btn-{{#unless currentUnit unit}}outline-{{/unless}}secondary" data-index="{{@index}}">
+                {{unit.shortCode}}
+              </button>
+            {{/each}}
+          </div>
+            {{!-- actions --}}
+            <span class="ms-auto">
+              <button class="btn btn-sm btn-secondary present-btn" data-mode="on">
+                {{> icon name="expand-alt" }}
+              </button>
+            </span>
+          </div>
+        {{/if}}
+        </div>
+
+        {{#if story}}
+          {{#container class=(containerClass "lea-unit-content-container bg-light overflow-auto py-3")}}
+            {{#if isFullScreen}}
+            <div class="py-2 d-flex justify-content-between align-items-center">
+              <button class="btn btn-sm btn-secondary present-btn ms-auto" data-mode="off">
+                {{> icon name="compress-alt" }}
+              </button>
+            </div>
+            {{/if}}
+            {{> taskPageRenderer storyData}}
+
+            <div class="card-body">
+              {{> actionButton type=color tts="actions.forward" btnClass="forward-btn"
+                  sclass="lea-story-finish-group" block=true
+                  icon="arrow-right" iconPos="right" label=(i18n "common.forward") }}
+            </div>
+          {{/container}}
+        {{/if}}
+
+        {{#if unitDoc}}
+          {{#container class=(containerClass "lea-unit-content-container bg-light overflow-auto py-3")}}
+            {{#if isFullScreen}}
+              <div class="py-2 d-flex justify-content-between align-items-center">
+                <button class="btn btn-sm btn-secondary present-btn ms-auto" data-mode="off">
+                  {{> icon name="compress-alt" }}
+                </button>
+              </div>
+            {{/if}}
+            {{> taskPageRenderer pageContentData}}
+          {{/container}}
+        {{/if}}
+      {{/unless}}
+    {{/onComplete}}
+  </div>
+</template>

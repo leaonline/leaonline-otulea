@@ -5,7 +5,7 @@ export const Legal = {
   name: 'legal',
   label: 'legal.title',
   icon: 'info',
-  isConfigDoc: true
+  isConfigDoc: true,
 }
 
 Legal.schema = {
@@ -13,38 +13,38 @@ Legal.schema = {
     type: String,
     label: 'legal.imprint',
     richText: true,
-    optional: true
+    optional: true,
   },
   privacy: {
     type: String,
     label: 'legal.privacy',
     richText: true,
-    optional: true
+    optional: true,
   },
   terms: {
     type: String,
     label: 'legal.terms',
     richText: true,
-    optional: true
+    optional: true,
   },
   contact: {
     type: String,
     label: 'legal.contact',
     richText: true,
-    optional: true
-  }
+    optional: true,
+  },
 }
 
 Legal.helpers = {}
 
-Legal.helpers.init = function () {
-  const configDoc = Legal.collection().findOne()
+Legal.helpers.init = async () => {
+  const configDoc = await Legal.collection().findOneAsync()
   if (!configDoc) {
-    Legal.collection().insert({
+    await Legal.collection().insertAsync({
       imprint: 'Imprint',
       privacy: 'Privacy',
       terms: 'Terms',
-      contact: 'Contact'
+      contact: 'Contact',
     })
   }
 }
@@ -56,16 +56,18 @@ Legal.methods.update = {
   backend: true,
   schema: {
     _id: {
-      type: String
+      type: String,
     },
     imprint: Legal.schema.imprint,
     privacy: Legal.schema.privacy,
     terms: Legal.schema.terms,
-    contact: Legal.schema.contact
+    contact: Legal.schema.contact,
   },
-  run: onServer(function ({ _id, imprint, privacy, terms, contact }) {
-    return Legal.collection().update(_id, { $set: { imprint, privacy, terms, contact } })
-  })
+  run: onServer(async ({ _id, imprint, privacy, terms, contact }) =>
+    Legal.collection().updateAsync(_id, {
+      $set: { imprint, privacy, terms, contact },
+    }),
+  ),
 }
 
 Legal.methods.get = {
@@ -74,29 +76,28 @@ Legal.methods.get = {
   schema: {
     _id: {
       type: String,
-      optional: true
+      optional: true,
     },
     name: {
       type: String,
       optional: true,
-      allowedValues: Object.keys(Legal.schema)
-    }
+      allowedValues: Object.keys(Legal.schema),
+    },
   },
-  run: onServer(function ({ name } = {}) {
-    const config = Legal.collection().findOne()
+  run: onServer(async ({ name } = {}) => {
+    const config = await Legal.collection().findOneAsync()
     if (!name) {
       return config
-    }
-    else {
-      return config && config[name]
+    } else {
+      return config?.[name]
     }
   }),
   /**
    * @deprecated
    */
-  call: onClient(function (name, cb) {
+  call: onClient((name, cb) => {
     Meteor.call(Legal.methods.get.name, { name }, cb)
-  })
+  }),
 }
 
 Legal.publications = {}

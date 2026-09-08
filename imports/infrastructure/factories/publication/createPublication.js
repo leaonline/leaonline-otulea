@@ -6,10 +6,11 @@ import { errorMixin } from '../../mixins/errorMixin'
 
 export const createPublication = createPublicationFactory({
   schemaFactory: Schema.create,
-  mixins: [errorMixin, checkPermissions, environmentExtensionMixin]
+  mixins: [errorMixin, checkPermissions, environmentExtensionMixin],
 })
 
-export const createPublications = publications => publications.forEach(publicationDef => {
-  console.info(`[publicationFactory]: create ${publicationDef.name}`)
-  createPublication(publicationDef)
-})
+export const createPublications = (publications) =>
+  publications.forEach((publicationDef) => {
+    console.info(`[publicationFactory]: create ${publicationDef.name}`)
+    createPublication(publicationDef)
+  })

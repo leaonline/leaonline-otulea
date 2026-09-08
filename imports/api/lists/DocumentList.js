@@ -4,17 +4,19 @@ import { checkDocument } from '../../infrastructure/mixins/checkDocument'
 import { getProperty } from '../../utils/object/getProperty'
 
 class DocumentList {
-  constructor ({ context, fieldName } = {}) {
-    check({ contextName: context?.name, fieldName }, {
-      contextName: String,
-      fieldName: String
-    })
+  constructor({ context, fieldName } = {}) {
+    check(
+      { contextName: context?.name, fieldName },
+      {
+        contextName: String,
+        fieldName: String,
+      },
+    )
     this.context = context
     this.fieldName = fieldName
-    return this
   }
 
-  setDocument (document) {
+  setDocument(document) {
     const { context, fieldName } = this
     checkDocument(document, context)
 
@@ -25,14 +27,14 @@ class DocumentList {
       throw new Meteor.Error('DocumentList.error', DocumentList.noList, {
         context: context.name,
         document: document._id,
-        field: fieldName
+        field: fieldName,
       })
     }
 
     return this
   }
 
-  setCurrent (currentId) {
+  setCurrent(currentId) {
     this.currentId = currentId
     this.index = this.list.indexOf(currentId)
 
@@ -41,23 +43,23 @@ class DocumentList {
       throw new Meteor.Error('DocumentList.error', DocumentList.idNotInSet, {
         current: this.currentId,
         context: this.context.name,
-        document: this.documentId
+        document: this.documentId,
       })
     }
 
     return this
   }
 
-  isFirst () {
+  isFirst() {
     return this.index === 0
   }
 
-  isLast () {
+  isLast() {
     const { index, list } = this
     return index === list.length - 1
   }
 
-  getNext () {
+  getNext() {
     const { index, list } = this
 
     // if this is already the last doc, return null to indicate this state

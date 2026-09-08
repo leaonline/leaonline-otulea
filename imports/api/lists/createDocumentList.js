@@ -10,7 +10,12 @@ import { DocumentList } from './DocumentList'
  * @param fieldName
  * @return {DocumentList}
  */
-export const createDocumentList = ({ currentId, document, context, fieldName }) => {
+export const createDocumentList = ({
+  currentId,
+  document,
+  context,
+  fieldName,
+}) => {
   const docList = new DocumentList({ context, fieldName })
   docList.setDocument(document)
   docList.setCurrent(currentId)

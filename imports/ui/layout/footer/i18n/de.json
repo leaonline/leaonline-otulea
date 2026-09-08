@@ -10,5 +10,8 @@
     "title": "Problem melden",
     "subject": "[otu.lea] - Problem",
     "body": "Zusammenfassung:\n\nDas Problem kann wie folgt reproduziert werden:\n\nLink:{{url}}"
+  },
+  "internal": {
+    "title": "Interner Bereich"
   }
 }

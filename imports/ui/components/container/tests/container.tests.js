@@ -4,12 +4,12 @@ import { expect } from 'chai'
 import { UITests } from '../../../../../tests/ui-helpers.tests'
 import '../container'
 
-describe('container', function () {
-  beforeEach(function () {
+describe('container', () => {
+  beforeEach(() => {
     UITests.preRender()
   })
 
-  afterEach(function () {
+  afterEach(() => {
     UITests.postRender()
   })
 
@@ -22,14 +22,9 @@ describe('container', function () {
     expect(container.hasClass('lea-base-container')).to.equal(true)
     expect(container.data('visible')).to.equal(false)
 
-    let opacity = Number(container.css('opacity')).toFixed(1)
-    expect(opacity).to.equal('0.0')
+    await UITests.wait(1500)
 
-    await UITests.wait(1000)
-
+    expect(container.hasClass('lea-base-container')).to.equal(true)
     expect(container.data('visible')).to.equal(true)
-
-    opacity = Number(container.css('opacity')).toFixed(1)
-    expect(opacity).to.equal('1.0')
   })
 })

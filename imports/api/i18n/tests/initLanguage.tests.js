@@ -5,14 +5,14 @@ import { i18n } from '../I18n'
 import { expect } from 'chai'
 import { restoreAll, stub } from '../../../../tests/helpers.tests'
 
-describe(initLanguage.name, function () {
+describe(initLanguage.name, () => {
   afterEach(() => {
     restoreAll()
   })
   it('is not initialized by default', () => {
     expect(i18n.get('common.yes')).to.equal('common.yes')
   })
-  it('initializes all language defaults', async function () {
+  it('initializes all language defaults', async () => {
     const loaded = await initLanguage()
     expect(loaded).to.equal(i18n)
 
