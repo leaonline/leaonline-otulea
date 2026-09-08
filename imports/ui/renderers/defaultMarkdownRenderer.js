@@ -31,12 +31,12 @@ class DefaultRenderer extends Renderer {
 
   text({ tokens, text }) {
     const txt = tokens ? this.parser.parseInline(tokens) : text
-    const tts = !tokens && this.userOptions.useTTS ? createTTS(txt) : ''
+    const tts = !tokens && this.userOptions.useTTS ? createTTS(txt, this.userOptions) : ''
     return tts ? `${tts} ${txt}` : txt
   }
 }
 
-const createTTS = (tokens) => {
+const createTTS = (tokens, options) => {
   let text
   if (Array.isArray(tokens)) {
     text = tokens.reduce((acc, token) => {
@@ -62,8 +62,8 @@ const createTTS = (tokens) => {
         text,
         outline: true,
         sm: true,
-        type: 'secondary',
-        class: 'border-0',
+        type: options.color ?? 'primary',
+        class: 'border-0 me-2',
       },
       parent,
     )

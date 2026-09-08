@@ -51,8 +51,8 @@ export class ResponseCache {
       ? self.storage.getAll()
       : { ...self.storage }
     Object.entries(items).forEach(([key, value]) => {
-      if (key.includes('rc-')) {
-        console.warn('[ResponseCache]: delete zombie entry', key, value)
+      if (key.includes('rc-') || key.includes('development')) {
+        console.error('[ResponseCache]: delete zombie entry', key, value)
         self.storage.removeItem(key)
       }
     })

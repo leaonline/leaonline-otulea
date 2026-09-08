@@ -218,7 +218,7 @@ Template.unit.helpers({
     const unitDoc = instance.state.get('unitDoc')
     const unitSetDoc = instance.state.get('unitSetDoc')
     const dimensionDoc = instance.state.get('dimensionDoc')
-debugger
+
     return {
       sessionDoc,
       levelDoc,

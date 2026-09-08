@@ -5,6 +5,7 @@
         <h1>Login for Internal</h1>
         {{> login}}
       {{else}}
+        <div class="{{#if isFullScreen}}d-none{{/if}}">
         <h1>{{i18n "internal.title"}}</h1>
         <div class="">
           <div class="d-flex align-items-baseline">
@@ -21,7 +22,7 @@
                   <option value="remote" selected>load from Backend (live)</option>
                   <option value="current">load from Lab (synced)</option>
               </select>
-            <input type="text" placeholder="{{i18n "internal.enterValue"}}" class="form-control me-2" id="unitInput" />
+            <input type="text" placeholder="{{i18n 'internal.enterValue'}}" class="form-control me-2" id="unitInput" />
             <button class="ms-1 ml-1 btn btn-primary mb-2 no-wrap" id="unitSearchButton">
               {{i18n "internal.load"}}
             </button>
@@ -36,6 +37,7 @@
 
         {{!- if unit set is loaded, we need to show the story and the available units --}}
         {{#if unitSetDoc}}
+          <div class="d-flex align-items-baseline mt-2">
           <div class="grid">
             {{#if unitSetDoc.story}}
               <button class="story-btn btn btn-sm btn-{{#unless story}}outline-{{/unless}}secondary">
@@ -48,22 +50,44 @@
               </button>
             {{/each}}
           </div>
+            {{!-- actions --}}
+            <span class="ms-auto">
+              <button class="btn btn-sm btn-secondary present-btn" data-mode="on">
+                {{> icon name="expand-alt" }}
+              </button>
+            </span>
+          </div>
         {{/if}}
+        </div>
 
         {{#if story}}
-          {{#container class="lea-unit-content-container"}}
+          {{#container class=(containerClass "lea-unit-content-container bg-light overflow-auto py-3")}}
+            {{#if isFullScreen}}
+            <div class="py-2 d-flex justify-content-between align-items-center">
+              <button class="btn btn-sm btn-secondary present-btn ms-auto" data-mode="off">
+                {{> icon name="compress-alt" }}
+              </button>
+            </div>
+            {{/if}}
             {{> taskPageRenderer storyData}}
 
             <div class="card-body">
-              {{> actionButton type=currentType tts="actions.forward" btnClass="forward-btn"
-                  type="primary" class="lea-story-finish-group" block=true
+              {{> actionButton type=color tts="actions.forward" btnClass="forward-btn"
+                  sclass="lea-story-finish-group" block=true
                   icon="arrow-right" iconPos="right" label=(i18n "common.forward") }}
             </div>
           {{/container}}
         {{/if}}
 
         {{#if unitDoc}}
-          {{#container class="lea-unit-content-container"}}
+          {{#container class=(containerClass "lea-unit-content-container bg-light overflow-auto py-3")}}
+            {{#if isFullScreen}}
+              <div class="py-2 d-flex justify-content-between align-items-center">
+                <button class="btn btn-sm btn-secondary present-btn ms-auto" data-mode="off">
+                  {{> icon name="compress-alt" }}
+                </button>
+              </div>
+            {{/if}}
             {{> taskPageRenderer pageContentData}}
           {{/container}}
         {{/if}}

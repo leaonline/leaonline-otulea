@@ -12,9 +12,13 @@ import { setQueryParam } from '../../routing/setQueryParam'
 import { ResponseCache } from '../unit/cache/ResponseCache'
 import { Scoring } from '../../../contexts/Scoring'
 import internalLang from './i18n/lang'
+import { Dimension } from '../../../contexts/Dimension'
+import { ColorType } from '../../../contexts/types/ColorType'
 import './Internal.html'
+import './internal.css'
 import '../../components/container/container'
 import '../login/login'
+import '../../layout/navbar/navbar'
 
 const renderersLoaded = initTaskRenderers()
 
@@ -24,6 +28,7 @@ Template.internal.onCreated(function () {
   const instance = this
   instance.state.setDefault('currentPageCount', 0)
   instance.state.setDefault('maxPages', -1)
+  instance.state.setDefault('color', 'primary')
 
   const storage = {
     data: {},
@@ -41,20 +46,18 @@ Template.internal.onCreated(function () {
     },
   }
 
-  const options = {
+
+  const responseCache = ResponseCache.create(storage, {
     getKey: ({ sessionId, unitId, page, contentId }) => {
-      const key = `${sessionId}-${unitId}-${page}-${contentId}`
-      console.debug('generate cache key', key)
-      return key
+      return `${sessionId}-${unitId}-${page}-${contentId}`
     },
     encode: (value) => value,
     decode: (value) => value,
-  }
-  const responseCache = ResponseCache.create(storage, options)
+  })
 
   instance.initDependencies({
     language: true,
-    contexts: [Unit, UnitSet],
+    contexts: [Dimension, Unit, UnitSet],
     tts: true,
     debug: true,
     translations: internalLang,
@@ -70,7 +73,7 @@ Template.internal.onCreated(function () {
       })
       instance.onNewPage = ({ action, newPage }, onComplete) => {
         setQueryParam({ page: newPage.currentPageCount })
-        Object.keys(storage.getAll()).forEach((key) => storage.removeItem(key))
+        instance.clearStorage()
         onPageNavUpdate({
           action,
           newPage,
@@ -86,13 +89,20 @@ Template.internal.onCreated(function () {
     },
   })
 
+  instance.clearStorage = () => {
+    Object.keys(storage.getAll()).forEach((key) => storage.removeItem(key))
+    console.debug('cleared storage', storage.data)
+  }
+
   instance.onEvaluate = () => {
+    const unitDoc = instance.state.get('unitDoc')
+    console.debug('on evaluate', storage.data, unitDoc)
     const currentPage = instance.state.get('currentPageCount')
     const allResponses = Object.entries(storage.data)
       .filter((entry) => {
         // filter out entries from other pages
         const [_sessionId, _unitId, page] = entry[0].split('-')
-        return page == currentPage
+        return _unitId === unitDoc._id && page == currentPage
       })
       .map((value) => {
         const [sessionId, unitId, page, itemId] = value[0].split('-')
@@ -104,10 +114,11 @@ Template.internal.onCreated(function () {
           ...EJSON.parse(value[1]),
         }
         const itemDefinitions = Unit.getContentElement({
-          unit: instance.state.get('unitDoc'),
+          unit: unitDoc,
           contentId: itemId,
           page: Number(page),
         })
+
         return Scoring.run(itemDefinitions.subtype, itemDefinitions.value, data)
       })
 
@@ -145,6 +156,8 @@ Template.internal.onCreated(function () {
     const nextUnit = allUnits[currentUnitIndex + 1]
 
     // always clear everything
+    instance.clearStorage()
+    responseCache.flush()
     instance.state.set({ unitDoc: null, story: null, currentPageCount: 0 })
 
     if (nextUnit) {
@@ -181,20 +194,23 @@ Template.internal.helpers({
   unitDocs() {
     return Template.getState('unitDocs')
   },
+  color () {
+    return Template.getState('color')
+  },
   pageContentData() {
     if (!renderersLoaded.get()) return
 
     const instance = Template.instance()
     const unitDoc = instance.state.get('unitDoc')
     const currentPageCount = instance.state.get('currentPageCount')
-
+    const color = instance.state.get('color')
     return {
       isPreview: true,
       isLearning: true,
       currentPageCount: currentPageCount,
       sessionId: 'development',
       doc: unitDoc,
-      color: 'primary',
+      color,
       onInput: instance.onItemInput,
       onLoad: instance.onItemLoad,
       onNewPage: instance.onNewPage,
@@ -207,17 +223,26 @@ Template.internal.helpers({
   storyData() {
     const instance = Template.instance()
     const unitSetDoc = instance.state.get('unitSetDoc')
-
+    const color = instance.state.get('color')
     return {
       isStory: true,
       currentPageCount: -1,
       sessionId: 'development',
       doc: unitSetDoc,
-      color: 'primary',
+      color,
     }
   },
   error() {
     return Template.getState('error')
+  },
+  isFullScreen() {
+    return Template.getState('presentationMode')
+  },
+  containerClass (baseName) {
+    const presentation =  Template.getState('presentationMode')
+    const presentationClass = presentation ? 'fullscreen' : ''
+    console.debug(`${baseName} ${presentationClass}`, presentation)
+    return `${baseName} ${presentationClass}`
   },
 })
 
@@ -270,7 +295,25 @@ Template.internal.events({
     event.preventDefault()
     instance.forward()
   },
+  'click .present-btn'(event, instance) {
+    event.preventDefault()
+    const presentationMode = dataTarget(event, 'mode') === 'on'
+    instance.state.set({ presentationMode })
+  },
 })
+
+const getColor = async ({ dimensionId, from }) => {
+  if (!dimensionId) return 'primary'
+  const dimensionDoc = await loadContentDoc({
+    context: Dimension,
+    from,
+    throwIfNotFound: false,
+    query: { _id: dimensionId  },
+  })
+  if (!dimensionDoc?.colorType) return 'primary'
+  const colorType = ColorType.byIndex(dimensionDoc.colorType)
+  return colorType?.type ?? 'primary'
+}
 
 async function loadUnitSet({ code, isShortCode, from, instance }) {
   console.debug('fetch unitSet', code, isShortCode)
@@ -282,6 +325,7 @@ async function loadUnitSet({ code, isShortCode, from, instance }) {
       throwIfNotFound,
       query: isShortCode ? { shortCode: code } : { _id: code },
     })
+    const color = await getColor({ dimensionId: unitSetDoc.dimension, from })
     const unitDocs = []
     console.debug(
       'fetch units for unitSet',
@@ -299,7 +343,7 @@ async function loadUnitSet({ code, isShortCode, from, instance }) {
       unitDocs.push(unitDoc)
     }
     setQueryParam(createUrlQuery({ code, isShortCode, type: 'unitSet' }))
-    instance.state.set({ unitSetDoc, unitDocs, error: null })
+    instance.state.set({ unitSetDoc, unitDocs, color, error: null })
   } catch (e) {
     console.error('Error loading unitSet', e)
     const errorObj = errorToObject(e)
