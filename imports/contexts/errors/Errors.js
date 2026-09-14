@@ -103,8 +103,8 @@ Errors.methods.create = {
   schema: Errors.schema,
   isPublic: true,
   run: onServerExec(() => {
-    const { Meteor } = require('meteor/meteor')
-    const { persistError } = require('./api/persistError')
+    import { Meteor } from 'meteor/meteor'
+    import { persistError } from './api/persistError'
 
     return async function (errorDoc) {
       const { userId } = this

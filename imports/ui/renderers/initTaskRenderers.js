@@ -1,10 +1,8 @@
 import { ReactiveVar } from 'meteor/reactive-var'
 import { TaskRenderers } from './TaskRenderers'
-import { LeaMarkdown } from '../../api/markdown/LeaMarkdown'
-import { createDefaultRenderer } from './defaultMarkdownRenderer'
+import { Markdown } from 'meteor/leaonline:corelib/markdown/Markdown'
+import { createTTS } from './defaultMarkdownRenderer'
 
-// register markdown renderer
-const defaultMarkdownRendererName = 'default'
 const renderersLoaded = new ReactiveVar()
 
 export const initTaskRenderers = () => {
@@ -12,13 +10,12 @@ export const initTaskRenderers = () => {
     return renderersLoaded
   }
 
-  LeaMarkdown.addRenderer(defaultMarkdownRendererName, createDefaultRenderer)
+  Markdown.setTTSRenderer(createTTS)
 
   TaskRenderers.init({
     markdown: {
-      renderer: async (txt) => {
-        const mdOptions = { input: txt, renderer: defaultMarkdownRendererName }
-        return LeaMarkdown.parse(mdOptions)
+      renderer: async (data) => {
+        return Markdown.render(data)
       },
     },
   })
