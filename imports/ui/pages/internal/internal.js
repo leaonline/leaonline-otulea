@@ -91,12 +91,10 @@ Template.internal.onCreated(function () {
 
   instance.clearStorage = () => {
     Object.keys(storage.getAll()).forEach((key) => storage.removeItem(key))
-    console.debug('cleared storage', storage.data)
   }
 
   instance.onEvaluate = () => {
     const unitDoc = instance.state.get('unitDoc')
-    console.debug('on evaluate', storage.data, unitDoc)
     const currentPage = instance.state.get('currentPageCount')
     const allResponses = Object.entries(storage.data)
       .filter((entry) => {
@@ -241,9 +239,11 @@ Template.internal.helpers({
   containerClass (baseName) {
     const presentation =  Template.getState('presentationMode')
     const presentationClass = presentation ? 'fullscreen' : ''
-    console.debug(`${baseName} ${presentationClass}`, presentation)
     return `${baseName} ${presentationClass}`
   },
+  showFullscreenButton () {
+    return Template.getState('unitDoc') || Template.getState('story')
+  }
 })
 
 Template.internal.events({
@@ -316,7 +316,6 @@ const getColor = async ({ dimensionId, from }) => {
 }
 
 async function loadUnitSet({ code, isShortCode, from, instance }) {
-  console.debug('fetch unitSet', code, isShortCode)
   const throwIfNotFound = true
   try {
     const unitSetDoc = await loadContentDoc({
@@ -327,11 +326,6 @@ async function loadUnitSet({ code, isShortCode, from, instance }) {
     })
     const color = await getColor({ dimensionId: unitSetDoc.dimension, from })
     const unitDocs = []
-    console.debug(
-      'fetch units for unitSet',
-      unitSetDoc?._id,
-      unitSetDoc?.units?.length,
-    )
     if (!unitSetDoc) throw new Meteor.Error('404', 'errors.docNocFound')
     for (const unitId of unitSetDoc.units) {
       const unitDoc = await loadContentDoc({
@@ -343,7 +337,7 @@ async function loadUnitSet({ code, isShortCode, from, instance }) {
       unitDocs.push(unitDoc)
     }
     setQueryParam(createUrlQuery({ code, isShortCode, type: 'unitSet' }))
-    instance.state.set({ unitSetDoc, unitDocs, color, error: null })
+    instance.state.set({ unitSetDoc, unitDocs, color, error: null, story: null, unitDoc: null, currentPageCount: 0 })
   } catch (e) {
     console.error('Error loading unitSet', e)
     const errorObj = errorToObject(e)
@@ -355,7 +349,6 @@ async function loadUnitSet({ code, isShortCode, from, instance }) {
 }
 
 async function loadUnit({ code, isShortCode, from, instance }) {
-  console.debug('fetch unit', code, isShortCode)
   const throwIfNotFound = true
   try {
     const unitDoc = await loadContentDoc({

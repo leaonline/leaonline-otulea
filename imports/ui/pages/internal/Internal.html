@@ -1,5 +1,5 @@
 <template name="internal">
-  <div class="container">
+  <div class="container vh-100">
     {{#onComplete complete=dependenciesComplete}}
       {{#unless currentUser}}
         <h1>Login for Internal</h1>
@@ -52,9 +52,11 @@
           </div>
             {{!-- actions --}}
             <span class="ms-auto">
+              {{#if showFullscreenButton}}
               <button class="btn btn-sm btn-secondary present-btn" data-mode="on">
                 {{> icon name="expand-alt" }}
               </button>
+              {{/if}}
             </span>
           </div>
         {{/if}}
@@ -77,9 +79,7 @@
                   icon="arrow-right" iconPos="right" label=(i18n "common.forward") }}
             </div>
           {{/container}}
-        {{/if}}
-
-        {{#if unitDoc}}
+        {{else if unitDoc}}
           {{#container class=(containerClass "lea-unit-content-container bg-light overflow-auto py-3")}}
             {{#if isFullScreen}}
               <div class="py-2 d-flex justify-content-between align-items-center">
@@ -90,6 +90,10 @@
             {{/if}}
             {{> taskPageRenderer pageContentData}}
           {{/container}}
+        {{else if isFullScreen}}
+          <div class="{{containerClass}} lea-unit-content-container bg-light overflow-auto py-3">
+            {{> loading }}
+          </div>
         {{/if}}
       {{/unless}}
     {{/onComplete}}
