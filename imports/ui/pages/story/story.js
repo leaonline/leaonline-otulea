@@ -17,18 +17,18 @@ Template.story.onCreated(function () {
     tts: true,
     language: true,
     translations: {
-      de: () => import('./i18n/de')
+      de: () => import('./i18n/de'),
     },
     contexts: [UnitSet, Session, Dimension, Level],
-    onComplete () {
+    onComplete() {
       instance.state.set('dependenciesComplete', true)
-    }
+    },
   })
 
   const { debug } = api
   const loadSessionDocs = createSessionLoader({ debug })
 
-  instance.autorun(computation => {
+  instance.autorun((computation) => {
     if (renderersLoaded.get()) {
       debug('renderers loaded')
       return computation.stop()
@@ -44,41 +44,49 @@ Template.story.onCreated(function () {
     }
 
     loadSessionDocs({ sessionId })
-      .catch(err => abortStory(instance, err))
+      .catch((err) => abortStory(instance, err))
       .then(({ sessionDoc, unitSetDoc, dimensionDoc, levelDoc, color }) => {
         if (!sessionDoc || !unitSetDoc || !dimensionDoc || !levelDoc) {
           return abortStory(instance)
         }
         console.log(color)
-        instance.state.set({ sessionDoc, unitSetDoc, dimensionDoc, levelDoc, color })
+        instance.state.set({
+          sessionDoc,
+          unitSetDoc,
+          dimensionDoc,
+          levelDoc,
+          color,
+        })
       })
   })
 })
 
 Template.story.helpers({
-  loadComplete () {
+  loadComplete() {
     const instance = Template.instance()
-    return instance.state.get('dependenciesComplete') &&
+    return (
+      instance.state.get('dependenciesComplete') &&
       instance.state.get('sessionDoc') &&
       instance.state.get('unitSetDoc') &&
       instance.state.get('dimensionDoc') &&
       renderersLoaded.get()
+    )
   },
-  pageContentData () {
+  pageContentData() {
     const intsance = Template.instance()
     const unitSetDoc = intsance.state.get('unitSetDoc')
     const sessionDoc = intsance.state.get('sessionDoc')
     const color = intsance.state.get('color')
 
     return {
-      isPreview: true,
+      isStory: true,
       currentPageCount: -1,
       sessionId: sessionDoc._id,
       doc: unitSetDoc,
-      color: color
+      color: color,
     }
   },
-  navbarData () {
+  navbarData() {
     const instance = Template.instance()
     const sessionDoc = instance.state.get('sessionDoc')
     const levelDoc = instance.state.get('levelDoc')
@@ -91,27 +99,27 @@ Template.story.helpers({
       unitSetDoc,
       dimensionDoc,
       showProgress: true,
-      onExit: instance.data.exit
+      onExit: instance.data.exit,
     }
   },
-  currentType () {
+  currentType() {
     const intsance = Template.instance()
     return intsance.state.get('color')
-  }
+  },
 })
 
 Template.story.events({
-  'click .lea-story-finish-button' (event, templateInstance) {
+  'click .lea-story-finish-button'(event, templateInstance) {
     event.preventDefault()
     const sessionDoc = templateInstance.state.get('sessionDoc')
     const sessionId = sessionDoc._id
     const { unitId } = templateInstance.data.params
 
     templateInstance.data?.next({ sessionId, unitId })
-  }
+  },
 })
 
-function abortStory (instance, err) {
+function abortStory(instance, err) {
   console.error('abort story')
   console.error(err)
   instance.data?.exit()

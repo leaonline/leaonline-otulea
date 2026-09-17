@@ -14,29 +14,29 @@ const fields = {
   contentId: 1,
   itemId: 1,
   score: 1,
-  responses: 1
+  responses: 1,
 }
 
-export const getResponses = ({ dryRun }) => {
-  const rows = [
-    Object.keys(fields).join(';')
-  ]
+export const getResponses = async ({ dryRun }) => {
+  const rows = [Object.keys(fields).join(';')]
 
-  Response.collection().find().forEach(responseDoc => {
-    const userDoc = Meteor.users.findOne(responseDoc.userId)
-    const unitDoc = Unit.collection().findOne(responseDoc.unitId)
+  Response.collection()
+    .find()
+    .forEach((responseDoc) => {
+      const userDoc = Meteor.users.findOne(responseDoc.userId)
+      const unitDoc = Unit.collection().findOne(responseDoc.unitId)
 
-    if (!userDoc || userDoc.isDemoUser || userDoc.isDemo || userDoc.debug) {
-      return console.debug('skip invalid user ', responseDoc.userId)
-    }
+      if (!userDoc || userDoc.isDemoUser || userDoc.isDemo || userDoc.debug) {
+        return console.debug('skip invalid user ', responseDoc.userId)
+      }
 
-    if (!unitDoc) {
-      return console.debug('skip missing unit ', responseDoc.unitId)
-    }
+      if (!unitDoc) {
+        return console.debug('skip missing unit ', responseDoc.unitId)
+      }
 
-    const row = toRow({ responseDoc, userDoc, unitDoc })
-    rows.push(row)
-  })
+      const row = toRow({ responseDoc, userDoc, unitDoc })
+      rows.push(row)
+    })
 
   const csvContent = rows.join('\n')
 
@@ -48,8 +48,7 @@ export const getResponses = ({ dryRun }) => {
     fs.writeFile(filePath, csvContent, (err) => {
       if (err) {
         console.log(filePath, err)
-      }
-      else {
+      } else {
         console.log(filePath, 'saved')
       }
     })
@@ -81,7 +80,7 @@ const toRow = ({ responseDoc, userDoc, unitDoc }) => {
     contentId,
     itemId,
     score,
-    `"${responses.join(',')}"`
+    `"${responses.join(',')}"`,
   ].join(';')
 }
 
@@ -91,7 +90,7 @@ const getItemId = ({ contentId, page, unitDoc }) => {
   if (!contentPage) return '?'
 
   let itemIndex = -1
-  contentPage.content.some(entry => {
+  contentPage.content.some((entry) => {
     if (entry.type === 'item') {
       itemIndex++
     }

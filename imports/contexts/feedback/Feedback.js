@@ -7,7 +7,7 @@
 export const Feedback = {
   name: 'feedback',
   label: 'feedback.title',
-  icon: 'star-half-alt'
+  icon: 'star-half-alt',
 }
 
 Feedback.schema = {
@@ -19,7 +19,7 @@ Feedback.schema = {
   // to feedbacks from teacher dashboard, filtered by dimension
   dimension: {
     type: String,
-    optional: true
+    optional: true,
   },
 
   competencies: Array,
@@ -41,7 +41,7 @@ Feedback.schema = {
   'alphaLevels.$.perc': Number,
   'alphaLevels.$.gradeName': String,
   'alphaLevels.$.gradeIndex': Number,
-  'alphaLevels.$.isGraded': Boolean
+  'alphaLevels.$.isGraded': Boolean,
 }
 
 Feedback.publications = {}

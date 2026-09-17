@@ -8,7 +8,7 @@ const defaultOptions = {
   breaks: true,
   gfm: true,
   async: true,
-  headerIds: false
+  headerIds: false,
 }
 
 LeaMarkdown.addRenderer = (name, impl) => {
@@ -16,12 +16,15 @@ LeaMarkdown.addRenderer = (name, impl) => {
 }
 
 LeaMarkdown.parse = async ({ input, options, renderer }) => {
-  const mergedOptions = { ...defaultOptions, ...options }
-  const usedRenderer = renderers.get(renderer)
-
-  if (usedRenderer) {
-    mergedOptions.renderer = usedRenderer
-  }
-
-  return marked.parse(input, mergedOptions)
+  if (!input?.value) return ''
+  const { value, ...definitions } = input
+  const rendererImpl = renderers.get(renderer).create(definitions)
+  return await marked.parse(
+    // biome-ignore lint: noMisleadingCharacterClass
+    value.replace(/^[\u200B\u200C\u200D\u200E\u200F\uFEFF]/, ''),
+    {
+      ...defaultOptions,
+      renderer: rendererImpl,
+    },
+  )
 }

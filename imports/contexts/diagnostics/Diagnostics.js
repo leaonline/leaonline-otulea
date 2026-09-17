@@ -1,32 +1,36 @@
 import { runDiagnostics } from './api/runDiagnostics'
 import { onServer } from '../../utils/archUtils'
 
+/**
+ * Diagnoses the current client's (usually browser) technical
+ * stats and availability if features.
+ */
 export const Diagnostics = {
   name: 'diagnostics',
   label: 'diagnostics.title',
   icon: 'microscope',
-  representative: 'allPassed'
+  representative: 'allPassed',
 }
 
 const optionalStr = {
   type: String,
-  optional: true
+  optional: true,
 }
 
 const optionalBoolean = {
   type: Boolean,
-  optional: true
+  optional: true,
 }
 
 const optionalNumber = {
   type: Number,
-  optional: true
+  optional: true,
 }
 
 Diagnostics.schema = {
   createdAt: {
     type: Date,
-    optional: true
+    optional: true,
   },
 
   // browser
@@ -89,20 +93,20 @@ Diagnostics.schema = {
 
   errors: {
     type: Array,
-    optional: true
+    optional: true,
   },
   'errors.$': {
     type: Object,
-    blackbox: true
+    blackbox: true,
   },
   log: {
     type: Array,
     optional: true,
-    max: 500
+    max: 500,
   },
   'log.$': {
-    type: String
-  }
+    type: String,
+  },
 }
 
 Diagnostics.api = {}
@@ -117,24 +121,24 @@ Diagnostics.methods.getAll = {
   schema: {
     ids: {
       type: Array,
-      optional: true
+      optional: true,
     },
     'ids.$': String,
     dependencies: {
       type: Array,
-      optional: true
+      optional: true,
     },
-    'dependencies.$': String
+    'dependencies.$': String,
   },
-  run: onServer(function ({ ids }) {
+  run: onServer(async ({ ids }) => {
     const query = {}
     if (ids?.length > 0) {
       query._id = { $in: ids }
     }
-    const all = Diagnostics.collection().find(query).fetch()
+    const all = await Diagnostics.collection().find(query).fetchAsync()
 
     return { [Diagnostics.name]: all }
-  })
+  }),
 }
 
 Diagnostics.methods.send = {
@@ -143,10 +147,10 @@ Diagnostics.methods.send = {
   timeInterval: 60 * 1000,
   numRequests: 1,
   isPublic: true,
-  run: onServer(function (data) {
+  run: onServer(async (data) => {
     data.createdAt = new Date()
-    return Diagnostics.collection().insert(data)
-  })
+    return Diagnostics.collection().insertAsync(data)
+  }),
 }
 
 Diagnostics.publications = {}

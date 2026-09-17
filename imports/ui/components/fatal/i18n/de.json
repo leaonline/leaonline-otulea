@@ -7,7 +7,7 @@
     "ok": "Ok"
   },
   "tts": {
-    "failed": "Dein Browser unterstützt leider keine Sprachausgabe. Bitte versuche deinen Browser zu aktualisieren oder installiere einen modernen Browser wie z.B. Firefox, Chrome oder Edge mit Unterstützung für Sprachausgabe."
+    "failed": "Dein Browser unterstützt leider keine Sprachausgabe. Bitte versuche es mit einem anderen Browser."
   },
   "unknown": "Der Fehler ist uns unbekannt, wir arbeiten aber daran dieses Problem zu beheben.",
   "content": {

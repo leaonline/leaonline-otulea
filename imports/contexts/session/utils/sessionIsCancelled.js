@@ -3,4 +3,5 @@
  * @param cancelledAt {Date|undefined}
  * @return {boolean}
  */
-export const sessionIsCancelled = ({ cancelledAt }) => Object.prototype.toString.call(cancelledAt) === '[object Date]'
+export const sessionIsCancelled = ({ cancelledAt }) =>
+  Object.prototype.toString.call(cancelledAt) === '[object Date]'

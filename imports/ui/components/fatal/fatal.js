@@ -14,16 +14,16 @@ Template.fatal.onCreated(function () {
   instance.initDependencies({
     language: true,
     translations: {
-      de: () => import('./i18n/de')
+      de: () => import('./i18n/de'),
     },
     loaders: [initFullTheme],
     onComplete: async () => {
       instance.state.set('dependenciesComplete', true)
     },
-    onError (err) {
+    onError(err) {
       console.error(err) // silently skip to keep messages displayed
       instance.state.set('dependenciesComplete', true)
-    }
+    },
   })
 })
 
@@ -40,25 +40,25 @@ Template.fatal.onRendered(function () {
 })
 
 Template.fatal.helpers({
-  errors () {
+  errors() {
     return Object.values(errors.all())
   },
-  loadComplete () {
+  loadComplete() {
     return Template.getState('dependenciesComplete')
-  }
+  },
 })
 
 Template.fatal.events({
-  'hidden.bs.modal' () {
+  'hidden.bs.modal'() {
     errors.clear()
     modalOpen.set(false)
-  }
+  },
 })
 
 export const fatal = ({ error }) => {
   const id = Random.id()
   errors.set(id, {
-    message: error.message
+    message: error.message,
   })
 
   if (!modalOpen.get()) {

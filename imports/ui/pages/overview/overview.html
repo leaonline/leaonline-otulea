@@ -1,14 +1,14 @@
 <template name="overview">
     <div class="lea-overview-container">
-
+      {{#unless error}}
         {{!--
-            the defaul container lists all dimensions that have been found when
+            The default container lists all dimensions that have been found when
             iterating all unit sets that are associated with this application
         --}}
 
         {{#container class="overview-dimensions-container my-4"}}
             {{#if loadComplete}}
-                <div class="card {{#if
+                <div class="card bg-white  {{#if
                         dimensionSelected}}d-unavailable2{{/if}}">
                     <div class="card-body">
                         {{> textGroup text=(i18n "pages.overview.chooseDimension")}}
@@ -16,7 +16,7 @@
                     <div class="card-body mt-3">
                         <div class="row d-flex justify-content-center">
                             {{#each allDimensions}}
-                                <div class="col col-xs-12 col-md-6 col-lg-3 my-1">
+                                <div class="col-12 col-md-6 col-xl-3 my-1">
                                     {{#actionButton
                                             block=true
                                             outline=true
@@ -26,7 +26,7 @@
                                             active=(isSelectedDimension this._id)
                                             btnClass="lea-dimension-button p-3 lea-text-bold  no-wrap"}}
                                         {{> icon name=this.icon
-                                                class="d-block ml-auto mr-auto my-2 fa-3x"}}
+                                                class="d-block ms-auto ml-auto me-auto my-2 fa-3x"}}
                                         <span class="lea-text">
                                             {{this.title}}
                                         </span>
@@ -51,24 +51,23 @@
         {{#with dimensionSelected}}
             {{#container class="overview-level-container my-4"}}
                 {{#if loadComplete}}
-                    <div class="card">
-                        <div class="card-body">
-                            {{#textGroup text=(i18n "pages.overview.chooseLevel")
-                                         type=colorType}}
-                                {{> actionButton
-                                        outline=true
-                                        tts="common.back"
-                                        type=colorType
-                                        icon="arrow-up"
-                                        data-target=".overview-level-container"
-                                        btnClass="lea-back-button  no-wrap"
-                                        data-type="level" }}
+                    <div class="card bg-white ">
+                        <div class="card-body d-flex justify-content-between align-items-center">
+                            {{#textGroup text=(i18n "pages.overview.chooseLevel") type=colorType}}
                             {{/textGroup}}
+                            {{> actionButton
+                                    outline=true
+                                    tts="common.back"
+                                    type=colorType
+                                    icon="arrow-up"
+                                    data-target=".overview-level-container"
+                                    btnClass="lea-back-button  no-wrap"
+                                    data-type="level" }}
                         </div>
                         <div class="card-body mt-3">
                             <div class="row d-flex justify-content-center">
                                 {{#each level in allLevels}}
-                                    <div class="col col-xs-12 col-md-6 col-lg-3 my-1">
+                                    <div class="col-12 col-md-6 col-xl-3 my-1">
                                         {{> actionButton
                                                 class="w-100 overview-button"
                                                 block=true
@@ -98,7 +97,7 @@
 
             {{#if levelSelected}}
                 {{#container class="overview-session-container my-4"}}
-                    <div class="card">
+                    <div class="card bg-white ">
                         {{#if levelLoadComplete}}
                             <div class="card-body mt-3 overview-level-description">
 
@@ -207,5 +206,16 @@
                 {{/container}}
             {{/if}}
         {{/with}}
+      {{else}}
+        {{#container class="overview-dimensions-container my-4"}}
+          {{#if loadComplete}}
+          <div class="card bg-white ">
+            <div class="card-body">
+              {{> textGroup text=(i18n error.message) type="danger"}}
+            </div>
+          </div>
+          {{/if}}
+        {{/container}}
+      {{/unless}}
     </div>
 </template>

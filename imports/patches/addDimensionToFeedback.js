@@ -8,13 +8,13 @@ export const addDimensionToFeedback = ({ dryRun, debug = () => {} } = {}) => {
   const result = {
     found: 0,
     updated: 0,
-    missing: []
+    missing: [],
   }
 
   const cursor = FeedbackCollection.find({ dimension: { $exists: false } })
   result.found = cursor.count()
 
-  cursor.forEach(feedbackDoc => {
+  cursor.forEach((feedbackDoc) => {
     let tcDoc = tcCache.get(feedbackDoc.testCycle)
 
     if (!tcDoc) {
@@ -24,7 +24,10 @@ export const addDimensionToFeedback = ({ dryRun, debug = () => {} } = {}) => {
 
     if (!tcDoc) {
       result.missing.push({ testCycle: feedbackDoc.testCycle })
-      return debug('[addDimensionToFeedback]: found no testCycle for', feedbackDoc.testCycle)
+      return debug(
+        '[addDimensionToFeedback]: found no testCycle for',
+        feedbackDoc.testCycle,
+      )
     }
 
     const { dimension } = tcDoc

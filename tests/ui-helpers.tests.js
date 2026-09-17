@@ -4,27 +4,24 @@ import { Tracker } from 'meteor/tracker'
 
 export const UITests = {}
 
-const withDiv = function withDiv (callback) {
-  const el = document.createElement('div')
-  document.body.appendChild(el)
-  try {
-    callback(el)
-  }
-  finally {
-    document.body.removeChild(el)
-  }
-}
-
-UITests.withRenderedTemplate = function withRenderedTemplate (template, data) {
-  return new Promise(resolve => {
-    withDiv(el => {
+UITests.withRenderedTemplate = (template, data) => {
+  return new Promise((resolve, reject) => {
+    const el = document.createElement('div')
+    try {
+      document.body.appendChild(el)
       const ourTemplate = typeof template === 'string'
         ? Template[template]
         : template
       Blaze.renderWithData(ourTemplate, data, el)
       Tracker.flush()
       resolve(el)
-    })
+    }
+    catch (e) {
+      reject(e)
+    }
+    finally {
+      document.body.removeChild(el)
+    }
   })
 }
 

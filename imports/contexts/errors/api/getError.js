@@ -1,3 +1,8 @@
 import { Errors } from '../Errors'
 
-export const getError = query => Errors.collection().findOne(query)
+/**
+ * Returns a single error by given query
+ * @param query {object}
+ * @return {Promise<*>}
+ */
+export const getError = async (query) => Errors.collection().findOneAsync(query)

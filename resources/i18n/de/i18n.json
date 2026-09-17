@@ -1,6 +1,9 @@
 {
+  "content": {
+    "notAvailable": "Inhalt sind zur Zeit nicht verfügbar. Bitte versuchen Sie es in Kürze erneut."
+  },
   "actions": {
-    "print": "Ausdrucken",
+    "print": "Drucken",
     "close": "Schließen",
     "continue": "Fortsetzen",
     "restart": "Neu starten",
@@ -28,6 +31,10 @@
     "help": "Hilfe",
     "description": "Beschreibung",
     "logo": "Lea Logo"
+  },
+  "task": {
+    "submit": "Überprüfen",
+    "explanation": "Erklärung"
   },
   "pages": {},
   "users": {

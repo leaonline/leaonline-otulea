@@ -15,23 +15,17 @@ Errors.collection = () => collection
 
 Errors.methods.get = createGetMethod({
   context: Errors,
-  run: function ({ _id }) {
-    return getError(_id)
-  }
+  run: ({ _id }) => getError(_id),
 })
 
 Errors.methods.getAll = createGetAllMethod({
   context: Errors,
-  run: function ({ ids }) {
-    return { [Errors.name]: getAllErrors(ids) }
-  }
+  run: ({ ids }) => ({ [Errors.name]: getAllErrors(ids) }),
 })
 
 Errors.methods.remove = createRemoveMethod({
   context: Errors,
-  run: function ({ _id }) {
-    return removeError({ _id })
-  }
+  run: ({ _id }) => removeError({ _id }),
 })
 
 const methods = Object.values(Errors.methods)

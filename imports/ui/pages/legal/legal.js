@@ -23,12 +23,14 @@ Template.legal.onCreated(function () {
     tts: true,
     onComplete: () => {
       instance.state.set('dependenciesComplete', true)
-    }
+    },
   })
 
   instance.autorun(() => {
     const dependenciesComplete = instance.state.get('dependenciesComplete')
-    if (!dependenciesComplete) { return }
+    if (!dependenciesComplete) {
+      return
+    }
 
     const data = Template.currentData()
     const { type } = data.params
@@ -42,7 +44,9 @@ Template.legal.onCreated(function () {
 
     if (!originalType) {
       instance.state.set({
-        error: new Error(i18n.get('pages.legal.unknownKey', { name: originalType }))
+        error: new Error(
+          i18n.get('pages.legal.unknownKey', { name: originalType }),
+        ),
       })
     }
 
@@ -51,10 +55,10 @@ Template.legal.onCreated(function () {
 
       LeaMarkdown.parse({
         input: res,
-        renderer: legalRendererName
+        renderer: legalRendererName,
       })
         .then((content) => instance.state.set({ content }))
-        .catch(error => {
+        .catch((error) => {
           console.error(error)
           instance.state.set({ error })
         })
@@ -65,23 +69,25 @@ Template.legal.onCreated(function () {
 })
 
 Template.legal.helpers({
-  allComplete () {
-    return Template.getState('dependenciesComplete') && Template.getState('content')
+  allComplete() {
+    return (
+      Template.getState('dependenciesComplete') && Template.getState('content')
+    )
   },
-  dependenciesComplete () {
+  dependenciesComplete() {
     return Template.getState('dependenciesComplete')
   },
-  content () {
+  content() {
     return Template.getState('content')
   },
-  legalTitle () {
+  legalTitle() {
     const type = Template.getState('type')
     return `pages.legal.${type}`
-  }
+  },
 })
 
 Template.legal.events({
-  'click .back-button' (/* event, templateInstance */) {
+  'click .back-button'(/* event, templateInstance */) {
     window.history.back()
-  }
+  },
 })

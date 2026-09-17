@@ -23,15 +23,15 @@ Template.welcome.onCreated(function () {
     language: true,
     tts: true,
     translations: {
-      de: () => import('./i18n/de')
+      de: () => import('./i18n/de'),
     },
     onComplete: () => {
       instance.state.set('dependenciesComplete', true)
     },
-    onError: e => {
+    onError: (e) => {
       // instance.data.onFail()
       instance.state.set('dependenciesComplete', true)
-    }
+    },
   })
 
   instance.newUser = new ReactiveVar()
@@ -40,7 +40,7 @@ Template.welcome.onCreated(function () {
     loadComplete: false,
     isDemoUser: !!instance.data?.queryParams?.demo,
     appStatus: appStatus,
-    isBeta: appStatus === 'beta'
+    isBeta: appStatus === 'beta',
   })
 
   // see if we have a cached code and this may be a page refresh
@@ -50,16 +50,16 @@ Template.welcome.onCreated(function () {
   }
 
   instance.wizard = {
-    intro (value) {
+    intro(value) {
       instance.state.set({ intro: value })
     },
-    newCode (value) {
+    newCode(value) {
       // if we have no case yet we need to ask the server to create one
       if (!instance.newUser.get()) {
         instance.api.callMethod({
           name: Users.methods.generateCode,
           args: {},
-          failure: err => {
+          failure: (err) => {
             // as a fallback due to server error we try to generate a code from
             // client and hope it gets accepted on login
             console.error(err)
@@ -67,17 +67,17 @@ Template.welcome.onCreated(function () {
             window.localStorage.setItem('newUserCode', fallbackCode)
             instance.newUser.set(fallbackCode)
           },
-          success: code => {
+          success: (code) => {
             window.localStorage.setItem('newUserCode', code)
             instance.newUser.set(code)
-          }
+          },
         })
       }
       instance.state.set({ newCode: value })
     },
-    login (value) {
+    login(value) {
       instance.state.set({ login: value })
-    }
+    },
   }
 
   instance.state.set('loadComplete', true)
@@ -85,32 +85,32 @@ Template.welcome.onCreated(function () {
 })
 
 Template.welcome.helpers({
-  loadComplete () {
+  loadComplete() {
     return Template.instance().state.get('loadComplete')
   },
-  dependenciesComplete () {
+  dependenciesComplete() {
     return Template.instance().state.get('dependenciesComplete')
   },
-  isBeta () {
+  isBeta() {
     return Template.instance().state.get('isBeta')
   },
-  betaMessageOpen () {
+  betaMessageOpen() {
     return Template.instance().state.get('betaMessageOpen')
   },
-  intro () {
+  intro() {
     return Template.instance().state.get('intro')
   },
-  newCode () {
+  newCode() {
     return Template.instance().state.get('newCode')
   },
-  login () {
+  login() {
     return Template.instance().state.get('login')
   },
-  or (...args) {
+  or(...args) {
     args.pop()
-    return args.some(entry => !!entry)
+    return args.some((entry) => !!entry)
   },
-  randomCode () {
+  randomCode() {
     const newUser = Template.instance().newUser.get()
     if (!newUser) return
     const split = newUser.split('')
@@ -118,46 +118,46 @@ Template.welcome.helpers({
     const tts = split.join(', ')
     return { text, tts }
   },
-  loginFail () {
+  loginFail() {
     return Template.getState('loginFail')
   },
-  videoRequested () {
+  videoRequested() {
     return Template.getState('videoRequested')
   },
-  loginRequired () {
+  loginRequired() {
     if (loggedIn()) {
       return false
     }
     const instance = Template.instance()
     return instance.state.get('login') || instance.state.get('newCode')
   },
-  loggedIn () {
+  loggedIn() {
     if (!loggedIn()) return false
     return !Template.getState('loggingIn')
   },
-  loggingIn () {
+  loggingIn() {
     return Template.getState('loggingIn')
   },
-  loginTTS () {
+  loginTTS() {
     const loginCode = Template.getState('loginCode')
     if (!loginCode || !loginCode.length) return ''
     return loginCode.split('').join(', ')
   },
-  inputFieldIndices () {
+  inputFieldIndices() {
     return inputFieldIndices.slice(1, inputFieldIndices.length)
-  }
+  },
 })
 
 Template.welcome.events({
-  'click .lea-logout-button' (event, templateInstance) {
+  'click .lea-logout-button'(event, templateInstance) {
     event.preventDefault()
     Meteor.logout()
   },
-  'click .request-video-button' (event, templateInstance) {
+  'click .request-video-button'(event, templateInstance) {
     event.preventDefault()
     templateInstance.state.set('videoRequested', true)
   },
-  'click .lea-welcome-yes' (event, templateInstance) {
+  'click .lea-welcome-yes'(event, templateInstance) {
     event.preventDefault()
 
     // if we have a video container we can shrink it's size using a nice effect
@@ -166,7 +166,7 @@ Template.welcome.events({
     templateInstance.wizard.login(true)
     setTimeout(() => focusInput(templateInstance), 50)
   },
-  'click .lea-welcome-no' (event, templateInstance) {
+  'click .lea-welcome-no'(event, templateInstance) {
     event.preventDefault()
 
     templateInstance.wizard.newCode(true)
@@ -176,7 +176,7 @@ Template.welcome.events({
     // $videoContainer.animate({ height: '200px' }, 500, 'swing', () => {})
     setTimeout(() => focusInput(templateInstance), 50)
   },
-  'paste .login-field' (event, templateInstance) {
+  'paste .login-field'(event, templateInstance) {
     // Stop data actually being pasted
     event.stopPropagation()
     event.preventDefault()
@@ -198,7 +198,7 @@ Template.welcome.events({
       return false
     }
 
-    inputFieldIndices.forEach(index => {
+    inputFieldIndices.forEach((index) => {
       const value = pastedData.charAt(index)
       templateInstance.$(`input[data-index="${index}"]`).val(value)
     })
@@ -206,7 +206,7 @@ Template.welcome.events({
     templateInstance.state.set('loginCode', pastedData)
     showLoginButton(templateInstance)
   },
-  'input .login-field' (event, templateInstance) {
+  'input .login-field'(event, templateInstance) {
     const key = event.originalEvent.data
     const $current = templateInstance.$(event.currentTarget)
     console.debug('input', key)
@@ -224,25 +224,20 @@ Template.welcome.events({
       if (index < CODE_LENGTH - 1) {
         const $next = templateInstance.$(`input[data-index="${index + 1}"]`)
         $next.focus()
-      }
-      else {
+      } else {
         showLoginButton(templateInstance)
       }
 
       return true
-    }
-
-    else if (/\s+/.test(key)) {
+    } else if (/\s+/.test(key)) {
       $current.val(null)
       $current.focus()
-    }
-
-    else {
+    } else {
       event.preventDefault()
       return false
     }
   },
-  'keydown .login-field' (event, templateInstance) {
+  'keydown .login-field'(event, templateInstance) {
     const key = event.key.toLowerCase()
 
     if (key === 'enter' || key === 'return') {
@@ -257,11 +252,21 @@ Template.welcome.events({
 
     // skip everything on Tab to keep
     // accessibility in standard mode
-    if (['escape', 'tab', 'shift', 'control', 'alt', ' ', 'spacebar', 'space bar'].includes(key) || /F\d{1,2}/i.test(key)) {
+    if (
+      [
+        'escape',
+        'tab',
+        'shift',
+        'control',
+        'alt',
+        ' ',
+        'spacebar',
+        'space bar',
+      ].includes(key) ||
+      /F\d{1,2}/i.test(key)
+    ) {
       return true
-    }
-
-    else if (/^[a-zA-Z0-9]{1}$/i.test(key)) {
+    } else if (/^[a-zA-Z0-9]{1}$/i.test(key)) {
       return true
     }
 
@@ -284,9 +289,7 @@ Template.welcome.events({
         $current.focus()
         const loginCode = getLoginCode(templateInstance)
         templateInstance.state.set('loginCode', loginCode)
-      }
-
-      else if (index > 0) {
+      } else if (index > 0) {
         // if the current input contains no value we "jump" to the previous
         // input and delete it, then update field and position
         const $prev = templateInstance.$(`input[data-index="${index - 1}"]`)
@@ -296,18 +299,14 @@ Template.welcome.events({
         // update logincode
         const loginCode = getLoginCode(templateInstance)
         templateInstance.state.set('loginCode', loginCode)
-      }
-
-      else {
+      } else {
         return true
       }
-    }
-
-    else {
+    } else {
       return true
     }
   },
-  'keydown .lea-welcome-login' (event, templateInstance) {
+  'keydown .lea-welcome-login'(event, templateInstance) {
     const key = event.key.toLowerCase()
 
     if (['backspace', 'delete', 'clear', 'cut', 'undo'].includes(key)) {
@@ -320,7 +319,7 @@ Template.welcome.events({
       templateInstance.state.set('loginCode', loginCode)
     }
   },
-  'click .lea-welcome-login' (event, templateInstance) {
+  'click .lea-welcome-login'(event, templateInstance) {
     event.preventDefault()
 
     templateInstance.state.set('loggingIn', true)
@@ -330,26 +329,26 @@ Template.welcome.events({
 
     if (newCode) {
       registerNewUser(loginCode.toUpperCase(), templateInstance)
-    }
-
-    else {
+    } else {
       loginUser(loginCode.toUpperCase(), templateInstance)
     }
   },
-  'click .lea-back-button' (event, templateInstance) {
+  'click .lea-back-button'(event, templateInstance) {
     event.preventDefault()
     templateInstance.wizard.newCode(false)
     templateInstance.state.set('loginFail', false)
-    templateInstance.$('.intro-video-container').animate({ height: originalVideoHeight }, 500, 'swing', () => {
-      templateInstance.wizard.login(false)
-    })
+    templateInstance
+      .$('.intro-video-container')
+      .animate({ height: originalVideoHeight }, 500, 'swing', () => {
+        templateInstance.wizard.login(false)
+      })
   },
-  'click .to-overview-button' (event, templateInstance) {
+  'click .to-overview-button'(event, templateInstance) {
     fadeOut('.lea-welcome-container', templateInstance, () => {
       templateInstance.data.next()
     })
   },
-  'click .toggle-beta' (event, templateInstance) {
+  'click .toggle-beta'(event, templateInstance) {
     event.preventDefault()
 
     // prevent multiple clicks here
@@ -367,23 +366,22 @@ Template.welcome.events({
 
     if (betaMessageOpen) {
       templateInstance.api.fadeOut('.beta-content', betaToggleComplete)
-    }
-    else {
+    } else {
       templateInstance.api.fadeIn('.beta-content', betaToggleComplete)
     }
-  }
+  },
 })
 
-function getLoginCode (templateInstance) {
+function getLoginCode(templateInstance) {
   let loginCode = ''
-  templateInstance.$('.login-field').each(function (index, input) {
+  templateInstance.$('.login-field').each((index, input) => {
     loginCode += templateInstance.$(input).val()
   })
   return loginCode
 }
 
-function resetInputs (templateInstance) {
-  templateInstance.$('.login-field').each(function (index, input) {
+function resetInputs(templateInstance) {
+  templateInstance.$('.login-field').each((index, input) => {
     templateInstance.$(input).val(null)
   })
   // update logincode
@@ -391,19 +389,19 @@ function resetInputs (templateInstance) {
   templateInstance.state.set('loginCode', loginCode)
 }
 
-function focusInput (templateInstance) {
+function focusInput(templateInstance) {
   const $target = templateInstance.$('input[data-index="0"]')
   $target.focus()
   $target.get(0).scrollIntoView(true)
 }
 
-function showLoginButton (templateInstance) {
+function showLoginButton(templateInstance) {
   const $target = templateInstance.$('.lea-welcome-login-container')
   $target.removeClass('d-none')
   templateInstance.$('.lea-welcome-login').focus()
 }
 
-function loginFail (templateInstance, error) {
+function loginFail(templateInstance, error) {
   resetInputs(templateInstance)
   focusInput(templateInstance)
   templateInstance.state.set('loggingIn', false)
@@ -417,7 +415,7 @@ function loginFail (templateInstance, error) {
   }
 }
 
-function registerNewUser (code, templateInstance) {
+function registerNewUser(code, templateInstance) {
   const registerCode = templateInstance.newUser.get()
   const isDemoUser = templateInstance.state.get('isDemoUser')
 
@@ -431,12 +429,12 @@ function registerNewUser (code, templateInstance) {
     name: Users.methods.register,
     args: { code, isDemoUser },
     prepare: () => templateInstance.state.set('loggingIn', true),
-    failure: err => loginFail(templateInstance, err),
-    success: () => loginUser(code, templateInstance)
+    failure: (err) => loginFail(templateInstance, err),
+    success: () => loginUser(code, templateInstance),
   })
 }
 
-function loginUser (code, templateInstance) {
+function loginUser(code, templateInstance) {
   Meteor.loginWithPassword(code, code, (err) => {
     if (err) {
       return loginFail(templateInstance, err)
@@ -450,7 +448,7 @@ function loginUser (code, templateInstance) {
   })
 }
 
-function onLoggedIn (templateInstance) {
+function onLoggedIn(templateInstance) {
   templateInstance.state.set('loggingIn', false)
   templateInstance.state.set('loginFail', false)
 
@@ -465,8 +463,8 @@ function onLoggedIn (templateInstance) {
       screenWidth,
       screenHeight,
       viewPortWidth,
-      viewPortHeight
+      viewPortHeight,
     },
-    failure: err => console.error(err)
+    failure: (err) => console.error(err),
   })
 }

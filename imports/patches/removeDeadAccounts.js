@@ -4,7 +4,7 @@ import { isValidInteger } from '../utils/number/validNumbers'
 import { Session } from '../contexts/session/Session'
 import { Response } from '../contexts/response/Response'
 
-const daysIsValid = d => isValidInteger(d) && d >= 0
+const daysIsValid = (d) => isValidInteger(d) && d >= 0
 
 /**
  * We can safely remove accounts, that have not started any session and is older
@@ -24,7 +24,13 @@ const daysIsValid = d => isValidInteger(d) && d >= 0
  *   usersRemoved : Number
  * }}
  */
-export const removeDeadAccounts = function ({ dryRun, removeOlderThanDays, removeIncompleteSessions = false, byComment, debug = () => {} }) {
+export const removeDeadAccounts = ({
+  dryRun,
+  removeOlderThanDays,
+  removeIncompleteSessions = false,
+  byComment,
+  debug = () => {},
+}) => {
   check(removeOlderThanDays, Match.Where(daysIsValid))
   check(removeIncompleteSessions, Match.Maybe(Boolean))
   check(byComment, Match.Maybe(String))
@@ -42,7 +48,7 @@ export const removeDeadAccounts = function ({ dryRun, removeOlderThanDays, remov
     userQuery.comment = byComment
   }
 
-  Meteor.users.find(userQuery).forEach(userDoc => {
+  Meteor.users.find(userQuery).forEach((userDoc) => {
     const userId = userDoc._id
     const sessionQuery = { userId }
 
@@ -64,7 +70,7 @@ export const removeDeadAccounts = function ({ dryRun, removeOlderThanDays, remov
     return {
       sessionsRemoved: 0,
       responsesRemoved: 0,
-      usersRemoved: 0
+      usersRemoved: 0,
     }
   }
 

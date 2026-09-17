@@ -1,6 +1,6 @@
 /* eslint-env mocha */
-describe('accounts', function () {
-  import './isDebugUser.tests'
-  import './generateUserCode.tests'
-  import './removeUser.tests'
+describe('accounts', () => {
+  require('./isDebugUser.tests')
+  require('./generateUserCode.tests')
+  require('./removeUser.tests')
 })

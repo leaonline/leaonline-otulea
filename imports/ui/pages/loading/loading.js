@@ -9,12 +9,12 @@ Template.loading.onCreated(function () {
     },
     onError: () => {
       instance.state.set('loadComplete', true)
-    }
+    },
   })
 })
 
 Template.loading.helpers({
-  loadComplete () {
+  loadComplete() {
     return Template.getState('loadComplete')
-  }
+  },
 })

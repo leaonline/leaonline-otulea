@@ -2,25 +2,25 @@
 import { Session } from '../Session'
 import { onServerExec } from '../../../utils/archUtils'
 
-describe(Session.name, function () {
-  describe('utils', function () {
-    import './getSessionDoc.tests'
-    import './isCurrentUnit.tests'
-    import './isEmptySession.tests'
-    import './sessionIsCancelled.tests'
-    import './sessionIsComplete.tests'
+describe(Session.name, () => {
+  describe('utils', () => {
+    require('./getSessionDoc.tests')
+    require('./isCurrentUnit.tests')
+    require('./isEmptySession.tests')
+    require('./sessionIsCancelled.tests')
+    require('./sessionIsComplete.tests')
   })
 
-  onServerExec(function () {
-    describe('api', function () {
-      import './startSession.tests'
-      import './updateSession.tests'
-      import './cancelSession.tests'
-      import './continueSession.tests'
-      import './getLastSessionByTestCycle.tests'
-      import './getSessionResponses.tests'
-      import './recentCompleted.tests'
-      import './results.tests'
+  onServerExec(() => {
+    describe('api', () => {
+      require('./startSession.tests')
+      require('./updateSession.tests')
+      require('./cancelSession.tests')
+      require('./continueSession.tests')
+      require('./getLastSessionByTestCycle.tests')
+      require('./getSessionResponses.tests')
+      require('./recentCompleted.tests')
+      require('./results.tests')
     })
   })
 })

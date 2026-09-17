@@ -11,30 +11,41 @@ import { checkDocument } from '../../../infrastructure/mixins/checkDocument'
  * @param options.userId
  * @return {*}
  */
-export const continueSession = function continueSession (options = {}) {
-  check(options, Match.ObjectIncluding({
-    sessionId: String,
-    userId: String
-  }))
+export const continueSession = async (options = {}) => {
+  check(
+    options,
+    Match.ObjectIncluding({
+      sessionId: String,
+      userId: String,
+    }),
+  )
 
   const { sessionId, userId } = options
   const SessionCollection = Session.collection()
-  const sessionDoc = SessionCollection.findOne({ _id: sessionId, userId })
+  const sessionDoc = await SessionCollection.findOneAsync({
+    _id: sessionId,
+    userId,
+  })
   checkDocument(sessionDoc, Session)
 
   if (sessionIsComplete(sessionDoc)) {
     throw new Meteor.Error('session.continueFailed', 'session.isComplete', {
-      sessionId, userId, completedAt: sessionDoc.completedAt
+      sessionId,
+      userId,
+      completedAt: sessionDoc.completedAt,
     })
   }
 
   if (sessionIsCancelled(sessionDoc)) {
     throw new Meteor.Error('session.continueFailed', 'session.isCancelled', {
-      sessionId, userId, cancelledAt: sessionDoc.cancelledAt
+      sessionId,
+      userId,
+      cancelledAt: sessionDoc.cancelledAt,
     })
   }
 
-  return SessionCollection.update(sessionId, {
-    $set: { continuedAt: new Date() }
-  }) && SessionCollection.findOne(sessionId)
+  const updated = await SessionCollection.updateAsync(sessionId, {
+    $set: { continuedAt: new Date() },
+  })
+  return updated && SessionCollection.findOneAsync(sessionId)
 }

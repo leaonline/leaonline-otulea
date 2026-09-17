@@ -38,22 +38,24 @@ export const getGrade = ({ count, minCount, percent, thresholds }) => {
     }
   }
 
-  throw new Error(`Unexpected code reach: expected ${percent} to be within defined thresholds.`)
+  throw new Error(
+    `Unexpected code reach: expected ${percent} to be within defined thresholds.`,
+  )
 }
 
 const gradeSchema = Schema.create({
   count: {
     type: Number,
-    min: 0
+    min: 0,
   },
   minCount: {
     type: Number,
-    min: 1
+    min: 1,
   },
   percent: {
     type: Number,
     min: 0,
-    max: 1
+    max: 1,
   },
   thresholds: Array,
   'thresholds.$': Object,
@@ -61,6 +63,6 @@ const gradeSchema = Schema.create({
   'thresholds.$.max': {
     type: Number,
     min: 0,
-    max: 1
-  }
+    max: 1,
+  },
 })
