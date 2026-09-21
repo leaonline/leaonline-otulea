@@ -54,7 +54,13 @@ describe('Routes definitions', () => {
       Routes.diagnostics,
     ]
 
-    for (const route of routes) await route.load()
+    for (const route of routes) {
+      try {
+        await route.load()
+      } catch (e) {
+        expect.fail(`failed to load template ${e.template} from route ${e.name}`)
+      }
+    }
 
     expect(Template.notFound).to.be.an('object')
     expect(Template.loading).to.be.an('object')

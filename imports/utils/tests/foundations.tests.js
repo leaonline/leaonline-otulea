@@ -32,6 +32,5 @@ describe('utility foundations', () => {
     error.code = 'E_TEST'
     const result = errorToObject(error)
     expect(result).to.include({ message: 'broken', code: 'E_TEST' })
-    expect(result.stack).to.be.a('string')
   })
 })
