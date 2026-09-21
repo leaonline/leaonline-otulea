@@ -26,7 +26,6 @@ import '../../layout/navbar/navbar'
 import '../../templates/initMarkdownRenderer'
 import './unit.html'
 
-const renderersLoaded = initTaskRenderers()
 const responseCache = ResponseCache.create(window.localStorage)
 const pageCache = UnitPageCache.create(window.localStorage)
 const submitItems = createItemSubmit({
@@ -42,6 +41,7 @@ const submitItems = createItemSubmit({
 
 Template.unit.onCreated(function () {
   const instance = this
+  instance.renderersLoaded = initTaskRenderers()
   instance.state.setDefault('currentPageCount', -1)
   instance.state.setDefault('maxPages', -1)
   instance.dependenciesLoaded = new ReactiveVar(false)
@@ -133,7 +133,7 @@ Template.unit.helpers({
       instance.dependenciesLoaded.get() &&
       instance.state.get('unitDoc') &&
       instance.state.get('sessionDoc') &&
-      renderersLoaded.get()
+      instance.renderersLoaded.get()
     )
   },
   navLoadComplete() {
@@ -145,7 +145,7 @@ Template.unit.helpers({
     )
   },
   pageContentData() {
-    if (!renderersLoaded.get()) return
+    if (!Template.instance().renderersLoaded.get()) return
 
     const instance = Template.instance()
     const sessionDoc = instance.state.get('sessionDoc')

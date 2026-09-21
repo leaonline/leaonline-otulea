@@ -10,10 +10,10 @@ import '../../components/container/container'
 import '../../layout/navbar/navbar'
 import './story.html'
 
-const renderersLoaded = initTaskRenderers()
 
 Template.story.onCreated(function () {
   const instance = this
+  instance.renderersLoaded = initTaskRenderers()
   const { api } = instance.initDependencies({
     tts: true,
     language: true,
@@ -30,7 +30,7 @@ Template.story.onCreated(function () {
   const loadSessionDocs = createSessionLoader({ debug })
 
   instance.autorun((computation) => {
-    if (renderersLoaded.get()) {
+    if (instance.renderersLoaded.get()) {
       debug('renderers loaded')
       return computation.stop()
     }
@@ -66,7 +66,7 @@ Template.story.helpers({
       instance.state.get('sessionDoc') &&
       instance.state.get('unitSetDoc') &&
       instance.state.get('dimensionDoc') &&
-      renderersLoaded.get()
+      instance.renderersLoaded.get()
     )
   },
   pageContentData() {

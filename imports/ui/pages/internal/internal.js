@@ -20,12 +20,11 @@ import '../../components/container/container'
 import '../login/login'
 import '../../layout/navbar/navbar'
 
-const renderersLoaded = initTaskRenderers()
-
 Scoring.init()
 
 Template.internal.onCreated(function () {
   const instance = this
+  instance.renderersLoaded = initTaskRenderers()
   instance.state.setDefault('currentPageCount', 0)
   instance.state.setDefault('maxPages', -1)
   instance.state.setDefault('color', 'primary')
@@ -173,7 +172,7 @@ Template.internal.helpers({
   dependenciesComplete() {
     return (
       Template.getState('dependenciesComplete') &&
-      renderersLoaded.get() &&
+      Template.instance().renderersLoaded.get() &&
       !Template.getState('loading')
     )
   },
@@ -196,9 +195,10 @@ Template.internal.helpers({
     return Template.getState('color')
   },
   pageContentData() {
-    if (!renderersLoaded.get()) return
-
     const instance = Template.instance()
+
+    if (!instance.renderersLoaded.get()) return
+
     const unitDoc = instance.state.get('unitDoc')
     const currentPageCount = instance.state.get('currentPageCount')
     const color = instance.state.get('color')
