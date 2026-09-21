@@ -3,7 +3,7 @@
   "modes": {
     "unit": {
       "server": 191,
-      "client": 178
+      "client": 206
     },
     "fullApp": {
       "server": 1,

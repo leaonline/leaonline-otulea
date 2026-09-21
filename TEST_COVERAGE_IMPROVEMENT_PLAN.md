@@ -1,6 +1,6 @@
 # Test Coverage Improvement Plan
 
-Status: revised proposal only. This document does not implement tests or change production code.
+Status: first tests-only milestone implemented on 2026-09-21; production code remains unchanged.
 
 This revision supersedes the earlier extraction/refactoring and app-flow phases. The remaining
 coverage work is strictly test-only and behavior-preserving. In particular, it must not refactor
@@ -9,6 +9,28 @@ client code, add production test seams, extend the existing app-flow suite, or i
 Coverage snapshot reviewed: `.coverage/lcov.info` and the result of
 `node scripts/check-coverage.mjs`, generated on 2026-09-21. Test inventories were read from
 `.test-results/`.
+
+## Implementation result
+
+The first milestone was reached with isolated client tests for routing, shared and small Blaze
+adapters, the story adapter, template runtime integration, and the exported browser diagnostics
+runner. A test-only Blaze harness retains and removes each rendered view, flushes Tracker, uses
+real bubbling DOM events, and restores temporary global helpers after cleanup.
+
+Two consecutive clean, unfiltered `./test.sh -c -o` runs produced identical results:
+
+| Metric | Corrected baseline | Verified result | Increase |
+| --- | ---: | ---: | ---: |
+| Lines | 2,338 / 3,838 (60.92%) | 2,692 / 3,838 (70.14%) | +354 |
+| Branches | 903 / 1,588 (56.86%) | 1,014 / 1,588 (63.85%) | +111 |
+| Functions | 504 / 1,047 (48.14%) | 645 / 1,047 (61.60%) | +141 |
+| Unit tests | 191 server / 178 client | 191 server / 206 client | +28 client |
+
+Production inventory remained fixed at 217 files: 206 reported, 11 allowlisted, and zero
+unexplained. The exact hit floors and client test-count floor were raised to these verified values;
+all denominator and inventory limits remain unchanged. Because the plan defines its completion
+point as the first milestone, the larger adapter and residual server slices remain candidates for
+a separately approved follow-up toward the second target.
 
 ## Why the reported percentage fell
 

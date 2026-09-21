@@ -19,5 +19,6 @@ describe('api', function () {
   onClientExec(function () {
     import '../../imports/api/context/tests'
     import '../../imports/api/tts/tests'
+    require('../../imports/contexts/diagnostics/tests')
   })
 })

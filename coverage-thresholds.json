@@ -3,15 +3,15 @@
   "metrics": {
     "lines": {
       "found": 3838,
-      "hit": 2338
+      "hit": 2692
     },
     "branches": {
       "found": 1588,
-      "hit": 903
+      "hit": 1014
     },
     "functions": {
       "found": 1047,
-      "hit": 504
+      "hit": 645
     }
   },
   "inventory": {
