@@ -1,5 +1,5 @@
 <template name="internal">
-  <div class="container vh-100">
+  <div class="container">
     {{#onComplete complete=dependenciesComplete}}
       {{#unless currentUser}}
         <h1>Login for Internal</h1>
@@ -89,6 +89,20 @@
               </div>
             {{/if}}
             {{> taskPageRenderer pageContentData}}
+          {{/container}}
+        {{else if isComplete}}
+          {{#container class=(containerClass "lea-unit-content-container bg-light overflow-auto py-3")}}
+          {{#if isFullScreen}}
+            <div class="py-2 d-flex justify-content-between align-items-center">
+              <button class="btn btn-sm btn-secondary present-btn ms-auto" data-mode="off">
+                {{> icon name="compress-alt" }}
+              </button>
+            </div>
+          {{/if}}
+              {{> icon name="thumbs-up" class="fa-3x text-primary"}}
+              {{> icon name="thumbs-up" class="fa-3x text-primary"}}
+              {{> icon name="thumbs-up" class="fa-3x text-primary"}}
+              {{> textGroup text=(i18n "internal.complete") align="center"}}
           {{/container}}
         {{else if isFullScreen}}
           <div class="{{containerClass}} lea-unit-content-container bg-light overflow-auto py-3">

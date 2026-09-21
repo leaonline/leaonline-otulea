@@ -158,14 +158,15 @@ Template.internal.onCreated(function () {
     responseCache.flush()
     instance.state.set({ unitDoc: null, story: null, currentPageCount: 0 })
 
-    if (nextUnit) {
-      setQueryParam({ page: 0 })
-      setTimeout(() => {
-        instance.state.set({ unitDoc: nextUnit })
-      }, 500)
-    } else {
-      // reached end of units, show eval screen
-    }
+    setQueryParam({ page: 0 })
+
+    setTimeout(() => {
+      const newState = nextUnit
+        ? { unitDoc: nextUnit }
+        : { isComplete: true }
+      instance.state.set(newState)
+    }, 500)
+
   }
 })
 
@@ -236,6 +237,9 @@ Template.internal.helpers({
   isFullScreen() {
     return Template.getState('presentationMode')
   },
+  isComplete () {
+    return Template.getState('isComplete')
+  },
   containerClass (baseName) {
     const presentation =  Template.getState('presentationMode')
     const presentationClass = presentation ? 'fullscreen' : ''
@@ -272,7 +276,7 @@ Template.internal.events({
   },
   'click .unit-btn'(event, instance) {
     event.preventDefault()
-    instance.state.set({ unitDoc: null, story: null, currentPageCount: 0 })
+    instance.state.set({ unitDoc: null, story: null, currentPageCount: 0, isComplete: false,  })
     const index = dataTarget(event, 'index')
     const units = instance.state.get('unitDocs')
     const unitDoc = units[index]
@@ -285,6 +289,7 @@ Template.internal.events({
       story: unitSet.story,
       unitDoc: null,
       currentPageCount: 0,
+      isComplete: false,
     })
   },
   'click .forward-btn'(event, instance) {
@@ -333,6 +338,7 @@ async function loadUnitSet({ code, isShortCode, from, instance }) {
         from,
         throwIfNotFound,
         query: { _id: unitId },
+        isComplete: false,
       })
       unitDocs.push(unitDoc)
     }

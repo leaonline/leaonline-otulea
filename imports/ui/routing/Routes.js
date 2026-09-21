@@ -318,7 +318,7 @@ Env.on(['dev', 'staging'], () => {
     async load() {
       return import('../pages/internal/internal')
     },
-    target: null,
+    target: 'internal-render-target',
     template: 'internal',
     data: {},
   }
