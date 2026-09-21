@@ -16,6 +16,13 @@ import '../../components/container/container'
 import './overview.scss'
 import './overview.html'
 import { sendError } from '../../../contexts/errors/api/sendError'
+import {
+  classifySession,
+  collectContentFilters,
+  getScrollTarget,
+  resolveLaunchNavigation,
+  sessionRequest,
+} from './overviewBehavior'
 
 Template.overview.onDestroyed(function () {
   const instance = this
@@ -48,15 +55,7 @@ Template.overview.onCreated(function () {
       throw new Error('content.notAvailable')
     }
 
-    const dimensions = new Set()
-    const levels = new Set()
-
-    testCycle.forEach((tstCycleDoc) => {
-      dimensions.add(tstCycleDoc.dimension)
-      levels.add(tstCycleDoc.level)
-    })
-
-    const dimensionIds = Array.from(dimensions)
+    const { dimensionIds, levelIds } = collectContentFilters(testCycle)
     await loadAllContentDocs({
       context: Dimension,
       ids: dimensionIds,
@@ -64,7 +63,6 @@ Template.overview.onCreated(function () {
       params: { ids: dimensionIds },
     })
 
-    const levelIds = Array.from(levels)
     await loadAllContentDocs({
       context: Level,
       ids: levelIds,
@@ -74,7 +72,7 @@ Template.overview.onCreated(function () {
 
     instance.state.set({
       contentDocsLoadComplete: true,
-      dimensionFilter: Array.from(dimensions),
+      dimensionFilter: dimensionIds,
     })
   }
 
@@ -167,31 +165,17 @@ Template.overview.onCreated(function () {
       args: { testCycleId: testCycle._id },
       success: (sessionDoc) => {
         console.debug('session doc loaded', { sessionDoc })
-        if (!sessionDoc) {
-          return instance.state.set({
-            completedSessionDetected: false,
-            abortedSessionDetected: false,
-            sessionDoc: null,
-          })
-        }
-
-        if (sessionDoc.completedAt) {
-          instance.state.set({ completedSessionDetected: true, sessionDoc })
-        } else if (
-          testCycle &&
+        const sessionState = classifySession({ sessionDoc, testCycle })
+        if (
           sessionDoc &&
-          sessionDoc.testCycle === testCycle._id
+          !sessionState.completedSessionDetected &&
+          !sessionState.abortedSessionDetected
         ) {
-          instance.state.set({ abortedSessionDetected: true, sessionDoc })
-        } else {
           instance.api.debug('warning! session has undefined state', {
             sessionDoc,
           })
-          instance.state.set({
-            completedSessionDetected: false,
-            abortedSessionDetected: false,
-          })
         }
+        instance.state.set(sessionState)
       },
     })
   })
@@ -346,11 +330,11 @@ Template.overview.events({
     const sessionDoc = templateInstance.state.get('sessionDoc')
     const sessionId = sessionDoc._id
 
+    const request = sessionRequest.continue(sessionId)
     launch({
       name: Session.methods.continue.name,
-      args: { sessionId },
+      ...request,
       templateInstance,
-      isFreshStart: false,
     })
   },
   'click .lea-overview-confirm-button'(event, templateInstance) {
@@ -363,9 +347,10 @@ function restartSession(templateInstance) {
   const sessionDoc = templateInstance.state.get('sessionDoc')
   const sessionId = sessionDoc._id
 
+  const request = sessionRequest.cancel(sessionId)
   templateInstance.api.callMethod({
     name: Session.methods.cancel.name,
-    args: { sessionId },
+    args: request.args,
     prepare: () => templateInstance.state.set('starting', true),
     success: () => {
       // after we obsoleted the old session we start a new one as we do
@@ -378,11 +363,11 @@ function restartSession(templateInstance) {
 function startNewSession(templateInstance) {
   const selectedTestCycle = templateInstance.state.get('selectedTestCycle')
   const testCycleId = selectedTestCycle._id
+  const request = sessionRequest.start(testCycleId)
   launch({
     name: Session.methods.start.name,
-    args: { testCycleId },
+    ...request,
     templateInstance,
-    isFreshStart: true,
   })
 }
 
@@ -409,20 +394,22 @@ function launch({ templateInstance, name, args, isFreshStart }) {
       setTimeout(async () => {
         // a new session can either begin with a story (no items included) or
         // go to the fist unit, which is decided here but routed externally
-        const sessionId = sessionDoc._id
-        const unitId = sessionDoc.currentUnit
         const unitSetDoc = await loadContentDoc({
           context: UnitSet,
           query: { _id: sessionDoc.unitSet },
           unlessExists: true,
           throwIfNotFound: true,
         })
-        const unitSetId = unitSetDoc._id
-        const shouldShowStory =
-          isFreshStart && showStoryBeforeUnit(unitId, unitSetDoc)
-        const onCompleteHandler = shouldShowStory
-          ? () => story({ sessionId, unitId, unitSetId })
-          : () => next({ sessionId, unitId })
+        const navigation = resolveLaunchNavigation({
+          sessionDoc,
+          unitSetDoc,
+          isFreshStart,
+          showStoryBeforeUnit,
+        })
+        const onCompleteHandler = () =>
+          navigation.target === 'story'
+            ? story(navigation.args)
+            : next(navigation.args)
 
         fadeOut('.lea-overview-container', () => {
           onCompleteHandler()
@@ -430,20 +417,4 @@ function launch({ templateInstance, name, args, isFreshStart }) {
       }, 100)
     },
   })
-}
-
-function getScrollTarget(dimension, level) {
-  if (!dimension && !level) {
-    return 'overview-dimensions-container'
-  }
-
-  if (dimension && !level) {
-    return 'overview-level-container'
-  }
-
-  if (dimension && level) {
-    return '.overview-session-container'
-  }
-
-  console.warn('Unexpected: no scroll target found!')
 }

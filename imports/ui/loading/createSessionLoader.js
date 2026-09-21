@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor'
 import { callMethod } from '../../infrastructure/methods/callMethod'
 import { Session } from '../../contexts/session/Session'
 import { loadContentDoc } from './loadContentDoc'
@@ -14,54 +15,76 @@ import { fixImageUrl } from '../../utils/image/fixImageUrl'
  * @param instance
  * @return fn {async Function} the load function, loading a session for unit
  */
-export const createSessionLoader = ({ debug = () => {} }) => {
-  ;[UnitSet, Level, Dimension, Session, Unit].forEach((ctx) =>
-    initClientContext(ctx),
-  )
+export const createSessionLoader = ({
+  debug = () => {},
+  call = callMethod,
+  load = loadContentDoc,
+  initializeContext = initClientContext,
+  rewriteImage = fixImageUrl,
+  isDevelopment = Meteor.isDevelopment,
+  contexts = { UnitSet, Level, Dimension, Session, Unit },
+  colorByIndex = ColorType.byIndex,
+} = {}) => {
+  const {
+    UnitSet: UnitSetContext,
+    Level: LevelContext,
+    Dimension: DimensionContext,
+    Session: SessionContext,
+    Unit: UnitContext,
+  } = contexts
+  ;[
+    UnitSetContext,
+    LevelContext,
+    DimensionContext,
+    SessionContext,
+    UnitContext,
+  ].forEach((context) => initializeContext(context))
 
   return async ({ sessionId, unitId, unitSetId }) => {
     debug('load session docs')
 
     const sessionDoc =
       sessionId &&
-      (await callMethod({
-        name: Session.methods.currentById.name,
+      (await call({
+        name: SessionContext.methods.currentById.name,
         args: { sessionId },
       }))
 
     const finalUnitSetId = unitSetId || sessionDoc?.unitSet
     const unitDoc =
       unitId &&
-      (await loadContentDoc({
-        context: Unit,
+      (await load({
+        context: UnitContext,
         query: { _id: unitId },
         unlessExists: true,
       }))
-    const unitSetDoc = await loadContentDoc({
-      context: UnitSet,
-      query: { _id: finalUnitSetId },
-      unlessExists: true,
-    })
-    if (Meteor.isDevelopment) {
+    const unitSetDoc =
+      finalUnitSetId &&
+      (await load({
+        context: UnitSetContext,
+        query: { _id: finalUnitSetId },
+        unlessExists: true,
+      }))
+    if (isDevelopment) {
       if (unitSetDoc?.story) {
         for (const element of unitSetDoc.story) {
-          fixImageUrl(element)
+          rewriteImage(element)
         }
       }
       if (unitDoc?.instructions) {
         for (const element of unitDoc.instructions) {
-          fixImageUrl(element)
+          rewriteImage(element)
         }
       }
       if (unitDoc?.stimuli) {
         for (const element of unitDoc.stimuli) {
-          fixImageUrl(element)
+          rewriteImage(element)
         }
       }
       if (unitDoc?.pages) {
         for (const page of unitDoc.pages) {
-          for (const element of page.content) {
-            fixImageUrl(element)
+          for (const element of page.content ?? []) {
+            rewriteImage(element)
           }
         }
       }
@@ -69,20 +92,20 @@ export const createSessionLoader = ({ debug = () => {} }) => {
 
     const levelDoc =
       unitSetDoc &&
-      (await loadContentDoc({
-        context: Level,
+      (await load({
+        context: LevelContext,
         query: { _id: unitSetDoc?.level },
         unlessExists: true,
       }))
     const dimensionDoc =
       unitSetDoc &&
-      (await loadContentDoc({
-        context: Dimension,
+      (await load({
+        context: DimensionContext,
         query: { _id: unitSetDoc?.dimension },
         unlessExists: true,
       }))
 
-    const colorType = dimensionDoc && ColorType.byIndex(dimensionDoc?.colorType)
+    const colorType = dimensionDoc && colorByIndex(dimensionDoc?.colorType)
     const color = colorType?.type
 
     return { sessionDoc, unitSetDoc, unitDoc, levelDoc, dimensionDoc, color }

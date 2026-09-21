@@ -2,23 +2,27 @@
 import { Meteor } from 'meteor/meteor'
 import 'meteor/aldeed:collection2/static'
 
-if (Meteor.isServer) {
-  (function () {
-    import './webapp-server-helpers'
-    import './infrastructure'
-    import './api'
-    import './startup'
-  })()
-}
+if (Meteor.isAppTest) {
+  require('../imports/integration/appFlow.app-tests')
+} else {
+  if (Meteor.isServer) {
+    ;(function () {
+      import './webapp-server-helpers'
+      import './infrastructure'
+      import './api'
+      import './startup'
+    })()
+  }
 
-if (Meteor.isClient) {
-  (function () {
-    import './client'
-    import './api'
-  })()
-}
+  if (Meteor.isClient) {
+    ;(function () {
+      import './client'
+      import './api'
+    })()
+  }
 
-describe('common', function () {
-  import './utils'
-  import './contexts'
-})
+  describe('common', function () {
+    import './utils'
+    import './contexts'
+  })
+}

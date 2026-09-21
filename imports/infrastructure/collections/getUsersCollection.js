@@ -1,3 +1,3 @@
-import { getCollection } from '../utils/getCollection'
+import { getCollection } from './getCollection'
 
 export const getUsersCollection = () => getCollection('users')

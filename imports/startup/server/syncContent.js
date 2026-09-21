@@ -3,8 +3,14 @@ import { ContentServer } from '../../api/remotes/content/ContentServer'
 import { createLog } from '../../utils/createLog'
 
 Meteor.startup(async () => {
-  const { sync } = Meteor.settings.remotes.content
   const log = createLog({ name: 'syncContent' })
+  // Full-app tests use deterministic local content fixtures and must never
+  // attempt a remote DDP connection.
+  if (Meteor.isAppTest) {
+    return log('skip remote content sync in app-test mode')
+  }
+
+  const { sync } = Meteor.settings.remotes.content
   ContentServer.setLogger(log)
   await ContentServer.init()
 

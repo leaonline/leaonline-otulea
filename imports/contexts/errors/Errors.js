@@ -103,10 +103,12 @@ Errors.methods.create = {
   schema: Errors.schema,
   isPublic: true,
   run: onServerExec(() => {
-    import { Meteor } from 'meteor/meteor'
-    import { persistError } from './api/persistError'
+    const { Meteor } = require('meteor/meteor')
 
     return async function (errorDoc) {
+      // Resolve after Errors finished initializing to preserve the circular
+      // Errors -> persistError -> Errors module boundary.
+      const { persistError } = require('./api/persistError')
       const { userId } = this
       errorDoc.userId = userId
 

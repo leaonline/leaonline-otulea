@@ -34,7 +34,13 @@ export const createSubmitResponse =
     try {
       const unitDoc = await Unit.collection().findOneAsync(unitId)
       const itemDoc = extractor({ unitDoc, page, contentId }, debug)
-      scores = scorer({ itemDoc, responseDoc })
+      // Core scoring identifies an item as itemId, while the transport and
+      // persistence contract calls the same relation contentId. Keep the raw
+      // response document unchanged and adapt only the scoring handoff.
+      scores = scorer({
+        itemDoc,
+        responseDoc: { ...responseDoc, itemId: contentId },
+      })
     } catch (e) {
       onError(e)
       failed = true

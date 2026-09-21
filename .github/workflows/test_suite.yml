@@ -54,7 +54,7 @@ jobs:
 #    - run: npm run lint:style
 
   tests:
-    name: Meteor ${{ matrix.meteor }} tests
+    name: Meteor 3.4 architecture and coverage gates
     runs-on: ubuntu-latest
     steps:
 
@@ -138,14 +138,27 @@ jobs:
       - name: Install NPM Dependencies
         run: meteor npm ci
 
-      - name: Run Tests
-        run: sh ./test.sh -c -o # run -o once with -c coverage
+      - name: Run server architecture
+        run: ./test.sh -a server -o
 
-      - name: Upload coverage
+      - name: Run client architecture
+        run: ./test.sh -a client -o
+
+      - name: Run deterministic full-app safety net
+        run: ./test.sh -f -o
+
+      - name: Run combined suite and coverage gates
+        run: ./test.sh -c -o
+
+      - name: Upload test and coverage inventories
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-folder
-          path: .coverage/
+          name: test-evidence
+          include-hidden-files: true
+          if-no-files-found: error
+          path: |
+            .coverage/
+            .test-results/
 
   coverage:
     name: Coverage report
@@ -155,15 +168,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Download coverage
+      - name: Download test evidence
         uses: actions/download-artifact@v4
         with:
-          name: coverage-folder
-          path: .coverage/
+          name: test-evidence
 
-
-      - name: Coverage Report
-        uses: VeryGoodOpenSource/very_good_coverage@v3
-        with:
-          path: ".coverage/lcov.info"
-          min_coverage: 65 # TODO increase to 95!
+      - name: Verify production metrics and source inventory
+        run: node scripts/check-coverage.mjs

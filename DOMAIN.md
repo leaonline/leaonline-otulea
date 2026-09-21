@@ -185,16 +185,18 @@ whether the learner's response demonstrates fulfillment of those competencies.
 A **Response** is created when a learner interacts with an Item. Responses are consumed by
 scoring logic to determine competency fulfillment.
 
-The following response states are distinct and must remain distinguishable during migration:
+The following response states are distinct and must remain distinguishable during migration. Their
+canonical raw transport/cache/persistence representations are arrays:
 
-- **entered** - a value has been entered;
-- **absent** - no value has been entered;
-- **null** - a previously entered value was deleted;
-- **`__undefined__`** - the learner omitted the interaction entirely, for example by skipping
-  the page or interacting with other items on the page but not this item.
+- **entered** - a value has been entered, for example `['value']`;
+- **absent** - no value has been entered, represented by `[]`;
+- **null** - a previously entered value was deleted, represented by `[null]`;
+- **`__undefined__`** - the learner omitted the interaction entirely, represented by
+  `['__undefined__']`, for example by skipping the page or interacting with other items on the page
+  but not this item.
 
 Do not normalize these states into a single "empty" value unless existing domain logic explicitly
-requires that transformation.
+requires that transformation. A top-level `null` is not a canonical response state.
 
 A durable Response is associated with the authenticated learner, Session, UnitSet, Unit, page,
 Item, Item type, raw response state, and score result/competency associations required by the

@@ -2,6 +2,10 @@ import { Blaze } from 'meteor/blaze'
 import { Meteor } from 'meteor/meteor'
 import { noop } from '../../utils/noop'
 import { lazyRequire } from '../../utils/lazyRequire'
+import {
+  observeDependencies,
+  scheduleDependencies,
+} from './dependencyScheduler'
 
 // if we use the autoload functionality we don't need to explicitly load basic
 // and generic (stateless) templates, since they are loaded at runtime using
@@ -57,8 +61,6 @@ Blaze.TemplateInstance.prototype.initDependencies = function ({
   } = loadLazyDeps()
 
   const instance = this
-  const allComplete = []
-
   // create api to provide a consistent dev experience across all template
   // instances without tight coupling between the api and Template files
   // TODO maybe dynamically import api using loadOnce, too?
@@ -107,71 +109,47 @@ Blaze.TemplateInstance.prototype.initDependencies = function ({
     },
   })
 
-  // if any context is added we initialize it immediately sync-style
-  contexts.forEach((ctx) => initClientContext(ctx))
-
-  if (language) {
-    allComplete.push(
-      loadOnce(initLanguage, {
-        onError: errorHandler,
-        name: 'language',
-      }),
-    )
-  }
-
-  if (tts) {
-    allComplete.push(
-      loadOnce(initializeTTS, {
-        onError: errorHandler,
-        name: 'tts',
-        debug: debugFn,
-      }),
-    )
-  }
-
-  if (loaders.length > 0) {
-    allComplete.push(
-      ...loaders.map((loader) =>
-        loadOnce(loader, {
-          onError: errorHandler,
-        }),
-      ),
-    )
-  }
+  const allComplete = scheduleDependencies({
+    contexts,
+    language,
+    tts,
+    loaders,
+    initClientContext,
+    initLanguage,
+    initializeTTS,
+    loadOnce,
+    onError: errorHandler,
+    debug: debugFn,
+  })
 
   if (allComplete.length === 0) {
     return onComplete()
   }
 
-  const addTranslations = async () => {
+  const addTranslations = async (definitions) => {
     const { addToLanguage } = await import('../../api/i18n/addToLanguage')
-    return addToLanguage(translations)
+    return addToLanguage(definitions)
   }
 
-  instance.autorun((c) => {
-    if (allComplete.every((rv) => rv.get())) {
-      c.stop()
+  observeDependencies({
+    pending: allComplete,
+    autorun: (callback) => instance.autorun(callback),
+    translations,
+    loadTranslations: addTranslations,
+    onComplete: () => {
       instance.api.info('call dependencies onComplete')
-      if (translations) {
-        addTranslations()
-          .catch((e) => {
-            fatal({
-              error: {
-                message: 'unknown',
-                original: e.message,
-              },
-            })
-
-            sendError({ error: e })
-            errorHandler(e)
-          })
-          .then(() => {
-            onComplete()
-          })
-      } else {
-        onComplete()
-      }
-    }
+      onComplete()
+    },
+    onTranslationError: (error) => {
+      fatal({
+        error: {
+          message: 'unknown',
+          original: error.message,
+        },
+      })
+      sendError({ error })
+      errorHandler(error)
+    },
   })
 
   return instance

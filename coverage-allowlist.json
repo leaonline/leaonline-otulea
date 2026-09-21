@@ -1,0 +1,13 @@
+{
+  "imports/startup/client/bootstrap.js": "Runtime-only theme and Popper bootstrap driven by Meteor startup, login reactivity, and delayed dynamic imports.",
+  "imports/startup/client/errors.js": "Global browser and Blaze exception hooks are exercised by the deterministic full-app run, not imported into isolated unit tests.",
+  "imports/startup/client/fontawesome.js": "Runtime-only delayed dynamic imports for the Font Awesome bundles have no application behavior to unit test.",
+  "imports/startup/client/serviceWorker.js": "Service-worker registration depends on the real browser lifecycle and is exercised only by the full-app architecture.",
+  "imports/startup/client/videos.js": "Startup video loading performs an immediate server method call; the underlying context methods and publication are covered separately.",
+  "imports/startup/server/collection2.js": "Declarative package-only startup import with no application-owned behavior or observable export.",
+  "imports/startup/server/content.js": "Retained legacy content registrar is not loaded by server/main and would duplicate the active contentContexts registrations.",
+  "imports/startup/server/csp.js": "Thin Meteor.startup adapter; configureCSP directives and middleware wiring are covered through its extracted boundary.",
+  "imports/startup/server/logging.js": "One-line external HTTP debug-hook registration with no application-owned decision logic.",
+  "imports/startup/server/monitoring.js": "One-line external uptime package initialization whose route lifecycle belongs to that package.",
+  "imports/startup/server/syncContent.js": "Remote startup orchestration is skipped by the deterministic full-app run; ContentServer synchronization behavior is covered with an injected transport."
+}

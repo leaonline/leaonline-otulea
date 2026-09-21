@@ -5,6 +5,7 @@ import { Session } from '../../../contexts/session/Session'
 import { Level } from '../../../contexts/Level'
 import { createSessionLoader } from '../../loading/createSessionLoader'
 import { initTaskRenderers } from '../../renderers/initTaskRenderers'
+import { resolveStorySession, storyNavigation } from './storyBehavior'
 import '../../components/container/container'
 import '../../layout/navbar/navbar'
 import './story.html'
@@ -44,20 +45,16 @@ Template.story.onCreated(function () {
     }
 
     loadSessionDocs({ sessionId })
-      .catch((err) => abortStory(instance, err))
-      .then(({ sessionDoc, unitSetDoc, dimensionDoc, levelDoc, color }) => {
-        if (!sessionDoc || !unitSetDoc || !dimensionDoc || !levelDoc) {
-          return abortStory(instance)
-        }
-        console.log(color)
-        instance.state.set({
-          sessionDoc,
-          unitSetDoc,
-          dimensionDoc,
-          levelDoc,
-          color,
+      .then((responseData) => {
+        const decision = resolveStorySession({
+          unitId,
+          sessionId,
+          responseData,
         })
+        if (decision.action === 'exit') return abortStory(instance)
+        instance.state.set(decision.state)
       })
+      .catch((err) => abortStory(instance, err))
   })
 })
 
@@ -112,10 +109,8 @@ Template.story.events({
   'click .lea-story-finish-button'(event, templateInstance) {
     event.preventDefault()
     const sessionDoc = templateInstance.state.get('sessionDoc')
-    const sessionId = sessionDoc._id
     const { unitId } = templateInstance.data.params
-
-    templateInstance.data?.next({ sessionId, unitId })
+    templateInstance.data?.next(storyNavigation({ sessionDoc, unitId }))
   },
 })
 

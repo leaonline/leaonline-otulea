@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor'
 import { callMethod } from '../../../../infrastructure/methods/callMethod'
 import { loadAllContentDocs } from '../../../loading/loadAllContentDocs'
 import { Competency } from '../../../../contexts/Competency'
@@ -7,128 +8,136 @@ import { Thresholds } from '../../../../contexts/thresholds/Thresholds'
 import { Session } from '../../../../contexts/session/Session'
 import { truncatePercent } from './truncatePercent'
 
-export const loadData = async ({ sessionId, debug }) => {
-  const thresholdRequest = await loadAllContentDocs({
-    context: Thresholds,
-    debug,
-  })
-  const thresholdDoc = thresholdRequest[Thresholds.name]
-  if (!thresholdDoc) {
-    throw new Meteor.Error('error.loadDataFailed', 'loadError.noThresholds')
-  }
-  const evaluationResults = await callMethod({
-    name: Session.methods.results,
-    args: { sessionId },
-  })
-  if (!evaluationResults) {
-    throw new Meteor.Error(
-      'error.loadDataFailed',
-      'loadError.noEvaluationResults',
-    )
-  }
+export const createDataLoader = ({
+  methodCall = callMethod,
+  loadAll = loadAllContentDocs,
+  contexts = { Competency, Dimension, AlphaLevel, Thresholds, Session },
+  createError = (...args) => new Meteor.Error(...args),
+} = {}) => {
+  const {
+    Competency: CompetencyContext,
+    Dimension: DimensionContext,
+    AlphaLevel: AlphaLevelContext,
+    Thresholds: ThresholdsContext,
+    Session: SessionContext,
+  } = contexts
 
-  const { competencies, alphaLevels } = evaluationResults
-
-  // fetch competency documents
-  // which are required to display the related texts
-  const competencyIds = competencies.map((c) => c.competencyId)
-
-  // by default this is true, but it will be set to false, once
-  // we have at least one graded competency
-  let noScoredCompetencies = true
-
-  const competencyRequest = await loadAllContentDocs({
-    context: Competency,
-    ids: competencyIds,
-  })
-  const competencyDocs = competencyRequest?.[Competency.name] ?? []
-
-  if (competencyDocs.length === 0) {
-    throw new Meteor.Error(
-      'error.loadDataFailed',
-      'loadError.competenciesNotFound',
-    )
-  }
-
-  const CompetencyCollection = Competency.collection()
-  const aggregatedResults = competencies
-    .map((resultDoc) => {
-      const { competencyId } = resultDoc
-      const competencyDoc = CompetencyCollection.findOne(competencyId)
-
-      if (noScoredCompetencies && resultDoc.gradeIndex > -1) {
-        noScoredCompetencies = false
-      }
-
-      if (!competencyDoc) {
-        return console.warn('Found no competency doc for _id', competencyId)
-      }
-
-      resultDoc.shortCode = competencyDoc.shortCode
-      resultDoc.description = competencyDoc.descriptionSimple
-      resultDoc.gradeLabel = `thresholds.${resultDoc.gradeName}`
-
-      const percentValue = Number(resultDoc.perc ?? 0) * 100
-      resultDoc.perc = truncatePercent(percentValue)
-      return resultDoc
+  return async ({ sessionId, debug = () => {} }) => {
+    const thresholdRequest = await loadAll({
+      context: ThresholdsContext,
+      debug,
     })
-    .sort((a, b) => a.shortCode.localeCompare(b.shortCode))
+    const thresholdDoc = thresholdRequest?.[ThresholdsContext.name]
+    if (!Array.isArray(thresholdDoc) || thresholdDoc.length === 0) {
+      throw createError('error.loadDataFailed', 'loadError.noThresholds')
+    }
 
-  debug({ aggregatedResults })
-
-  const alphaLevelIds = alphaLevels.map((c) => c.alphaLevelId)
-  let noScoredAlphas = true
-
-  const alphaLevelRequest = await loadAllContentDocs({
-    context: AlphaLevel,
-    ids: alphaLevelIds,
-  })
-  const alphaLevelDocs = alphaLevelRequest?.[AlphaLevel.name] ?? []
-
-  if (alphaLevelDocs.length === 0) {
-    throw new Meteor.Error(
-      'error.loadDataFailed',
-      'loadError.alphaLevelsNotFound',
-    )
-  }
-
-  const AlphaLevelCollection = AlphaLevel.collection()
-  const aggregatedAlphaLevels = alphaLevels
-    .map((alpha) => {
-      const { alphaLevelId } = alpha
-      const alphaLevelDoc = AlphaLevelCollection.findOne(alphaLevelId)
-
-      if (noScoredAlphas && alpha.gradeIndex > -1) {
-        noScoredAlphas = false
-      }
-
-      if (!alphaLevelDoc) {
-        return console.warn('Found no alphaLevel doc for _id', alphaLevelId)
-      }
-
-      const dimension = Dimension.collection().findOne(alphaLevelDoc.dimension)
-      alpha.dimension = dimension && `${dimension.title} ${alphaLevelDoc.level}`
-      alpha.level = alphaLevelDoc.level
-      alpha.shortCode = alphaLevelDoc.shortCode
-      alpha.description = alphaLevelDoc.description
-      alpha.gradeLabel = `thresholds.${alpha.gradeName}`
-
-      const percentValue = Number(alpha.perc ?? 0) * 100
-      alpha.perc = truncatePercent(percentValue)
-
-      return alpha
+    const evaluationResults = await methodCall({
+      name: SessionContext.methods.results,
+      args: { sessionId },
     })
-    .sort((a, b) => a.shortCode.localeCompare(b.shortCode))
+    if (!evaluationResults) {
+      throw createError(
+        'error.loadDataFailed',
+        'loadError.noEvaluationResults',
+      )
+    }
 
-  debug({ aggregatedAlphaLevels })
+    const { competencies = [], alphaLevels = [] } = evaluationResults
+    const competencyIds = competencies.map(({ competencyId }) => competencyId)
+    const competencyRequest = await loadAll({
+      context: CompetencyContext,
+      ids: competencyIds,
+    })
+    const competencyDocs = competencyRequest?.[CompetencyContext.name] ?? []
+    if (competencyDocs.length === 0) {
+      throw createError(
+        'error.loadDataFailed',
+        'loadError.competenciesNotFound',
+      )
+    }
 
-  return {
-    thresholdDoc,
-    aggregatedResults,
-    noScoredCompetencies,
-    noScoredAlphas,
-    alphaLevels: aggregatedAlphaLevels,
-    alphaLevelsLoaded: true,
-    competenciesLoaded: true,
+    let noScoredCompetencies = true
+    const competencyCollection = CompetencyContext.collection()
+    const aggregatedResults = competencies
+      .map((resultDocument) => {
+        const competencyDocument = competencyCollection.findOne(
+          resultDocument.competencyId,
+        )
+        if (!competencyDocument) {
+          throw createError(
+            'error.loadDataFailed',
+            'loadError.competencyNotFound',
+            { competencyId: resultDocument.competencyId },
+          )
+        }
+        if (resultDocument.gradeIndex > -1) noScoredCompetencies = false
+        return {
+          ...resultDocument,
+          shortCode: competencyDocument.shortCode,
+          description: competencyDocument.descriptionSimple,
+          gradeLabel: `thresholds.${resultDocument.gradeName}`,
+          perc: truncatePercent(Number(resultDocument.perc ?? 0) * 100),
+        }
+      })
+      .sort((a, b) => a.shortCode.localeCompare(b.shortCode))
+    debug({ aggregatedResults })
+
+    const alphaLevelIds = alphaLevels.map(({ alphaLevelId }) => alphaLevelId)
+    const alphaLevelRequest = await loadAll({
+      context: AlphaLevelContext,
+      ids: alphaLevelIds,
+    })
+    const alphaLevelDocs = alphaLevelRequest?.[AlphaLevelContext.name] ?? []
+    if (alphaLevelDocs.length === 0) {
+      throw createError(
+        'error.loadDataFailed',
+        'loadError.alphaLevelsNotFound',
+      )
+    }
+
+    let noScoredAlphas = true
+    const alphaLevelCollection = AlphaLevelContext.collection()
+    const aggregatedAlphaLevels = alphaLevels
+      .map((alphaResult) => {
+        const alphaLevelDocument = alphaLevelCollection.findOne(
+          alphaResult.alphaLevelId,
+        )
+        if (!alphaLevelDocument) {
+          throw createError(
+            'error.loadDataFailed',
+            'loadError.alphaLevelNotFound',
+            { alphaLevelId: alphaResult.alphaLevelId },
+          )
+        }
+        if (alphaResult.gradeIndex > -1) noScoredAlphas = false
+        const dimension = DimensionContext.collection().findOne(
+          alphaLevelDocument.dimension,
+        )
+        return {
+          ...alphaResult,
+          dimension:
+            dimension && `${dimension.title} ${alphaLevelDocument.level}`,
+          level: alphaLevelDocument.level,
+          shortCode: alphaLevelDocument.shortCode,
+          description: alphaLevelDocument.description,
+          gradeLabel: `thresholds.${alphaResult.gradeName}`,
+          perc: truncatePercent(Number(alphaResult.perc ?? 0) * 100),
+        }
+      })
+      .sort((a, b) => a.shortCode.localeCompare(b.shortCode))
+    debug({ aggregatedAlphaLevels })
+
+    return {
+      thresholdDoc,
+      aggregatedResults,
+      noScoredCompetencies,
+      noScoredAlphas,
+      alphaLevels: aggregatedAlphaLevels,
+      alphaLevelsLoaded: true,
+      competenciesLoaded: true,
+    }
   }
 }
+
+export const loadData = createDataLoader()

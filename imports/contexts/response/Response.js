@@ -16,7 +16,12 @@ Response.schema = {
   contentId: String,
   responses: {
     type: Array,
-    optional: true,
+    // Canonical raw states are: entered ['value'], absent [], deleted [null],
+    // and omitted ['__undefined__']. A missing legacy property remains valid,
+    // but an explicit top-level null is not a response-state representation.
+    optional() {
+      return this.value === undefined
+    },
   },
   'responses.$': String,
   scores: {
