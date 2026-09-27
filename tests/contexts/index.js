@@ -1,11 +1,11 @@
 /* eslint-env mocha */
 
 describe('contexts', function () {
-  import '../../imports/contexts/errors/tests'
-  import '../../imports/contexts/response/tests'
-  import '../../imports/contexts/session/tests'
-  import '../../imports/contexts/unitSet/tests'
-  import '../../imports/contexts/thresholds/tests'
-  import '../../imports/contexts/feedback/tests'
-  import '../../imports/contexts/record/tests'
+  require('../../imports/contexts/errors/tests')
+  require('../../imports/contexts/response/tests')
+  require('../../imports/contexts/session/tests')
+  require('../../imports/contexts/unitSet/tests')
+  require('../../imports/contexts/thresholds/tests')
+  require('../../imports/contexts/feedback/tests')
+  require('../../imports/contexts/record/tests')
 })

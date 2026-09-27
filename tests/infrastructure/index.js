@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 describe('infrastructure', function () {
-  import './mixins'
-  import './factories'
-  import '../../imports/infrastructure/csp/cspOptions.tests'
+    require('./mixins')
+    require('./factories')
+    require('../../imports/infrastructure/csp/cspOptions.tests')
 })

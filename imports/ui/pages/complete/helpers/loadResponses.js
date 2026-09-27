@@ -1,6 +1,7 @@
 import { Response } from '../../../../contexts/response/Response'
 import { callMethod } from '../../../../infrastructure/methods/callMethod'
 import { Unit } from '../../../../contexts/Unit'
+import { loadAllContentDocs } from '../../../loading/loadAllContentDocs'
 
 export const loadResponses = async ({ sessionId, debug }) => {
   const responses = await callMethod({

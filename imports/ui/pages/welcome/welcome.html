@@ -16,15 +16,6 @@
                                 height=625
                                 alt="image welcome"
                                 class="rounded lea-main-logo autoscale shadow"}}
-{{!--
-                    <div class="intro-video-container embed-responsive embed-responsive-16by9 mh-50 shadow shadow-sm">
-                        <video controls preload="none"
-                               class="embed-responsive-item" allowfullscreen>
-                            <source src="{{video "welcome"}}" type="video/mp4">
-                            Your browser does not support the video tag.
-                        </video>
-                    </div>
---}}
                 </div>
             </div>
 
@@ -154,7 +145,7 @@
                                 {{> soundbutton text=loginTTS lg=true outline=true disabled=true class="active"}}
                             {{/with}}
                             <div class="input-group input-group-lg mx-auto">
-                                <input type="text" data-index="0" maxlength="1" class="login-field text-uppercase form-control text-center me-md-2" autofocus/>
+                                <input type="text" data-index="0" maxlength="1" class="login-field text-uppercase form-control text-center me-md-2"/>
                                 {{#each index in inputFieldIndices}}
                                     <input type="text" data-index="{{index}}" maxlength="1" class="login-field text-uppercase form-control text-center mx-md-2"/>
                                 {{/each}}

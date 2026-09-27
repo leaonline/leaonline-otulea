@@ -61,6 +61,9 @@ Response.methods.submit = {
       const self = this
       const { userId } = self
 
+      // XXX: hotfixing missing itemId
+      responseDoc.itemId = responseDoc.contentId
+
       return submitResponse({
         responseDoc,
         debug: self.debug,

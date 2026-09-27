@@ -216,7 +216,8 @@ Session.methods.results = {
     const { generateResults } = require('./api/generateResults')
 
     return function ({ sessionId }) {
-      const { userId, debug, flagFromDb = true } = this
+      const { userId, flagFromDb = true } = this
+        const debug = (...args) => console.log('[session.methods.results    ]:', ...args)
       return generateResults({ sessionId, userId, debug, flagFromDb })
     }
   }),

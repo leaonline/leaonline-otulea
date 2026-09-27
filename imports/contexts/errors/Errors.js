@@ -103,15 +103,15 @@ Errors.methods.create = {
   schema: Errors.schema,
   isPublic: true,
   run: onServerExec(() => {
-    import { Meteor } from 'meteor/meteor'
-    import { persistError } from './api/persistError'
+    const { getUsersCollection } = require('../../infrastructure/collections/getUsersCollection')
+    const { persistError } = require('./api/persistError')
 
     return async function (errorDoc) {
       const { userId } = this
       errorDoc.userId = userId
 
       if (userId && !errorDoc.code) {
-        const user = await Meteor.users.findOneAsync(userId)
+        const user = await getUsersCollection().findOneAsync(userId)
         errorDoc.code = user?.username
       }
 

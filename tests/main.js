@@ -4,21 +4,21 @@ import 'meteor/aldeed:collection2/static'
 
 if (Meteor.isServer) {
   (function () {
-    import './webapp-server-helpers'
-    import './infrastructure'
-    import './api'
-    import './startup'
+    require('./webapp-server-helpers')
+    require('./infrastructure')
+      require('./api')
+      require('./startup')
   })()
 }
 
 if (Meteor.isClient) {
   (function () {
-    import './client'
-    import './api'
+      require('./client')
+      require('./api')
   })()
 }
 
 describe('common', function () {
-  import './utils'
-  import './contexts'
+    require( './utils')
+    require('./contexts')
 })

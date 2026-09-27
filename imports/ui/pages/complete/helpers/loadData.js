@@ -7,6 +7,13 @@ import { Thresholds } from '../../../../contexts/thresholds/Thresholds'
 import { Session } from '../../../../contexts/session/Session'
 import { truncatePercent } from './truncatePercent'
 
+/**
+ * Loads all relevant results from a given session
+ * and processes them into the appropriate formats
+ * @param sessionId {string}
+ * @param debug
+ * @return {Promise<{thresholdDoc: *, aggregatedResults: *, noScoredCompetencies: boolean, noScoredAlphas: boolean, alphaLevels: *, alphaLevelsLoaded: boolean, competenciesLoaded: boolean}>}
+ */
 export const loadData = async ({ sessionId, debug }) => {
   const thresholdRequest = await loadAllContentDocs({
     context: Thresholds,
