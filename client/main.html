@@ -151,3 +151,12 @@
     </wrapper>
     {{> fatal }}
 </template>
+
+<template name="internal-render-target">
+    <wrapper class="container-fluid d-flex flex-column">
+        <main class="w-100 main-container flex-fill">
+            {{> yield}}
+        </main>
+    </wrapper>
+    {{> fatal }}
+</template>

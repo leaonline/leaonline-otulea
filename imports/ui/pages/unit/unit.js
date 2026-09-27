@@ -23,7 +23,6 @@ import {
 } from './unitBehavior'
 import '../../components/container/container'
 import '../../layout/navbar/navbar'
-import '../../templates/initMarkdownRenderer'
 import './unit.html'
 
 const responseCache = ResponseCache.create(window.localStorage)
@@ -120,8 +119,7 @@ Template.unit.onCreated(function () {
 })
 
 Template.unit.onDestroyed(function () {
-  const instance = this
-  instance.state.set({
+  this.state.set({
     fadedOut: null,
   })
 })

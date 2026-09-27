@@ -11,6 +11,7 @@ import { Unit } from '../../../../contexts/Unit'
 import { UnitSet } from '../../../../contexts/unitSet/UnitSet'
 import { createBlazeHarness } from '../../../../../tests/blazeHarness'
 import '../story'
+import { asyncTimeout } from '../../../../utils/asyncTimeout'
 
 const installDependencies = (sandbox) =>
   sandbox
@@ -125,6 +126,8 @@ describe('story Blaze adapter', () => {
       docs.dimension,
     )
     expect(rendered.instance.state.get('levelDoc')).to.deep.equal(docs.level)
+
+    await asyncTimeout(150)
     expect(
       rendered.host.querySelector('.lea-story-finish-button'),
     ).to.not.equal(null)
@@ -133,6 +136,7 @@ describe('story Blaze adapter', () => {
       rendered.host.querySelector('.lea-story-finish-button'),
       'click',
     )
+    await asyncTimeout(150)
     expect(
       next.calledOnceWithExactly({
         sessionId: 'session',

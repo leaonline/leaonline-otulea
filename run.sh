@@ -3,9 +3,13 @@ meteor npm install
 
 PRODUCTION_MODE=""
 PROFILE_REQUIRE=""
+DEBUG_BREAK=""
 
-while getopts "pr" opt; do
+while getopts "prd" opt; do
   case $opt in
+    d)
+    DEBUG_BREAK="--inspect-brk"
+      ;;
     p)
 	  PRODUCTION_MODE="--production"
       ;;
@@ -27,3 +31,4 @@ DEBUG="app" METEOR_PACKAGE_DIRS=${PACKAGE_DIRS}  meteor \
     --settings=settings.json \
     ${PRODUCTION_MODE} \
     ${PROFILE_REQUIRE} \
+    ${DEBUG_BREAK}

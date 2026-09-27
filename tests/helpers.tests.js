@@ -24,7 +24,7 @@ export const unsafeInt = negative => negative
  * @param details
  * @return {Promise<*>}
  */
-export const expectThrow = async function ({ fn, error, reason, message, details }) {
+export const expectThrow = async ({ fn, error, reason, message, details }) => {
   try {
     await fn()
     expect.fail()

@@ -1,24 +1,24 @@
 /* eslint-env mocha */
 import { onServerExec, onClientExec } from '../../imports/utils/archUtils'
 
-describe('api', function () {
-  onServerExec(function () {
-    import '../../imports/api/accounts/tests'
-    import '../../imports/api/http/tests/fetchDoc.tests'
-    import '../../imports/api/notify/tests'
-    import '../../imports/api/remotes/content/tests'
+describe('api', () => {
+  onServerExec(() => {
+    require('../../imports/api/accounts/tests')
+    require('../../imports/api/http/tests/fetchDoc.tests')
+    require('../../imports/api/notify/tests')
+    require('../../imports/api/remotes/content/tests')
   })
 
-  import '../../imports/api/i18n/tests'
-  import '../../imports/api/lists/tests/DocumentLists.tests'
-  import '../../imports/api/markdown/tests/LeaMarkdown.tests'
-  import '../../imports/api/schema/tests/regExSchema.tests'
-  import '../../imports/api/scoring/tests'
-  import '../../imports/api/url/tests'
+  require('../../imports/api/i18n/tests')
+  require('../../imports/api/lists/tests/DocumentLists.tests')
+  require('../../imports/api/markdown/tests/LeaMarkdown.tests')
+  require('../../imports/api/schema/tests/regExSchema.tests')
+  require('../../imports/api/scoring/tests')
+  require('../../imports/api/url/tests')
 
-  onClientExec(function () {
-    import '../../imports/api/context/tests'
-    import '../../imports/api/tts/tests'
+  onClientExec(() => {
+    require('../../imports/api/context/tests')
+    require('../../imports/api/tts/tests')
     require('../../imports/contexts/diagnostics/tests')
   })
 })

@@ -103,7 +103,7 @@ Errors.methods.create = {
   schema: Errors.schema,
   isPublic: true,
   run: onServerExec(() => {
-    const { Meteor } = require('meteor/meteor')
+    const { getUsersCollection } = require('../../infrastructure/collections/getUsersCollection')
 
     return async function (errorDoc) {
       // Resolve after Errors finished initializing to preserve the circular
@@ -113,7 +113,7 @@ Errors.methods.create = {
       errorDoc.userId = userId
 
       if (userId && !errorDoc.code) {
-        const user = await Meteor.users.findOneAsync(userId)
+        const user = await getUsersCollection().findOneAsync(userId)
         errorDoc.code = user?.username
       }
 

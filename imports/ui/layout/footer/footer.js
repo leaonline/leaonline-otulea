@@ -37,12 +37,11 @@ Template.footer.onCreated(function () {
 })
 
 Template.footer.onRendered(function () {
-  const instance = this
 
   // defer logo loading until first rendering occurred
   Logos.methods.get.call((err, logoDoc) => {
     if (err) console.error(err)
-    instance.state.set('logoDoc', logoDoc)
+    this.state.set('logoDoc', logoDoc)
   })
 })
 

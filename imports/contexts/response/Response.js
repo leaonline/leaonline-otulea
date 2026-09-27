@@ -63,15 +63,17 @@ Response.methods.submit = {
     })
 
     return async function (responseDoc) {
-      const self = this
-      const { userId } = self
+      const { userId } = this
+
+      // XXX: hotfixing missing itemId
+      responseDoc.itemId = responseDoc.contentId
 
       return submitResponse({
         responseDoc,
-        debug: self.debug,
+        debug: this.debug,
         userId,
         onError: async (error) => {
-          self.info('failed to score', JSON.stringify(responseDoc))
+          this.info('failed to score', JSON.stringify(responseDoc))
           await persistError(
             normalizeError({
               error,

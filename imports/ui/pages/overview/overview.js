@@ -25,14 +25,12 @@ import {
 } from './overviewBehavior'
 
 Template.overview.onDestroyed(function () {
-  const instance = this
-  instance.state.clear()
+  this.state.clear()
 })
 
 Template.overview.onCreated(function () {
-  const instance = this
-  instance.state.set('color', 'secondary')
-  instance.initDependencies({
+  this.state.set('color', 'secondary')
+  this.initDependencies({
     language: true,
     translations: {
       de: () => import('./i18n/de'),
@@ -41,11 +39,11 @@ Template.overview.onCreated(function () {
     debug: true,
     contexts: [Session, TestCycle, UnitSet, Dimension, Level],
     onComplete: async () => {
-      instance.state.set('dependenciesComplete', true)
+      this.state.set('dependenciesComplete', true)
     },
   })
 
-  const { loadAllContentDocs, callMethod, debug } = instance.api
+  const { loadAllContentDocs, callMethod, debug } = this.api
   const loadContentDocuments = async () => {
     const { testCycle } = await loadAllContentDocs({
       context: TestCycle,
@@ -70,14 +68,14 @@ Template.overview.onCreated(function () {
       params: { ids: levelIds },
     })
 
-    instance.state.set({
+    this.state.set({
       contentDocsLoadComplete: true,
       dimensionFilter: dimensionIds,
     })
   }
 
-  instance.autorun(() => {
-    if (!instance.state.get('contentDocsLoadComplete')) {
+  this.autorun(() => {
+    if (!this.state.get('contentDocsLoadComplete')) {
       return
     }
     const data = Template.currentData()
@@ -86,7 +84,7 @@ Template.overview.onCreated(function () {
 
     const dimension = Dimension.collection().findOne({ _id: d })
     const currentDimension = Tracker.nonreactive(() =>
-      instance.state.get('dimension'),
+      this.state.get('dimension'),
     )
 
     if (dimension && dimension !== currentDimension) {
@@ -99,7 +97,7 @@ Template.overview.onCreated(function () {
 
       const color = ColorType.byIndex(dimension.colorType)?.type
 
-      instance.state.set({
+      this.state.set({
         levelFilter: Array.from(levelFilter),
         dimension: dimension,
         color: color,
@@ -109,7 +107,7 @@ Template.overview.onCreated(function () {
     if (!dimension && currentDimension) {
       // if there ware a dimensions but now there is not,
       // reset the dimension and the filters for new selection
-      instance.state.set({
+      this.state.set({
         dimension: null,
         levelFilter: null,
         color: 'secondary',
@@ -118,14 +116,14 @@ Template.overview.onCreated(function () {
 
     // TODO if level not exist, reset queryParam
     const level = Level.collection().findOne({ _id: l })
-    const currentLevel = Tracker.nonreactive(() => instance.state.get('level'))
+    const currentLevel = Tracker.nonreactive(() => this.state.get('level'))
 
     if (level && level !== currentLevel) {
-      instance.state.set('level', level)
+      this.state.set('level', level)
     }
 
     if (!level && currentLevel) {
-      instance.state.set('level', null)
+      this.state.set('level', null)
     }
 
     // if both selected, select respective test-cyclce
@@ -134,7 +132,7 @@ Template.overview.onCreated(function () {
         dimension: d,
         level: l,
       })
-      instance.state.set('selectedTestCycle', testCycle)
+      this.state.set('selectedTestCycle', testCycle)
     }
 
     // always scroll to respective target
@@ -142,7 +140,7 @@ Template.overview.onCreated(function () {
 
     if (target) {
       setTimeout(() => {
-        const $target = instance.$(target)
+        const $target = this.$(target)
         const scrollTarget = $target && $target.get(0)
         scrollTarget &&
           scrollTarget.scrollIntoView({
@@ -156,8 +154,8 @@ Template.overview.onCreated(function () {
 
   // if we have a testCycle selected we need to check if there is a recent session
   // that has been aborted
-  instance.autorun(() => {
-    const testCycle = instance.state.get('selectedTestCycle')
+  this.autorun(() => {
+    const testCycle = this.state.get('selectedTestCycle')
     if (!testCycle) return
 
     callMethod({
@@ -171,11 +169,11 @@ Template.overview.onCreated(function () {
           !sessionState.completedSessionDetected &&
           !sessionState.abortedSessionDetected
         ) {
-          instance.api.debug('warning! session has undefined state', {
+          this.api.debug('warning! session has undefined state', {
             sessionDoc,
           })
         }
-        instance.state.set(sessionState)
+        this.state.set(sessionState)
       },
     })
   })
@@ -186,8 +184,8 @@ Template.overview.onCreated(function () {
       original: e.message,
     }
     fatal({ error })
-    instance.state.set({ error })
-    instance.api.sendError({ error: e })
+    this.state.set({ error })
+    this.api.sendError({ error: e })
   })
 })
 

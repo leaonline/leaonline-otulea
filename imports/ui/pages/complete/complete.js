@@ -26,9 +26,8 @@ import {
 } from './completeBehavior'
 
 Template.complete.onCreated(async function () {
-  const instance = this
-  const { sessionId } = instance.data.params
-  const { api } = instance.initDependencies({
+  const { sessionId } = this.data.params
+  const { api } = this.initDependencies({
     language: true,
     tts: true,
     translations: {
@@ -44,7 +43,7 @@ Template.complete.onCreated(async function () {
       Unit,
     ],
     onComplete: async () => {
-      instance.state.set({
+      this.state.set({
         dependenciesComplete: true,
       })
     },
@@ -53,12 +52,12 @@ Template.complete.onCreated(async function () {
   const { queryParam, debug, hasProperty } = api
   const onFailed = (e) => {
     console.error(e)
-    instance.state.set(createCompletionFailureState(e))
+    this.state.set(createCompletionFailureState(e))
   }
 
   try {
     const data = await loadData({ sessionId, debug })
-    instance.state.set(data)
+    this.state.set(data)
   } catch (e) {
     onFailed(e)
   }
@@ -67,24 +66,24 @@ Template.complete.onCreated(async function () {
     const sessionData = await loadSessionData({ debug, sessionId })
     const decision = resolveCompletionSession({ sessionData, sessionId })
     if (decision.action === 'exit') {
-      instance.data.exit(decision.args)
+      this.data.exit(decision.args)
     } else {
-      instance.state.set(decision.state)
+      this.state.set(decision.state)
     }
   } catch (e) {
     onFailed(e)
   }
 
   // basic routes / state handling
-  instance.autorun(() => {
+  this.autorun(() => {
     const currentView = resolveCompletionView(queryParam('v'))
-    instance.state.set(
+    this.state.set(
       'view',
       hasProperty(states, currentView) ? currentView : states.showResults,
     )
   })
 
-  instance.responseDetailsLoader = createResponseDetailsLoader({
+  this.responseDetailsLoader = createResponseDetailsLoader({
     sessionId,
     debug,
     load: loadResponses,
@@ -94,10 +93,10 @@ Template.complete.onCreated(async function () {
   // Debug response details are attempted once per page lifetime. The adapter
   // owns the attempted/loaded transition so this autorun cannot refetch after
   // its own callingResponses update.
-  instance.autorun(() => {
-    void instance.responseDetailsLoader.run({
+  this.autorun(() => {
+    void this.responseDetailsLoader.run({
       user: Meteor.user(),
-      state: instance.state,
+      state: this.state,
     })
   })
 })

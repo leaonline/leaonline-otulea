@@ -6,44 +6,50 @@
     "useIgnoreFile": true
   },
   "files": {
-    "ignoreUnknown": false,
+    "ignoreUnknown": true,
     "includes": [
-      "**",
-      "!packages/",
-      "!node_modules",
-      "!.meteor",
-      "!.coverage",
-      "!.deploy*",
-      "!.github",
-      "!.git",
-      "!test-proxy/"
+      "imports/**/*",
+      "client/**/*",
+      "server/**/*",
+      "resources/**/*",
+      "tests/**/*",
+      "**/*.md",
+      "./*.json",
+      "./*.*js"
     ]
   },
   "formatter": {
     "enabled": true,
-    "includes": ["imports/**/*.js"],
     "indentStyle": "space",
     "indentWidth": 2
   },
   "linter": {
     "enabled": true,
-    "includes": ["imports/**/*.js"],
     "rules": {
       "preset": "recommended",
       "performance": {
-        "noDelete": "off"
+        "noDelete": "warn"
       },
       "complexity": {
-        "noForEach": "off",
-        "noUselessThisAlias": "off"
+        "noForEach": "warn",
+        "noUselessThisAlias": "warn"
       },
       "suspicious": {
-        "useIterableCallbackReturn": "off",
+        "useIterableCallbackReturn": "warn",
         "noDoubleEquals": "warn"
+      },
+      "a11y": {
+        "noSvgWithoutTitle": "warn",
+        "useValidAriaValues": "warn"
+      },
+      "correctness": {
+        "noUnknownTypeSelector": "warn",
+        "noUndeclaredVariables": "error"
       }
     }
   },
   "javascript": {
+    "globals": ["$", "Meteor", "Mongo", "describe", "it", "beforeEach", "afterEach", "before", "after", "ServiceConfiguration", "DDP"],
     "formatter": {
       "indentStyle": "space",
       "indentWidth": 2,

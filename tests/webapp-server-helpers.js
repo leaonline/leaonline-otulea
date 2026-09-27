@@ -48,7 +48,7 @@ const _singleDocCollection = new Mongo.Collection(null)
 RequestedDocsContext.collection = () => _singleDocCollection
 
 onServerExec(() => {
-  import { createMethod } from '../imports/infrastructure/factories/method/createMethods'
+  const { createMethod } = require('../imports/infrastructure/factories/method/createMethods')
 
   createMethod(RequestedDocsContext.methods.get)
   createMethod(RequestedDocsContext.methods.getAll)

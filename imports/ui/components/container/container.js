@@ -7,8 +7,7 @@ export const createContainerOnRendered = ({
   reportError = console.error,
 } = {}) =>
   function onRendered() {
-    const instance = this
-    animate('.lea-base-container', instance, (err, $target) => {
+    animate('.lea-base-container', this, (err, $target) => {
       if (err) return reportError(err)
       $target.data('visible', true)
     })

@@ -59,20 +59,18 @@ Blaze.TemplateInstance.prototype.initDependencies = function ({
     sendError,
     callMethod,
   } = loadLazyDeps()
-
-  const instance = this
   // create api to provide a consistent dev experience across all template
   // instances without tight coupling between the api and Template files
   // TODO maybe dynamically import api using loadOnce, too?
-  instance.api = {}
-  instance.api.info = createLog({
-    name: instance.view.name,
+  this.api = {}
+  this.api.info = createLog({
+    name: this.view.name,
     devOnly: !Meteor.user()?.debug,
     type: 'info',
   })
 
   const logDebug = createLog({
-    name: instance.view.name,
+    name: this.view.name,
     type: 'debug',
     devOnly: !Meteor.user()?.debug,
   })
@@ -80,7 +78,7 @@ Blaze.TemplateInstance.prototype.initDependencies = function ({
   const errorHandler =
     onError ||
     createLog({
-      name: instance.view.name,
+      name: this.view.name,
       type: 'error',
       devOnly: false,
     })
@@ -89,7 +87,7 @@ Blaze.TemplateInstance.prototype.initDependencies = function ({
 
   const debugFn = Meteor.isDevelopment || Meteor.user()?.debug ? logDebug : noop
 
-  Object.assign(instance.api, {
+  Object.assign(this.api, {
     queryParam: (value) => Router.queryParam(value),
     callMethod,
     loadAllContentDocs,
@@ -97,13 +95,13 @@ Blaze.TemplateInstance.prototype.initDependencies = function ({
     hasProperty,
     isDebugUser,
     debug: debugFn,
-    fadeOut: (target, callback) => fadeOut(target, instance, callback),
-    fadeIn: (target, callback) => fadeIn(target, instance, callback),
+    fadeOut: (target, callback) => fadeOut(target, this, callback),
+    fadeIn: (target, callback) => fadeIn(target, this, callback),
     sendError: ({ error, isResponse }) => {
       sendError({
         error,
         isResponse,
-        template: instance.view.name,
+        template: this.view.name,
         failure: errorHandler,
       })
     },
@@ -133,11 +131,11 @@ Blaze.TemplateInstance.prototype.initDependencies = function ({
 
   observeDependencies({
     pending: allComplete,
-    autorun: (callback) => instance.autorun(callback),
+    autorun: (callback) => this.autorun(callback),
     translations,
     loadTranslations: addTranslations,
     onComplete: () => {
-      instance.api.info('call dependencies onComplete')
+      this.api.info('call dependencies onComplete')
       onComplete()
     },
     onTranslationError: (error) => {
@@ -152,7 +150,7 @@ Blaze.TemplateInstance.prototype.initDependencies = function ({
     },
   })
 
-  return instance
+  return this
 }
 
 const loadLazyDeps = lazyRequire(() => {
