@@ -12,7 +12,14 @@ import { getProperty } from '../../../../utils/object/getProperty'
  * @param onError {Function}
  * @return {function({sessionId?: *, unitDoc: *, page?: *}): *}
  */
-export const createItemSubmit = ({ loadValue, prepare, receive, onError, onSuccess }) => {
+export const createItemSubmit = ({
+  loadValue,
+  prepare,
+  receive,
+  onError,
+  onSuccess,
+  methodCall = callMethod,
+}) => {
   /**
    *
    * @param sessionId {String} The current {Session} id
@@ -28,7 +35,7 @@ export const createItemSubmit = ({ loadValue, prepare, receive, onError, onSucce
 
     // xxx: circumvent special case, where there is no pages or no content
     if (Array.isArray(contentPage?.content)) {
-      contentPage.content.forEach(entry => {
+      contentPage.content.forEach((entry) => {
         // we iterate the full page stgructure
         // so we skip on any content
         // that is not flagged as item tyoe
@@ -37,29 +44,36 @@ export const createItemSubmit = ({ loadValue, prepare, receive, onError, onSucce
         const { contentId } = entry
         const responseDoc = { sessionId, unitId, page, contentId }
         const responseValue = loadValue(responseDoc)
-        responseDoc.responses = (responseValue?.responses) || []
+        // A missing cache entry means the canonical absent response. Explicit
+        // values, including [null] and ['__undefined__'], must cross the
+        // durable boundary unchanged. In particular, do not coerce an invalid
+        // top-level null into an apparently valid absent response.
+        responseDoc.responses =
+          responseValue?.responses === undefined ? [] : responseValue.responses
         allResponseDocs.push(responseDoc)
       })
     }
 
-    return Promise.all(allResponseDocs.map(responseDoc =>
-      callMethod({
-        name: Response.methods.submit.name,
-        args: responseDoc,
-        prepare: () => {
-          console.debug('[submit item]:', responseDoc)
-          if (prepare) prepare(responseDoc)
-        },
-        receive: () => {
-          if (receive) prepare(receive)
-        },
-        failure: error => {
-          if (onError) onError(error, responseDoc)
-        },
-        success: result => {
-          if (onSuccess) onSuccess(result, responseDoc)
-        }
-      })
-    ))
+    return Promise.all(
+      allResponseDocs.map((responseDoc) =>
+        methodCall({
+          name: Response.methods.submit.name,
+          args: responseDoc,
+          prepare: () => {
+            console.debug('[submit item]:', responseDoc)
+            if (prepare) prepare(responseDoc)
+          },
+          receive: () => {
+            if (receive) receive(responseDoc)
+          },
+          failure: (error) => {
+            if (onError) onError(error, responseDoc)
+          },
+          success: (result) => {
+            if (onSuccess) onSuccess(result, responseDoc)
+          },
+        }),
+      ),
+    )
   }
 }

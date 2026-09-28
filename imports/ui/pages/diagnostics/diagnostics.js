@@ -18,13 +18,15 @@ Template.diagnostics.onCreated(function () {
   const log = []
   const originals = {}
   let $logOut
-  const logOutput = line => {
+  const logOutput = (line) => {
     if (!$logOut) {
       $logOut = document.querySelector('#diagnostics-log')
     }
 
-    if (!$logOut) { return }
-    $logOut.value = ($logOut.value) + line + '\n'
+    if (!$logOut) {
+      return
+    }
+    $logOut.value = $logOut.value + line + '\n'
   }
 
   const overrideLog = (target) => {
@@ -36,13 +38,13 @@ Template.diagnostics.onCreated(function () {
       originals[target](...args)
     }
   }
-  const restoreLog = target => {
+  const restoreLog = (target) => {
     console[target] = originals[target]
   }
 
   consoleTypes.forEach(overrideLog)
 
-  instance.addError = error => {
+  instance.addError = (error) => {
     console.error('[diagnostics]:', error.message)
     const normalized = normalizeError({ error })
     const errors = instance.state.get('errors') || []
@@ -53,32 +55,31 @@ Template.diagnostics.onCreated(function () {
 
   instance.debug('init template')
   initLanguage()
-    .catch(e => instance.addError(e))
+    .catch((e) => instance.addError(e))
     .then(() => {
       try {
         instance.initDependencies({
           tts: false,
           debug: true,
           translations: diagnosticsLanguage,
-          onComplete () {
+          onComplete() {
             instance.debug('init complete')
             instance.state.set('loadComplete', true)
-          }
+          },
         })
-      }
-      catch (error) {
+      } catch (error) {
         instance.addError(error)
         instance.state.set({ loadComplete: true })
       }
     })
 
-  const processResults = results => {
+  const processResults = (results) => {
     instance.debug('process results')
     instance.allData = results
 
     instance.debug('map results')
     const map = new Map()
-    results.forEach(entry => {
+    results.forEach((entry) => {
       const { name, label, ...rest } = entry
       map.set(entry.name, rest)
     })
@@ -90,7 +91,17 @@ Template.diagnostics.onCreated(function () {
     }
 
     instance.debug('create doc to send')
-    const { osinfo, font, language, localStorage, serviceworker, performance, tts, screen, graphics } = entries
+    const {
+      osinfo,
+      font,
+      language,
+      localStorage,
+      serviceworker,
+      performance,
+      tts,
+      screen,
+      graphics,
+    } = entries
     const insertDoc = {
       bName: osinfo?.browser?.name,
       bVersion: osinfo?.browser?.version,
@@ -149,7 +160,7 @@ Template.diagnostics.onCreated(function () {
       glRenderer: graphics.glRenderer,
       glVendor: graphics.glVendor,
 
-      errors: []
+      errors: [],
     }
 
     for (const val of map.values()) {
@@ -167,8 +178,9 @@ Template.diagnostics.onCreated(function () {
     if (!confirmed) return
     instance.debug('run diagnostics')
 
-    Diagnostics.api.run({ debug: instance.debug })
-      .then(result => {
+    Diagnostics.api
+      .run({ debug: instance.debug })
+      .then((result) => {
         instance.debug('diagnostics collected')
         try {
           const insertDoc = processResults(result)
@@ -184,27 +196,25 @@ Template.diagnostics.onCreated(function () {
             args: insertDoc,
             prepare: () => instance.state.set('sending', true),
             receive: () => instance.state.set('sending', false),
-            failure: er => {
+            failure: (er) => {
               instance.addError(er)
               instance.state.set({
                 sendError: normalizeError({
                   error: er || new Error('failed'),
-                  template: 'diagnostics'
+                  template: 'diagnostics',
                 }),
-                sending: false
+                sending: false,
               })
             },
-            success: () => instance.state.set('sendComplete', true)
+            success: () => instance.state.set('sendComplete', true),
           })
-        }
-        catch (error) {
+        } catch (error) {
           instance.addError(error)
-        }
-        finally {
+        } finally {
           instance.state.set('diagnosticsComplete', true)
         }
       })
-      .catch(error => {
+      .catch((error) => {
         instance.addError(error)
         sendError({ error: error })
       })
@@ -213,36 +223,39 @@ Template.diagnostics.onCreated(function () {
 })
 
 Template.diagnostics.helpers({
-  loadComplete () {
+  loadComplete() {
     return Template.getState('loadComplete')
   },
-  results () {
+  results() {
     const instance = Template.instance()
     return instance.state.get('diagnosticsComplete') && instance.allData
   },
-  confirmed () {
+  confirmed() {
     return Template.getState('confirmed')
   },
-  sending () {
+  sending() {
     return Template.getState('sending')
   },
-  sendComplete () {
+  sendComplete() {
     return Template.getState('sendComplete')
   },
-  sendError () {
+  sendError() {
     return Template.getState('sendError')
   },
-  errors () {
+  errors() {
     return Template.getState('errors')
   },
-  running () {
-    return Template.getState('confirmed') && !Template.getState('diagnosticsComplete')
-  }
+  running() {
+    return (
+      Template.getState('confirmed') &&
+      !Template.getState('diagnosticsComplete')
+    )
+  },
 })
 
 Template.diagnostics.events({
-  'click .confirm-button' (event, templateInstance) {
+  'click .confirm-button'(event, templateInstance) {
     event.preventDefault()
     templateInstance.state.set('confirmed', true)
-  }
+  },
 })

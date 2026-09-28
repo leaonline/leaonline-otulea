@@ -1,14 +1,36 @@
-export const createGetMethod = ({ context, run }) => {
-  const runFunction = run || function ({ _id }) {
-    return context.collection.findOne(_id)
-  }
+import { onServer } from '../../utils/archUtils'
+import { getCollection } from '../../infrastructure/collections/getCollection'
+import { createLog } from '../../utils/createLog'
 
+export const createGetMethod = ({
+  context,
+  schema,
+  run,
+  backendOnly = true,
+  debug,
+  ...additionalMixins
+}) => {
+  const methodName = `${context.name}.methods.get`
+  const prefix = `[${context.name}][${methodName}]:`
+  const _debug = debug ?? createLog({ name: context.name, level: 'debug' })
   return {
-    name: `${context.name}.methods.get`,
-    backend: true,
+    name: methodName,
+    backend: backendOnly,
     schema: {
-      _id: String
+      _id: String,
+      ...schema,
     },
-    run: runFunction
+    run: onServer(
+      run ||
+        (async (query) => {
+          const collection = context.collection
+            ? context.collection()
+            : getCollection(context.name)
+          const document = await collection.findOneAsync(query)
+          _debug(prefix, JSON.stringify(query, null, 0), `found=${!!document}`)
+          return document
+        }),
+    ),
+    ...additionalMixins,
   }
 }

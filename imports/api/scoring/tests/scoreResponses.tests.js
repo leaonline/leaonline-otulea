@@ -5,14 +5,14 @@ import { scoreResponses } from '../scoreResponses'
 import { restoreAll, stub } from '../../../../tests/helpers.tests'
 import { Scoring } from '../../../contexts/Scoring'
 
-describe(scoreResponses.name, function () {
-  afterEach(function () {
+describe(scoreResponses.name, () => {
+  afterEach(() => {
     restoreAll()
   })
-  it('throws if there is no item definition for the given document', function () {
+  it('throws if there is no item definition for the given document', () => {
     expect(() => scoreResponses()).to.throw('scoreResponses.error')
   })
-  it('scores responses for a given response document', function () {
+  it('scores responses for a given response document', () => {
     const value = Random.id()
     const subtype = Random.id()
     const result = Random.id()
@@ -25,9 +25,11 @@ describe(scoreResponses.name, function () {
       return result
     })
 
-    expect(scoreResponses({
-      itemDoc: { subtype, value },
-      responseDoc: doc
-    })).to.equal(result)
+    expect(
+      scoreResponses({
+        itemDoc: { subtype, value },
+        responseDoc: doc,
+      }),
+    ).to.equal(result)
   })
 })

@@ -14,5 +14,6 @@
     "privacy": "datenschutz",
     "contact": "kontakt"
   },
-  "diagnostics": "/browser-diagnose"
+  "diagnostics": "/browser-diagnose",
+  "internal": "/intern"
 }

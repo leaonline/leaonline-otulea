@@ -1,0 +1,85 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.5.12/schema.json",
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
+  "files": {
+    "ignoreUnknown": true,
+    "includes": [
+      "imports/**/*",
+      "client/**/*",
+      "server/**/*",
+      "resources/**/*",
+      "tests/**/*",
+      "**/*.md",
+      "./*.json",
+      "./*.*js"
+    ]
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "preset": "recommended",
+      "performance": {
+        "noDelete": "warn"
+      },
+      "complexity": {
+        "noForEach": "off",
+        "noUselessThisAlias": "warn"
+      },
+      "suspicious": {
+        "useIterableCallbackReturn": "warn",
+        "noDoubleEquals": "warn"
+      },
+      "a11y": {
+        "noSvgWithoutTitle": "warn",
+        "useValidAriaValues": "warn"
+      },
+      "correctness": {
+        "noUnknownTypeSelector": "warn",
+        "noUndeclaredVariables": "error"
+      }
+    }
+  },
+  "javascript": {
+    "globals": [
+      "$",
+      "Meteor",
+      "Mongo",
+      "describe",
+      "it",
+      "beforeEach",
+      "afterEach",
+      "before",
+      "after",
+      "ServiceConfiguration",
+      "DDP"
+    ],
+    "formatter": {
+      "indentStyle": "space",
+      "indentWidth": 2,
+      "quoteStyle": "single",
+      "semicolons": "asNeeded"
+    }
+  },
+  "css": {
+    "linter": {
+      "enabled": true
+    }
+  },
+  "assist": {
+    "enabled": true,
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
+  }
+}

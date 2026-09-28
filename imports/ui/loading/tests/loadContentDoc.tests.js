@@ -1,44 +1,174 @@
 /* eslint-env mocha */
-import { loadContentDoc } from '../loadContentDoc'
 import { expect } from 'chai'
-import { Random } from 'meteor/random'
+import { Mongo } from 'meteor/mongo'
+import sinon from 'sinon'
+import { createContentDocLoader, loadContentDoc } from '../loadContentDoc'
 import { RequestedDocsContext } from '../../../../tests/webapp-server-helpers'
-import { expectThrow } from '../../../../tests/helpers.tests'
-import { toContentServerURL } from '../../../api/url/toContentServerURL'
+import {
+  mockCollection,
+  restoreCollection,
+} from '../../../../tests/mockCollection'
 
-describe(loadContentDoc.name, function () {
-  beforeEach(function () {
-    RequestedDocsContext.collection().remove({})
+const getError = async (callback) => {
+  try {
+    await callback()
+  } catch (error) {
+    return error
+  }
+  expect.fail('expected callback to reject')
+}
+
+describe('loadContentDoc', () => {
+  before(() => mockCollection(RequestedDocsContext))
+  beforeEach(() => RequestedDocsContext.collection().remove({}))
+  after(() => restoreCollection(RequestedDocsContext))
+
+  it('loads a current document and caches it locally', async () => {
+    const document = await loadContentDoc({
+      context: RequestedDocsContext,
+      query: { test: 'foo' },
+    })
+    expect(document).to.deep.equal({ _id: 'fooDoc', test: 'foo' })
+    expect(RequestedDocsContext.collection().findOne('fooDoc')).to.deep.equal(
+      document,
+    )
   })
-  it('loads a single document from the content server', async function () {
-    const docId = RequestedDocsContext.routes.byId.docId
-    const doc = await loadContentDoc(RequestedDocsContext, docId)
-    expect(doc).to.deep.equal(RequestedDocsContext.doc)
-    expect(doc.regex).to.deep.equal(/[a-z]/g)
-    expect(RequestedDocsContext.collection().find().count()).to.equal(1)
 
-    // local collection
-    const localDoc = RequestedDocsContext.collection().findOne(docId)
-    expect(localDoc).to.deep.equal(doc)
+  it('validates context, collection, method and route type', async () => {
+    expect((await getError(() => loadContentDoc({}))).message).to.equal(
+      'Context is expected',
+    )
+    const context = { name: 'missing', methods: {} }
+    expect(
+      (await getError(() => loadContentDoc({ context, query: {} }))).message,
+    ).to.include('Expected collection')
 
-    // cached response
-    const cachedDoc = await loadContentDoc(RequestedDocsContext, docId)
-    expect(cachedDoc).to.deep.equal(doc)
-    expect(RequestedDocsContext.collection().find().count()).to.equal(1)
+    const collection = new Mongo.Collection(null)
+    expect(
+      (await getError(() => loadContentDoc({ context, collection, query: {} })))
+        .message,
+    ).to.include('Expected method name')
+    context.methods.get = 'missing.get'
+    expect(
+      (
+        await getError(() =>
+          loadContentDoc({ context, collection, query: {}, from: 'invalid' }),
+        )
+      ).message,
+    ).to.include('Expected loader')
   })
-  it('throws an error if the request targets a faulty _id', async function () {
-    const docId = Random.id()
-    const e = await expectThrow(function () {
-      return loadContentDoc(RequestedDocsContext, docId)
+
+  it('uses a cached document without calling the method', async () => {
+    const collection = new Mongo.Collection(null)
+    collection.insert({ _id: 'cached', value: 1 })
+    const methodCall = sinon.spy()
+    const loader = createContentDocLoader({ methodCall })
+
+    const document = await loader({
+      context: { name: 'docs', methods: { get: 'docs.get' } },
+      collection,
+      query: { _id: 'cached' },
+      unlessExists: true,
     })
 
-    expect(e.message).to.deep.equal(`failed [404] Invalid request id ${docId}`)
+    expect(document).to.deep.equal({ _id: 'cached', value: 1 })
+    expect(methodCall.called).to.equal(false)
   })
-  it('throws if the response is not a document', async function () {
-    const e = await expectThrow(function () {
-      return loadContentDoc(RequestedDocsContext, 'plain')
+
+  it('loads the selected current method and rejects malformed documents', async () => {
+    const collection = new Mongo.Collection(null)
+    const methodCall = sinon.stub().resolves({ _id: 'one', value: 1 })
+    const loader = createContentDocLoader({ methodCall })
+    const context = { name: 'docs', methods: { get: 'docs.get' } }
+
+    expect(
+      await loader({
+        context,
+        collection,
+        name: 'custom.get',
+        query: { x: 1 },
+      }),
+    ).to.deep.equal({ _id: 'one', value: 1 })
+    expect(methodCall.firstCall.args[0]).to.deep.equal({
+      name: 'custom.get',
+      args: { x: 1 },
     })
 
-    expect(e.message).to.equal(`Expected document for GET ${toContentServerURL(RequestedDocsContext.routes.byId.path)}`)
+    methodCall.resolves({ value: 'missing id' })
+    expect(
+      (await getError(() => loader({ context, collection, query: { x: 2 } })))
+        .message,
+    ).to.include('Expected document with _id')
+  })
+
+  it('supports optional and required not-found behavior', async () => {
+    const collection = new Mongo.Collection(null)
+    const loader = createContentDocLoader({
+      methodCall: sinon.stub().resolves(undefined),
+    })
+    const context = { name: 'docs', methods: { get: 'docs.get' } }
+
+    expect(await loader({ context, collection, query: {} })).to.equal(undefined)
+    expect(
+      (
+        await getError(() =>
+          loader({
+            context,
+            collection,
+            query: { _id: 'x' },
+            throwIfNotFound: true,
+          }),
+        )
+      ).message,
+    ).to.include('Expected document for ctx docs')
+  })
+
+  it('selects remote id/code routes, caches results and exposes HTTP errors', async () => {
+    const collection = new Mongo.Collection(null)
+    const http = sinon.stub().resolves({
+      statusCode: 200,
+      data: { _id: 'remote', value: 1 },
+    })
+    const loader = createContentDocLoader({
+      http,
+      contentBase: 'https://content.example.test',
+    })
+    const context = {
+      name: 'docs',
+      methods: { get: 'docs.get' },
+      routes: { byId: { path: '/by-id' }, byCode: { path: '/by-code' } },
+    }
+
+    await loader({
+      context,
+      collection,
+      query: { _id: 'remote' },
+      from: 'remote',
+    })
+    expect(http.firstCall.args).to.deep.equal([
+      'GET',
+      'https://content.example.test/by-id?_id=remote',
+    ])
+    expect(collection.findOne('remote')).to.include({ value: 1 })
+
+    http.resetHistory()
+    await loader({
+      context,
+      collection,
+      query: { shortCode: 'ABC' },
+      from: 'remote',
+    })
+    expect(http.firstCall.args[1]).to.equal(
+      'https://content.example.test/by-code?shortCode=ABC',
+    )
+
+    http.resolves({ statusCode: 503, content: ' unavailable' })
+    expect(
+      (
+        await getError(() =>
+          loader({ context, collection, query: { _id: 'x' }, from: 'remote' }),
+        )
+      ).message,
+    ).to.equal('503 unavailable')
   })
 })

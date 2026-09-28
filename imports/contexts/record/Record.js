@@ -16,7 +16,7 @@ export const Record = {
   label: 'record.title',
   icon: 'user',
   methods: {},
-  publications: {}
+  publications: {},
 }
 
 /**
@@ -39,7 +39,7 @@ Record.status = {
   /**
    * Current is "worse" tha previous; perc value is lower
    */
-  declined: 'declined'
+  declined: 'declined',
 }
 
 Record.schema = {
@@ -54,7 +54,7 @@ Record.schema = {
   feedback: String,
   previousId: {
     type: String, // the previous record doc id to be compared with
-    optional: true
+    optional: true,
   },
 
   // timestamps
@@ -69,7 +69,7 @@ Record.schema = {
   'competencies.$.alphaLevel': String,
   'competencies.$.category': {
     type: String,
-    optional: true
+    optional: true,
   },
   'competencies.$.count': Number,
   'competencies.$.scored': Number,
@@ -79,11 +79,11 @@ Record.schema = {
   'competencies.$.gradeName': String,
   'competencies.$.example': {
     type: String,
-    optional: true
+    optional: true,
   },
   'competencies.$.development': {
     type: String,
-    allowedValues: Object.values(Record.status)
+    allowedValues: Object.values(Record.status),
   },
 
   alphaLevels: Array,
@@ -98,8 +98,8 @@ Record.schema = {
   'alphaLevels.$.isGraded': Boolean,
   'alphaLevels.$.development': {
     type: String,
-    allowedValues: Object.values(Record.status)
-  }
+    allowedValues: Object.values(Record.status),
+  },
 }
 
 /**
@@ -115,28 +115,28 @@ Record.methods.getForUsers = {
     dimension: String,
     skip: {
       type: Array,
-      optional: true
+      optional: true,
     },
     'skip.$': String,
     oldest: {
       type: Date,
-      optional: true
+      optional: true,
     },
     newest: {
       type: Date,
-      optional: true
-    }
+      optional: true,
+    },
   },
   backend: true,
-  run: onServerExec(function () {
+  run: onServerExec(() => {
     const transform = {
-      hint: { $natural: -1 }
+      hint: { $natural: -1 },
     }
 
-    return function ({ users = [], dimension, skip = [], oldest, newest }) {
+    return async ({ users = [], dimension, skip = [], oldest, newest }) => {
       const query = {
         userId: { $in: users },
-        dimension: dimension
+        dimension: dimension,
       }
 
       // skip allows to not include those docs, which are
@@ -160,7 +160,7 @@ Record.methods.getForUsers = {
         query.completedAt = { $lte: newest }
       }
 
-      return Record.collection().find(query, transform).fetch()
+      return Record.collection().find(query, transform).fetchAsync()
     }
-  })
+  }),
 }

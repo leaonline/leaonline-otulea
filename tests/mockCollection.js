@@ -9,7 +9,10 @@ if (Collection2 && typeof Collection2.load === 'function') {
 
 const originals = new Map()
 
-export const mockCollection = (context, { collectionFn, attachSchema = true } = {}) => {
+export const mockCollection = (
+  context,
+  { collectionFn, attachSchema = true } = {},
+) => {
   originals.set(context.name, context.collection)
   const collection = new Mongo.Collection(null)
 
@@ -21,11 +24,16 @@ export const mockCollection = (context, { collectionFn, attachSchema = true } = 
   context.collection = collectionFn || (() => collection)
 }
 
-export const restoreCollection = context => {
+export const restoreCollection = (context) => {
   context.collection = originals.get(context.name)
   originals.delete(context.name)
 }
 
-export const clearCollection = context => {
-  return context.collection().remove({})
+/**
+ * Removes all docs from collection
+ * @param context
+ * @return {Promise<number>}
+ */
+export const clearCollection = (context) => {
+  return context.collection().removeAsync({})
 }

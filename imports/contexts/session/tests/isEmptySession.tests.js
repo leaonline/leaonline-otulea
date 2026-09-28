@@ -4,50 +4,48 @@ import { isEmptySession } from '../utils/isEmptySession'
 import {
   mockCollection,
   restoreCollection,
-  clearCollection
+  clearCollection,
 } from '../../../../tests/mockCollection'
 import { stub, restoreAll } from '../../../../tests/helpers.tests'
 import { Session } from '../Session'
 import { Response } from '../../response/Response'
 
-describe(isEmptySession.name, function () {
-  before(function () {
+describe(isEmptySession.name, async () => {
+  before(async () => {
     mockCollection(Session)
     mockCollection(Response)
   })
 
-  after(function () {
+  after(async () => {
     restoreCollection(Session)
     restoreCollection(Response)
   })
 
-  afterEach(function () {
+  afterEach(async () => {
     restoreAll()
-    clearCollection(Session)
-    clearCollection(Response)
+    await clearCollection(Session)
+    await clearCollection(Response)
   })
 
-  it('returns false, if the session has progress', function () {
-    expect(isEmptySession({ progress: 1 })).to.equal(false)
+  it('returns false, if the session has progress', async () => {
+    expect(await isEmptySession({ progress: 1 })).to.equal(false)
   })
-  it('returns false, if there is no progress but there are response docs', function () {
+  it('returns false, if there is no progress but there are response docs', async () => {
     stub(Response, 'collection', () => ({
-      find: () => ({
-        count: () => 1
-      })
+      countDocuments: async () => 1,
     }))
-    ;[undefined, 0, '', null].forEach(progress => {
-      expect(isEmptySession({ progress })).to.equal(false)
-    })
+    const values = [undefined, 0, '', null]
+    for (const progress of values) {
+      expect(await isEmptySession({ progress })).to.equal(false)
+    }
   })
-  it('returns true, if has no progress and no response docs', function () {
+  it('returns true, if has no progress and no response docs', async () => {
     stub(Response, 'collection', () => ({
-      find: () => ({
-        count: () => 0
-      })
+      countDocuments: async () => 0,
     }))
-    ;[undefined, 0, '', null].forEach(progress => {
-      expect(isEmptySession({ progress })).to.equal(true)
-    })
+    const values = [undefined, 0, '', null]
+    for (const progress of values) {
+      expect(await isEmptySession({ progress })).to.equal(true)
+    }
   })
 })

@@ -12,7 +12,16 @@ import { sendError } from '../../contexts/errors/api/sendError'
  * @param failure
  * @return {Promise}
  */
-export const callMethod = ({ name, args, prepare, receive, success, failure, connection }) => {
+export const callMethod = ({
+  name,
+  args,
+  prepare,
+  receive,
+  success,
+  failure,
+  connection,
+  reportError = sendError,
+}) => {
   const methodName = typeof name === 'object' ? name.name : name
   check(methodName, String)
   check(args, Match.Maybe(Object))
@@ -28,7 +37,7 @@ export const callMethod = ({ name, args, prepare, receive, success, failure, con
 
   // then we create the promise
   const promise = new Promise((resolve, reject) => {
-    (connection || Meteor).call(methodName, args, (error, result) => {
+    ;(connection || Meteor).call(methodName, args, (error, result) => {
       // call receive hook in any case the method has completed
       if (typeof receive === 'function') {
         receive()
@@ -46,8 +55,8 @@ export const callMethod = ({ name, args, prepare, receive, success, failure, con
     promise.then(success)
   }
 
-  promise.catch(error => {
-    sendError({ error, isResponse: true })
+  promise.catch((error) => {
+    reportError({ error, isResponse: true })
     if (typeof failure === 'function') {
       failure(error)
     }

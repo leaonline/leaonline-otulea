@@ -1,44 +1,89 @@
-import { toContentServerURL } from '../../api/url/toContentServerURL'
-import { isPlainObject } from '../../utils/object/isPlainObject'
+import { EJSON } from 'meteor/ejson'
+import { Meteor } from 'meteor/meteor'
+import { getLocalCollection } from '../../infrastructure/collections/getLocalCollection'
+import { callMethod } from '../../infrastructure/methods/callMethod'
 import { asyncHTTP } from './asyncHTTP'
 
-/**
- * Loads a single document from the content-server
- * @param context {Object} The context related to the document.
- * @param docId {String} The _id value of the document
- * @param debug {Function?} optional debug logger
- * @return {Promise<Object>} A promise resoling to an object or void
- */
-
-export const loadContentDoc = async (context, docId, debug = () => {}) => {
-  const collection = context.collection()
-  const cursor = collection.find(docId)
-
-  if (cursor.count() > 0) {
-    return cursor.fetch()[0]
+export const createContentDocLoader = ({
+  methodCall = callMethod,
+  http = asyncHTTP,
+  getCollection = getLocalCollection,
+  contentBase = Meteor.settings.public.hosts.content.base,
+} = {}) => {
+  const loadRemote = async ({ name, context, query }) => {
+    let route
+    if (query?.shortCode) route = context.routes?.byCode
+    if (query?._id) route = context.routes?.byId
+    if (!route) {
+      throw new Error(`No route for query/context: ${query}, ${context}`)
+    }
+    const url = new URL(name ?? `${contentBase}${route.path}`)
+    url.search = new URLSearchParams(query)
+    const response = await http('GET', url.toString())
+    if (response.statusCode >= 400) {
+      throw new Error(response.statusCode + response.content)
+    }
+    return response?.data
   }
 
-  const route = context.routes.byId
-  const url = toContentServerURL(route.path)
-
-  const method = route.method.toUpperCase()
-  const requestOptions = {}
-  requestOptions.params = { _id: docId }
-  requestOptions.headers = {
-    mode: 'cors',
-    cache: 'no-store'
+  const loaders = {
+    remote: loadRemote,
+    current: ({ name, context, query }) =>
+      methodCall({
+        name: name ?? context.methods.get,
+        args: query,
+      }),
   }
 
-  debug('load', method, url, docId)
+  /** Loads and caches one content document. */
+  return async ({
+    context,
+    collection,
+    name,
+    unlessExists,
+    query,
+    from = 'current',
+    debug = () => {},
+    throwIfNotFound = false,
+  }) => {
+    if (!context) throw new Error('Context is expected')
+    debug('loadContentDoc', context.name, JSON.stringify(query, null, 0))
 
-  const response = await asyncHTTP(method, url, requestOptions)
-  const document = response.data
+    const localCollection =
+      collection ?? context.collection?.() ?? getCollection(context.name)
+    if (!localCollection) {
+      throw new Error(`Expected collection for ctx ${context.name}`)
+    }
 
-  if (!isPlainObject(document)) {
-    throw new Error(`Expected document for ${method} ${url}`)
+    const existingDocument = localCollection.findOne(query)
+    if (unlessExists && existingDocument) return existingDocument
+
+    const methodName = name ?? context.methods?.get
+    if (!methodName) {
+      throw new Error(`Expected method name for ctx ${context.name}`)
+    }
+
+    const loader = loaders[from]
+    if (!loader) throw new Error(`Expected loader by given type "${from}"`)
+
+    const document = await loader({ context, name, query })
+    if (!document && throwIfNotFound) {
+      throw new Error(
+        `Expected document for ctx ${context.name} and query ${
+          query ? EJSON.stringify(query) : undefined
+        }`,
+      )
+    }
+
+    if (document) {
+      if (typeof document !== 'object' || !document._id) {
+        throw new Error(`Expected document with _id for ctx ${context.name}`)
+      }
+      localCollection.upsert({ _id: document._id }, { $set: { ...document } })
+    }
+
+    return document
   }
-
-  debug('received', document._id)
-  collection.upsert({ _id: docId }, { $set: document })
-  return collection.findOne(docId)
 }
+
+export const loadContentDoc = createContentDocLoader()

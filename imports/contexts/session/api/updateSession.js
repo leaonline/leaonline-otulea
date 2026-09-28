@@ -23,34 +23,37 @@ import { Unit } from '../../Unit'
  *  completed: Boolean
  * }}
  */
-export const updateSession = function (options = {}) {
-  check(options, Match.ObjectIncluding({
-    sessionId: String,
-    userId: String
-  }))
+export const updateSession = async (options = {}) => {
+  check(
+    options,
+    Match.ObjectIncluding({
+      sessionId: String,
+      userId: String,
+    }),
+  )
 
   const { sessionId, userId, debug = () => {} } = options
 
   // verify given session
-  const sessionDoc = getSessionDoc({ sessionId, userId })
+  const sessionDoc = await getSessionDoc({ sessionId, userId })
   checkDocument(sessionDoc, Session, { sessionId, userId })
 
   const { unitSet, testCycle, currentUnit } = sessionDoc
 
   // get test cycle doc
-  const testCycleDoc = getDocument(testCycle, TestCycle)
+  const testCycleDoc = await getDocument(testCycle, TestCycle)
   checkDocument(testCycleDoc, TestCycle, {
     testCycle,
     sessionId,
-    userId
+    userId,
   })
 
   // get unitSet doc
-  const unitSetDoc = getDocument(unitSet, UnitSet)
+  const unitSetDoc = await getDocument(unitSet, UnitSet)
   checkDocument(unitSetDoc, UnitSet, { sessionId, unitSet })
 
   // get unit doc
-  const unitDoc = getDocument(currentUnit, Unit)
+  const unitDoc = await getDocument(currentUnit, Unit)
   checkDocument(unitDoc, Unit, { sessionId, currentUnit })
   const progressIncrement = unitDoc.pages?.length
 
@@ -60,14 +63,14 @@ export const updateSession = function (options = {}) {
     context: TestCycle,
     fieldName: 'unitSets',
     document: testCycleDoc,
-    currentId: unitSet
+    currentId: unitSet,
   })
 
   const unitList = createDocumentList({
     context: UnitSet,
     fieldName: 'units',
     document: unitSetDoc,
-    currentId: currentUnit
+    currentId: currentUnit,
   })
 
   const timestamp = new Date()
@@ -79,15 +82,15 @@ export const updateSession = function (options = {}) {
   // through with the session's associated testCycle
 
   if (isLastUnitSet && isLastUnit) {
-    Session.collection().update(sessionDoc._id, {
+    await Session.collection().updateAsync(sessionDoc._id, {
       $set: {
         currentUnit: null,
         updatedAt: timestamp,
-        completedAt: timestamp
+        completedAt: timestamp,
       },
       $inc: {
-        progress: progressIncrement
-      }
+        progress: progressIncrement,
+      },
     })
 
     debug('session -> testcycle complete', sessionId)
@@ -95,7 +98,7 @@ export const updateSession = function (options = {}) {
       nextUnit: null,
       nextUnitSet: null,
       hasStory: false,
-      completed: true
+      completed: true,
     }
   }
 
@@ -105,33 +108,38 @@ export const updateSession = function (options = {}) {
 
   if (isLastUnit) {
     const nextUnitSetId = unitSetList.getNext()
-    const nextUnitSetDoc = getDocument(nextUnitSetId, UnitSet)
+    const nextUnitSetDoc = await getDocument(nextUnitSetId, UnitSet)
     checkDocument(nextUnitSetDoc, UnitSet, {
       nextUnitSetId,
       sessionId,
-      userId
+      userId,
     })
 
     const firstUnit = nextUnitSetDoc.units[0]
 
-    Session.collection().update(sessionDoc._id, {
+    await Session.collection().updateAsync(sessionDoc._id, {
       $set: {
         unitSet: nextUnitSetId,
         currentUnit: firstUnit,
-        updatedAt: timestamp
+        updatedAt: timestamp,
       },
       $inc: {
-        progress: progressIncrement
-      }
+        progress: progressIncrement,
+      },
     })
 
     const hasStory = nextUnitSetDoc.story?.length > 0
-    debug('session -> load next unit from new unitSet', sessionId, firstUnit, hasStory)
+    debug(
+      'session -> load next unit from new unitSet',
+      sessionId,
+      firstUnit,
+      hasStory,
+    )
     return {
       nextUnit: firstUnit,
       nextUnitSet: nextUnitSetId,
       hasStory: hasStory,
-      completed: false
+      completed: false,
     }
   }
 
@@ -139,14 +147,14 @@ export const updateSession = function (options = {}) {
   // We have neither completed and iterate to the next unit
   const nextUnit = unitList.getNext()
 
-  Session.collection().update(sessionDoc._id, {
+  await Session.collection().updateAsync(sessionDoc._id, {
     $set: {
       currentUnit: nextUnit,
-      updatedAt: timestamp
+      updatedAt: timestamp,
     },
     $inc: {
-      progress: progressIncrement
-    }
+      progress: progressIncrement,
+    },
   })
 
   debug('session -> load next unit from current unitSet', sessionId, nextUnit)
@@ -154,6 +162,6 @@ export const updateSession = function (options = {}) {
     nextUnit: nextUnit,
     nextUnitSet: null,
     hasStory: false,
-    completed: false
+    completed: false,
   }
 }

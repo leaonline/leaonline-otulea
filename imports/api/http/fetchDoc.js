@@ -5,13 +5,19 @@ const origin = Meteor.absoluteUrl()
 const defaultHeaders = {
   origin: origin,
   mode: 'cors',
-  cache: 'no-store'
+  cache: 'no-store',
 }
 
-export const fetchDoc = (url, params) => {
+/**
+ * Fetches a doc from given URL
+ * @param url
+ * @param params
+ * @return {Promise<*>}
+ */
+export const fetchDoc = async (url, params) => {
   const headers = { ...defaultHeaders }
   console.debug('[fetchDoc]:', { url, headers, params })
   const requestOptions = { params, headers }
-  const response = HTTP.get(url, requestOptions)
+  const response = await HTTP.get(url, requestOptions)
   return response.data
 }

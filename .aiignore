@@ -1,0 +1,6 @@
+.deploy*
+.lab*
+.production*
+.meteor/local/
+.git
+node_modules

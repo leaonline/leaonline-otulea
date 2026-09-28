@@ -1,0 +1,15 @@
+.fullscreen {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  margin: 0;
+}
+
+.lea-unit-content-container {
+}
+
+.min-vh-100 {
+  min-height: 100vh !important;
+}

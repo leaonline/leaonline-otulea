@@ -5,23 +5,23 @@ import { UnitSet } from '../../unitSet/UnitSet'
 import {
   clearCollection,
   mockCollection,
-  restoreCollection
+  restoreCollection,
 } from '../../../../tests/mockCollection'
 import { Session } from '../Session'
 import { TestCycle } from '../../testcycle/TestCycle'
-import { restoreAll, stub } from '../../../../tests/helpers.tests'
+import { expectThrow, restoreAll, stub } from '../../../../tests/helpers.tests'
 import { DocNotFoundError } from '../../errors/DocNotFoundError'
 
 const continueSession = Session.methods.continue.run
 
-describe(Session.methods.continue.name, function () {
-  before(function () {
+describe(Session.methods.continue.name, async () => {
+  before(async () => {
     mockCollection(Session)
     mockCollection(TestCycle)
     mockCollection(UnitSet)
   })
 
-  after(function () {
+  after(async () => {
     restoreCollection(Session)
     restoreCollection(TestCycle)
     restoreCollection(UnitSet)
@@ -30,56 +30,66 @@ describe(Session.methods.continue.name, function () {
   let sessionId
   let userId
 
-  beforeEach(function () {
+  beforeEach(async () => {
     sessionId = Random.id()
     userId = Random.id()
   })
 
-  afterEach(function () {
+  afterEach(async () => {
     restoreAll()
-    clearCollection(Session)
-    clearCollection(TestCycle)
-    clearCollection(UnitSet)
+    await clearCollection(Session)
+    await clearCollection(TestCycle)
+    await clearCollection(UnitSet)
   })
 
-  it('throws if there is no sessionDoc for sessionId', function () {
-    stub(Session, 'collection', () => ({ findOne: () => {} }))
+  it('throws if there is no sessionDoc for sessionId', async () => {
+    stub(Session, 'collection', () => ({ findOneAsync: async () => {} }))
 
     const env = { userId }
     const arg = { sessionId }
-    expect(() => continueSession.call(env, arg)).to.throw(DocNotFoundError.reason)
+    await expectThrow({
+      fn: () => continueSession.call(env, arg),
+      message: DocNotFoundError.reason,
+    })
   })
 
-  it('throws if the session is already complete', function () {
+  it('throws if the session is already complete', async () => {
     const doc = { completedAt: new Date() }
-    stub(Session, 'collection', () => ({ findOne: () => doc }))
+    stub(Session, 'collection', () => ({ findOneAsync: async () => doc }))
 
     const env = { userId }
     const arg = { sessionId }
-    expect(() => continueSession.call(env, arg)).to.throw('session.isComplete')
+
+    await expectThrow({
+      fn: () => continueSession.call(env, arg),
+      message: 'session.isComplete',
+    })
   })
-  it('throws if the session is already cancelled', function () {
+  it('throws if the session is already cancelled', async () => {
     const doc = { cancelledAt: new Date() }
-    stub(Session, 'collection', () => ({ findOne: () => doc }))
+    stub(Session, 'collection', () => ({ findOneAsync: async () => doc }))
 
     const env = { userId }
     const arg = { sessionId }
-    expect(() => continueSession.call(env, arg)).to.throw('session.isCancelled')
+    await expectThrow({
+      fn: () => continueSession.call(env, arg),
+      message: 'session.isCancelled',
+    })
   })
-  it('updates the session accordingly and returns the doc', function () {
+  it('updates the session accordingly and returns the doc', async () => {
     const doc = { _id: sessionId }
     stub(Session, 'collection', () => ({
-      findOne: () => doc,
-      update: (id, modifier) => {
+      findOneAsync: async () => doc,
+      updateAsync: async (id, modifier) => {
         expect(id).to.equal(sessionId)
         expect(modifier.$set.continuedAt instanceof Date).to.equal(true)
         return 1
-      }
+      },
     }))
 
     const env = { userId }
     const arg = { sessionId }
-    const updated = continueSession.call(env, arg)
+    const updated = await continueSession.call(env, arg)
     expect(updated).to.deep.equal(doc)
   })
 })

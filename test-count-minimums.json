@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "modes": {
+    "unit": {
+      "server": 191,
+      "client": 205
+    },
+    "fullApp": {
+      "server": 1,
+      "client": 2
+    }
+  }
+}

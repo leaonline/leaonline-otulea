@@ -1,35 +1,43 @@
 /* eslint-env mocha */
 /* global $ */
 import { expect } from 'chai'
+import sinon from 'sinon'
 import { UITests } from '../../../../../tests/ui-helpers.tests'
-import '../container'
+import { createContainerOnRendered } from '../container'
 
-describe('container', function () {
-  beforeEach(function () {
+describe('container', () => {
+  beforeEach(() => {
     UITests.preRender()
+    $.fx.off = true
   })
 
-  afterEach(function () {
+  afterEach(() => {
     UITests.postRender()
+    $.fx.off = false
   })
 
-  it('is initially not displayed after being rendered', async function () {
-    this.timeout(3000)
-
+  it('marks itself visible after rendering without a real animation wait', async () => {
     const root = await UITests.withRenderedTemplate('container', {})
     const container = $(root.firstChild)
 
     expect(container.hasClass('lea-base-container')).to.equal(true)
-    expect(container.data('visible')).to.equal(false)
-
-    let opacity = Number(container.css('opacity')).toFixed(1)
-    expect(opacity).to.equal('0.0')
-
-    await UITests.wait(1000)
-
     expect(container.data('visible')).to.equal(true)
+  })
 
-    opacity = Number(container.css('opacity')).toFixed(1)
-    expect(opacity).to.equal('1.0')
+  it('exposes an injected animation boundary and reports animation errors', () => {
+    const expected = new Error('animation failed')
+    const reportError = sinon.spy()
+    const animate = sinon.spy((selector, instance, callback) =>
+      callback(expected),
+    )
+    const instance = {}
+
+    createContainerOnRendered({ animate, reportError }).call(instance)
+
+    expect(animate.firstCall.args.slice(0, 2)).to.deep.equal([
+      '.lea-base-container',
+      instance,
+    ])
+    expect(reportError.calledWith(expected)).to.equal(true)
   })
 })

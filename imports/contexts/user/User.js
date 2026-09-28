@@ -10,18 +10,18 @@ export const Users = {
   name: 'users',
   label: 'users.title',
   icon: 'users',
-  representative: 'username'
+  representative: 'username',
 }
 
 Users.schema = {
   username: {
     type: String,
     min: codeLength,
-    max: codeLength
+    max: codeLength,
   },
   updatedAt: {
     type: Date,
-    sort: -1
+    sort: -1,
   },
 
   createdAt: Date,
@@ -32,7 +32,7 @@ Users.schema = {
    */
   isDemoUser: {
     type: Boolean,
-    optional: true
+    optional: true,
   },
 
   /**
@@ -41,7 +41,7 @@ Users.schema = {
    */
   debug: {
     type: Boolean,
-    optional: true
+    optional: true,
   },
 
   /**
@@ -51,7 +51,7 @@ Users.schema = {
    */
   comment: {
     type: String,
-    optional: true
+    optional: true,
   },
 
   /**
@@ -60,11 +60,11 @@ Users.schema = {
    */
   email: {
     type: String,
-    optional: true
+    optional: true,
   },
   services: {
     type: Object,
-    blackbox: true // TODO specify
+    blackbox: true, // TODO specify
   },
 
   /**
@@ -72,14 +72,14 @@ Users.schema = {
    */
   agents: {
     type: Array,
-    optional: true
+    optional: true,
   },
   'agents.$': Object,
   'agents.$.name': String,
   'agents.$.screenWidth': Number,
   'agents.$.screenHeight': Number,
   'agents.$.viewPortWidth': Number,
-  'agents.$.viewPortHeight': Number
+  'agents.$.viewPortHeight': Number,
 }
 
 Users.methods = {}
@@ -89,31 +89,33 @@ Users.methods.generate = {
   schema: {
     isDemo: {
       type: Boolean,
-      optional: true
-    }
+      optional: true,
+    },
   },
   backend: true,
   numRequests: 1,
   timeInterval: 1000,
-  run: onServerExec(function () {
-    import { generateUserCode } from '../../api/accounts/generateUserCode'
+  run: onServerExec(() => {
+    const { generateUserCode } = require('../../api/accounts/generateUserCode')
 
-    return function ({ isDemo } = {}) {
-      const usersLength = Meteor.users.find().count()
-      const maxRetries = usersLength > defaultMaxRetries
-        ? usersLength
-        : defaultMaxRetries
+    return async ({ isDemo } = {}) => {
+      const usersLength = await Meteor.users.countDocuments({})
+      const maxRetries =
+        usersLength > defaultMaxRetries ? usersLength : defaultMaxRetries
 
-      const code = generateUserCode(codeLength, maxRetries)
-      const userId = Accounts.createUser({ username: code, password: code })
+      const code = await generateUserCode(codeLength, maxRetries)
+      const userId = await Accounts.createUserAsync({
+        username: code,
+        password: code,
+      })
 
       if (isDemo === true) {
-        Meteor.users.update(userId, { $set: { isDemoUser: isDemo } })
+        await Meteor.users.updateAsync(userId, { $set: { isDemoUser: isDemo } })
       }
 
-      return Meteor.users.findOne(userId, { fields: { services: 0 } })
+      return Meteor.users.findOneAsync(userId, { fields: { services: 0 } })
     }
-  })
+  }),
 }
 
 Users.methods.generateCode = {
@@ -122,24 +124,27 @@ Users.methods.generateCode = {
   isPublic: true,
   numRequests: 1,
   timeInterval: 5000,
-  run: onServerExec(function () {
-    import { generateUserCode } from '../../api/accounts/generateUserCode'
+  run: onServerExec(() => {
+    const { generateUserCode } = require('../../api/accounts/generateUserCode')
 
-    return function () {
+    return async function () {
       const { userId } = this
 
       if (userId) {
-        throw new Meteor.Error('generateCode.error', 'generateCode.alreadyLoggedIn', { userId })
+        throw new Meteor.Error(
+          'generateCode.error',
+          'generateCode.alreadyLoggedIn',
+          { userId },
+        )
       }
 
-      const usersLength = Meteor.users.find().count()
-      const maxRetries = usersLength > defaultMaxRetries
-        ? usersLength
-        : defaultMaxRetries
+      const usersLength = await Meteor.users.estimatedDocumentCount()
+      const maxRetries =
+        usersLength > defaultMaxRetries ? usersLength : defaultMaxRetries
 
       return generateUserCode(codeLength, maxRetries)
     }
-  })
+  }),
 }
 
 Users.methods.register = {
@@ -148,40 +153,40 @@ Users.methods.register = {
     code: {
       type: String,
       min: codeLength,
-      max: codeLength
+      max: codeLength,
     },
     isDemoUser: {
       type: Boolean,
-      optional: true
-    }
+      optional: true,
+    },
   },
   isPublic: true,
   numRequests: 1,
   timeInterval: 1000,
-  run: onServer(function ({ code, isDemoUser }) {
-    const userId = Accounts.createUser({ username: code, password: code })
+  run: onServer(async ({ code, isDemoUser }) => {
+    const userId = await Accounts.createUser({ username: code, password: code })
 
     if (isDemoUser === true) {
-      Meteor.users.update(userId, { $set: { isDemoUser } })
+      await Meteor.users.updateAsync(userId, { $set: { isDemoUser } })
     }
 
     return userId
-  })
+  }),
 }
 
 Users.methods.isDebug = {
   name: 'users.methods.isDebug',
   schema: {
-    value: Boolean
+    value: Boolean,
   },
   numRequests: 1,
   timeInterval: 1000,
-  run: onServer(function ({ value }) {
+  run: onServer(async function ({ value }) {
     const { userId } = this
-    return Meteor.users.update(userId, {
-      $set: { debug: value }
+    return Meteor.users.updateAsync(userId, {
+      $set: { debug: value },
     })
-  })
+  }),
 }
 
 Users.methods.exist = {
@@ -190,11 +195,11 @@ Users.methods.exist = {
   numRequests: 1,
   timeInterval: 1000,
   schema: {
-    code: String
+    code: String,
   },
-  run: onServer(function ({ code }) {
-    return Meteor.users.findOne({ username: code })
-  })
+  run: onServer(async ({ code }) =>
+    Meteor.users.findOneAsync({ username: code }),
+  ),
 }
 
 Users.methods.loggedIn = {
@@ -203,14 +208,19 @@ Users.methods.loggedIn = {
     screenWidth: Number,
     screenHeight: Number,
     viewPortWidth: Number,
-    viewPortHeight: Number
+    viewPortHeight: Number,
   },
   numRequests: 1,
   timeInterval: 1000,
-  run: onServerExec(function () {
-    import { SHA256 } from 'meteor/sha'
+  run: onServerExec(() => {
+    const { SHA256 } = require('meteor/sha')
 
-    return function ({ screenWidth, screenHeight, viewPortWidth, viewPortHeight }) {
+    return function ({
+      screenWidth,
+      screenHeight,
+      viewPortWidth,
+      viewPortHeight,
+    }) {
       // eslint-disable-next-line
       const { userId } = this
       const { connection } = this
@@ -222,18 +232,18 @@ Users.methods.loggedIn = {
         screenWidth,
         screenHeight,
         viewPortWidth,
-        viewPortHeight
+        viewPortHeight,
       }
       const updatedAt = new Date()
-      return Meteor.users.update(userId, {
+      return Meteor.users.updateAsync(userId, {
         $set: { updatedAt },
-        $addToSet: { agents: updateDoc }
+        $addToSet: { agents: updateDoc },
       })
     }
-  })
+  }),
 }
 
-onServerExec(function () {
+onServerExec(() => {
   Users.actions = {
     generateUser: {
       key: 'generateUser',
@@ -244,9 +254,9 @@ onServerExec(function () {
       color: 'success',
       args: {
         isDemo: Boolean,
-        isDebug: Boolean
-      }
-    }
+        isDebug: Boolean,
+      },
+    },
   }
 })
 

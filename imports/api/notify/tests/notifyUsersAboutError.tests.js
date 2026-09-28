@@ -4,15 +4,15 @@ import { Email } from 'meteor/email'
 import { notifyUsersAboutError } from '../notifyUsersAboutError'
 import { restoreAll, stub } from '../../../../tests/helpers.tests'
 
-describe(notifyUsersAboutError.name, function () {
-  afterEach(function () {
+describe(notifyUsersAboutError.name, () => {
+  afterEach(() => {
     restoreAll()
   })
-  it('skips an undefined error', function () {
+  it('skips an undefined error', async () => {
     stub(Email, 'send', () => expect.fail())
-    notifyUsersAboutError()
+    await notifyUsersAboutError()
   })
-  it('sends an email with a stringified error', function () {
+  it('sends an email with a stringified error', async () => {
     const err = new Error('foobar')
     err.type = 'testError'
 
@@ -24,6 +24,6 @@ describe(notifyUsersAboutError.name, function () {
       expect(text).to.equal(JSON.stringify(err, null, 2).trim())
     })
 
-    notifyUsersAboutError(err)
+    await notifyUsersAboutError(err)
   })
 })

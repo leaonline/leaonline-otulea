@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "metrics": {
+    "lines": {
+      "found": 3818,
+      "hit": 2674
+    },
+    "branches": {
+      "found": 1586,
+      "hit": 1015
+    },
+    "functions": {
+      "found": 1048,
+      "hit": 645
+    }
+  },
+  "inventory": {
+    "productionFiles": 216,
+    "maxAllowlisted": 11
+  }
+}

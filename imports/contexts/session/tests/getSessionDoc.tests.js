@@ -5,47 +5,48 @@ import { getSessionDoc } from '../utils/getSessionDoc'
 import { Session } from '../../session/Session'
 import {
   mockCollection,
-  restoreCollection
+  restoreCollection,
 } from '../../../../tests/mockCollection'
 import { restoreAll, stub } from '../../../../tests/helpers.tests'
 import { onServerExec } from '../../../utils/archUtils'
 
-describe(getSessionDoc.name, function () {
+describe(getSessionDoc.name, () => {
   let userId
   let sessionId
   let val
   let stubSession
 
-  beforeEach(function () {
+  beforeEach(() => {
     mockCollection(Session)
     userId = Random.id()
     sessionId = Random.id()
     val = Random.id()
-    stubSession = () => stub(Session, 'collection', () => ({
-      findOne: ({ _id, userId }) => {
-        expect(_id).to.equal(sessionId)
-        expect(userId).to.equal(userId)
-        return val
-      }
-    }))
+    stubSession = () =>
+      stub(Session, 'collection', () => ({
+        findOneAsync: async ({ _id, userId }) => {
+          expect(_id).to.equal(sessionId)
+          expect(userId).to.equal(userId)
+          return val
+        },
+      }))
   })
-  afterEach(function () {
+  afterEach(() => {
     restoreCollection(Session)
     restoreAll()
   })
 
-  it('returns the sessionDoc only for the given user', function () {
+  it('returns the sessionDoc only for the given user', async () => {
     stubSession()
     const data = { sessionId, userId }
-    expect(getSessionDoc(data)).to.equal(val)
+    expect(await getSessionDoc(data)).to.equal(val)
   })
 
-  onServerExec(function () {
-    it('runs as method', function () {
+  onServerExec(() => {
+    it('runs as method', async () => {
       stubSession()
       const env = { userId }
       const arg = { sessionId }
-      expect(Session.methods.currentById.run.call(env, arg)).to.equal(val)
+      expect(await Session.methods.currentById.run.call(env, arg)).to.equal(val)
     })
   })
 })

@@ -1,13 +1,12 @@
 import { Meteor } from 'meteor/meteor'
-import { WebApp } from 'meteor/webapp'
-import { createCSPOptions } from '../../infrastructure/csp/cspOptions'
-import helmet from 'helmet'
+import { configureCSP } from './configureCSP'
 
-const hostUrls = Object
-  .values(Meteor.settings.public.hosts)
-  .map(host => host.url)
-
-const cspOptions = createCSPOptions(hostUrls)
-
-// Within server side Meter.startup()
-WebApp.connectHandlers.use(helmet(cspOptions))
+Meteor.startup(async () => {
+  // Keep Meteor's runtime configuration out of inline script tags. This lets
+  // script-src continue to block arbitrary inline JavaScript without relying
+  // on hashes reconstructed from Meteor's private, mutable runtime state.
+  const hostUrls = Object.values(Meteor.settings.public.hosts).map(
+    (host) => host.url,
+  )
+  await configureCSP({ hostUrls })
+})

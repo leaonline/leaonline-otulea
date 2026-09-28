@@ -1,5 +1,11 @@
 import { UnitSet } from '../UnitSet'
 
+/**
+ * @locus client
+ * @param dimension
+ * @param level
+ * @return {*}
+ */
 export const getUnitSetForDimensionAndLevel = ({ dimension, level }) => {
   const query = {}
   if (dimension) {

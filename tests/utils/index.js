@@ -1,4 +1,5 @@
 /* eslint-env mocha */
-describe('utils', function () {
-  import '../../imports/utils/object/tests/objectUtils.tests'
+describe('utils', () => {
+  require('../../imports/utils/object/tests/objectUtils.tests')
+  require('../../imports/utils/tests/foundations.tests')
 })

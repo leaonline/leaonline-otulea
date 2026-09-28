@@ -18,6 +18,8 @@ public/logos/
 .deploy
 .production
 .dev
+.lab
+.staging
 
 # Logs
 logs
@@ -43,6 +45,7 @@ lib-cov
 coverage
 .coverage
 *.lcov
+.test-results
 
 # nyc test coverage
 .nyc_output
@@ -60,7 +63,6 @@ bower_components
 build/Release
 
 # Dependency directories
-node_modules/
 jspm_packages/
 
 # TypeScript v1 declaration files

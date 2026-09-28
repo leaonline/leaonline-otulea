@@ -17,39 +17,42 @@ import { getDocument } from '../../../infrastructure/mixins/getDocument'
  * @param options.userId {string}
  * @return {any}
  */
-export const startSession = function startSession (options = {}) {
-  check(options, Match.ObjectIncluding({
-    testCycleId: String,
-    userId: String
-  }))
+export const startSession = async (options = {}) => {
+  check(
+    options,
+    Match.ObjectIncluding({
+      testCycleId: String,
+      userId: String,
+    }),
+  )
 
   const { testCycleId, userId } = options
 
   const SessionCollection = Session.collection()
-  const abortedSessionDoc = SessionCollection.findOne({
+  const abortedSessionDoc = await SessionCollection.findOneAsync({
     userId,
     testCycle: testCycleId,
     completedAt: { $exists: false },
-    cancelledAt: { $exists: false }
+    cancelledAt: { $exists: false },
   })
 
   // There may be the the case where we find an aborted session.
   if (abortedSessionDoc) {
     throw new Meteor.Error('session.start.error', 'session.existsAlready', {
       sessionId: abortedSessionDoc._id,
-      unitSetId: testCycleId
+      unitSetId: testCycleId,
     })
   }
 
   // for a new session we stamp the start time and get the referenced
   // unitSet document in order to store the associated dimension, level and
   // ordered set of units to be solved.
-  const testCycleDoc = getDocument(testCycleId, TestCycle)
+  const testCycleDoc = await getDocument(testCycleId, TestCycle)
   checkDocument(testCycleDoc, TestCycle, { testCycleId })
 
   // get the initial unit-set
   const unitSetId = testCycleDoc.unitSets?.[0]
-  const unitSetDoc = getDocument(unitSetId, UnitSet)
+  const unitSetDoc = await getDocument(unitSetId, UnitSet)
   const progress = 0
   const maxProgress = testCycleDoc.progress
 
@@ -58,7 +61,7 @@ export const startSession = function startSession (options = {}) {
 
   // get the initial unit
   const currentUnit = unitSetDoc.units?.[0]
-  const unitDoc = getDocument(currentUnit, Unit)
+  const unitDoc = await getDocument(currentUnit, Unit)
 
   // unit is also strictly required to start a session
   checkDocument(unitDoc, Unit, { currentUnit })
@@ -69,6 +72,6 @@ export const startSession = function startSession (options = {}) {
   insertDoc.testCycle = testCycleId
   insertDoc.unitSet = unitSetId
 
-  const newSessionId = SessionCollection.insert(insertDoc)
-  return SessionCollection.findOne(newSessionId)
+  const newSessionId = await SessionCollection.insertAsync(insertDoc)
+  return SessionCollection.findOneAsync(newSessionId)
 }

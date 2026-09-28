@@ -1,5 +1,4 @@
 import { HTTP } from 'meteor/jkuester:http'
-import { check, Match } from 'meteor/check'
 
 const defaultTimeout = 5000
 
@@ -17,8 +16,15 @@ HTTP.debug((...args) => {
  * @return {Promise}
  */
 export const asyncHTTP = (method, url, requestOptions = {}) => {
-  check({ method, url }, Match.ObjectIncluding({ method: String, url: String }))
-
+  if (!method) {
+    throw new Error(`Method ${method} not found`)
+  }
+  if (!validMethods.includes(method.toLowerCase())) {
+    throw new Error(`${method.toLowerCase()} is not a valid HTTP method`)
+  }
+  if (!url) {
+    throw new Error(`Url ${url} not found`)
+  }
   if (!requestOptions.timeout) {
     requestOptions.timeout = defaultTimeout
   }
@@ -33,3 +39,5 @@ export const asyncHTTP = (method, url, requestOptions = {}) => {
     })
   })
 }
+
+const validMethods = ['get', 'post', 'put', 'patch', 'delete', 'options']
