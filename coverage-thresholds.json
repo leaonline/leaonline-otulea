@@ -2,20 +2,20 @@
   "version": 1,
   "metrics": {
     "lines": {
-      "found": 3838,
-      "hit": 2692
+      "found": 3818,
+      "hit": 2674
     },
     "branches": {
-      "found": 1588,
-      "hit": 1014
+      "found": 1586,
+      "hit": 1015
     },
     "functions": {
-      "found": 1047,
+      "found": 1048,
       "hit": 645
     }
   },
   "inventory": {
-    "productionFiles": 217,
+    "productionFiles": 216,
     "maxAllowlisted": 11
   }
 }

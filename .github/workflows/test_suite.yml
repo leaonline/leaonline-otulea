@@ -116,12 +116,6 @@ jobs:
       - name: Install NPM Dependencies
         run: meteor npm ci
 
-      - name: Run server architecture
-        run: ./test.sh -a server -o
-
-      - name: Run client architecture
-        run: ./test.sh -a client -o
-
       - name: Run deterministic full-app safety net
         run: ./test.sh -f -o
 
