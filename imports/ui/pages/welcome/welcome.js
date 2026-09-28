@@ -5,6 +5,13 @@ import { Random } from 'meteor/random'
 import { Users } from '../../../contexts/user/User'
 import { loggedIn } from '../../../utils/accountUtils'
 import { fadeOut } from '../../../utils/animationUtils'
+import {
+  combineLoginCode,
+  createWelcomeAuth,
+  deleteLoginInput,
+  normalizePastedCode,
+  updateLoginInput,
+} from './welcomeBehavior'
 import '../../components/container/container'
 import './welcome.scss'
 import './welcome.html'
@@ -13,7 +20,6 @@ const appStatus = Meteor.settings.public.status
 const settings = Meteor.settings.public.accounts
 const CODE_LENGTH = settings.code.length
 const inputFieldIndices = [...new Array(CODE_LENGTH)].map((v, i) => i)
-const whiteSpace = /\s+/g
 let originalVideoHeight
 
 Template.welcome.onCreated(function () {
@@ -190,10 +196,13 @@ Template.welcome.events({
       // TODO send to server to log this error along with the detected browser
     }
 
-    const pastedData = clipboardData.getData('Text').replace(whiteSpace, '')
+    const pastedData = normalizePastedCode(
+      clipboardData.getData('Text'),
+      CODE_LENGTH,
+    )
 
     // we accept only the correct length of usernames
-    if (pastedData.length !== CODE_LENGTH) {
+    if (!pastedData) {
       console.debug('[Template.welcome]: rejected', pastedData)
       return false
     }
@@ -211,31 +220,25 @@ Template.welcome.events({
     const $current = templateInstance.$(event.currentTarget)
     console.debug('input', key)
 
-    if (/^[a-zA-Z0-9]{1}$/i.test(key)) {
-      const indexStr = $current.data('index')
-      const index = parseInt(indexStr, 10)
-
-      // update values
-      $current.val(key)
-      const loginCode = getLoginCode(templateInstance)
-      templateInstance.state.set('loginCode', loginCode)
-
-      // update pointer
-      if (index < CODE_LENGTH - 1) {
-        const $next = templateInstance.$(`input[data-index="${index + 1}"]`)
-        $next.focus()
-      } else {
-        showLoginButton(templateInstance)
-      }
-
-      return true
-    } else if (/\s+/.test(key)) {
-      $current.val(null)
-      $current.focus()
-    } else {
+    const index = parseInt($current.data('index'), 10)
+    const transition = updateLoginInput({
+      values: getLoginValues(templateInstance),
+      index,
+      key,
+    })
+    if (!transition.accepted) {
       event.preventDefault()
       return false
     }
+
+    applyLoginValues(templateInstance, transition.values)
+    templateInstance.state.set('loginCode', combineLoginCode(transition.values))
+    if (transition.complete) {
+      showLoginButton(templateInstance)
+    } else {
+      templateInstance.$(`input[data-index="${transition.focusIndex}"]`).focus()
+    }
+    return true
   },
   'keydown .login-field'(event, templateInstance) {
     const key = event.key.toLowerCase()
@@ -283,25 +286,16 @@ Template.welcome.events({
     // on any destructive operation we clear the current field
     // and jump to the previous input and re-eszablish edit mode
     if (['backspace', 'delete', 'clear', 'cut', 'undo'].includes(key)) {
-      // if there is a value in this input we delete the current input
-      if ($current.val()) {
-        $current.val(null)
-        $current.focus()
-        const loginCode = getLoginCode(templateInstance)
-        templateInstance.state.set('loginCode', loginCode)
-      } else if (index > 0) {
-        // if the current input contains no value we "jump" to the previous
-        // input and delete it, then update field and position
-        const $prev = templateInstance.$(`input[data-index="${index - 1}"]`)
-        $current.val('')
-        $prev.val('')
-        $prev.focus()
-        // update logincode
-        const loginCode = getLoginCode(templateInstance)
-        templateInstance.state.set('loginCode', loginCode)
-      } else {
-        return true
-      }
+      const transition = deleteLoginInput({
+        values: getLoginValues(templateInstance),
+        index,
+      })
+      applyLoginValues(templateInstance, transition.values)
+      templateInstance.$(`input[data-index="${transition.focusIndex}"]`).focus()
+      templateInstance.state.set(
+        'loginCode',
+        combineLoginCode(transition.values),
+      )
     } else {
       return true
     }
@@ -373,11 +367,21 @@ Template.welcome.events({
 })
 
 function getLoginCode(templateInstance) {
-  let loginCode = ''
+  return combineLoginCode(getLoginValues(templateInstance))
+}
+
+function getLoginValues(templateInstance) {
+  const values = []
   templateInstance.$('.login-field').each((index, input) => {
-    loginCode += templateInstance.$(input).val()
+    values.push(templateInstance.$(input).val())
   })
-  return loginCode
+  return values
+}
+
+function applyLoginValues(templateInstance, values) {
+  values.forEach((value, index) => {
+    templateInstance.$(`input[data-index="${index}"]`).val(value)
+  })
 }
 
 function resetInputs(templateInstance) {
@@ -418,33 +422,50 @@ function loginFail(templateInstance, error) {
 function registerNewUser(code, templateInstance) {
   const registerCode = templateInstance.newUser.get()
   const isDemoUser = templateInstance.state.get('isDemoUser')
-
-  // a failed attempt resets the state to enable a re-type of the login code
-  if (registerCode !== code) {
-    return loginFail(templateInstance)
-  }
-
-  // on a match we want to register the new user
-  templateInstance.api.callMethod({
-    name: Users.methods.register,
-    args: { code, isDemoUser },
-    prepare: () => templateInstance.state.set('loggingIn', true),
-    failure: (err) => loginFail(templateInstance, err),
-    success: () => loginUser(code, templateInstance),
+  return createWelcomeAuthController(templateInstance).register({
+    code,
+    registerCode,
+    isDemoUser,
   })
 }
 
 function loginUser(code, templateInstance) {
-  Meteor.loginWithPassword(code, code, (err) => {
-    if (err) {
-      return loginFail(templateInstance, err)
-    }
+  return createWelcomeAuthController(templateInstance).login(code)
+}
 
-    window.localStorage.removeItem('newUserCode')
-    onLoggedIn(templateInstance)
-    fadeOut('.lea-welcome-container', templateInstance, () => {
-      templateInstance.data.next()
-    })
+export function createWelcomeAuthController(
+  templateInstance,
+  {
+    callMethod = (options) => templateInstance.api.callMethod(options),
+    loginWithPassword = (code, password, callback) =>
+      Meteor.loginWithPassword(code, password, callback),
+    removeStoredCode = () => window.localStorage.removeItem('newUserCode'),
+    notifyLoggedIn = () => onLoggedIn(templateInstance),
+    transition = (onComplete) =>
+      fadeOut('.lea-welcome-container', templateInstance, onComplete),
+  } = {},
+) {
+  return createWelcomeAuth({
+    callMethod: (options) => {
+      const prepare = options.prepare
+      return callMethod({
+        ...options,
+        prepare: () => {
+          templateInstance.state.set('loggingIn', true)
+          prepare()
+        },
+      })
+    },
+    loginWithPassword,
+    registerMethod: Users.methods.register,
+    onFailure: (error) => loginFail(templateInstance, error),
+    onLoginSuccess: () => {
+      removeStoredCode()
+      notifyLoggedIn()
+      transition(() => {
+        templateInstance.data.next()
+      })
+    },
   })
 }
 

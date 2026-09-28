@@ -5,15 +5,15 @@ import { expect } from 'chai'
 // allow our custom schema keys here to pass schema based tests
 SimpleSchema.extendOptions(['autoform'])
 
-export const createSchema = (schema, options) => new SimpleSchema(schema, options)
+export const createSchema = (schema, options) =>
+  new SimpleSchema(schema, options)
 export const multiSchema = (...defs) => SimpleSchema.oneOf(defs)
 
-export const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
-export const iterate = (num, fct) => (new Array(num)).forEach(fct)
+export const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+export const iterate = (num, fct) => new Array(num).forEach(fct)
 
-export const unsafeInt = negative => negative
-  ? (Number.MIN_SAFE_INTEGER - 1)
-  : (Number.MAX_SAFE_INTEGER + 1)
+export const unsafeInt = (negative) =>
+  negative ? Number.MIN_SAFE_INTEGER - 1 : Number.MAX_SAFE_INTEGER + 1
 
 /**
  * expects an async function to throw with given message
@@ -24,12 +24,11 @@ export const unsafeInt = negative => negative
  * @param details
  * @return {Promise<*>}
  */
-export const expectThrow = async function ({ fn, error, reason, message, details }) {
+export const expectThrow = async ({ fn, error, reason, message, details }) => {
   try {
     await fn()
     expect.fail()
-  }
-  catch (e) {
+  } catch (e) {
     if (error) expect(e.error).to.include(error)
     if (message) expect(e.message).to.include(message)
     if (reason) expect(e.reason).to.include(reason)
@@ -53,8 +52,7 @@ export const stub = (target, name, handler) => {
   const stubbedTarget = sinon.stub(target, name)
   if (typeof handler === 'function') {
     stubbedTarget.callsFake(handler)
-  }
-  else {
+  } else {
     stubbedTarget.value(handler)
   }
   stubs.set(stubbedTarget, name)

@@ -15,19 +15,17 @@ const legalRendererName = 'legalRenderer'
 LeaMarkdown.addRenderer(legalRendererName, legalRenderer())
 
 Template.legal.onCreated(function () {
-  const instance = this
-
-  instance.initDependencies({
+  this.initDependencies({
     contexts: [Legal],
     translations: legalLanguage,
     tts: true,
     onComplete: () => {
-      instance.state.set('dependenciesComplete', true)
+      this.state.set('dependenciesComplete', true)
     },
   })
 
-  instance.autorun(() => {
-    const dependenciesComplete = instance.state.get('dependenciesComplete')
+  this.autorun(() => {
+    const dependenciesComplete = this.state.get('dependenciesComplete')
     if (!dependenciesComplete) {
       return
     }
@@ -43,7 +41,7 @@ Template.legal.onCreated(function () {
     })
 
     if (!originalType) {
-      instance.state.set({
+      this.state.set({
         error: new Error(
           i18n.get('pages.legal.unknownKey', { name: originalType }),
         ),
@@ -51,19 +49,19 @@ Template.legal.onCreated(function () {
     }
 
     Meteor.call(Legal.methods.get.name, { name: originalType }, (err, res) => {
-      if (err) return instance.state.set({ error: err })
+      if (err) return this.state.set({ error: err })
 
       LeaMarkdown.parse({
         input: res,
         renderer: legalRendererName,
       })
-        .then((content) => instance.state.set({ content }))
+        .then((content) => this.state.set({ content }))
         .catch((error) => {
           console.error(error)
-          instance.state.set({ error })
+          this.state.set({ error })
         })
 
-      instance.state.set({ type: originalType })
+      this.state.set({ type: originalType })
     })
   })
 })

@@ -15,19 +15,19 @@ import './complete.html'
 import { loadData } from './helpers/loadData'
 import { loadSessionData } from './helpers/loadSessionData'
 import { loadResponses } from './helpers/loadResponses'
-
-const states = {
-  showResults: 'showResults',
-  showDecision: 'showDecision',
-  showFailed: 'showFailed',
-}
-
-const stateValues = Object.values(states)
+import {
+  completionNavigation,
+  completionStates as states,
+  completionViewIndex,
+  createCompletionFailureState,
+  createResponseDetailsLoader,
+  resolveCompletionSession,
+  resolveCompletionView,
+} from './completeBehavior'
 
 Template.complete.onCreated(async function () {
-  const instance = this
-  const { sessionId } = instance.data.params
-  const { api } = instance.initDependencies({
+  const { sessionId } = this.data.params
+  const { api } = this.initDependencies({
     language: true,
     tts: true,
     translations: {
@@ -43,7 +43,7 @@ Template.complete.onCreated(async function () {
       Unit,
     ],
     onComplete: async () => {
-      instance.state.set({
+      this.state.set({
         dependenciesComplete: true,
       })
     },
@@ -52,59 +52,57 @@ Template.complete.onCreated(async function () {
   const { queryParam, debug, hasProperty } = api
   const onFailed = (e) => {
     console.error(e)
-    instance.state.set({
-      competenciesLoaded: true,
-      sessionLoaded: true,
-      failed: e
-        ? { error: e.error ?? 'error.default', reason: e.reason || e.message }
-        : true,
-    })
+    this.state.set(createCompletionFailureState(e))
   }
 
   try {
     const data = await loadData({ sessionId, debug })
-    instance.state.set(data)
+    this.state.set(data)
   } catch (e) {
     onFailed(e)
   }
 
   try {
     const sessionData = await loadSessionData({ debug, sessionId })
-    if (sessionData.action === 'next') {
-      instance.data.exit({ sessionId })
+    const decision = resolveCompletionSession({ sessionData, sessionId })
+    if (decision.action === 'exit') {
+      this.data.exit(decision.args)
     } else {
-      instance.state.set(sessionData)
+      this.state.set(decision.state)
     }
   } catch (e) {
     onFailed(e)
   }
 
   // basic routes / state handling
-  instance.autorun(() => {
-    const v = queryParam('v') || 0
-    const currentView = stateValues[parseInt(v, 10)]
-
-    if (currentView && hasProperty(states, currentView)) {
-      instance.state.set('view', currentView)
-    } else {
-      instance.state.set('view', states.showResults)
-    }
+  this.autorun(() => {
+    const currentView = resolveCompletionView(queryParam('v'))
+    this.state.set(
+      'view',
+      hasProperty(states, currentView) ? currentView : states.showResults,
+    )
   })
 
-  // if we have a debug user we can ask for her responses in detail so our
-  // team members can see their response-scoring in detail
-  instance.autorun(() => {
-    const user = Meteor.user()
-    if (!user?.debug || instance.state.get('callingResponses')) {
-      return
-    }
-
-    instance.state.set('callingResponses', true)
-    loadResponses({ sessionId, debug })
-      .then((responses) => instance.state.set({ responses }))
-      .catch(onFailed)
-      .finally(() => instance.state.set('callingResponses', false))
+  this.responseDetailsLoader = createResponseDetailsLoader({
+    sessionId,
+    debug,
+    load: loadResponses,
+    onFailed,
   })
+
+  // Debug response details are attempted once per page lifetime. The adapter
+  // owns the attempted/loaded transition so this autorun cannot refetch after
+  // its own callingResponses update.
+  this.autorun(() => {
+    void this.responseDetailsLoader.run({
+      user: Meteor.user(),
+      state: this.state,
+    })
+  })
+})
+
+Template.complete.onDestroyed(function () {
+  this.responseDetailsLoader?.stop()
 })
 
 Template.complete.helpers({
@@ -231,12 +229,12 @@ Template.complete.events({
   'click .lea-showresults-forward-button'(event, templateInstance) {
     event.preventDefault()
     const { queryParam } = templateInstance.api
-    queryParam({ v: stateValues.indexOf(states.showDecision) })
+    queryParam({ v: completionViewIndex(states.showDecision) })
   },
   'click .lea-showdecision-back-button'(event, templateInstance) {
     event.preventDefault()
     const { queryParam } = templateInstance.api
-    queryParam({ v: stateValues.indexOf(states.showResults) })
+    queryParam({ v: completionViewIndex(states.showResults) })
   },
   'click .print-simple'(event) {
     event.preventDefault()
@@ -245,20 +243,23 @@ Template.complete.events({
   },
   'click .lea-end-button'(event, templateInstance) {
     event.preventDefault()
+    const target = completionNavigation('end')
     templateInstance.api.fadeOut('.lea-complete-container', () =>
-      templateInstance.data?.end(),
+      templateInstance.data?.[target](),
     )
   },
   'click .lea-continue-button'(event, templateInstance) {
     event.preventDefault()
+    const target = completionNavigation('continue')
     templateInstance.api.fadeOut('.lea-complete-container', () =>
-      templateInstance.data?.next(),
+      templateInstance.data?.[target](),
     )
   },
   'click .lea-to-overview-button'(event, templateInstance) {
     event.preventDefault()
+    const target = completionNavigation('overview')
     templateInstance.api.fadeOut('.lea-complete-container', () =>
-      templateInstance.data?.next(),
+      templateInstance.data?.[target](),
     )
   },
   'click .toggle-competency-display'(event, templateInstance) {

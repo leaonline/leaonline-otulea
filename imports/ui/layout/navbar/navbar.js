@@ -3,26 +3,29 @@ import { ColorType } from '../../../contexts/types/ColorType'
 import './navbar.html'
 
 Template.navbar.onDestroyed(function () {
-  const instance = this
-  instance.state.clear()
+  this.state.clear()
 })
 
 Template.navbar.onCreated(function () {
-  const instance = this
-
-  instance.initDependencies({
+  this.initDependencies({
     language: true,
     tts: true,
-    onComplete: () => instance.state.set('dependenciesLoaded', true),
+    onComplete: () => this.state.set('dependenciesLoaded', true),
   })
 
-  instance.autorun(() => {
+  this.autorun(() => {
     const data = Template.currentData()
-    const { sessionDoc, showProgress, dimensionDoc, levelDoc, unitSetDoc, unitDoc } =
-      data
+    const {
+      sessionDoc,
+      showProgress,
+      dimensionDoc,
+      levelDoc,
+      unitSetDoc,
+      unitDoc,
+    } = data
 
     if (!sessionDoc || !unitSetDoc || !dimensionDoc || !levelDoc) {
-      return instance.state.set({
+      return this.state.set({
         showProgress: false,
       })
     }
@@ -48,7 +51,7 @@ Template.navbar.onCreated(function () {
     }
 
     const loadComplete = true
-    instance.state.set({ showProgress, progress, labels, loadComplete, unitDoc })
+    this.state.set({ showProgress, progress, labels, loadComplete, unitDoc })
   })
 })
 
@@ -60,9 +63,9 @@ Template.navbar.helpers({
       instance.state.get('loadComplete')
     )
   },
-  details () {
+  details() {
     return {
-      unitDoc: Template.getState('unitDoc')
+      unitDoc: Template.getState('unitDoc'),
     }
   },
   showProgress() {

@@ -136,10 +136,9 @@ Session.methods.start = {
     const { startSession } = require('./api/startSession')
 
     return async function ({ testCycleId }) {
-      const api = this
       return startSession({
         testCycleId: testCycleId,
-        userId: api.userId,
+        userId: this.userId,
       })
     }
   }),
@@ -156,10 +155,9 @@ Session.methods.cancel = {
     const { cancelSession } = require('./api/cancelSession')
 
     return async function ({ sessionId }) {
-      const api = this
       return cancelSession({
         sessionId: sessionId,
-        userId: api.userId,
+        userId: this.userId,
       })
     }
   }),
@@ -176,10 +174,9 @@ Session.methods.continue = {
     const { continueSession } = require('./api/continueSession')
 
     return async function ({ sessionId }) {
-      const api = this
       return continueSession({
         sessionId: sessionId,
-        userId: api.userId,
+        userId: this.userId,
       })
     }
   }),
@@ -195,11 +192,10 @@ Session.methods.next = {
   run: onServerExec(() => {
     const { updateSession } = require('./api/updateSession')
     return async function ({ sessionId }) {
-      const api = this
       return updateSession({
         sessionId: sessionId,
-        userId: api.userId,
-        debug: api.debug,
+        userId: this.userId,
+        debug: this.debug,
       })
     }
   }),
@@ -217,7 +213,8 @@ Session.methods.results = {
 
     return function ({ sessionId }) {
       const { userId, flagFromDb = true } = this
-        const debug = (...args) => console.log('[session.methods.results    ]:', ...args)
+      const debug = (...args) =>
+        console.log('[session.methods.results    ]:', ...args)
       return generateResults({ sessionId, userId, debug, flagFromDb })
     }
   }),

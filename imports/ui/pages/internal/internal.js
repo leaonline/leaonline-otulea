@@ -20,12 +20,11 @@ import '../../components/container/container'
 import '../login/login'
 import '../../layout/navbar/navbar'
 
-const renderersLoaded = initTaskRenderers()
-
 Scoring.init()
 
 Template.internal.onCreated(function () {
   const instance = this
+  instance.renderersLoaded = initTaskRenderers()
   instance.state.setDefault('currentPageCount', 0)
   instance.state.setDefault('maxPages', -1)
   instance.state.setDefault('color', 'primary')
@@ -45,7 +44,6 @@ Template.internal.onCreated(function () {
       return { ...this.data }
     },
   }
-
 
   const responseCache = ResponseCache.create(storage, {
     getKey: ({ sessionId, unitId, page, contentId }) => {
@@ -161,12 +159,9 @@ Template.internal.onCreated(function () {
     setQueryParam({ page: 0 })
 
     setTimeout(() => {
-      const newState = nextUnit
-        ? { unitDoc: nextUnit }
-        : { isComplete: true }
+      const newState = nextUnit ? { unitDoc: nextUnit } : { isComplete: true }
       instance.state.set(newState)
     }, 500)
-
   }
 })
 
@@ -174,7 +169,7 @@ Template.internal.helpers({
   dependenciesComplete() {
     return (
       Template.getState('dependenciesComplete') &&
-      renderersLoaded.get() &&
+      Template.instance().renderersLoaded.get() &&
       !Template.getState('loading')
     )
   },
@@ -193,13 +188,14 @@ Template.internal.helpers({
   unitDocs() {
     return Template.getState('unitDocs')
   },
-  color () {
+  color() {
     return Template.getState('color')
   },
   pageContentData() {
-    if (!renderersLoaded.get()) return
-
     const instance = Template.instance()
+
+    if (!instance.renderersLoaded.get()) return
+
     const unitDoc = instance.state.get('unitDoc')
     const currentPageCount = instance.state.get('currentPageCount')
     const color = instance.state.get('color')
@@ -237,17 +233,17 @@ Template.internal.helpers({
   isFullScreen() {
     return Template.getState('presentationMode')
   },
-  isComplete () {
+  isComplete() {
     return Template.getState('isComplete')
   },
-  containerClass (baseName) {
-    const presentation =  Template.getState('presentationMode')
+  containerClass(baseName) {
+    const presentation = Template.getState('presentationMode')
     const presentationClass = presentation ? 'fullscreen' : ''
     return `${baseName} ${presentationClass}`
   },
-  showFullscreenButton () {
+  showFullscreenButton() {
     return Template.getState('unitDoc') || Template.getState('story')
-  }
+  },
 })
 
 Template.internal.events({
@@ -276,7 +272,12 @@ Template.internal.events({
   },
   'click .unit-btn'(event, instance) {
     event.preventDefault()
-    instance.state.set({ unitDoc: null, story: null, currentPageCount: 0, isComplete: false,  })
+    instance.state.set({
+      unitDoc: null,
+      story: null,
+      currentPageCount: 0,
+      isComplete: false,
+    })
     const index = dataTarget(event, 'index')
     const units = instance.state.get('unitDocs')
     const unitDoc = units[index]
@@ -313,7 +314,7 @@ const getColor = async ({ dimensionId, from }) => {
     context: Dimension,
     from,
     throwIfNotFound: false,
-    query: { _id: dimensionId  },
+    query: { _id: dimensionId },
   })
   if (!dimensionDoc?.colorType) return 'primary'
   const colorType = ColorType.byIndex(dimensionDoc.colorType)
@@ -343,7 +344,15 @@ async function loadUnitSet({ code, isShortCode, from, instance }) {
       unitDocs.push(unitDoc)
     }
     setQueryParam(createUrlQuery({ code, isShortCode, type: 'unitSet' }))
-    instance.state.set({ unitSetDoc, unitDocs, color, error: null, story: null, unitDoc: null, currentPageCount: 0 })
+    instance.state.set({
+      unitSetDoc,
+      unitDocs,
+      color,
+      error: null,
+      story: null,
+      unitDoc: null,
+      currentPageCount: 0,
+    })
   } catch (e) {
     console.error('Error loading unitSet', e)
     const errorObj = errorToObject(e)

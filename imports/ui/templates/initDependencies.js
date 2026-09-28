@@ -2,6 +2,10 @@ import { Blaze } from 'meteor/blaze'
 import { Meteor } from 'meteor/meteor'
 import { noop } from '../../utils/noop'
 import { lazyRequire } from '../../utils/lazyRequire'
+import {
+  observeDependencies,
+  scheduleDependencies,
+} from './dependencyScheduler'
 
 // if we use the autoload functionality we don't need to explicitly load basic
 // and generic (stateless) templates, since they are loaded at runtime using
@@ -55,22 +59,18 @@ Blaze.TemplateInstance.prototype.initDependencies = function ({
     sendError,
     callMethod,
   } = loadLazyDeps()
-
-  const instance = this
-  const allComplete = []
-
   // create api to provide a consistent dev experience across all template
   // instances without tight coupling between the api and Template files
   // TODO maybe dynamically import api using loadOnce, too?
-  instance.api = {}
-  instance.api.info = createLog({
-    name: instance.view.name,
+  this.api = {}
+  this.api.info = createLog({
+    name: this.view.name,
     devOnly: !Meteor.user()?.debug,
     type: 'info',
   })
 
   const logDebug = createLog({
-    name: instance.view.name,
+    name: this.view.name,
     type: 'debug',
     devOnly: !Meteor.user()?.debug,
   })
@@ -78,7 +78,7 @@ Blaze.TemplateInstance.prototype.initDependencies = function ({
   const errorHandler =
     onError ||
     createLog({
-      name: instance.view.name,
+      name: this.view.name,
       type: 'error',
       devOnly: false,
     })
@@ -87,7 +87,7 @@ Blaze.TemplateInstance.prototype.initDependencies = function ({
 
   const debugFn = Meteor.isDevelopment || Meteor.user()?.debug ? logDebug : noop
 
-  Object.assign(instance.api, {
+  Object.assign(this.api, {
     queryParam: (value) => Router.queryParam(value),
     callMethod,
     loadAllContentDocs,
@@ -95,86 +95,62 @@ Blaze.TemplateInstance.prototype.initDependencies = function ({
     hasProperty,
     isDebugUser,
     debug: debugFn,
-    fadeOut: (target, callback) => fadeOut(target, instance, callback),
-    fadeIn: (target, callback) => fadeIn(target, instance, callback),
+    fadeOut: (target, callback) => fadeOut(target, this, callback),
+    fadeIn: (target, callback) => fadeIn(target, this, callback),
     sendError: ({ error, isResponse }) => {
       sendError({
         error,
         isResponse,
-        template: instance.view.name,
+        template: this.view.name,
         failure: errorHandler,
       })
     },
   })
 
-  // if any context is added we initialize it immediately sync-style
-  contexts.forEach((ctx) => initClientContext(ctx))
-
-  if (language) {
-    allComplete.push(
-      loadOnce(initLanguage, {
-        onError: errorHandler,
-        name: 'language',
-      }),
-    )
-  }
-
-  if (tts) {
-    allComplete.push(
-      loadOnce(initializeTTS, {
-        onError: errorHandler,
-        name: 'tts',
-        debug: debugFn,
-      }),
-    )
-  }
-
-  if (loaders.length > 0) {
-    allComplete.push(
-      ...loaders.map((loader) =>
-        loadOnce(loader, {
-          onError: errorHandler,
-        }),
-      ),
-    )
-  }
+  const allComplete = scheduleDependencies({
+    contexts,
+    language,
+    tts,
+    loaders,
+    initClientContext,
+    initLanguage,
+    initializeTTS,
+    loadOnce,
+    onError: errorHandler,
+    debug: debugFn,
+  })
 
   if (allComplete.length === 0) {
     return onComplete()
   }
 
-  const addTranslations = async () => {
+  const addTranslations = async (definitions) => {
     const { addToLanguage } = await import('../../api/i18n/addToLanguage')
-    return addToLanguage(translations)
+    return addToLanguage(definitions)
   }
 
-  instance.autorun((c) => {
-    if (allComplete.every((rv) => rv.get())) {
-      c.stop()
-      instance.api.info('call dependencies onComplete')
-      if (translations) {
-        addTranslations()
-          .catch((e) => {
-            fatal({
-              error: {
-                message: 'unknown',
-                original: e.message,
-              },
-            })
-
-            sendError({ error: e })
-            errorHandler(e)
-          })
-          .then(() => {
-            onComplete()
-          })
-      } else {
-        onComplete()
-      }
-    }
+  observeDependencies({
+    pending: allComplete,
+    autorun: (callback) => this.autorun(callback),
+    translations,
+    loadTranslations: addTranslations,
+    onComplete: () => {
+      this.api.info('call dependencies onComplete')
+      onComplete()
+    },
+    onTranslationError: (error) => {
+      fatal({
+        error: {
+          message: 'unknown',
+          original: error.message,
+        },
+      })
+      sendError({ error })
+      errorHandler(error)
+    },
   })
 
-  return instance
+  return this
 }
 
 const loadLazyDeps = lazyRequire(() => {

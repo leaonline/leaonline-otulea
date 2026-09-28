@@ -18,6 +18,7 @@ export const createItemSubmit = ({
   receive,
   onError,
   onSuccess,
+  methodCall = callMethod,
 }) => {
   /**
    *
@@ -43,14 +44,19 @@ export const createItemSubmit = ({
         const { contentId } = entry
         const responseDoc = { sessionId, unitId, page, contentId }
         const responseValue = loadValue(responseDoc)
-        responseDoc.responses = responseValue?.responses || []
+        // A missing cache entry means the canonical absent response. Explicit
+        // values, including [null] and ['__undefined__'], must cross the
+        // durable boundary unchanged. In particular, do not coerce an invalid
+        // top-level null into an apparently valid absent response.
+        responseDoc.responses =
+          responseValue?.responses === undefined ? [] : responseValue.responses
         allResponseDocs.push(responseDoc)
       })
     }
 
     return Promise.all(
       allResponseDocs.map((responseDoc) =>
-        callMethod({
+        methodCall({
           name: Response.methods.submit.name,
           args: responseDoc,
           prepare: () => {
@@ -58,7 +64,7 @@ export const createItemSubmit = ({
             if (prepare) prepare(responseDoc)
           },
           receive: () => {
-            if (receive) prepare(receive)
+            if (receive) receive(responseDoc)
           },
           failure: (error) => {
             if (onError) onError(error, responseDoc)

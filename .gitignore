@@ -45,6 +45,7 @@ lib-cov
 coverage
 .coverage
 *.lcov
+.test-results
 
 # nyc test coverage
 .nyc_output

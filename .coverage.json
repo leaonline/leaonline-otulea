@@ -1,6 +1,4 @@
 {
-  "exclude": [
-    "**/tests/",
-    "**/*.tests.js"
-  ]
+  "output": "./.coverage",
+  "remapFormat": ["html", "json-summary", "lcovonly"]
 }

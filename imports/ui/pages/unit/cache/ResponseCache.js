@@ -43,17 +43,16 @@ export class ResponseCache {
   }
 
   flush() {
-    const self = this
     // custom storage implementations may use getAll to return all items,
     // otherwise we assume it's a simple key-value store, and we iterate over keys
     // which is the case for localStorage and sessionStorage
-    const items = self.storage?.getAll
-      ? self.storage.getAll()
-      : { ...self.storage }
+    const items = this.storage?.getAll
+      ? this.storage.getAll()
+      : { ...this.storage }
     Object.entries(items).forEach(([key, value]) => {
       if (key.includes('rc-') || key.includes('development')) {
         console.error('[ResponseCache]: delete zombie entry', key, value)
-        self.storage.removeItem(key)
+        this.storage.removeItem(key)
       }
     })
   }

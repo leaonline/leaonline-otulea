@@ -20,6 +20,7 @@ export const callMethod = ({
   success,
   failure,
   connection,
+  reportError = sendError,
 }) => {
   const methodName = typeof name === 'object' ? name.name : name
   check(methodName, String)
@@ -55,7 +56,7 @@ export const callMethod = ({
   }
 
   promise.catch((error) => {
-    sendError({ error, isResponse: true })
+    reportError({ error, isResponse: true })
     if (typeof failure === 'function') {
       failure(error)
     }

@@ -28,13 +28,11 @@ Template.fatal.onCreated(function () {
 })
 
 Template.fatal.onRendered(function () {
-  const instance = this
-
-  instance.autorun(() => {
+  this.autorun(() => {
     const open = modalOpen.get()
 
-    if (open && instance.state.get('dependenciesComplete')) {
-      instance.$('#fatal-modal').modal('show')
+    if (open && this.state.get('dependenciesComplete')) {
+      this.$('#fatal-modal').modal('show')
     }
   })
 })

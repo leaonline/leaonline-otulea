@@ -21,4 +21,6 @@ Object.values(Routes)
     route.target = route.target || defaultTarget
     return route
   })
-  .forEach((route) => Router.register(route, onError))
+  .forEach((route) => {
+    Router.register(route, onError)
+  })

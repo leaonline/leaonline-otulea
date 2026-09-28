@@ -16,7 +16,12 @@ Response.schema = {
   contentId: String,
   responses: {
     type: Array,
-    optional: true,
+    // Canonical raw states are: entered ['value'], absent [], deleted [null],
+    // and omitted ['__undefined__']. A missing legacy property remains valid,
+    // but an explicit top-level null is not a response-state representation.
+    optional() {
+      return this.value === undefined
+    },
   },
   'responses.$': String,
   scores: {
@@ -58,18 +63,17 @@ Response.methods.submit = {
     })
 
     return async function (responseDoc) {
-      const self = this
-      const { userId } = self
+      const { userId } = this
 
       // XXX: hotfixing missing itemId
       responseDoc.itemId = responseDoc.contentId
 
       return submitResponse({
         responseDoc,
-        debug: self.debug,
+        debug: this.debug,
         userId,
         onError: async (error) => {
-          self.info('failed to score', JSON.stringify(responseDoc))
+          this.info('failed to score', JSON.stringify(responseDoc))
           await persistError(
             normalizeError({
               error,

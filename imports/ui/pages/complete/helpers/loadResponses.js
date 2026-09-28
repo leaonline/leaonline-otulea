@@ -3,23 +3,34 @@ import { callMethod } from '../../../../infrastructure/methods/callMethod'
 import { Unit } from '../../../../contexts/Unit'
 import { loadAllContentDocs } from '../../../loading/loadAllContentDocs'
 
-export const loadResponses = async ({ sessionId, debug }) => {
-  const responses = await callMethod({
-    name: Response.methods.getMy,
-    args: { sessionId },
-  })
-  debug({ responses })
+export const createResponsesLoader = ({
+  methodCall = callMethod,
+  loadAll = loadAllContentDocs,
+  responseContext = Response,
+  unitContext = Unit,
+} = {}) => {
+  return async ({ sessionId, debug = () => {} }) => {
+    const responses = await methodCall({
+      name: responseContext.methods.getMy,
+      args: { sessionId },
+    })
+    if (!Array.isArray(responses)) {
+      throw new Error('Expected responses array')
+    }
+    debug({ responses })
 
-  const unitIds = new Set()
-  responses.forEach((doc) => unitIds.add(doc.unitId))
+    const ids = Array.from(new Set(responses.map(({ unitId }) => unitId)))
+    await loadAll({ context: unitContext, ids, params: { ids }, debug })
 
-  const ids = Array.from(unitIds)
-  await loadAllContentDocs({ context: Unit, ids, params: { ids }, debug })
-  const mapped = responses.map((doc) => {
-    doc.unit = Unit.collection().findOne(doc.unitId) || { shortCode: '?' }
-    return doc
-  })
-
-  responses.sort((a, b) => a.unit.shortCode.localeCompare(b.unit.shortCode))
-  return mapped
+    return responses
+      .map((document) => ({
+        ...document,
+        unit: unitContext.collection().findOne(document.unitId) || {
+          shortCode: '?',
+        },
+      }))
+      .sort((a, b) => a.unit.shortCode.localeCompare(b.unit.shortCode))
+  }
 }
+
+export const loadResponses = createResponsesLoader()

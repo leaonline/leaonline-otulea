@@ -49,7 +49,18 @@
     "env": {
       "COVERAGE": {
         "plugins": [
-          "istanbul"
+          [
+            "istanbul",
+            {
+              "exclude": [
+                "tests/**",
+                "**/tests/**",
+                "**/*.tests.js",
+                "**/*.app-test.js",
+                "**/*.app-tests.js"
+              ]
+            }
+          ]
         ]
       }
     }
