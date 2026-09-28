@@ -34,6 +34,7 @@ jobs:
   tests:
     name: Meteor Tests
     runs-on: ubuntu-latest
+    needs: [lintcode]
     steps:
 
       # CHECKOUTS
@@ -105,7 +106,7 @@ jobs:
             .meteor/local/isopacks
             .meteor/local/bundler-cache/scanner
           key: v3-meteor_build_cache-${{ github.ref }}-${{ github.sha }}
-          restore-key: |
+          restore-keys: |
             v3-meteor_build_cache-
 
       - name: Setup meteor
