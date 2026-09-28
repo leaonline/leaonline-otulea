@@ -3,10 +3,7 @@ import { expect } from 'chai'
 import { Mongo } from 'meteor/mongo'
 import { Random } from 'meteor/random'
 import sinon from 'sinon'
-import {
-  ContentServerError,
-  createContentServer,
-} from '../ContentServer'
+import { ContentServerError, createContentServer } from '../ContentServer'
 
 const getError = async (callback) => {
   try {
@@ -121,7 +118,9 @@ describe('ContentServer', () => {
       keep: true,
     })
     expect(await collection.findOneAsync('remove')).to.equal(undefined)
-    expect(connection.get.firstCall.args[0].query).to.deep.equal({ active: true })
+    expect(connection.get.firstCall.args[0].query).to.deep.equal({
+      active: true,
+    })
   })
 
   it('keeps local documents for empty and malformed remote results', async () => {
@@ -136,7 +135,9 @@ describe('ContentServer', () => {
       connection.get.resolves(result)
       const stats = await contentServer.sync({ name: context.name })
       expect(stats.removed).to.equal(0)
-      expect(await collection.findOneAsync('safe')).to.include({ value: 'local' })
+      expect(await collection.findOneAsync('safe')).to.include({
+        value: 'local',
+      })
     }
   })
 
@@ -152,8 +153,16 @@ describe('ContentServer', () => {
     }
     const removed = () => calls.push('removed')
     contentServer.on(contentServer.hooks.beforeSyncUpsert, context.name, first)
-    contentServer.on(contentServer.hooks.beforeSyncUpsert, context.name, removed)
-    contentServer.off(contentServer.hooks.beforeSyncUpsert, context.name, removed)
+    contentServer.on(
+      contentServer.hooks.beforeSyncUpsert,
+      context.name,
+      removed,
+    )
+    contentServer.off(
+      contentServer.hooks.beforeSyncUpsert,
+      context.name,
+      removed,
+    )
     contentServer.on(contentServer.hooks.syncEnd, context.name, () => {
       calls.push('end')
     })

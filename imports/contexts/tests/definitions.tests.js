@@ -31,33 +31,53 @@ describe('context definitions', () => {
 
       it('initializes and reads legal configuration', async () => {
         const insertAsync = sinon.stub().resolves('legal-id')
-        const findOneAsync = sinon.stub().onFirstCall().resolves(undefined).onSecondCall().resolves({
-          privacy: 'Private',
-        })
+        const findOneAsync = sinon
+          .stub()
+          .onFirstCall()
+          .resolves(undefined)
+          .onSecondCall()
+          .resolves({
+            privacy: 'Private',
+          })
         sinon.stub(Legal, 'collection').returns({ findOneAsync, insertAsync })
 
         await Legal.helpers.init()
-        expect(insertAsync.calledWith({
-          imprint: 'Imprint',
-          privacy: 'Privacy',
-          terms: 'Terms',
-          contact: 'Contact',
-        })).to.equal(true)
-        expect(await Legal.methods.get.run({ name: 'privacy' })).to.equal('Private')
+        expect(
+          insertAsync.calledWith({
+            imprint: 'Imprint',
+            privacy: 'Privacy',
+            terms: 'Terms',
+            contact: 'Contact',
+          }),
+        ).to.equal(true)
+        expect(await Legal.methods.get.run({ name: 'privacy' })).to.equal(
+          'Private',
+        )
       })
 
       it('inserts then updates logo configuration', async () => {
         const insertAsync = sinon.stub().resolves('logo-id')
         const updateAsync = sinon.stub().resolves(1)
-        const findOneAsync = sinon.stub().onFirstCall().resolves(undefined).onSecondCall().resolves({
-          _id: 'logo-id',
-        }).onThirdCall().resolves({ footer: [{ url: '/logo.svg' }] })
-        sinon.stub(Logos, 'collection').returns({ findOneAsync, insertAsync, updateAsync })
+        const findOneAsync = sinon
+          .stub()
+          .onFirstCall()
+          .resolves(undefined)
+          .onSecondCall()
+          .resolves({
+            _id: 'logo-id',
+          })
+          .onThirdCall()
+          .resolves({ footer: [{ url: '/logo.svg' }] })
+        sinon
+          .stub(Logos, 'collection')
+          .returns({ findOneAsync, insertAsync, updateAsync })
 
         const footer = [{ url: '/logo.svg' }]
         expect(await Logos.methods.update.run({ footer })).to.equal('logo-id')
         await Logos.methods.update.run({ footer })
-        expect(updateAsync.calledWith('logo-id', { $set: { footer } })).to.equal(true)
+        expect(
+          updateAsync.calledWith('logo-id', { $set: { footer } }),
+        ).to.equal(true)
         expect(await Logos.methods.get.run()).to.deep.equal({ footer })
       })
     })

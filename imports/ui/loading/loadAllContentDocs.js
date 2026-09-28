@@ -52,7 +52,9 @@ export const createAllContentDocsLoader = ({
       allDocuments,
     )) {
       if (!Array.isArray(documents)) {
-        throw new Error(`Expected documents array for ctx ${documentContextName}`)
+        throw new Error(
+          `Expected documents array for ctx ${documentContextName}`,
+        )
       }
       debug(
         methodName,

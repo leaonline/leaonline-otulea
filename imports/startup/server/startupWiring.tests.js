@@ -44,9 +44,9 @@ describe('server startup wiring', () => {
     expect(Meteor.server.method_handlers[Videos.methods.get.name]).to.be.a(
       'function',
     )
-    expect(Meteor.server.method_handlers[Diagnostics.methods.send.name]).to.be.a(
-      'function',
-    )
+    expect(
+      Meteor.server.method_handlers[Diagnostics.methods.send.name],
+    ).to.be.a('function')
     expect(Meteor.server.method_handlers[Errors.methods.get.name]).to.be.a(
       'function',
     )
@@ -84,9 +84,9 @@ describe('server startup wiring', () => {
 
   it('registers the development corpus query without executing filesystem work', () => {
     if (Meteor.isDevelopment) {
-      expect(Meteor.server.method_handlers['query.methods.createCorpus']).to.be.a(
-        'function',
-      )
+      expect(
+        Meteor.server.method_handlers['query.methods.createCorpus'],
+      ).to.be.a('function')
     }
   })
 
@@ -98,7 +98,10 @@ describe('server startup wiring', () => {
     }
     const collectionStub = sinon.stub(Errors, 'collection').returns(collection)
     try {
-      await Errors.methods.create.run.call({ userId: null }, { hash: 'same-error' })
+      await Errors.methods.create.run.call(
+        { userId: null },
+        { hash: 'same-error' },
+      )
       expect(
         updateAsync.calledWith('existing-error', { $inc: { count: 1 } }),
       ).to.equal(true)

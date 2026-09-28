@@ -85,10 +85,9 @@ describe('completion loaders', () => {
       name: 'session.results',
       args: { sessionId: 'session' },
     })
-    expect(result.aggregatedResults.map(({ shortCode }) => shortCode)).to.deep.equal([
-      'A',
-      'B',
-    ])
+    expect(
+      result.aggregatedResults.map(({ shortCode }) => shortCode),
+    ).to.deep.equal(['A', 'B'])
     expect(result.aggregatedResults[0]).to.include({
       description: 'Alpha',
       gradeLabel: 'thresholds.none',

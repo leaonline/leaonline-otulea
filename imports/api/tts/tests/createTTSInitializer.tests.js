@@ -70,9 +70,11 @@ describe('createTTSInitializer', () => {
     expect(await promise).to.equal(harness.engine)
     expect(harness.createError.calledWith('speech unavailable')).to.equal(true)
     const normalized = harness.createError.firstCall.returnValue
-    expect(harness.fatal.calledWith({
-      error: { message: 'tts.failed', original: normalized.message },
-    })).to.equal(true)
+    expect(
+      harness.fatal.calledWith({
+        error: { message: 'tts.failed', original: normalized.message },
+      }),
+    ).to.equal(true)
     expect(harness.sendError.calledWith({ error: normalized })).to.equal(true)
   })
 
@@ -135,8 +137,8 @@ describe('createTTSInitializer', () => {
     harness.engine.mode = 'unknown'
     const error = new Error('unknown mode')
     initial.globalErrorHandler(error)
-    expect(debug.calledWith('[initializeTTS]: globalErrorHandler fallback', error)).to.equal(
-      true,
-    )
+    expect(
+      debug.calledWith('[initializeTTS]: globalErrorHandler fallback', error),
+    ).to.equal(true)
   })
 })

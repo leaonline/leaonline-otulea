@@ -56,7 +56,9 @@ describe('ContentConnection', () => {
     expect(harness.connection.isConnected()).to.equal(false)
 
     const pending = harness.connection.connect({ log, timeout: 25 })
-    expect(harness.ddpConnect.firstCall.args[0]).to.equal(settings.remotes.content.url)
+    expect(harness.ddpConnect.firstCall.args[0]).to.equal(
+      settings.remotes.content.url,
+    )
     expect(harness.ddpConnect.firstCall.args[1].retry).to.equal(false)
     harness.connected()
     await pending

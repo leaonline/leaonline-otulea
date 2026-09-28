@@ -7,7 +7,6 @@ Template.navbar.onDestroyed(function () {
 })
 
 Template.navbar.onCreated(function () {
-
   this.initDependencies({
     language: true,
     tts: true,
@@ -16,8 +15,14 @@ Template.navbar.onCreated(function () {
 
   this.autorun(() => {
     const data = Template.currentData()
-    const { sessionDoc, showProgress, dimensionDoc, levelDoc, unitSetDoc, unitDoc } =
-      data
+    const {
+      sessionDoc,
+      showProgress,
+      dimensionDoc,
+      levelDoc,
+      unitSetDoc,
+      unitDoc,
+    } = data
 
     if (!sessionDoc || !unitSetDoc || !dimensionDoc || !levelDoc) {
       return this.state.set({
@@ -58,9 +63,9 @@ Template.navbar.helpers({
       instance.state.get('loadComplete')
     )
   },
-  details () {
+  details() {
     return {
-      unitDoc: Template.getState('unitDoc')
+      unitDoc: Template.getState('unitDoc'),
     }
   },
   showProgress() {

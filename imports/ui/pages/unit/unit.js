@@ -106,7 +106,11 @@ Template.unit.onCreated(function () {
           return instance.data.next(decision.args)
         }
         if (decision.action === 'exit') {
-          info(responseData ? 'response data is incomplete' : 'response data undefined')
+          info(
+            responseData
+              ? 'response data is incomplete'
+              : 'response data undefined',
+          )
           return abortUnit(instance)
         }
         instance.state.set(decision.state)

@@ -38,7 +38,8 @@ export const createBlazeHarness = () => {
     }
     const host = document.createElement('div')
     document.body.appendChild(host)
-    const definition = typeof template === 'string' ? Template[template] : template
+    const definition =
+      typeof template === 'string' ? Template[template] : template
     let view
     try {
       view = Blaze.renderWithData(definition, { ...helpers, ...data }, host)

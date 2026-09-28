@@ -6,12 +6,7 @@ import { createItemLoad } from '../item/createItemLoad'
 import { createItemSubmit } from '../item/createItemSubmit'
 
 describe('unit item callbacks', () => {
-  const canonicalResponses = [
-    ['value'],
-    [],
-    [null],
-    ['__undefined__'],
-  ]
+  const canonicalResponses = [['value'], [], [null], ['__undefined__']]
   const itemData = {
     userId: 'user',
     sessionId: 'session',
@@ -71,9 +66,9 @@ describe('unit item callbacks', () => {
 
     cache.load.returns(undefined)
     expect(createItemLoad({ cache })(itemData)).to.equal(undefined)
-    expect(createItemLoad({ cache, createIfMissing: true })(itemData)).to.deep.equal(
-      { key: 'new' },
-    )
+    expect(
+      createItemLoad({ cache, createIfMissing: true })(itemData),
+    ).to.deep.equal({ key: 'new' })
     expect(cache.save.firstCall.args[0]).to.deep.equal({
       ...itemData,
       responses: [],
@@ -111,13 +106,12 @@ describe('unit item callbacks', () => {
       ],
     }
 
-    expect(await submit({ sessionId: 'session', unitDoc, page: 10 })).to.deep.equal(
-      [],
-    )
-    expect(await submit({ sessionId: 'session', unitDoc, page: 0 })).to.deep.equal([
-      'saved:first',
-      'saved:second',
-    ])
+    expect(
+      await submit({ sessionId: 'session', unitDoc, page: 10 }),
+    ).to.deep.equal([])
+    expect(
+      await submit({ sessionId: 'session', unitDoc, page: 0 }),
+    ).to.deep.equal(['saved:first', 'saved:second'])
     expect(methodCall.args.map(([options]) => options.args)).to.deep.equal([
       {
         sessionId: 'session',
@@ -201,13 +195,8 @@ describe('unit item callbacks', () => {
 
     await submit({ sessionId: 'session', unitDoc, page: 0 })
 
-    expect(methodCall.args.map(([options]) => options.args.responses)).to.deep.equal([
-      ['value'],
-      [],
-      [null],
-      ['__undefined__'],
-      null,
-      [],
-    ])
+    expect(
+      methodCall.args.map(([options]) => options.args.responses),
+    ).to.deep.equal([['value'], [], [null], ['__undefined__'], null, []])
   })
 })

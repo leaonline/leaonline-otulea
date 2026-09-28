@@ -43,7 +43,9 @@ describe('Blaze page adapters', () => {
   })
 
   it('retains dependency, router and TTS public adapter shapes', () => {
-    expect(Blaze.TemplateInstance.prototype.initDependencies).to.be.a('function')
+    expect(Blaze.TemplateInstance.prototype.initDependencies).to.be.a(
+      'function',
+    )
     expect(Router.register).to.be.a('function')
     expect(Router.queryParam).to.be.a('function')
     expect(initializeTTS).to.be.a('function')

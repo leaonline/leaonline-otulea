@@ -67,10 +67,12 @@ describe('unit Blaze adapter', () => {
     })
     expect(onComplete.calledOnceWithExactly()).to.equal(true)
     expect(releaseWaiting.called).to.equal(false)
-    expect(savePage.calledOnceWithExactly(
-      { unitId: 'unit', sessionId: 'session' },
-      1,
-    )).to.equal(true)
+    expect(
+      savePage.calledOnceWithExactly(
+        { unitId: 'unit', sessionId: 'session' },
+        1,
+      ),
+    ).to.equal(true)
   })
 
   it('releases renderer waiting without advancing either wiring state on rejection', async () => {
@@ -98,7 +100,9 @@ describe('unit Blaze adapter', () => {
     expect(templateInstance.state.snapshot()).to.deep.equal(before)
     expect(onComplete.called).to.equal(false)
     expect(savePage.called).to.equal(false)
-    expect(releaseWaiting.calledOnceWithExactly(templateInstance)).to.equal(true)
+    expect(releaseWaiting.calledOnceWithExactly(templateInstance)).to.equal(
+      true,
+    )
     expect(onError.calledOnceWithExactly(expected)).to.equal(true)
   })
 
@@ -125,9 +129,9 @@ describe('unit Blaze adapter', () => {
     expect(finish.calledOnce).to.equal(true)
     expect(templateInstance.state.get('unitDoc')).to.equal(null)
     expect(templateInstance.state.get('fadedOut')).to.equal(true)
-    expect(templateInstance.data.next.calledOnceWithExactly(
-      transition.navigation,
-    )).to.equal(true)
+    expect(
+      templateInstance.data.next.calledOnceWithExactly(transition.navigation),
+    ).to.equal(true)
   })
 
   it('keeps finish routing available after a rejected durable response', async () => {

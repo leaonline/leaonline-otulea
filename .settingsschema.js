@@ -1,5 +1,5 @@
 module.exports = (SimpleSchema, settings) => {
-  const schema = def => new SimpleSchema(def)
+  const schema = (def) => new SimpleSchema(def)
   const settingsSchema = schema({
     public: schema({
       env: String,
@@ -8,44 +8,44 @@ module.exports = (SimpleSchema, settings) => {
       status: String,
       accounts: schema({
         code: schema({
-          length: SimpleSchema.Integer
-        })
+          length: SimpleSchema.Integer,
+        }),
       }),
       packages: schema({
         'dynamic-import': schema({
           useLocationOrigin: {
             type: Boolean,
-            optional: true
-          }
-        })
+            optional: true,
+          },
+        }),
       }),
       app: schema({
         name: String,
         label: String,
         description: String,
         icon: String,
-        logLevel: String
+        logLevel: String,
       }),
       tts: schema({
         url: String,
-        maxRetries: Number
+        maxRetries: Number,
       }),
       hosts: schema({
         content: schema({
           base: String,
           tts: String,
           competency: String,
-          url: String
+          url: String,
         }),
         sessions: schema({
           url: String,
           evalUrl: String,
-          responseUrl: String
-        })
+          responseUrl: String,
+        }),
       }),
       error: schema({
-        maxStackSize: SimpleSchema.Integer
-      })
+        maxStackSize: SimpleSchema.Integer,
+      }),
     }),
     oauth: schema({
       clientId: String,
@@ -54,99 +54,99 @@ module.exports = (SimpleSchema, settings) => {
       accessTokenUrl: String,
       authorizeUrl: String,
       identityUrl: String,
-      redirectUrl: String
+      redirectUrl: String,
     }),
     hosts: schema({
       backend: schema({
-        urlRegEx: String
+        urlRegEx: String,
       }),
       sessions: schema({
-        secret: String
+        secret: String,
       }),
       content: schema({
         username: String,
-        password: String
-      })
+        password: String,
+      }),
     }),
     email: schema({
       notify: {
         type: Array,
-        optional: true
+        optional: true,
       },
       'notify.$': SimpleSchema.RegEx.Email,
       replyTo: {
         type: SimpleSchema.RegEx.Email,
-        optional: true
+        optional: true,
       },
       from: {
         type: SimpleSchema.RegEx.Email,
-        optional: true
-      }
+        optional: true,
+      },
     }),
     accounts: schema({
       config: schema({
-        "forbidClientAccountCreation": Boolean,
-        "ambiguousErrorMessages": Boolean,
-        "sendVerificationEmail": Boolean,
-        "loginExpirationInDays": SimpleSchema.Integer,
-        "passwordResetTokenExpirationInDays": SimpleSchema.Integer,
-        "passwordEnrollTokenExpirationInDays": SimpleSchema.Integer
-      })
+        forbidClientAccountCreation: Boolean,
+        ambiguousErrorMessages: Boolean,
+        sendVerificationEmail: Boolean,
+        loginExpirationInDays: SimpleSchema.Integer,
+        passwordResetTokenExpirationInDays: SimpleSchema.Integer,
+        passwordEnrollTokenExpirationInDays: SimpleSchema.Integer,
+      }),
     }),
     records: schema({
-      defaultOldest: SimpleSchema.Integer
+      defaultOldest: SimpleSchema.Integer,
     }),
     status: schema({
       active: Boolean,
       interval: Number,
       secret: String,
-      url: String
+      url: String,
     }),
     remotes: schema({
       content: schema({
-        "url": String,
-        "jwt": schema({
-          "key": String,
-          "sub": String
+        url: String,
+        jwt: schema({
+          key: String,
+          sub: String,
         }),
-        "sync": {
+        sync: {
           type: Object,
-          blackbox: true
-        }
-      })
+          blackbox: true,
+        },
+      }),
     }),
     uptime: schema({
-      path: String
+      path: String,
     }),
     patches: schema({
       alphaUsers: schema({
         active: Boolean,
         dryRun: Boolean,
         includeCompetencies: Boolean,
-        includeAlphaLevels: Boolean
+        includeAlphaLevels: Boolean,
       }),
       removeDeadAccounts: schema({
         active: Boolean,
         dryRun: Boolean,
         removeOlderThanDays: {
           type: SimpleSchema.Integer,
-          min: 0
+          min: 0,
         },
         removeIncompleteSessions: {
-          type: Boolean
+          type: Boolean,
         },
         byComment: {
           type: String,
-          optional: true
-        }
+          optional: true,
+        },
       }),
       addDimensionToFeedback: schema({
         active: Boolean,
-        dryRun: Boolean
+        dryRun: Boolean,
       }),
       getResponses: schema({
         active: Boolean,
-        dryRun: Boolean
+        dryRun: Boolean,
       }),
       generateAccounts: schema({
         dryRun: Boolean,
@@ -154,9 +154,9 @@ module.exports = (SimpleSchema, settings) => {
         amount: Number,
         comment: String,
         notify: Array,
-        'notify.$': String
-      })
-    })
+        'notify.$': String,
+      }),
+    }),
   })
   settingsSchema.validate(settings)
 }

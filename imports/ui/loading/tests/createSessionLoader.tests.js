@@ -22,9 +22,9 @@ describe('createSessionLoader', () => {
     expect(createSessionLoader({ contexts, initializeContext })).to.be.a(
       'function',
     )
-    expect(initializeContext.args.map(([context]) => context.name)).to.deep.equal(
-      ['unitSet', 'level', 'dimension', 'session', 'unit'],
-    )
+    expect(
+      initializeContext.args.map(([context]) => context.name),
+    ).to.deep.equal(['unitSet', 'level', 'dimension', 'session', 'unit'])
   })
 
   it('loads explicit ids and resolves dependent documents and color', async () => {
@@ -36,7 +36,9 @@ describe('createSessionLoader', () => {
       level: { _id: 'level-1' },
       dimension: { _id: 'dimension-1', colorType: 2 },
     }
-    const load = sinon.stub().callsFake(({ context }) => documents[context.name])
+    const load = sinon
+      .stub()
+      .callsFake(({ context }) => documents[context.name])
     const loader = createSessionLoader({
       contexts,
       initializeContext: () => {},

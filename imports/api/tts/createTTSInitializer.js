@@ -33,7 +33,11 @@ export const createTTSInitializer = ({
       sendError({ error })
     }
 
-    const externalServerTTSLoader = (requestText, callback, loaderDebug = noop) => {
+    const externalServerTTSLoader = (
+      requestText,
+      callback,
+      loaderDebug = noop,
+    ) => {
       loaderDebug(`[ServerTTSLoader]: request for text "${requestText}"`)
       return callback(null, `${url}?hash=${hash(requestText)}`)
     }

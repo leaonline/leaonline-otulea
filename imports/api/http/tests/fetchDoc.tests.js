@@ -12,9 +12,9 @@ describe('fetchDoc', () => {
     const get = sinon.stub(HTTP, 'get').resolves(response)
     sinon.stub(console, 'debug')
 
-    expect(await fetchDoc('https://content.example.test/doc', { q: 'one' })).to.equal(
-      response.data,
-    )
+    expect(
+      await fetchDoc('https://content.example.test/doc', { q: 'one' }),
+    ).to.equal(response.data)
     expect(get.calledOnce).to.equal(true)
     expect(get.firstCall.args[0]).to.equal('https://content.example.test/doc')
     expect(get.firstCall.args[1]).to.deep.include({ params: { q: 'one' } })

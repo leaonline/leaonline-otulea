@@ -62,7 +62,8 @@ export const createContentConnection = ({
 
             settled = true
             clearTimer(timer)
-            if (log) log('connection established with', contentUrl, !!connection)
+            if (log)
+              log('connection established with', contentUrl, !!connection)
             resolve()
           },
         })

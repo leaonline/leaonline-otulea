@@ -15,12 +15,7 @@ import { expectThrow, restoreAll, stub } from '../../../../tests/helpers.tests'
 import { asyncTimeout } from '../../../utils/asyncTimeout'
 import { Schema } from '../../../api/schema/Schema'
 
-const canonicalResponses = [
-  ['value'],
-  [],
-  [null],
-  ['__undefined__'],
-]
+const canonicalResponses = [['value'], [], [null], ['__undefined__']]
 
 describe(createSubmitResponse.name, () => {
   before(() => {

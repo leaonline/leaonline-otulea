@@ -22,9 +22,19 @@ export const updateLoginInput = ({ values, index, key }) => {
   }
   if (whitespace.test(key)) {
     updated[index] = ''
-    return { accepted: true, values: updated, focusIndex: index, complete: false }
+    return {
+      accepted: true,
+      values: updated,
+      focusIndex: index,
+      complete: false,
+    }
   }
-  return { accepted: false, values: updated, focusIndex: index, complete: false }
+  return {
+    accepted: false,
+    values: updated,
+    focusIndex: index,
+    complete: false,
+  }
 }
 
 export const deleteLoginInput = ({ values, index }) => {

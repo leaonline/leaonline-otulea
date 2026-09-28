@@ -94,7 +94,8 @@ export const createContentServer = ({
     }
 
     const collection = getCollection(name)
-    if (!collection) throw new ContentServerError('collectionNotFound', { name })
+    if (!collection)
+      throw new ContentServerError('collectionNotFound', { name })
 
     const stats = { name, created: 0, updated: 0, removed: 0, skipped: 0 }
     const query = sync?.query ?? {}

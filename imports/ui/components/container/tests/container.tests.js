@@ -27,7 +27,9 @@ describe('container', () => {
   it('exposes an injected animation boundary and reports animation errors', () => {
     const expected = new Error('animation failed')
     const reportError = sinon.spy()
-    const animate = sinon.spy((selector, instance, callback) => callback(expected))
+    const animate = sinon.spy((selector, instance, callback) =>
+      callback(expected),
+    )
     const instance = {}
 
     createContainerOnRendered({ animate, reportError }).call(instance)

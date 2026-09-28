@@ -31,9 +31,9 @@ describe('dependency scheduler', () => {
       debug,
     })
 
-    expect(initClientContext.args.map(([context]) => context.name)).to.deep.equal(
-      ['first', 'second'],
-    )
+    expect(
+      initClientContext.args.map(([context]) => context.name),
+    ).to.deep.equal(['first', 'second'])
     expect(handles).to.have.length(4)
     expect(loadOnce.args.map(([loader]) => loader)).to.deep.equal([
       initLanguage,

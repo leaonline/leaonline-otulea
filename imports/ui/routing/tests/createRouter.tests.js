@@ -6,7 +6,9 @@ import { createRouter } from '../createRouter'
 const createHarness = (overrides = {}) => {
   const source = {
     go: sinon.stub().returns('gone'),
-    current: sinon.stub().returns({ path: '/current', route: { name: 'home' } }),
+    current: sinon
+      .stub()
+      .returns({ path: '/current', route: { name: 'home' } }),
     watchPathChange: sinon.spy(),
     setParams: sinon.stub().returns('params-set'),
     getParam: sinon.stub().returns('param-value'),
@@ -91,8 +93,9 @@ describe('createRouter', () => {
     expect(render.calledOnce).to.equal(true)
 
     delete dependencies.templateRegistry.unit
-    createRouteLifecycle(routeDefinition({ showLoading: false }))
-      .whileWaiting.call({ render })
+    createRouteLifecycle(
+      routeDefinition({ showLoading: false }),
+    ).whileWaiting.call({ render })
     expect(render.calledOnce).to.equal(true)
   })
 
@@ -160,11 +163,9 @@ describe('createRouter', () => {
 
   it('skips unloaded templates and routes render exceptions to onError', () => {
     const missing = createHarness()
-    missing.createRouteLifecycle(routeDefinition()).action.call(
-      { render: sinon.spy() },
-      {},
-      {},
-    )
+    missing
+      .createRouteLifecycle(routeDefinition())
+      .action.call({ render: sinon.spy() }, {}, {})
     expect(missing.dependencies.warn.calledOnce).to.equal(true)
 
     const expected = new Error('render failed')

@@ -28,7 +28,6 @@ Template.fatal.onCreated(function () {
 })
 
 Template.fatal.onRendered(function () {
-
   this.autorun(() => {
     const open = modalOpen.get()
 

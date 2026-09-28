@@ -15,7 +15,6 @@ const legalRendererName = 'legalRenderer'
 LeaMarkdown.addRenderer(legalRendererName, legalRenderer())
 
 Template.legal.onCreated(function () {
-
   this.initDependencies({
     contexts: [Legal],
     translations: legalLanguage,

@@ -232,16 +232,11 @@ Template.welcome.events({
     }
 
     applyLoginValues(templateInstance, transition.values)
-    templateInstance.state.set(
-      'loginCode',
-      combineLoginCode(transition.values),
-    )
+    templateInstance.state.set('loginCode', combineLoginCode(transition.values))
     if (transition.complete) {
       showLoginButton(templateInstance)
     } else {
-      templateInstance
-        .$(`input[data-index="${transition.focusIndex}"]`)
-        .focus()
+      templateInstance.$(`input[data-index="${transition.focusIndex}"]`).focus()
     }
     return true
   },
@@ -296,9 +291,7 @@ Template.welcome.events({
         index,
       })
       applyLoginValues(templateInstance, transition.values)
-      templateInstance
-        .$(`input[data-index="${transition.focusIndex}"]`)
-        .focus()
+      templateInstance.$(`input[data-index="${transition.focusIndex}"]`).focus()
       templateInstance.state.set(
         'loginCode',
         combineLoginCode(transition.values),

@@ -72,7 +72,11 @@ describe('Users method definitions', () => {
     })
     createdIds.add(userId)
 
-    const updated = await invoke(methodNames.isDebug, { userId }, { value: true })
+    const updated = await invoke(
+      methodNames.isDebug,
+      { userId },
+      { value: true },
+    )
 
     expect(updated).to.equal(1)
     expect((await Meteor.users.findOneAsync(userId)).debug).to.equal(true)

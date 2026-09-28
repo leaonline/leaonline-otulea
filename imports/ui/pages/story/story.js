@@ -10,7 +10,6 @@ import '../../components/container/container'
 import '../../layout/navbar/navbar'
 import './story.html'
 
-
 Template.story.onCreated(function () {
   const instance = this
   instance.renderersLoaded = initTaskRenderers()

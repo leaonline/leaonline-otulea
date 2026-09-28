@@ -20,21 +20,23 @@ describe('Unit.getContentElement', () => {
     expect(Unit.getContentElement({ unit: {}, contentId: 'target' })).to.equal(
       null,
     )
-    expect(Unit.getContentElement({ unit, contentId: undefined })).to.equal(null)
+    expect(Unit.getContentElement({ unit, contentId: undefined })).to.equal(
+      null,
+    )
   })
 
   it('prefers the requested page and supports page zero', () => {
-    expect(Unit.getContentElement({ unit, page: 0, contentId: 'target' })).to.equal(
-      requested,
-    )
+    expect(
+      Unit.getContentElement({ unit, page: 0, contentId: 'target' }),
+    ).to.equal(requested)
   })
 
   it('falls back across empty and non-item page content', () => {
-    expect(Unit.getContentElement({ unit, page: 1, contentId: 'fallback' })).to.equal(
-      fallback,
-    )
-    expect(Unit.getContentElement({ unit, page: 20, contentId: 'missing' })).to.equal(
-      null,
-    )
+    expect(
+      Unit.getContentElement({ unit, page: 1, contentId: 'fallback' }),
+    ).to.equal(fallback)
+    expect(
+      Unit.getContentElement({ unit, page: 20, contentId: 'missing' }),
+    ).to.equal(null)
   })
 })

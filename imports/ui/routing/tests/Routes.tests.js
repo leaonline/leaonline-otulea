@@ -58,7 +58,9 @@ describe('Routes definitions', () => {
       try {
         await route.load()
       } catch (e) {
-        expect.fail(`failed to load template ${route.template} from route ${route.name}: ${e.message}`)
+        expect.fail(
+          `failed to load template ${route.template} from route ${route.name}: ${e.message}`,
+        )
       }
     }
 

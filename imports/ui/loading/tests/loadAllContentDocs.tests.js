@@ -40,7 +40,10 @@ describe('loadAllContentDocs', () => {
     expect(
       (
         await getError(() =>
-          loadAllContentDocs({ context, collection: new Mongo.Collection(null) }),
+          loadAllContentDocs({
+            context,
+            collection: new Mongo.Collection(null),
+          }),
         )
       ).message,
     ).to.include('Expected method name')

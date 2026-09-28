@@ -75,19 +75,11 @@
         "exports": [
           {
             "name": "check",
-            "architectures": [
-              "os",
-              "web.browser",
-              "web.cordova"
-            ]
+            "architectures": ["os", "web.browser", "web.cordova"]
           },
           {
             "name": "Match",
-            "architectures": [
-              "os",
-              "web.browser",
-              "web.cordova"
-            ]
+            "architectures": ["os", "web.browser", "web.cordova"]
           }
         ],
         "dependencies": {
@@ -202,17 +194,11 @@
         "exports": [
           {
             "name": "DDP",
-            "architectures": [
-              "os",
-              "web.browser",
-              "web.cordova"
-            ]
+            "architectures": ["os", "web.browser", "web.cordova"]
           },
           {
             "name": "DDPServer",
-            "architectures": [
-              "os"
-            ]
+            "architectures": ["os"]
           }
         ],
         "dependencies": {
@@ -253,11 +239,7 @@
                 "exports": [
                   {
                     "name": "DDPCommon",
-                    "architectures": [
-                      "os",
-                      "web.browser",
-                      "web.cordova"
-                    ]
+                    "architectures": ["os", "web.browser", "web.cordova"]
                   }
                 ],
                 "dependencies": {
@@ -317,11 +299,7 @@
                     "exports": [
                       {
                         "name": "Retry",
-                        "architectures": [
-                          "os",
-                          "web.browser",
-                          "web.cordova"
-                        ]
+                        "architectures": ["os", "web.browser", "web.cordova"]
                       }
                     ],
                     "dependencies": {
@@ -414,11 +392,7 @@
                 "exports": [
                   {
                     "name": "IdMap",
-                    "architectures": [
-                      "os",
-                      "web.browser",
-                      "web.cordova"
-                    ]
+                    "architectures": ["os", "web.browser", "web.cordova"]
                   }
                 ],
                 "dependencies": {
@@ -452,11 +426,7 @@
                 "exports": [
                   {
                     "name": "MongoID",
-                    "architectures": [
-                      "os",
-                      "web.browser",
-                      "web.cordova"
-                    ]
+                    "architectures": ["os", "web.browser", "web.cordova"]
                   }
                 ],
                 "dependencies": {
@@ -710,9 +680,7 @@
             "exports": [
               {
                 "name": "DDPServer",
-                "architectures": [
-                  "os"
-                ]
+                "architectures": ["os"]
               }
             ],
             "dependencies": {
@@ -740,9 +708,7 @@
                 "exports": [
                   {
                     "name": "RoutePolicy",
-                    "architectures": [
-                      "os"
-                    ]
+                    "architectures": ["os"]
                   }
                 ],
                 "dependencies": {
@@ -761,11 +727,7 @@
                     "exports": [
                       {
                         "name": "_",
-                        "architectures": [
-                          "os",
-                          "web.browser",
-                          "web.cordova"
-                        ]
+                        "architectures": ["os", "web.browser", "web.cordova"]
                       }
                     ],
                     "dependencies": {
@@ -824,15 +786,11 @@
                       },
                       {
                         "name": "WebAppInternals",
-                        "architectures": [
-                          "os"
-                        ]
+                        "architectures": ["os"]
                       },
                       {
                         "name": "main",
-                        "architectures": [
-                          "os"
-                        ]
+                        "architectures": ["os"]
                       }
                     ],
                     "dependencies": {
@@ -850,9 +808,7 @@
                         "exports": [
                           {
                             "name": "Boilerplate",
-                            "architectures": [
-                              "os"
-                            ]
+                            "architectures": ["os"]
                           }
                         ],
                         "dependencies": {
@@ -1286,11 +1242,7 @@
                 "exports": [
                   {
                     "name": "_",
-                    "architectures": [
-                      "os",
-                      "web.browser",
-                      "web.cordova"
-                    ]
+                    "architectures": ["os", "web.browser", "web.cordova"]
                   }
                 ],
                 "dependencies": {
@@ -1372,9 +1324,7 @@
         "exports": [
           {
             "name": "DDPRateLimiter",
-            "architectures": [
-              "os"
-            ]
+            "architectures": ["os"]
           }
         ],
         "dependencies": {
@@ -1393,11 +1343,7 @@
             "exports": [
               {
                 "name": "RateLimiter",
-                "architectures": [
-                  "os",
-                  "web.browser",
-                  "web.cordova"
-                ]
+                "architectures": ["os", "web.browser", "web.cordova"]
               }
             ],
             "dependencies": {
@@ -1567,15 +1513,11 @@
         "exports": [
           {
             "name": "Email",
-            "architectures": [
-              "os"
-            ]
+            "architectures": ["os"]
           },
           {
             "name": "EmailInternals",
-            "architectures": [
-              "os"
-            ]
+            "architectures": ["os"]
           }
         ],
         "dependencies": {
@@ -1624,9 +1566,7 @@
         "exports": [
           {
             "name": "NpmModuleBcrypt",
-            "architectures": [
-              "os"
-            ]
+            "architectures": ["os"]
           }
         ],
         "dependencies": {
@@ -1662,11 +1602,7 @@
         "exports": [
           {
             "name": "SHA256",
-            "architectures": [
-              "os",
-              "web.browser",
-              "web.cordova"
-            ]
+            "architectures": ["os", "web.browser", "web.cordova"]
           }
         ],
         "dependencies": {
@@ -1740,11 +1676,7 @@
             "exports": [
               {
                 "name": "SHA256",
-                "architectures": [
-                  "os",
-                  "web.browser",
-                  "web.cordova"
-                ]
+                "architectures": ["os", "web.browser", "web.cordova"]
               }
             ],
             "dependencies": {
@@ -1822,11 +1754,7 @@
     "exports": [
       {
         "name": "AutoForm",
-        "architectures": [
-          "web.browser",
-          "web.browser.legacy",
-          "web.cordova"
-        ]
+        "architectures": ["web.browser", "web.browser.legacy", "web.cordova"]
       }
     ],
     "dependencies": {
@@ -1928,11 +1856,7 @@
             "exports": [
               {
                 "name": "ObserveSequence",
-                "architectures": [
-                  "os",
-                  "web.browser",
-                  "web.cordova"
-                ]
+                "architectures": ["os", "web.browser", "web.cordova"]
               }
             ],
             "dependencies": {
@@ -1954,11 +1878,7 @@
                 "exports": [
                   {
                     "name": "_",
-                    "architectures": [
-                      "os",
-                      "web.browser",
-                      "web.cordova"
-                    ]
+                    "architectures": ["os", "web.browser", "web.cordova"]
                   }
                 ],
                 "dependencies": {
@@ -2022,11 +1942,7 @@
             "exports": [
               {
                 "name": "OrderedDict",
-                "architectures": [
-                  "os",
-                  "web.browser",
-                  "web.cordova"
-                ]
+                "architectures": ["os", "web.browser", "web.cordova"]
               }
             ],
             "dependencies": {
@@ -2062,11 +1978,7 @@
             "exports": [
               {
                 "name": "_",
-                "architectures": [
-                  "os",
-                  "web.browser",
-                  "web.cordova"
-                ]
+                "architectures": ["os", "web.browser", "web.cordova"]
               }
             ],
             "dependencies": {
@@ -2133,19 +2045,11 @@
         "exports": [
           {
             "name": "Tracker",
-            "architectures": [
-              "os",
-              "web.browser",
-              "web.cordova"
-            ]
+            "architectures": ["os", "web.browser", "web.cordova"]
           },
           {
             "name": "Deps",
-            "architectures": [
-              "os",
-              "web.browser",
-              "web.cordova"
-            ]
+            "architectures": ["os", "web.browser", "web.cordova"]
           }
         ],
         "dependencies": {
@@ -2182,17 +2086,11 @@
         "exports": [
           {
             "name": "DDP",
-            "architectures": [
-              "os",
-              "web.browser",
-              "web.cordova"
-            ]
+            "architectures": ["os", "web.browser", "web.cordova"]
           },
           {
             "name": "DDPServer",
-            "architectures": [
-              "os"
-            ]
+            "architectures": ["os"]
           }
         ],
         "dependencies": {
@@ -2322,9 +2220,7 @@
                 "exports": [
                   {
                     "name": "CachingHtmlCompiler",
-                    "architectures": [
-                      "os"
-                    ]
+                    "architectures": ["os"]
                   }
                 ],
                 "dependencies": {
@@ -2342,15 +2238,11 @@
                     "exports": [
                       {
                         "name": "CachingCompiler",
-                        "architectures": [
-                          "os"
-                        ]
+                        "architectures": ["os"]
                       },
                       {
                         "name": "MultiFileCachingCompiler",
-                        "architectures": [
-                          "os"
-                        ]
+                        "architectures": ["os"]
                       }
                     ],
                     "dependencies": {
@@ -2662,11 +2554,7 @@
                     "exports": [
                       {
                         "name": "_",
-                        "architectures": [
-                          "os",
-                          "web.browser",
-                          "web.cordova"
-                        ]
+                        "architectures": ["os", "web.browser", "web.cordova"]
                       }
                     ],
                     "dependencies": {
@@ -2801,11 +2689,7 @@
                     "exports": [
                       {
                         "name": "_",
-                        "architectures": [
-                          "os",
-                          "web.browser",
-                          "web.cordova"
-                        ]
+                        "architectures": ["os", "web.browser", "web.cordova"]
                       }
                     ],
                     "dependencies": {
@@ -2873,11 +2757,7 @@
                 "exports": [
                   {
                     "name": "_",
-                    "architectures": [
-                      "os",
-                      "web.browser",
-                      "web.cordova"
-                    ]
+                    "architectures": ["os", "web.browser", "web.cordova"]
                   }
                 ],
                 "dependencies": {
@@ -2961,27 +2841,15 @@
         "exports": [
           {
             "name": "Blaze",
-            "architectures": [
-              "os",
-              "web.browser",
-              "web.cordova"
-            ]
+            "architectures": ["os", "web.browser", "web.cordova"]
           },
           {
             "name": "UI",
-            "architectures": [
-              "os",
-              "web.browser",
-              "web.cordova"
-            ]
+            "architectures": ["os", "web.browser", "web.cordova"]
           },
           {
             "name": "Handlebars",
-            "architectures": [
-              "os",
-              "web.browser",
-              "web.cordova"
-            ]
+            "architectures": ["os", "web.browser", "web.cordova"]
           }
         ],
         "dependencies": {
@@ -3094,11 +2962,7 @@
             "exports": [
               {
                 "name": "GeoJSON",
-                "architectures": [
-                  "os",
-                  "web.browser",
-                  "web.cordova"
-                ]
+                "architectures": ["os", "web.browser", "web.cordova"]
               }
             ],
             "dependencies": {
@@ -3360,11 +3224,7 @@
         "exports": [
           {
             "name": "_",
-            "architectures": [
-              "os",
-              "web.browser",
-              "web.cordova"
-            ]
+            "architectures": ["os", "web.browser", "web.cordova"]
           }
         ],
         "dependencies": {
@@ -3522,11 +3382,7 @@
         "exports": [
           {
             "name": "CollectionExtensions",
-            "architectures": [
-              "os",
-              "web.browser",
-              "web.cordova"
-            ]
+            "architectures": ["os", "web.browser", "web.cordova"]
           }
         ],
         "dependencies": {
@@ -3565,11 +3421,7 @@
         "exports": [
           {
             "name": "_",
-            "architectures": [
-              "os",
-              "web.browser",
-              "web.cordova"
-            ]
+            "architectures": ["os", "web.browser", "web.cordova"]
           }
         ],
         "dependencies": {
@@ -3637,9 +3489,7 @@
     "exports": [
       {
         "name": "ECMAScript",
-        "architectures": [
-          "os"
-        ]
+        "architectures": ["os"]
       }
     ],
     "dependencies": {
@@ -3657,15 +3507,11 @@
         "exports": [
           {
             "name": "Babel",
-            "architectures": [
-              "os"
-            ]
+            "architectures": ["os"]
           },
           {
             "name": "BabelCompiler",
-            "architectures": [
-              "os"
-            ]
+            "architectures": ["os"]
           }
         ],
         "dependencies": {
@@ -4135,9 +3981,7 @@
       },
       {
         "name": "HTTPInternals",
-        "architectures": [
-          "os"
-        ]
+        "architectures": ["os"]
       }
     ],
     "dependencies": {
@@ -4244,19 +4088,11 @@
     "exports": [
       {
         "name": "$",
-        "architectures": [
-          "web.browser",
-          "web.browser.legacy",
-          "web.cordova"
-        ]
+        "architectures": ["web.browser", "web.browser.legacy", "web.cordova"]
       },
       {
         "name": "jQuery",
-        "architectures": [
-          "web.browser",
-          "web.browser.legacy",
-          "web.cordova"
-        ]
+        "architectures": ["web.browser", "web.browser.legacy", "web.cordova"]
       }
     ],
     "dependencies": {
@@ -4408,9 +4244,7 @@
               },
               {
                 "name": "HTTPInternals",
-                "architectures": [
-                  "os"
-                ]
+                "architectures": ["os"]
               }
             ],
             "dependencies": {
@@ -4594,11 +4428,7 @@
         "exports": [
           {
             "name": "SHA256",
-            "architectures": [
-              "os",
-              "web.browser",
-              "web.cordova"
-            ]
+            "architectures": ["os", "web.browser", "web.cordova"]
           }
         ],
         "dependencies": {
@@ -4902,15 +4732,11 @@
         "exports": [
           {
             "name": "mochaInstance",
-            "architectures": [
-              "os"
-            ]
+            "architectures": ["os"]
           },
           {
             "name": "setupGlobals",
-            "architectures": [
-              "os"
-            ]
+            "architectures": ["os"]
           }
         ],
         "dependencies": {
@@ -5125,9 +4951,7 @@
     "exports": [
       {
         "name": "MongoInternals",
-        "architectures": [
-          "os"
-        ]
+        "architectures": ["os"]
       },
       {
         "name": "Mongo",
@@ -5153,11 +4977,7 @@
         "exports": [
           {
             "name": "AllowDeny",
-            "architectures": [
-              "os",
-              "web.browser",
-              "web.cordova"
-            ]
+            "architectures": ["os", "web.browser", "web.cordova"]
           }
         ],
         "dependencies": {
@@ -5292,15 +5112,11 @@
         "exports": [
           {
             "name": "NpmModuleMongodb",
-            "architectures": [
-              "os"
-            ]
+            "architectures": ["os"]
           },
           {
             "name": "NpmModuleMongodbVersion",
-            "architectures": [
-              "os"
-            ]
+            "architectures": ["os"]
           }
         ],
         "dependencies": {
@@ -5352,11 +5168,7 @@
         "exports": [
           {
             "name": "_",
-            "architectures": [
-              "os",
-              "web.browser",
-              "web.cordova"
-            ]
+            "architectures": ["os", "web.browser", "web.cordova"]
           }
         ],
         "dependencies": {
@@ -5507,11 +5319,7 @@
         "exports": [
           {
             "name": "_",
-            "architectures": [
-              "os",
-              "web.browser",
-              "web.cordova"
-            ]
+            "architectures": ["os", "web.browser", "web.cordova"]
           }
         ],
         "dependencies": {
@@ -5578,11 +5386,7 @@
     "exports": [
       {
         "name": "Markdown",
-        "architectures": [
-          "os",
-          "web.browser",
-          "web.cordova"
-        ]
+        "architectures": ["os", "web.browser", "web.cordova"]
       }
     ],
     "dependencies": {
@@ -5659,11 +5463,7 @@
     "exports": [
       {
         "name": "ReactiveVar",
-        "architectures": [
-          "os",
-          "web.browser",
-          "web.cordova"
-        ]
+        "architectures": ["os", "web.browser", "web.cordova"]
       }
     ],
     "dependencies": {
@@ -5770,11 +5570,7 @@
     "exports": [
       {
         "name": "ServiceConfiguration",
-        "architectures": [
-          "os",
-          "web.browser",
-          "web.cordova"
-        ]
+        "architectures": ["os", "web.browser", "web.cordova"]
       }
     ],
     "dependencies": {

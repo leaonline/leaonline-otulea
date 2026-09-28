@@ -19,7 +19,9 @@ describe('completion behavior', () => {
       get: (key) => values.get(key),
       set(key, value) {
         if (typeof key === 'object') {
-          Object.entries(key).forEach(([name, entry]) => values.set(name, entry))
+          Object.entries(key).forEach(([name, entry]) =>
+            values.set(name, entry),
+          )
         } else {
           values.set(key, value)
         }
@@ -32,22 +34,27 @@ describe('completion behavior', () => {
     expect(resolveCompletionView()).to.equal(completionStates.showResults)
     expect(resolveCompletionView('1')).to.equal(completionStates.showDecision)
     expect(resolveCompletionView(2)).to.equal(completionStates.showFailed)
-    expect(resolveCompletionView('invalid')).to.equal(completionStates.showResults)
+    expect(resolveCompletionView('invalid')).to.equal(
+      completionStates.showResults,
+    )
     expect(resolveCompletionView(99)).to.equal(completionStates.showResults)
     expect(completionViewIndex(completionStates.showDecision)).to.equal(1)
   })
 
   it('creates a renderable failure state with Meteor and Error fallbacks', () => {
     expect(
-      createCompletionFailureState({ error: 'session.failed', reason: 'reason' }),
+      createCompletionFailureState({
+        error: 'session.failed',
+        reason: 'reason',
+      }),
     ).to.deep.equal({
       competenciesLoaded: true,
       sessionLoaded: true,
       failed: { error: 'session.failed', reason: 'reason' },
     })
-    expect(createCompletionFailureState(new Error('broken')).failed).to.deep.equal(
-      { error: 'error.default', reason: 'broken' },
-    )
+    expect(
+      createCompletionFailureState(new Error('broken')).failed,
+    ).to.deep.equal({ error: 'error.default', reason: 'broken' })
     expect(createCompletionFailureState().failed).to.equal(true)
   })
 
@@ -70,7 +77,10 @@ describe('completion behavior', () => {
       resolveCompletionSession({ sessionData: state, sessionId: 'session' }),
     ).to.deep.equal({ action: 'show', state })
     expect(() =>
-      resolveCompletionSession({ sessionData: undefined, sessionId: 'session' }),
+      resolveCompletionSession({
+        sessionData: undefined,
+        sessionId: 'session',
+      }),
     ).to.throw('Expected completion session data')
   })
 

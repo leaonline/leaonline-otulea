@@ -8,9 +8,11 @@ describe('createIssuesLink', () => {
   afterEach(() => sinon.restore())
 
   it('creates an encoded mailto link from translations and the current URL', () => {
-    sinon.stub(i18n, 'get').callsFake((key, data) =>
-      key === 'issues.subject' ? 'Report issue' : `Visited ${data.url}`,
-    )
+    sinon
+      .stub(i18n, 'get')
+      .callsFake((key, data) =>
+        key === 'issues.subject' ? 'Report issue' : `Visited ${data.url}`,
+      )
 
     const result = createIssuesLink({ url: 'https://example.test/path?a=1' })
     expect(result).to.equal(

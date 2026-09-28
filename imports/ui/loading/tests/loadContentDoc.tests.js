@@ -2,10 +2,7 @@
 import { expect } from 'chai'
 import { Mongo } from 'meteor/mongo'
 import sinon from 'sinon'
-import {
-  createContentDocLoader,
-  loadContentDoc,
-} from '../loadContentDoc'
+import { createContentDocLoader, loadContentDoc } from '../loadContentDoc'
 import { RequestedDocsContext } from '../../../../tests/webapp-server-helpers'
 import {
   mockCollection,
@@ -48,11 +45,8 @@ describe('loadContentDoc', () => {
 
     const collection = new Mongo.Collection(null)
     expect(
-      (
-        await getError(() =>
-          loadContentDoc({ context, collection, query: {} }),
-        )
-      ).message,
+      (await getError(() => loadContentDoc({ context, collection, query: {} })))
+        .message,
     ).to.include('Expected method name')
     context.methods.get = 'missing.get'
     expect(
@@ -88,7 +82,12 @@ describe('loadContentDoc', () => {
     const context = { name: 'docs', methods: { get: 'docs.get' } }
 
     expect(
-      await loader({ context, collection, name: 'custom.get', query: { x: 1 } }),
+      await loader({
+        context,
+        collection,
+        name: 'custom.get',
+        query: { x: 1 },
+      }),
     ).to.deep.equal({ _id: 'one', value: 1 })
     expect(methodCall.firstCall.args[0]).to.deep.equal({
       name: 'custom.get',
@@ -97,9 +96,8 @@ describe('loadContentDoc', () => {
 
     methodCall.resolves({ value: 'missing id' })
     expect(
-      (
-        await getError(() => loader({ context, collection, query: { x: 2 } }))
-      ).message,
+      (await getError(() => loader({ context, collection, query: { x: 2 } })))
+        .message,
     ).to.include('Expected document with _id')
   })
 
@@ -114,7 +112,12 @@ describe('loadContentDoc', () => {
     expect(
       (
         await getError(() =>
-          loader({ context, collection, query: { _id: 'x' }, throwIfNotFound: true }),
+          loader({
+            context,
+            collection,
+            query: { _id: 'x' },
+            throwIfNotFound: true,
+          }),
         )
       ).message,
     ).to.include('Expected document for ctx docs')
@@ -136,7 +139,12 @@ describe('loadContentDoc', () => {
       routes: { byId: { path: '/by-id' }, byCode: { path: '/by-code' } },
     }
 
-    await loader({ context, collection, query: { _id: 'remote' }, from: 'remote' })
+    await loader({
+      context,
+      collection,
+      query: { _id: 'remote' },
+      from: 'remote',
+    })
     expect(http.firstCall.args).to.deep.equal([
       'GET',
       'https://content.example.test/by-id?_id=remote',

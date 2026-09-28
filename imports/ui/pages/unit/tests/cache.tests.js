@@ -26,12 +26,7 @@ class TestStorage {
 }
 
 describe('unit response caches', () => {
-  const canonicalResponses = [
-    ['value'],
-    [],
-    [null],
-    ['__undefined__'],
-  ]
+  const canonicalResponses = [['value'], [], [null], ['__undefined__']]
 
   it('round-trips every canonical raw response array without normalization', () => {
     const storage = new TestStorage()

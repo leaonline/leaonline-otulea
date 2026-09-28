@@ -49,9 +49,11 @@ describe('welcome behavior', () => {
       focusIndex: 0,
       complete: false,
     })
-    expect(
-      updateLoginInput({ values: ['A'], index: 0, key: '+' }),
-    ).to.include({ accepted: false, focusIndex: 0, complete: false })
+    expect(updateLoginInput({ values: ['A'], index: 0, key: '+' })).to.include({
+      accepted: false,
+      focusIndex: 0,
+      complete: false,
+    })
   })
 
   it('deletes the current value or moves back from an empty field', () => {

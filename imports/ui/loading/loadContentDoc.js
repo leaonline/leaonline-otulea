@@ -79,10 +79,7 @@ export const createContentDocLoader = ({
       if (typeof document !== 'object' || !document._id) {
         throw new Error(`Expected document with _id for ctx ${context.name}`)
       }
-      localCollection.upsert(
-        { _id: document._id },
-        { $set: { ...document } },
-      )
+      localCollection.upsert({ _id: document._id }, { $set: { ...document } })
     }
 
     return document

@@ -103,7 +103,9 @@ Errors.methods.create = {
   schema: Errors.schema,
   isPublic: true,
   run: onServerExec(() => {
-    const { getUsersCollection } = require('../../infrastructure/collections/getUsersCollection')
+    const {
+      getUsersCollection,
+    } = require('../../infrastructure/collections/getUsersCollection')
 
     return async function (errorDoc) {
       // Resolve after Errors finished initializing to preserve the circular

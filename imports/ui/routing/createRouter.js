@@ -27,7 +27,7 @@ export const createRouter = ({
         `Fatal: expected route-definition, got ${routeDefinition}.`,
       )
     }
-debugger
+
     return {
       name: routeDefinition.key,
       whileWaiting() {

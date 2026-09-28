@@ -8,14 +8,8 @@ export const resolveUnitSession = ({
 }) => {
   if (!sessionId || !unitId || !responseData) return { action: 'exit' }
 
-  const {
-    sessionDoc,
-    unitDoc,
-    unitSetDoc,
-    dimensionDoc,
-    levelDoc,
-    color,
-  } = responseData
+  const { sessionDoc, unitDoc, unitSetDoc, dimensionDoc, levelDoc, color } =
+    responseData
   if (!sessionDoc || !unitDoc || !unitSetDoc || !dimensionDoc || !levelDoc) {
     return { action: 'exit' }
   }
@@ -61,17 +55,16 @@ export const submitAndAdvancePage = async ({
   delay = () => Promise.resolve(),
 }) => {
   if (!newPage.currentPage) {
-    throw new Error(`Undefined page for current index ${newPage.currentPageCount}`)
+    throw new Error(
+      `Undefined page for current index ${newPage.currentPageCount}`,
+    )
   }
 
   await delay()
   await submitItems({ sessionId, unitDoc, page: currentPageCount })
   sessionDoc.progress += 1
   const nextPage = { ...newPage, sessionDoc }
-  savePage(
-    { unitId: unitDoc._id, sessionId },
-    newPage.currentPageCount,
-  )
+  savePage({ unitId: unitDoc._id, sessionId }, newPage.currentPageCount)
   return nextPage
 }
 

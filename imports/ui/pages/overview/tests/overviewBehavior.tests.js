@@ -25,17 +25,21 @@ describe('overview behavior', () => {
 
   it('classifies absent, completed, aborted and unrelated sessions', () => {
     const testCycle = { _id: 'cycle' }
-    expect(classifySession({ sessionDoc: undefined, testCycle })).to.deep.equal({
-      completedSessionDetected: false,
-      abortedSessionDetected: false,
-      sessionDoc: null,
-    })
+    expect(classifySession({ sessionDoc: undefined, testCycle })).to.deep.equal(
+      {
+        completedSessionDetected: false,
+        abortedSessionDetected: false,
+        sessionDoc: null,
+      },
+    )
 
     const completed = { _id: 'done', completedAt: new Date() }
-    expect(classifySession({ sessionDoc: completed, testCycle })).to.deep.equal({
-      completedSessionDetected: true,
-      sessionDoc: completed,
-    })
+    expect(classifySession({ sessionDoc: completed, testCycle })).to.deep.equal(
+      {
+        completedSessionDetected: true,
+        sessionDoc: completed,
+      },
+    )
 
     const aborted = { _id: 'open', testCycle: 'cycle' }
     expect(classifySession({ sessionDoc: aborted, testCycle })).to.deep.equal({

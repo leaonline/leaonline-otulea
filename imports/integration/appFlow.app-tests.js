@@ -120,87 +120,95 @@ if (Meteor.isServer) {
           description: 'App test competency',
           descriptionSimple: 'App test competency',
         }),
-        Thresholds.collection().rawCollection().insertOne({
-          _id: fixture.thresholdsId,
-          minCountCompetency: 1,
-          thresholdsCompetency: {
-            accomplished: 0.8,
-            nearAccomplished: 0.6,
-            partialAccomplished: 0.3,
-            notAccomplished: 0,
-          },
-          minCountAlphaLevel: 1,
-          thresholdsAlphaLevel: {
-            accomplished: 0.8,
-            notAccomplished: 0,
-          },
-        }),
-        Unit.collection().rawCollection().insertOne({
-          _id: fixture.unitId,
-          status: 1,
-          unitSet: fixture.unitSetId,
-          shortCode: 'APP-UNIT',
-          pages: [
-            {
-              content: [
-                {
-                  type: 'item',
-                  subtype: 'choice',
-                  contentId: fixture.itemId,
-                  width: '12',
-                  value: {
-                    flavor: 1,
-                    shuffle: false,
-                    choices: [
-                      { text: 'Not selected' },
-                      { text: 'Selected response' },
-                    ],
-                    scoring: [
-                      {
-                        competency: fixture.competencyId,
-                        requires: 1,
-                        correctResponse: [1],
-                      },
-                    ],
+        Thresholds.collection()
+          .rawCollection()
+          .insertOne({
+            _id: fixture.thresholdsId,
+            minCountCompetency: 1,
+            thresholdsCompetency: {
+              accomplished: 0.8,
+              nearAccomplished: 0.6,
+              partialAccomplished: 0.3,
+              notAccomplished: 0,
+            },
+            minCountAlphaLevel: 1,
+            thresholdsAlphaLevel: {
+              accomplished: 0.8,
+              notAccomplished: 0,
+            },
+          }),
+        Unit.collection()
+          .rawCollection()
+          .insertOne({
+            _id: fixture.unitId,
+            status: 1,
+            unitSet: fixture.unitSetId,
+            shortCode: 'APP-UNIT',
+            pages: [
+              {
+                content: [
+                  {
+                    type: 'item',
+                    subtype: 'choice',
+                    contentId: fixture.itemId,
+                    width: '12',
+                    value: {
+                      flavor: 1,
+                      shuffle: false,
+                      choices: [
+                        { text: 'Not selected' },
+                        { text: 'Selected response' },
+                      ],
+                      scoring: [
+                        {
+                          competency: fixture.competencyId,
+                          requires: 1,
+                          correctResponse: [1],
+                        },
+                      ],
+                    },
                   },
-                },
-              ],
-            },
-            {
-              content: [
-                {
-                  type: 'text',
-                  subtype: 'text',
-                  contentId: '__app-test-finish-text',
-                  width: '12',
-                  value: 'Ready to finish',
-                },
-              ],
-            },
-          ],
-        }),
-        UnitSet.collection().rawCollection().insertOne({
-          _id: fixture.unitSetId,
-          status: 1,
-          shortCode: 'APP-SET',
-          dimension: fixture.dimensionId,
-          dimensionShort: 'A',
-          level: fixture.levelId,
-          field: '__app-test-field',
-          units: [fixture.unitId],
-          story: [],
-        }),
-        TestCycle.collection().rawCollection().insertOne({
-          _id: fixture.testCycleId,
-          shortCode: 'APP-CYCLE',
-          field: '__app-test-field',
-          dimension: fixture.dimensionId,
-          level: fixture.levelId,
-          selfAssessment: 'App test assessment',
-          progress: 2,
-          unitSets: [fixture.unitSetId],
-          isLegacy: true,
-        }),
+                ],
+              },
+              {
+                content: [
+                  {
+                    type: 'text',
+                    subtype: 'text',
+                    contentId: '__app-test-finish-text',
+                    width: '12',
+                    value: 'Ready to finish',
+                  },
+                ],
+              },
+            ],
+          }),
+        UnitSet.collection()
+          .rawCollection()
+          .insertOne({
+            _id: fixture.unitSetId,
+            status: 1,
+            shortCode: 'APP-SET',
+            dimension: fixture.dimensionId,
+            dimensionShort: 'A',
+            level: fixture.levelId,
+            field: '__app-test-field',
+            units: [fixture.unitId],
+            story: [],
+          }),
+        TestCycle.collection()
+          .rawCollection()
+          .insertOne({
+            _id: fixture.testCycleId,
+            shortCode: 'APP-CYCLE',
+            field: '__app-test-field',
+            dimension: fixture.dimensionId,
+            level: fixture.levelId,
+            selfAssessment: 'App test assessment',
+            progress: 2,
+            unitSets: [fixture.unitSetId],
+            isLegacy: true,
+          }),
       ])
       return { ...fixture, userId }
     },
@@ -212,16 +220,16 @@ if (Meteor.isServer) {
     async [methods.setResponseAcceptance](options) {
       check(options, { sessionId: String, accept: Boolean })
       const { sessionId, accept } = options
-      return Session.collection().rawCollection().updateOne(
-        { _id: sessionId, testCycle: fixture.testCycleId },
-        {
-          $set: {
-            currentUnit: accept
-              ? fixture.unitId
-              : '__app-test-rejected-unit',
+      return Session.collection()
+        .rawCollection()
+        .updateOne(
+          { _id: sessionId, testCycle: fixture.testCycleId },
+          {
+            $set: {
+              currentUnit: accept ? fixture.unitId : '__app-test-rejected-unit',
+            },
           },
-        },
-      )
+        )
     },
     async [methods.inspect]() {
       const session = await Session.collection().rawCollection().findOne({
@@ -368,7 +376,8 @@ if (Meteor.isClient) {
       })
       await click('.lea-pagenav-button[data-action="next"]', 'next page button')
       await waitFor(
-        () => !document.querySelector('.lea-pagenav-button[data-action="next"]'),
+        () =>
+          !document.querySelector('.lea-pagenav-button[data-action="next"]'),
         'durable response wait state',
       )
       await waitFor(

@@ -213,7 +213,8 @@ Session.methods.results = {
 
     return function ({ sessionId }) {
       const { userId, flagFromDb = true } = this
-        const debug = (...args) => console.log('[session.methods.results    ]:', ...args)
+      const debug = (...args) =>
+        console.log('[session.methods.results    ]:', ...args)
       return generateResults({ sessionId, userId, debug, flagFromDb })
     }
   }),

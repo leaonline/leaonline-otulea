@@ -37,10 +37,7 @@ export const createDataLoader = ({
       args: { sessionId },
     })
     if (!evaluationResults) {
-      throw createError(
-        'error.loadDataFailed',
-        'loadError.noEvaluationResults',
-      )
+      throw createError('error.loadDataFailed', 'loadError.noEvaluationResults')
     }
 
     const { competencies = [], alphaLevels = [] } = evaluationResults
@@ -90,10 +87,7 @@ export const createDataLoader = ({
     })
     const alphaLevelDocs = alphaLevelRequest?.[AlphaLevelContext.name] ?? []
     if (alphaLevelDocs.length === 0) {
-      throw createError(
-        'error.loadDataFailed',
-        'loadError.alphaLevelsNotFound',
-      )
+      throw createError('error.loadDataFailed', 'loadError.alphaLevelsNotFound')
     }
 
     let noScoredAlphas = true

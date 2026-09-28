@@ -49,9 +49,7 @@ export const createItemSubmit = ({
         // durable boundary unchanged. In particular, do not coerce an invalid
         // top-level null into an apparently valid absent response.
         responseDoc.responses =
-          responseValue?.responses === undefined
-            ? []
-            : responseValue.responses
+          responseValue?.responses === undefined ? [] : responseValue.responses
         allResponseDocs.push(responseDoc)
       })
     }

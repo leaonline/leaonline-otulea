@@ -31,7 +31,9 @@ const resolve = (options = {}) =>
 describe('unit behavior', () => {
   it('exits for missing route values, response data or linked documents', () => {
     expect(resolve({ sessionId: undefined })).to.deep.equal({ action: 'exit' })
-    expect(resolve({ responseData: undefined })).to.deep.equal({ action: 'exit' })
+    expect(resolve({ responseData: undefined })).to.deep.equal({
+      action: 'exit',
+    })
     expect(
       resolve({ responseData: loadedResponse({ levelDoc: undefined }) }),
     ).to.deep.equal({ action: 'exit' })
@@ -47,10 +49,12 @@ describe('unit behavior', () => {
   it('routes an outdated unit URL to the session current unit', () => {
     const responseData = loadedResponse()
     responseData.sessionDoc.currentUnit = 'actual-unit'
-    expect(resolve({ responseData, isCurrentUnit: () => false })).to.deep.equal({
-      action: 'next',
-      args: { unitId: 'actual-unit', sessionId: 'session' },
-    })
+    expect(resolve({ responseData, isCurrentUnit: () => false })).to.deep.equal(
+      {
+        action: 'next',
+        args: { unitId: 'actual-unit', sessionId: 'session' },
+      },
+    )
   })
 
   it('creates view state for resumed, empty and multi-page units', () => {

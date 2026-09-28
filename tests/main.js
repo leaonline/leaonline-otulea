@@ -22,7 +22,7 @@ if (Meteor.isAppTest) {
   }
 
   describe('common', () => {
-    require( './utils')
+    require('./utils')
     require('./contexts')
   })
 }

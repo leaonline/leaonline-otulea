@@ -9,9 +9,11 @@ describe('legalRenderer', () => {
 
   it('renders headings and prepares speakable paragraph text', () => {
     const clock = sinon.useFakeTimers()
-    sinon.stub(i18n, 'get').callsFake((key) =>
-      key.endsWith('paragraphs') ? ' paragraphs ' : ' paragraph ',
-    )
+    sinon
+      .stub(i18n, 'get')
+      .callsFake((key) =>
+        key.endsWith('paragraphs') ? ' paragraphs ' : ' paragraph ',
+      )
     const renderer = legalRenderer()
 
     expect(renderer.heading('Title')).to.equal(

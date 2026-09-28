@@ -11,7 +11,8 @@ export const createSessionDataLoader = ({
     debug('loaded session data', sessionData)
     if (!sessionData) return undefined
 
-    const { sessionDoc, unitSetDoc, dimensionDoc, levelDoc, color } = sessionData
+    const { sessionDoc, unitSetDoc, dimensionDoc, levelDoc, color } =
+      sessionData
     if (!sessionDoc || !unitSetDoc || !dimensionDoc || !levelDoc) {
       return undefined
     }
