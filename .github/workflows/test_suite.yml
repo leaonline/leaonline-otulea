@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - master
-      - develop
   pull_request:
 
 jobs:
@@ -13,90 +12,69 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
 
     - name: setup node
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v7
       with:
-        node-version: 20
+        node-version: 22
 
     - name: cache dependencies
       uses: actions/cache@v4
       with:
         path: ~/.npm
-        key: ${{ runner.os }}-node-20-${{ hashFiles('**/package-lock.json') }}
+        key: ${{ runner.os }}-node-22-${{ hashFiles('**/package-lock.json') }}
         restore-keys: |
-          ${{ runner.os }}-node-20-
+          ${{ runner.os }}-node-22-
 
-    - run: npm install
-    - run: npm run lint:code
-
-#  lintstyle:
-#    name: SCSS lint
-#    runs-on: ubuntu-latest
-#    steps:
-#    - name: checkout
-#      uses: actions/checkout@v4
-#
-#    - name: setup node
-#      uses: actions/setup-node@v4
-#      with:
-#        node-version: 20
-#
-#    - name: cache dependencies
-#      uses: actions/cache@v4
-#      with:
-#        path: ~/.npm
-#        key: ${{ runner.os }}-node-20-${{ hashFiles('**/package-lock.json') }}
-#        restore-keys: |
-#          ${{ runner.os }}-node-20-
-#    - run: npm install
-#    - run: npm run lint:style
+    - run: |
+        npm install
+        npm run lint:code
 
   tests:
-    name: Meteor 3.4 architecture and coverage gates
+    name: Meteor Tests
     runs-on: ubuntu-latest
     steps:
 
       # CHECKOUTS
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Checkout leaonline:testing repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: leaonline/testing
-          path: github/testing
+          path: packages/testing
 
       - name: Checkout leaonline:utils repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: leaonline/utils
-          path: github/utils
+          path: packages/utils
 
       - name: Checkout leaonline:corelib repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: leaonline/corelib
-          path: github/corelib
+          path: packages/corelib
 
       - name: Checkout leaonline:ui repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: leaonline/ui
-          path: github/ui
+          path: packages/ui
 
       - name: Checkout leaonline:service-registry repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: leaonline/service-registry
-          path: github/service-registry
+          path: packages/service-registry
 
       - name: Checkout leaonline:theme repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: leaonline/theme
-          path: github/theme
+          path: packages/theme
 
       # CACHING
       - name: Install Meteor
@@ -131,7 +109,7 @@ jobs:
             v3-meteor_build_cache-
 
       - name: Setup meteor
-        uses: meteorengineer/setup-meteor@v1
+        uses: meteorengineer/setup-meteor@v2
         with:
           meteor-release: '3.4'
 
