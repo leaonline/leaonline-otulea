@@ -31,7 +31,7 @@
         "noDelete": "warn"
       },
       "complexity": {
-        "noForEach": "warn",
+        "noForEach": "off",
         "noUselessThisAlias": "warn"
       },
       "suspicious": {

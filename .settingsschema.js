@@ -1,4 +1,4 @@
-module.exports = function (SimpleSchema, settings) {
+module.exports = (SimpleSchema, settings) => {
   const schema = def => new SimpleSchema(def)
   const settingsSchema = schema({
     public: schema({

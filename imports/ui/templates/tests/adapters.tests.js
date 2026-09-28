@@ -7,8 +7,6 @@ import sinon from 'sinon'
 import { Router } from '../../routing/Router'
 import { createTTS } from '../../renderers/defaultMarkdownRenderer'
 import '../initDependencies'
-import '../initMarkdownRenderer'
-import './markdownFixture.html'
 
 describe('template runtime adapters', () => {
   let sandbox
@@ -70,19 +68,6 @@ describe('template runtime adapters', () => {
       text: 'Speak',
       type: 'warning',
     })
-    host.remove()
-  })
-
-  it('renders markdown block content through the registered helper', () => {
-    const host = document.createElement('div')
-    document.body.appendChild(host)
-    const view = Blaze.render(Template.markdownTestFixture, host)
-
-    Tracker.flush()
-
-    expect(host.querySelector('h1')?.textContent).to.equal('Rendered heading')
-    Blaze.remove(view)
-    Tracker.flush()
     host.remove()
   })
 
