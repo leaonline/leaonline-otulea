@@ -1,0 +1,42 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: otu.lea
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Jan
+    family-names: Küster
+    email: jkuester@uni-bremen.de
+    affiliation: 'ZeMKI, University of Bremen'
+    orcid: 'https://orcid.org/0009-0008-8088-9837'
+  - given-names: Meyer
+    family-names: Imke
+    email: imeyer@uni-bremen.de
+    affiliation: 'ZeMKI, University of Bremen '
+    orcid: 'https://orcid.org/0000-0001-8261-365X'
+  - given-names: Karsten
+    family-names: Wolf
+    name-particle: D.
+    email: wolf@uni-bremen.de
+    affiliation: 'ZeMKI, University of Bremen'
+    orcid: 'https://orcid.org/0000-0002-4151-840X'
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.10813761
+    description: Zenodo Base DOI
+repository-code: 'https://github.com/leaonline/leaonline-otulea'
+abstract: >-
+  Diagnostics app for lea.online. "otu.lea" is a short term
+  for "Online Testumgebung im Projekt lea" , which is a
+  German research and development project to assess and
+  improve the fundamental literacy of the German workforce.
+keywords:
+  - e-assessment
+  - diagnostics
+  - literacy
+  - workforce literacy
+license: AGPL-3.0
