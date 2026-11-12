@@ -1,0 +1,10 @@
+{
+  "actions": {
+    "start": "Starten"
+  },
+  "pages": {
+    "trial": {
+      "title": "Erprobung"
+    }
+  }
+}

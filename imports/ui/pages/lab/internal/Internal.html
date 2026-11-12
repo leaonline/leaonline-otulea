@@ -52,6 +52,11 @@
           </div>
             {{!-- actions --}}
             <span class="ms-auto">
+              {{#if showQRCode}}
+              <a href="{{route 'qrcode' qrCodeData}}" target="_blank" class="btn btn-sm btn-outline-secondary qr-btn">
+                {{> icon name="qrcode" }}
+              </a>
+              {{/if}}
               {{#if showFullscreenButton}}
               <button type="button" class="btn btn-sm btn-secondary present-btn" data-mode="on">
                 {{> icon name="expand-alt" }}

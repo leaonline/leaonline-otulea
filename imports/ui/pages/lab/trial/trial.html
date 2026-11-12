@@ -1,0 +1,60 @@
+<template name="trial">
+    <div class="container py-2">
+        {{#if showProgress}}
+        {{#if progress}}
+        <div class="d-flex align-items-center">
+            <div class="progress w-100 bg-transparent border border-{{color}}">
+                <div class="progress-bar bg-{{color}}" role="progressbar" style="width: {{progress.value}}%"
+                     aria-valuenow="{{progress.value}}" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            <span class="mx-3 no-wrap text-{{color}}">{{progress.rounded}}%</span>
+        </div>
+        {{/if}}
+        {{/if}}
+
+
+        {{#onComplete complete=initComplete}}
+        {{#if view "start"}}
+        <div class="text-center">
+            <h1 class="w-100 text-center lea-text-bold border-bottom py-2 my-4">LEA TRIAL</h1>
+            {{#unless currentUser}}
+            <input type="text" class="form-input py-3 lea-text-bold lea-text-xl">
+            {{else}}
+            {{> actionButton
+            type="primary"
+            label=(i18n "actions.start")
+            class="justify-content-center py-4"
+            btnClass="py-4 start-btn"}}
+            {{/unless}}
+
+        </div>
+        {{/if}}
+
+        {{#if view "story"}}
+
+        {{/if}}
+
+        {{#if view "unit"}}
+        <div class="lea-unit-container mb-5">
+            {{#unless unitLoadComplete}}
+            <div class="w-100 text-center text-primary">
+                {{> icon pulse=true name="spinner" class="fa-3x"}}
+            </div>
+            {{else}}
+            {{#container class="lea-unit-content-container h-auto"}}
+            {{#unless submitting}}
+            {{> taskPageRenderer unitRendererData}}
+            {{else}}
+            {{> loading }}
+            {{/unless}}
+            {{/container}}
+            {{/unless}}
+        </div>
+        {{/if}}
+
+        {{#if view "finish"}}
+
+        {{/if}}
+        {{/onComplete}}
+    </div>
+</template>

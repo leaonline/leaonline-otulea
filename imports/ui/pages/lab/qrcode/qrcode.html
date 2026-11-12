@@ -1,0 +1,25 @@
+<template name="qrcode">
+    <div class="container">
+        {{#onComplete complete=dependenciesComplete}}
+            {{#if qrSVG}}
+                <div>{{{qrSVG}}}</div>
+            {{/if}}
+
+        <div class="mb-5">
+            {{#if label}}
+                <h1 class="w-100 justify-content-center lea-text-bold d-flex align-items-center gap-1">
+                    {{#if iconName}}
+                        {{> icon name=iconName class="text-primary fa-2x"}}
+                    {{/if}}
+                    {{label}}
+                </h1>
+            {{/if}}
+            {{#if url}}
+                <div class="w-100 text-center">
+                    <a href="{{url}}">{{url}}</a>
+                </div>
+            {{/if}}
+        </div>
+        {{/onComplete}}
+    </div>
+</template>

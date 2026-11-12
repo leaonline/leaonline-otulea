@@ -1,24 +1,26 @@
 import { EJSON } from 'meteor/ejson'
-import { Unit } from '../../../contexts/Unit'
+import { Unit } from '../../../../contexts/Unit'
 import { Template } from 'meteor/templating'
-import { UnitSet } from '../../../contexts/unitSet/UnitSet'
-import { loadContentDoc } from '../../loading/loadContentDoc'
-import { initTaskRenderers } from '../../renderers/initTaskRenderers'
-import { createItemInput } from '../unit/item/createItemInput'
-import { createItemLoad } from '../unit/item/createItemLoad'
-import { dataTarget } from '../../../utils/dataTarget'
-import { errorToObject } from '../../../utils/object/errorToObject'
-import { setQueryParam } from '../../routing/setQueryParam'
-import { ResponseCache } from '../unit/cache/ResponseCache'
-import { Scoring } from '../../../contexts/Scoring'
+import { UnitSet } from '../../../../contexts/unitSet/UnitSet'
+import { loadContentDoc } from '../../../loading/loadContentDoc'
+import { initTaskRenderers } from '../../../renderers/initTaskRenderers'
+import { createItemInput } from '../../unit/item/createItemInput'
+import { createItemLoad } from '../../unit/item/createItemLoad'
+import { dataTarget } from '../../../../utils/dataTarget'
+import { errorToObject } from '../../../../utils/object/errorToObject'
+import { setQueryParam } from '../../../routing/setQueryParam'
+import { getColor } from "../shared/getColor";
+import { onPageNavUpdate } from "../shared/onPageNavUpdate";
+import { ResponseCache } from '../../unit/cache/ResponseCache'
+import { Scoring } from '../../../../contexts/Scoring'
 import internalLang from './i18n/lang'
-import { Dimension } from '../../../contexts/Dimension'
-import { ColorType } from '../../../contexts/types/ColorType'
+import { Dimension } from '../../../../contexts/Dimension'
 import './Internal.html'
 import './internal.css'
-import '../../components/container/container'
-import '../login/login'
-import '../../layout/navbar/navbar'
+import '../../../components/container/container'
+import '../../login/login'
+import '../../../layout/navbar/navbar'
+import {Routes} from "../../../routing/Routes";
 
 Scoring.init()
 
@@ -91,35 +93,7 @@ Template.internal.onCreated(function () {
     Object.keys(storage.getAll()).forEach((key) => storage.removeItem(key))
   }
 
-  instance.onEvaluate = () => {
-    const unitDoc = instance.state.get('unitDoc')
-    const currentPage = instance.state.get('currentPageCount')
-    const allResponses = Object.entries(storage.data)
-      .filter((entry) => {
-        // filter out entries from other pages
-        const [_sessionId, _unitId, page] = entry[0].split('-')
-        return _unitId === unitDoc._id && page == currentPage
-      })
-      .map((value) => {
-        const [sessionId, unitId, page, itemId] = value[0].split('-')
-        const data = {
-          sessionId,
-          unitId,
-          page,
-          itemId,
-          ...EJSON.parse(value[1]),
-        }
-        const itemDefinitions = Unit.getContentElement({
-          unit: unitDoc,
-          contentId: itemId,
-          page: Number(page),
-        })
-
-        return Scoring.run(itemDefinitions.subtype, itemDefinitions.value, data)
-      })
-
-    return allResponses.flat()
-  }
+  instance.onEvaluate = createOnEvaluate(instance)
 
   // check query params for unit or unitSet
   const query = instance.data.queryParams ?? {}
@@ -244,6 +218,17 @@ Template.internal.helpers({
   showFullscreenButton() {
     return Template.getState('unitDoc') || Template.getState('story')
   },
+  showQRCode () {
+    return Template.getState('unitSetDoc')
+  },
+  qrCodeData () {
+    const unitSetDoc = Template.getState('unitSetDoc')
+    const url = Meteor.absoluteUrl(Routes.trial.path(unitSetDoc._id))
+    const icon = Routes.trial.icon
+    const data = { url, label: unitSetDoc.shortCode, icon }
+    const dataStr = EJSON.stringify(data)
+    return encodeURIComponent(btoa(dataStr))
+  }
 })
 
 Template.internal.events({
@@ -305,21 +290,9 @@ Template.internal.events({
     event.preventDefault()
     const presentationMode = dataTarget(event, 'mode') === 'on'
     instance.state.set({ presentationMode })
-  },
+  }
 })
 
-const getColor = async ({ dimensionId, from }) => {
-  if (!dimensionId) return 'primary'
-  const dimensionDoc = await loadContentDoc({
-    context: Dimension,
-    from,
-    throwIfNotFound: false,
-    query: { _id: dimensionId },
-  })
-  if (!dimensionDoc?.colorType) return 'primary'
-  const colorType = ColorType.byIndex(dimensionDoc.colorType)
-  return colorType?.type ?? 'primary'
-}
 
 async function loadUnitSet({ code, isShortCode, from, instance }) {
   const throwIfNotFound = true
@@ -380,14 +353,7 @@ async function loadUnit({ code, isShortCode, from, instance }) {
   }
 }
 
-function onPageNavUpdate({ action, newPage, templateInstance, onComplete }) {
-  templateInstance.state.set({ loading: true })
-  templateInstance.state.set(newPage)
-  setTimeout(() => {
-    templateInstance.state.set({ loading: false })
-    onComplete()
-  }, 300)
-}
+
 
 const createUrlQuery = ({ code, isShortCode, type }) => {
   return isShortCode ? { shortCode: code, type } : { _id: code, type }
