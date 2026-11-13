@@ -6,7 +6,8 @@
     "status": "production",
     "accounts": {
       "code": {
-        "length": 5
+        "length": 5,
+        "allowedChars": "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
       }
     },
     "packages": {

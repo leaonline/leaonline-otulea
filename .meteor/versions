@@ -1,7 +1,7 @@
 accounts-base@3.2.0
 accounts-oauth@1.4.6
 accounts-password@3.2.2
-aldeed:autoform@8.1.0
+aldeed:autoform@8.0.0
 aldeed:collection2@4.2.2
 aldeed:simple-schema@2.0.0
 allow-deny@2.1.0
@@ -59,7 +59,7 @@ leaonline:ddp-login@3.0.1
 leaonline:ddp-login-handler@3.0.2
 leaonline:grid-factory@1.6.0
 leaonline:jwt@0.0.1
-leaonline:method-factory@2.0.0
+leaonline:method-factory@2.0.2
 leaonline:oauth-lea@3.0.1
 leaonline:publication-factory@2.0.0
 leaonline:ratelimit-factory@2.0.0

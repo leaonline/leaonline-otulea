@@ -4,22 +4,20 @@ import {Unit} from "../../../../contexts/Unit";
 import {UnitSet} from "../../../../contexts/unitSet/UnitSet";
 import trialLang from "./i18n/lang";
 import {loadContentDoc} from "../../../loading/loadContentDoc";
+import {TestCycle} from "../../../../contexts/testcycle/TestCycle";
+import { Session } from "../../../../contexts/session/Session";
 import {Scoring} from '../../../../contexts/Scoring'
 import {getQueryParam} from "../../../routing/getQueryParam";
 import {setQueryParam} from "../../../routing/setQueryParam";
 import {callMethod} from "../../../../infrastructure/methods/callMethod";
-import {getColor} from "../shared/getColor";
 import './trial.html'
 import '../../unit/unit'
 import '../../story/story'
-import {initTaskRenderers} from "../../../renderers/initTaskRenderers";
-import {pageCache, responseCache, submitItems} from "./cache";
-import {createItemInput} from "../../unit/item/createItemInput";
-import {createItemLoad} from "../../unit/item/createItemLoad";
-import {submitAndAdvancePage} from "../../unit/unitBehavior";
-import {createOnEvaluate} from "../shared/createOnEvaluate";
-import {onPageNavUpdate} from "../../unit/unit";
-
+import {createLoadSession, createLoadTrialData, createLoadUnitData, createSessionStarter} from "./loader";
+import {errorToObject} from "../../../../utils/object/errorToObject";
+import {Users} from "../../../../contexts/user/User";
+import {asyncTimeout} from "../../../../utils/asyncTimeout";
+import { loginAsync} from "../../../../api/accounts/loginAsync";
 
 // in this trial page users can test exactly ONE unitSet at a time
 // which is prepending by a "START" state and
@@ -36,106 +34,110 @@ Template.trial.onCreated(async function () {
     const instance = this
 
     // helpers
+    instance.fail = error => {
+        console.error(error)
+        instance.state.set({ error: errorToObject(error) })
+    }
     instance.getView = name => TRIAL_VIEWS[name]
+    instance.setView = view => {
+        instance.state.set({ view })
+        setQueryParam({ step: view })
+    }
+    instance.isRunningView = (name) => [
+        TRIAL_VIEWS.story.name,
+        TRIAL_VIEWS.unit.name,
+    ].includes(name)
+    instance.loadTrialData = createLoadTrialData({ instance })
+    instance.loadSession = createLoadSession({ instance })
+    instance.sessionIsComplete = sessionDoc => !!sessionDoc.completedAt
+    instance.loadUnitData = createLoadUnitData({ instance })
+    instance.startSession = createSessionStarter({ instance })
+    instance.finishStory = () => {
+        const view = TRIAL_VIEWS.unit.name
+        instance.state.set({ view })
+        setQueryParam({step: view })
+    }
+    instance.nextUnitSet = ({ completed, hasStory, sessionId, unitId, unitSetId }) => {
+        instance.state.set('loading', true)
 
-    // context scope
-    const unitSetId = instance.data.params.unitSetId
+        if (hasStory) {
+            const view = TRIAL_VIEWS.story.name
+            instance.state.set({ view })
+            setQueryParam({step: view })
+        }
 
-    // fail early
-    if (!unitSetId) {
-        // TODO set error etc.
+
+        nextUnit()
+            .then(instance.state.set('loading', false))
+            .catch(instance.fail)
     }
 
-    // get starting view state from query param, if none exists, use start
-    const view = getQueryParam('step') ?? TRIAL_VIEWS.start.name
-    const trialId = getQueryParam('trial')
-    const unitId = getQueryParam('unit')
-    const currentPageCount = getQueryParam('page') ?? 0
-    instance.state.set({view})
+    const nextUnit = async () => {
+        const sessionDoc = await instance.loadSession({ testCycleId: instance.state.get('testCycleId'), trialId: instance.state.get('trialId') })
+        if (!sessionDoc || instance.sessionIsComplete(sessionDoc)) {
+            return instance.finishUnitSet()
+        }
+
+        return instance.loadUnitData({ sessionDoc })
+    }
+
+    instance.finishUnitSet = () => {
+        Meteor.logout(error => {
+            if (error) instance.fail(error)
+        })
+        instance.setView(TRIAL_VIEWS.finish.name)
+    }
+
+    // context scope
+    const { testCycleId, trialId } = instance.data.params
+    instance.state.set({ testCycleId, trialId })
 
     // general dependencies
     const { api } = instance.initDependencies({
         language: true,
-        contexts: [Dimension, Unit, UnitSet, Trial],
+        contexts: [Dimension, Unit, UnitSet, Trial, Session, TestCycle],
         tts: true,
         debug: true,
+        user: true,
         translations: trialLang,
-        onComplete: () => {
+        onComplete: async () => {
+            if (!Meteor.user()) {
+                const code = await callMethod({ name: Users.methods.generateCode, args: {}})
+                await callMethod({ name: Users.methods.register, args: { code }})
+                await loginAsync(code)
+                await asyncTimeout(300)
+            }
+
+            // always load session as early as possible
+            const sessionDoc = await instance.loadSession({ testCycleId, trialId })
+
+            // get starting view state from query param, if none exists, use start
+            let view = TRIAL_VIEWS.start.name
+            const viewQuery = getQueryParam('step')
+
+            // only allow unit/story view if we have a session doc
+            if (viewQuery !== view && sessionDoc) {
+                view = viewQuery
+                setQueryParam({ step: view })
+            } else {
+                // clean all query params
+                setQueryParam({ step: null })
+            }
+
+            instance.state.set({ view })
+
+            // if we are already running (after page reload)
+            // we need the correct data
+            if (sessionDoc && instance.isRunningView(view)) {
+                await instance.loadUnitData({ sessionDoc })
+            }
+
             instance.state.set('dependenciesComplete', true)
         },
         onError: (e) => {
-            // instance.data.onFail()
+            instance.fail(e)
             instance.state.set('dependenciesComplete', true)
         },
-    })
-
-    // data loading dependencies
-    const unitSetDoc = await loadContentDoc({
-        context: UnitSet,
-        from: 'remote',
-        throwIfNotFound: true,
-        query: {_id: unitSetId},
-    })
-
-    const dimensionDoc = await loadContentDoc({
-        context: Dimension,
-        from: 'remote',
-        throwIfNotFound: true,
-        query: {_id: unitSetDoc.dimension},
-    })
-
-    const color = await getColor({dimensionId: unitSetDoc.dimension, from: 'remote'})
-
-    // pre-load unit
-    const unitDoc = await loadContentDoc({
-        context: Unit,
-        from: 'remote',
-        throwIfNotFound: true,
-        // load step-bound unit or first one as default
-        query: {_id: unitId ?? unitSetDoc.units[0]},
-    })
-
-    const trialDoc = trialId && await loadContentDoc({
-        context: Trial,
-        throwIfNotFound: false,
-        query: {_id: trialId},
-    })
-
-    const hasStory = unitSetDoc.story?.length
-    const max = unitSetDoc.progress + 1
-    const initialProgress = trialDoc?.progress || 1
-    const value = (initialProgress / max) * 100
-    const progress = { value, count: initialProgress, rounded: Math.round(value), type: 'primary', max}
-    instance.state.set({trialDoc, unitSetDoc, unitDoc, hasStory, progress, dimensionDoc, color, currentPageCount })
-
-
-    instance.renderersLoaded = initTaskRenderers()
-
-    instance.onEvaluate = createOnEvaluate({instance, storage: window.sessionStorage })
-
-    instance.onNewPage = ({ action, newPage }, onComplete) => {
-        const progress = instance.state.get('progress')
-        progress.count++
-        progress.value = (progress.count / progress.max) * 100
-        progress.rounded = Math.round(progress.value)
-        instance.state.set({ progress, loading: true, ...newPage })
-        setTimeout(() => {
-            instance.state.set({ loading: false })
-            onComplete()
-        }, 300)
-    }
-
-    instance.forward = () => {
-        debugger
-    }
-
-    instance.onItemInput = createItemInput({
-        cache: responseCache,
-        debug: api.debug,
-    })
-    instance.onItemLoad = createItemLoad({
-        cache: responseCache,
-        debug: api.debug,
     })
 })
 
@@ -143,8 +145,14 @@ Template.trial.helpers({
     initComplete() {
         return Template.getState('dependenciesComplete') && !Template.getState('loading')
     },
+    error () {
+        return Template.getState('error')
+    },
     color() {
         return Template.getState('color') ?? 'primary'
+    },
+    sessionDoc () {
+        return Template.getState('sessionDoc')
     },
     view(name) {
         if (!name) return false
@@ -164,68 +172,74 @@ Template.trial.helpers({
     unitLoadComplete() {
         return Template.getState('unitDoc') && Template.instance().renderersLoaded.get()
     },
+    storyData () {
+        const sessionDoc = Template.getState('sessionDoc')
+        const currentUnit = sessionDoc.currentUnit
+        const finishStory = Template.instance().finishStory
+      return {
+          params: { sessionId: sessionDoc._id, unitId: currentUnit },
+          exit: finishStory,
+          next: finishStory
+      }
+    },
     unitRendererData () {
-        if (!Template.instance().renderersLoaded.get()) return
-
+        const sessionDoc = Template.getState('sessionDoc')
+        const currentUnit = sessionDoc.currentUnit
         const instance = Template.instance()
-        const trialDoc = instance.state.get('trialDoc')
-        const unitDoc = instance.state.get('unitDoc')
-        const color = instance.state.get('color')
-        const currentPageCount = instance.state.get('currentPageCount')
-
+        const finish = instance.finishUnitSet
+        const next = instance.nextUnitSet
+        const exit = instance.fail
         return {
-            isPreview: true,
-            isLearning: true,
-            currentPageCount,
-            sessionId: trialDoc._id,
-            doc: unitDoc,
-            color,
-            onInput: instance.onItemInput,
-            onLoad: instance.onItemLoad,
-            onNewPage: instance.onNewPage,
-            onEvaluate: instance.onEvaluate,
-            onFinish: instance.forward,
-            onLoadError: (err) => console.error(err),
-            onLoadComplete: () => console.warn('item renderer load complete'),
+            params: { sessionId: sessionDoc._id, unitId: currentUnit },
+            exit,
+            next,
+            finish,
         }
     }
 })
 
 Template.trial.events({
-    'click .start-btn': async function (event, instance) {
+    'click .start-btn': async (event, instance) => {
         event.preventDefault()
-
-        // 1. start trial
-        const unitSetId = instance.state.get('unitSetDoc')._id
-        const trialDoc = await callMethod({
-            name: Trial.methods.start,
-            args: {unitSetId}
-        })
-
-        const unitDoc = await loadContentDoc({
-            context: Unit,
-            from: 'remote',
-            throwIfNotFound: true,
-            query: {_id: trialDoc.unitId},
-        })
-
-        const unit = unitDoc._id
-        const hasStory = instance.state.get('hasStory')
-        const isNewDoc = !trialDoc.completedAt && !trialDoc.cancelledAt && !trialDoc.continuedAt
-
-        const view = (hasStory && isNewDoc)
-            ? TRIAL_VIEWS.story.name
-            : TRIAL_VIEWS.unit.name
-
-        instance.state.set({trialDoc, view, unit})
-        setQueryParam({trial: trialDoc._id, step: view, unit})
+        try {
+            const testCycleId = instance.state.get('testCycleId')
+            const trialId = instance.state.get('trialId')
+            // start new session as we usually do in overview
+            const sessionDoc = await instance.startSession({ testCycleId, trialId })
+            // get unit docs
+            const { unitSetDoc } = await instance.loadUnitData({ sessionDoc })
+            const view = (unitSetDoc.story.length)
+                ? TRIAL_VIEWS.story.name
+                : TRIAL_VIEWS.unit.name
+            instance.state.set({ sessionDoc })
+            instance.setView(view)
+        } catch (e) {
+            instance.fail(e)
+        }
     },
-    'click .forward-btn'(event, instance) {
+    'click .continue-btn': async (event, instance) => {
         event.preventDefault()
-        instance.forward()
+        try {
+            const testCycleId = instance.state.get('testCycleId')
+            const trialId = instance.state.get('trialId')
+            let sessionDoc = instance.state.get('sessionDoc')
+            const sessionId = sessionDoc._id
+            // start new session as we usually do in overview
+            sessionDoc = await instance.startSession({ sessionId, isContinue: true })
+
+            // get unit docs
+            const { unitSetDoc } = await instance.loadUnitData({ sessionDoc })
+            const view = (unitSetDoc.story.length)
+                ? TRIAL_VIEWS.story.name
+                : TRIAL_VIEWS.unit.name
+            instance.state.set({ sessionDoc })
+            instance.setView(view)
+        } catch (e) {
+            instance.fail(e)
+        }
     },
-    'click .lea-pagenav-finish-button'(event, instance) {
+    'click .complete-btn' (event, instance) {
         event.preventDefault()
-        instance.forward()
-    },
+        instance.setView(TRIAL_VIEWS.start.name)
+    }
 })

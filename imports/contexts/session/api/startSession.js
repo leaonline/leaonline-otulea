@@ -3,6 +3,7 @@ import { check, Match } from 'meteor/check'
 import { TestCycle } from '../../testcycle/TestCycle'
 import { UnitSet } from '../../unitSet/UnitSet'
 import { Session } from '../Session'
+import { Trial } from "../../trial/Trial"
 import { Unit } from '../../Unit'
 import { checkDocument } from '../../../infrastructure/mixins/checkDocument'
 import { getDocument } from '../../../infrastructure/mixins/getDocument'
@@ -22,11 +23,12 @@ export const startSession = async (options = {}) => {
     options,
     Match.ObjectIncluding({
       testCycleId: String,
+      trialId: Match.Maybe(String),
       userId: String,
     }),
   )
 
-  const { testCycleId, userId } = options
+  const { testCycleId, trialId, userId } = options
 
   const SessionCollection = Session.collection()
   const abortedSessionDoc = await SessionCollection.findOneAsync({
@@ -50,6 +52,16 @@ export const startSession = async (options = {}) => {
   const testCycleDoc = await getDocument(testCycleId, TestCycle)
   checkDocument(testCycleDoc, TestCycle, { testCycleId })
 
+  if (trialId) {
+    const trialDoc = await Trial.collection().findOneAsync({ _id: trialId })
+    if (trialDoc?.testCycleId !== testCycleId) {
+      throw new Meteor.Error('session.start.error', 'trial.testCycleMismatch', {
+        trialId,
+        testCycleId,
+      })
+    }
+  }
+
   // get the initial unit-set
   const unitSetId = testCycleDoc.unitSets?.[0]
   const unitSetDoc = await getDocument(unitSetId, UnitSet)
@@ -71,6 +83,9 @@ export const startSession = async (options = {}) => {
   const insertDoc = { userId, startedAt, currentUnit, progress, maxProgress }
   insertDoc.testCycle = testCycleId
   insertDoc.unitSet = unitSetId
+
+  // optional: set trial id, everything else remains same
+  if (trialId) insertDoc.trialId = trialId
 
   const newSessionId = await SessionCollection.insertAsync(insertDoc)
   return SessionCollection.findOneAsync(newSessionId)

@@ -28,6 +28,7 @@ let autoLoadEnabled = false
 Blaze.TemplateInstance.prototype.initDependencies = function ({
   translations,
   tts = false,
+  user = false,
   language = tts || translations || false,
   contexts = [],
   loaders = [],
@@ -110,6 +111,7 @@ Blaze.TemplateInstance.prototype.initDependencies = function ({
   const allComplete = scheduleDependencies({
     contexts,
     language,
+    user,
     tts,
     loaders,
     initClientContext,

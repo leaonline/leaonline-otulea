@@ -1,30 +1,31 @@
 import { EJSON } from 'meteor/ejson'
-import { Unit } from '../../../../contexts/Unit'
+import { Unit } from '../../../../../contexts/Unit'
 import { Template } from 'meteor/templating'
-import { UnitSet } from '../../../../contexts/unitSet/UnitSet'
-import { loadContentDoc } from '../../../loading/loadContentDoc'
-import { initTaskRenderers } from '../../../renderers/initTaskRenderers'
-import { createItemInput } from '../../unit/item/createItemInput'
-import { createItemLoad } from '../../unit/item/createItemLoad'
-import { dataTarget } from '../../../../utils/dataTarget'
-import { errorToObject } from '../../../../utils/object/errorToObject'
-import { setQueryParam } from '../../../routing/setQueryParam'
-import { getColor } from "../shared/getColor";
-import { onPageNavUpdate } from "../shared/onPageNavUpdate";
-import { ResponseCache } from '../../unit/cache/ResponseCache'
-import { Scoring } from '../../../../contexts/Scoring'
-import internalLang from './i18n/lang'
-import { Dimension } from '../../../../contexts/Dimension'
-import './Internal.html'
-import './internal.css'
-import '../../../components/container/container'
-import '../../login/login'
-import '../../../layout/navbar/navbar'
-import {Routes} from "../../../routing/Routes";
+import { UnitSet } from '../../../../../contexts/unitSet/UnitSet'
+import { loadContentDoc } from '../../../../loading/loadContentDoc'
+import { initTaskRenderers } from '../../../../renderers/initTaskRenderers'
+import { createItemInput } from '../../../unit/item/createItemInput'
+import { createItemLoad } from '../../../unit/item/createItemLoad'
+import { dataTarget } from '../../../../../utils/dataTarget'
+import { errorToObject } from '../../../../../utils/object/errorToObject'
+import { setQueryParam } from '../../../../routing/setQueryParam'
+import { getColor } from "../../shared/getColor";
+import { onPageNavUpdate } from "../../shared/onPageNavUpdate";
+import { ResponseCache } from '../../../unit/cache/ResponseCache'
+import { Scoring } from '../../../../../contexts/Scoring'
+import unitDevLang from './i18n/lang'
+import { Dimension } from '../../../../../contexts/Dimension'
+import './unitDev.html'
+import './unitDev.css'
+import '../../../../components/container/container'
+import '../../../login/login'
+import '../../../../layout/navbar/navbar'
+import {Routes} from "../../../../routing/Routes";
+import {createOnEvaluate} from "../../shared/createOnEvaluate";
 
 Scoring.init()
 
-Template.internal.onCreated(function () {
+Template.unitDev.onCreated(function () {
   const instance = this
   instance.renderersLoaded = initTaskRenderers()
   instance.state.setDefault('currentPageCount', 0)
@@ -60,7 +61,7 @@ Template.internal.onCreated(function () {
     contexts: [Dimension, Unit, UnitSet],
     tts: true,
     debug: true,
-    translations: internalLang,
+    translations: unitDevLang,
     onComplete: () => {
       instance.onItemInput = createItemInput({
         cache: responseCache,
@@ -139,7 +140,7 @@ Template.internal.onCreated(function () {
   }
 })
 
-Template.internal.helpers({
+Template.unitDev.helpers({
   dependenciesComplete() {
     return (
       Template.getState('dependenciesComplete') &&
@@ -231,7 +232,7 @@ Template.internal.helpers({
   }
 })
 
-Template.internal.events({
+Template.unitDev.events({
   'click #unitSearchButton': async (event, instance) => {
     event.preventDefault()
     const code = instance.$('#unitInput').val().trim()

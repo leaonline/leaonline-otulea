@@ -329,6 +329,6 @@ function abortUnit(templateInstance, err) {
   templateInstance.api.fadeOut('.lea-unit-container', () => {
     // there should be a strategy pattern here so we can easily switch depending
     // on the settings configuration and users needs (tests vs production etc.)
-    templateInstance.data.exit()
+    templateInstance.data.exit(err)
   })
 }

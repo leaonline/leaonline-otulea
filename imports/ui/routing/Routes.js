@@ -310,8 +310,8 @@ Routes.diagnostics = {
 
 Env.on(['dev', 'staging'], () => {
   Routes.trial = {
-    path: (unitSetId = ':unitSetId') => {
-      return `${settings().trial}/${unitSetId}`
+    path: (trialId = ':trialId', testCycleId = ':testCycleId') => {
+      return `${settings().trial}/${trialId}/${testCycleId}`
     },
     label: 'pages.trial.title',
     triggersEnter: () => [],
@@ -324,6 +324,10 @@ Env.on(['dev', 'staging'], () => {
     data: {},
   }
 
+  /**
+   * Internal lab area, overview page
+   * @type {{path: function(): string, label: string, triggersEnter: function(): [], load(): Promise<{}>, target: string, template: string, data: {}}}
+   */
   Routes.internal = {
     path: () => {
       return `${settings().internal}`
@@ -331,7 +335,7 @@ Env.on(['dev', 'staging'], () => {
     label: 'pages.internal.title',
     triggersEnter: () => [],
     async load() {
-      return import('../pages/lab/internal/internal')
+      return import('../pages/lab/internal/main/internal')
     },
     target: 'internal-render-target',
     template: 'internal',
@@ -341,10 +345,7 @@ Env.on(['dev', 'staging'], () => {
   Routes.qrcode = {
     path: (data = '') => {
       const base = `${settings().qrcode}`
-      const query = new URLSearchParams()
-      if (data) query.set('data', data)
-      const queryString = query.toString()
-      return queryString ? `${base}?${queryString}` : base
+      return data ? `${base}?${data}` : base
     },
     label: 'pages.qrcode.title',
     triggersEnter: () => [],

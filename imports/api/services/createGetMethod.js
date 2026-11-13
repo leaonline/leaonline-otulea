@@ -7,6 +7,7 @@ export const createGetMethod = ({
   schema,
   run,
   backendOnly = true,
+    isPublic = false,
   debug,
   ...additionalMixins
 }) => {
@@ -16,6 +17,7 @@ export const createGetMethod = ({
   return {
     name: methodName,
     backend: backendOnly,
+      isPublic: isPublic ?? false,
     schema: {
       _id: String,
       ...schema,

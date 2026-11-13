@@ -30,6 +30,16 @@ Session.schema = {
 
   userId: String,
 
+
+  /**
+   * Indicate, whether this session belongs to a trial
+   */
+
+  trialId: {
+    type: String,
+    optional: true
+  },
+
   /**
    * Temporal start and end indicators.
    */
@@ -129,15 +139,20 @@ Session.methods.start = {
   name: 'session.start',
   schema: {
     testCycleId: String,
+    trialId: {
+      type: String,
+      optional: true
+    }
   },
   numRequests: 1,
   timeInterval: 1000,
   run: onServerExec(() => {
     const { startSession } = require('./api/startSession')
 
-    return async function ({ testCycleId }) {
+    return async function ({ testCycleId, trialId }) {
       return startSession({
-        testCycleId: testCycleId,
+        testCycleId,
+        trialId,
         userId: this.userId,
       })
     }
@@ -228,15 +243,19 @@ Session.methods.byTestCycle = {
   name: 'session.methods.byTestCycle',
   schema: {
     testCycleId: String,
+    trialId: {
+      type: String,
+      optional: true
+    }
   },
   run: onServerExec(() => {
     const {
       getLastSessionByTestCylce,
     } = require('./api/getLastSessionByTestCyclce')
 
-    return function ({ testCycleId }) {
+    return function ({ testCycleId, trialId }) {
       const { userId } = this
-      return getLastSessionByTestCylce({ testCycleId, userId })
+      return getLastSessionByTestCylce({ testCycleId, trialId,  userId })
     }
   }),
 }

@@ -116,5 +116,5 @@ Template.story.events({
 function abortStory(instance, err) {
   console.error('abort story')
   console.error(err)
-  instance.data?.exit()
+  instance.data?.exit(err)
 }

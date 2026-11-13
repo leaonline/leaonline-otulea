@@ -3,16 +3,20 @@ import encodeQR from 'qr';
 import {errorToObject} from "../../../../utils/object/errorToObject";
 import {getQueryParam} from "../../../routing/getQueryParam";
 import './qrcode.html'
+import {Routes} from "../../../routing/Routes";
 
 Template.qrcode.onCreated(function () {
-    const instance = this
-    debugger
+
     try {
-        const { url, label, icon } = fromBase64(getQueryParam('data'))
+        const route = getQueryParam('route')
+        const args = (getQueryParam('args') ?? '').split(',')
+        const label = getQueryParam('label')
+        const path = Routes[route].path.apply(null, args)
+        const url = Meteor.absoluteUrl(path)
         const svg = encodeQR(url, 'svg')
-        instance.state.set({ url, label, svg, icon, dependenciesComplete: true })
+        this.state.set({ url, label, svg, dependenciesComplete: true })
     } catch (e) {
-        instance.state.set({ error: errorToObject(e) })
+        this.state.set({ error: errorToObject(e) })
     }
 })
 
