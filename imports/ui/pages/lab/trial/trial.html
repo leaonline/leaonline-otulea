@@ -1,0 +1,83 @@
+<template name="trial">
+    <div class="container py-2">
+        {{#if showProgress}}
+        {{#if progress}}
+        <div class="d-flex align-items-center">
+            <div class="progress w-100 bg-transparent border border-{{color}}">
+                <div class="progress-bar bg-{{color}}" role="progressbar" style="width: {{progress.value}}%"
+                     aria-valuenow="{{progress.value}}" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            <span class="mx-3 no-wrap text-{{color}}">{{progress.rounded}}%</span>
+        </div>
+        {{/if}}
+        {{/if}}
+
+        {{#if error}}
+            <div class="alert alert-danger">{{error.message}}</div>
+        {{/if}}
+
+
+        {{#onComplete complete=initComplete}}
+
+        {{#if view "start"}}
+
+        {{#unless sessionDoc}}
+            <div class="text-center">
+                {{> actionButton
+                    type="primary"
+                    label=(i18n "trial.startAs")
+                    class="justify-content-center py-4"
+                    btnClass="py-4 d-block w-100 start-btn shadow-lg"}}
+            </div>
+            <div class="text-center">
+                {{currentUser.username}}
+            </div>
+        {{else}}
+            <h1 class="text-center">
+                {{i18n "trial.sessionExists"}}
+            </h1>
+        <div class="text-center">{{currentUser.username}}</div>
+
+                        <div class="d-flex justify-content-between">
+                            {{> actionButton
+                                type="secondary"
+                                label=(i18n "trial.continue")
+                                class="w-100 py-4"
+                                btnClass="py-4 flex-grow-1 continue-btn shadow-lg"}}
+                            {{> actionButton
+                                type="secondary"
+                                label=(i18n "trial.restart")
+                                class="w-100 py-4"
+                                btnClass="py-4 flex-grow-1 restart-btn shadow-lg"}}
+                        </div>
+        {{/unless}}
+        {{/if}}
+
+        {{#if view "story"}}
+            {{#onComplete complete=initComplete}}
+                {{> story storyData}}
+            {{/onComplete}}
+        {{/if}}
+
+        {{#if view "unit"}}
+                    {{#onComplete complete=initComplete}}
+                        {{> unit unitRendererData}}
+                    {{/onComplete}}
+        {{/if}}
+
+        {{#if view "finish"}}
+            {{#onComplete complete=initComplete}}
+                <h1 class="text-center">
+                    {{i18n "trial.sessionComplete"}}
+                </h1>
+
+                {{> actionButton
+                    type="primary"
+                    label=(i18n "trial.next")
+                    class="w-100 py-4"
+                    btnClass="py-4 flex-grow-1 complete-btn shadow-lg"}}
+            {{/onComplete}}
+        {{/if}}
+        {{/onComplete}}
+    </div>
+</template>

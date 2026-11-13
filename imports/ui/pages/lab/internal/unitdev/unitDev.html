@@ -1,18 +1,12 @@
-<template name="internal">
+<template name="unitDev">
   <div class="container {{#if isFullScreen}}vh-100{{/if}}">
     {{#onComplete complete=dependenciesComplete}}
-      {{#unless currentUser}}
-        <h1>Login for Internal</h1>
-        {{> login}}
-      {{else}}
         <div class="{{#if isFullScreen}}d-none{{/if}}">
-        <h1>{{i18n "internal.title"}}</h1>
         <div class="">
           <div class="d-flex align-items-baseline">
             <select class="form-control" id="typeSelect">
               <option value="unitSet" selected>Unit-Set</option>
               <option value="unit">Unit</option>
-              <option value="testCycle">Test-Cycle</option>
             </select>
             <select class="form-control" id="fieldSelect">
               <option value="code" selected>Short-Code (lea id)</option>
@@ -52,6 +46,11 @@
           </div>
             {{!-- actions --}}
             <span class="ms-auto">
+              {{#if showQRCode}}
+              <a href="{{route 'qrcode' qrCodeData}}" target="_blank" class="btn btn-sm btn-outline-secondary qr-btn">
+                {{> icon name="qrcode" }}
+              </a>
+              {{/if}}
               {{#if showFullscreenButton}}
               <button type="button" class="btn btn-sm btn-secondary present-btn" data-mode="on">
                 {{> icon name="expand-alt" }}
@@ -109,7 +108,6 @@
             {{> loading }}
           </div>
         {{/if}}
-      {{/unless}}
     {{/onComplete}}
   </div>
 </template>

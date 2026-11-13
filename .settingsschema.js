@@ -9,6 +9,7 @@ module.exports = (SimpleSchema, settings) => {
       accounts: schema({
         code: schema({
           length: SimpleSchema.Integer,
+          allowedChars: String
         }),
       }),
       packages: schema({

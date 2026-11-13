@@ -12,6 +12,7 @@ export const createAllContentDocsLoader = ({
     name,
     params = {},
     unlessExists,
+      ignoreFailedUpsert = false,
     debug = () => {},
   }) => {
     debug(`loadAllContentDocs (call) for ${context?.name}`)
@@ -64,7 +65,15 @@ export const createAllContentDocsLoader = ({
       for (const document of documents) {
         if (!document?._id) throw new Error('Expected doc with _id to upsert')
         const documentId = document._id
-        localCollection.upsert(documentId, { $set: { ...document } })
+        try {
+          localCollection.upsert(documentId, { $set: { ...document } })
+        } catch (e) {
+          if (!ignoreFailedUpsert) {
+            throw e
+          } else {
+            debug(`Failed to upsert document ${documentId} for context ${documentContextName}`, e)
+          }
+        }
         document._id = documentId
       }
     }

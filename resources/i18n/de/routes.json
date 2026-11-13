@@ -15,5 +15,7 @@
     "contact": "kontakt"
   },
   "diagnostics": "/browser-diagnose",
-  "internal": "/intern"
+  "internal": "/intern",
+  "trial": "/erprobung",
+  "qrcode": "/qr"
 }

@@ -1,0 +1,112 @@
+<template name="trials">
+    {{#onComplete complete=dependenciesComplete}}
+    <table class="table table-bordered table-striped">
+        <thead>
+        <tr>
+            <th>{{trials.count}}</th>
+            <th>name</th>
+            <th>description</th>
+            <th>testCylce</th>
+            <th>from</th>
+            <th>until</th>
+            <th>location</th>
+            <th colspan="text-end">
+                {{#onComplete complete=dependenciesComplete}}
+                    <button type="button" class="btn btn-sm btn-success create-btn">
+                        {{> icon name="plus"}}
+                    </button>
+                {{/onComplete}}
+            </th>
+        </tr>
+        </thead>
+            {{#unless form}}
+            <tbody>
+                {{#each entry in trials}}
+                {{#if showEntry entry}}
+                <tr>
+                    <td>{{@index}}</td>
+                    <td>{{entry.title}}</td>
+                    <td>{{entry.description}}</td>
+                    <td>{{testCycle entry.testCycleId}}</td>
+                    <td>{{toDate entry.from}}</td>
+                    <td>{{toDate entry.until}}</td>
+                    <td>{{entry.location}}</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-secondary border-0 view-data-btn"
+                            data-trial="{{entry._id}}" data-testCycle="{{entry.testCycleId}}">
+                            {{> icon name="eye" }}
+                        </button>
+                        <a href="{{route 'qrcode' (qrData entry)}}"
+                           target="_blank"
+                           rel="noreferrer noopener"
+                           class="text-secondary">
+                            {{> icon name="qrcode"}}
+                        </a>
+                    </td>
+                </tr>
+                {{/if}}
+                {{/each}}
+            </tbody>
+            {{/unless}}
+    </table>
+
+        {{#if trialData}}
+            <table class="table table-bordered table-striped">
+                <thead>
+                <tr>
+                    <th>{{trialData.count}}</th>
+                    <th>user</th>
+                    <th class="text-end">date</th>
+                    <th class="text-end">started</th>
+                    <th class="text-end">completed</th>
+                    <th class="text-end">duration</th>
+                    <th class="text-end">progress</th>
+                </tr>
+                </thead>
+                {{#unless form}}
+                    <tbody>
+                    {{#each entry in trialData.sessionDocs}}
+                            <tr>
+                                <td>{{@index}}</td>
+                                <td><code>{{entry.username}}</code></td>
+                                <td class="text-end">{{toDate entry.startedAt}}</td>
+                                <td class="text-end">{{toTime entry.startedAt}}</td>
+                                <td class="text-end">{{toTime entry.completedAt}}</td>
+                                <td class="text-end">{{entry.duration}}</td>
+                                <td class="text-end">{{entry.progress}} / {{entry.maxProgress}}</td>
+                            </tr>
+                    {{/each}}
+                    </tbody>
+                {{/unless}}
+            </table>
+        {{/if}}
+
+
+    {{/onComplete}}
+
+    {{#if form}}
+        <h2>New Trial</h2>
+        <form id="trialForm">
+            {{#each field in formSchema}}
+                <label>{{field.label}}</label>
+                <input name="{{field.name}}" placeholder="Enter {{field.label}}" type="{{field.type}}"
+                       class="form-control mb-4">
+            {{/each}}
+        </form>
+        {{#unless submitting}}
+        <div class="d-flex justify-content-between align-items-center">
+            <button class="btn btn-outline-secondary cancel-form-btn">Cancel</button>
+            {{#if form.isInsert}}
+                <button class="btn btn-success submit-form-btn">Create</button>
+            {{/if}}
+            {{#if form.isUpdate}}
+                <button class="btn btn-primary submit-form-btn">Update</button>
+            {{/if}}
+        </div>
+        {{else}}
+            {{> loading }}
+        {{/unless}}
+    {{/if}}
+
+    {{#if error}}<div class="alert alert-danger">{{error.message}}</div>{{/if}}
+</template>

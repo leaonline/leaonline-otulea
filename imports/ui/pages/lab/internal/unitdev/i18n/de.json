@@ -1,6 +1,8 @@
 {
   "internal": {
     "title": "Interner Bereich",
+    "unitdev": "Units",
+    "trials": "Erprobungen",
     "enterValue": "_id, short-code etc. eingeben",
     "load": "Laden",
     "complete": "Du hast alle Aufgaben bearbeitet."

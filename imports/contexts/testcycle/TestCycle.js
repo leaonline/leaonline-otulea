@@ -11,7 +11,7 @@ TestCycle.methods = TestCycle.methods ?? {}
 TestCycle.methods.getAll = createGetAllMethod({
   context: TestCycle,
   backendOnly: false,
-  defaultQuery: { isLegacy: true },
+  // defaultQuery: { isLegacy: true },
 })
 
 TestCycle.methods.get = createGetMethod({

@@ -12,13 +12,15 @@ const projection = {
  * @async
  * @return {Promise.<object|undefined>}
  */
-export const getLastSessionByTestCylce = ({ testCycleId, userId }) => {
+export const getLastSessionByTestCylce = ({ testCycleId, trialId, userId }) => {
   const query = {
     userId: userId,
     testCycle: testCycleId,
     startedAt: { $exists: true },
     cancelledAt: { $exists: false },
   }
+
+  if (trialId) query.trialId = trialId
 
   // TODO maybe add a flag to settings.json with number of days/hours that
   // TODO define a threshold until a session can be continued.

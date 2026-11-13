@@ -14,9 +14,10 @@ import '../imports/startup/server/legal'
 import '../imports/startup/server/logos'
 import '../imports/startup/server/feedback'
 import '../imports/startup/server/videos'
+import '../imports/startup/server/Record'
 import '../imports/startup/server/Response'
 import '../imports/startup/server/Session'
-import '../imports/startup/server/Record'
+import '../imports/startup/server/trial'
 import '../imports/startup/server/diagnostics'
 
 // RATE LIMIT

@@ -309,6 +309,25 @@ Routes.diagnostics = {
 }
 
 Env.on(['dev', 'staging'], () => {
+  Routes.trial = {
+    path: (trialId = ':trialId', testCycleId = ':testCycleId') => {
+      return `${settings().trial}/${trialId}/${testCycleId}`
+    },
+    label: 'pages.trial.title',
+    triggersEnter: () => [],
+    async load() {
+      return import('../pages/lab/trial/trial')
+    },
+    target: 'internal-render-target',
+    template: 'trial',
+    icon: 'flask',
+    data: {},
+  }
+
+  /**
+   * Internal lab area, overview page
+   * @type {{path: function(): string, label: string, triggersEnter: function(): [], load(): Promise<{}>, target: string, template: string, data: {}}}
+   */
   Routes.internal = {
     path: () => {
       return `${settings().internal}`
@@ -316,10 +335,25 @@ Env.on(['dev', 'staging'], () => {
     label: 'pages.internal.title',
     triggersEnter: () => [],
     async load() {
-      return import('../pages/internal/internal')
+      return import('../pages/lab/internal/main/internal')
     },
     target: 'internal-render-target',
     template: 'internal',
+    data: {},
+  }
+
+  Routes.qrcode = {
+    path: (data = '') => {
+      const base = `${settings().qrcode}`
+      return data ? `${base}?${data}` : base
+    },
+    label: 'pages.qrcode.title',
+    triggersEnter: () => [],
+    async load() {
+      return import('../pages/lab/qrcode/qrcode')
+    },
+    target: 'internal-render-target',
+    template: 'qrcode',
     data: {},
   }
 })

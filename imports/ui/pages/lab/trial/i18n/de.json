@@ -1,0 +1,18 @@
+{
+  "actions": {
+    "start": "Starten"
+  },
+  "pages": {
+    "trial": {
+      "title": "Erprobung"
+    }
+  },
+  "trial": {
+    "startAs": "Neue Erprobung starten",
+    "sessionExists": "Erprobung fortsetzen?",
+    "continue": "Fortsetzen",
+    "restart": "Neu starten",
+    "sessionComplete": "Erprobung abgeschlossen",
+    "next": "Abschließen"
+  }
+}

@@ -6,6 +6,7 @@ export const scheduleDependencies = ({
   contexts = [],
   language = false,
   tts = false,
+  user = false,
   loaders = [],
   initClientContext,
   initLanguage,
@@ -28,6 +29,9 @@ export const scheduleDependencies = ({
         debug,
       }),
     )
+  }
+  if (user) {
+    pending.push()
   }
   loaders.forEach((loader) => {
     pending.push(loadOnce(loader, { onError }))
@@ -62,7 +66,10 @@ export const observeDependencies = ({
   }
 
   return autorun((computation) => {
-    if (started || !pending.every((handle) => handle.get())) return
+    if (started || !pending.every((handle) => {
+      if (handle?.get) return handle.get()
+      if (typeof handle === 'function') return handle()
+    })) return
     started = true
     computation.stop()
 

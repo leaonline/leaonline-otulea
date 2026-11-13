@@ -26,6 +26,7 @@
     "marked": "^17.0.1",
     "meteor-node-stubs": "^1.2.25",
     "print-js": "^1.6.0",
+    "qr": "^0.7.2",
     "showdown": "^2.1.0",
     "ua-parser-js": "^2.0.9"
   },
